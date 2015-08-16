@@ -1,16 +1,23 @@
 package com.gemstone.gemfire.internal.offheap;
 
+import static com.gemstone.gemfire.test.dunit.ExpectedExceptionString.*;
+import static com.gemstone.gemfire.test.dunit.Invoke.*;
+import static com.gemstone.gemfire.test.dunit.Wait.*;
+import static org.junit.Assert.*;
+
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.logging.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.OutOfOffHeapMemoryException;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionShortcut;
-import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
@@ -21,49 +28,33 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.util.StopWatch;
+import com.gemstone.gemfire.test.dunit.cache.CacheTestCase;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
-import dunit.Host;
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test behavior of region when running out of off-heap memory.
  * 
  * @author Kirk Lund
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unused" })
+@Category(DistributedTest.class)
 public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
   private static final Logger logger = LogService.getLogger();
   
   protected static final AtomicReference<Cache> cache = new AtomicReference<Cache>();
   protected static final AtomicReference<DistributedSystem> system = new AtomicReference<DistributedSystem>();
   protected static final AtomicBoolean isSmallerVM = new AtomicBoolean();
-  
-  public OutOfOffHeapMemoryDUnitTest(String name) {
-    super(name);
-  }
 
-  @Override
-  public void setUp() throws Exception {
+  @Before
+  public void setUpOutOfOffHeapMemoryDUnitTest() throws Exception {
     disconnectAllFromDS();
-    super.setUp();
-    addExpectedException(OutOfOffHeapMemoryException.class.getSimpleName());
+    addExpectedExceptionString(OutOfOffHeapMemoryException.class.getSimpleName());
   }
   
-//  public static void caseSetUp() {
-//    //disconnectAllFromDS();
-//    for (int i = 0; i < Host.getHost(0).getVMCount(); i++) {
-//      Host.getHost(0).getVM(i).invoke(new SerializableRunnable() {
-//        public void run() {
-//          InternalDistributedSystem ids = InternalDistributedSystem.getAnyInstance();
-//          if (ids != null && ids.isConnected()) {
-//            logger.warn(OutOfOffHeapMemoryDUnitTest.class.getSimpleName() + " found DistributedSystem connection from previous test: {}", ids);
-//            ids.disconnect();
-//          }
-//        }
-//      });
-//    }
-//  }
-
   @Override
   public void tearDown2() throws Exception {
     final SerializableRunnable checkOrphans = new SerializableRunnable() {
@@ -83,7 +74,6 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
     }
   }
 
-  @SuppressWarnings("unused") // invoked by reflection from tearDown2()
   private static void cleanup() {
     disconnectFromDS();
     SimpleMemoryAllocatorImpl.freeOffHeapMemory();
@@ -121,6 +111,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
     return props;
   }
   
+  @Test
   public void testSimpleOutOfOffHeapMemoryMemberDisconnects() {
     final DistributedSystem system = getSystem();
     final Cache cache = getCache();
@@ -209,6 +200,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
     }
   }
   
+  @Test
   public void testOtherMembersSeeOutOfOffHeapMemoryMemberDisconnects() {
     final int vmCount = Host.getHost(0).getVMCount();
     assertEquals(4, vmCount);
@@ -301,44 +293,4 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
       });
     }
   }
-
-//  private static void foo() {
-//    final WaitCriterion waitForDisconnect = new WaitCriterion() {
-//      public boolean done() {
-//        return cache.isClosed() && !system.isConnected() && dm.isClosed();
-//      }
-//      public String description() {
-//        return "Waiting for cache, system and dm to close";
-//      }
-//    };
-//    waitForCriterion(waitForDisconnect, 10*1000, 100, true);
-//  }
-  
-  // setUp() and caseSetUp() are commented out -- they were in place because of incompatible DistributedSystem bleed over from earlier DUnit tests
-  
-//@Override
-//public void setUp() throws Exception {
-//  super.setUp();
-//  long begin = System.currentTimeMillis();
-//  Cache gfc = null;
-//  while (gfc == null) {
-//    try {
-//      gfc = getCache();
-//      break;
-//    } catch (IllegalStateException e) {
-//      if (System.currentTimeMillis() > begin+60*1000) {
-//        fail("OutOfOffHeapMemoryDUnitTest waited too long to getCache", e);
-//      } else if (e.getMessage().contains("A connection to a distributed system already exists in this VM.  It has the following configuration")) {
-//        InternalDistributedSystem ids = InternalDistributedSystem.getAnyInstance();
-//        if (ids != null && ids.isConnected()) {
-//          ids.getLogWriter().warning("OutOfOffHeapMemoryDUnitTest found DistributedSystem connection from previous test", e);
-//          ids.disconnect();
-//        }
-//      } else {
-//        throw e;
-//      }
-//    }
-//  }
-//}
-
 }

@@ -144,7 +144,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     vm.invoke(new SerializableRunnable("Attach Debugger") {
       public void run() {
         com.gemstone.gemfire.internal.util.DebuggerSupport.
-        waitForJavaDebugger(getSystem().getLogWriter().convertToLogWriterI18n(), msg);
+        waitForJavaDebugger(msg);
       } 
     });
   }
@@ -526,7 +526,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * NOTE: if you use this method be sure that you clean up the VM before the end of your
    * test with disconnectFromDS() or disconnectAllFromDS().
    */
-  public boolean crashDistributedSystem(VM vm) {
+  public static boolean crashDistributedSystem(VM vm) {
     return (Boolean)vm.invoke(new SerializableCallable("crash distributed system") {
       public Object call() throws Exception {
         DistributedSystem msys = InternalDistributedSystem.getAnyInstance();
@@ -544,7 +544,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * NOTE: if you use this method be sure that you clean up the VM before the end of your
    * test with disconnectFromDS() or disconnectAllFromDS().
    */
-  public void crashDistributedSystem(final DistributedSystem msys) {
+  public static void crashDistributedSystem(final DistributedSystem msys) {
     MembershipManagerHelper.inhibitForcedDisconnectLogging(true);
     MembershipManagerHelper.playDead(msys);
     JChannel c = MembershipManagerHelper.getJChannel(msys);

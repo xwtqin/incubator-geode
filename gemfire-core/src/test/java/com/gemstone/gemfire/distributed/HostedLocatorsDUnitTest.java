@@ -1,11 +1,24 @@
 package com.gemstone.gemfire.distributed;
 
+import static com.jayway.awaitility.Awaitility.*;
+import static java.util.concurrent.TimeUnit.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.RestoreSystemProperties;
+import org.junit.experimental.categories.Category;
+import org.junit.rules.Timeout;
 
 import com.gemstone.gemfire.distributed.AbstractLauncher.Status;
 import com.gemstone.gemfire.distributed.LocatorLauncher.Builder;
@@ -18,10 +31,13 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.util.StopWatch;
 
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import com.gemstone.gemfire.test.junit.categories.MembershipTest;
+import com.gemstone.gemfire.test.junit.rules.Retry;
 
 /**
  * Extracted from LocatorLauncherLocalJUnitTest.
@@ -29,26 +45,36 @@ import dunit.SerializableRunnable;
  * @author Kirk Lund
  * @since 8.0
  */
+@SuppressWarnings("serial")
+@Category({ DistributedTest.class, MembershipTest.class })
 public class HostedLocatorsDUnitTest extends DistributedTestCase {
 
-  protected static final int TIMEOUT_MILLISECONDS = 5 * 60 * 1000; // 5 minutes
+  //protected static final int TIMEOUT_MILLISECONDS = 5 * 60 * 1000; // 5 minutes
 
   protected transient volatile int locatorPort;
   protected transient volatile LocatorLauncher launcher;
   
+  @Rule // not serializable and yet we're setting/clearing in other JVMs
+  public final transient RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
+  
+  @Rule
+  public final transient Timeout globalTimeout = Timeout.seconds(2 * 60 * 1000);
+  
+  @Rule
+  public final transient Retry retry = new Retry(2);
+  
+  @Before
   public void setUp() throws Exception {
     disconnectAllFromDS();
   }
   
-  public void tearDown2() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     disconnectAllFromDS();
   }
   
-  public HostedLocatorsDUnitTest(String name) {
-    super(name);
-  }
-
-  public void testGetAllHostedLocators() throws Exception {
+  @Test
+  public void getAllHostedLocators() throws Exception {
     final InternalDistributedSystem system = getSystem();
     final String dunitLocator = system.getConfig().getLocators();
     assertNotNull(dunitLocator);
@@ -79,7 +105,8 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     
             launcher = builder.build();
             assertEquals(Status.ONLINE, launcher.start().getStatus());
-            waitForLocatorToStart(launcher, TIMEOUT_MILLISECONDS, 10, true);
+            //was: waitForLocatorToStart(launcher, TIMEOUT_MILLISECONDS, 10, true);
+            with().pollInterval(10, MILLISECONDS).await().atMost(5, MINUTES).until( isLocatorStarted() );
             return null;
           } finally {
             System.clearProperty("gemfire.locators");
@@ -154,6 +181,23 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     }
   }
 
+  @Test
+  public void unreliableTestWithRaceConditions() {
+    count++;
+    if (count < 2) {
+      assertThat(count, is(2)); // doomed to fail
+    }
+  }
+  
+  private Callable<Boolean> isLocatorStarted() {
+    return new Callable<Boolean>() {
+      public Boolean call() throws Exception {
+        final LocatorState LocatorState = launcher.status();
+        return (LocatorState != null && Status.ONLINE.equals(LocatorState.getStatus()));
+      }
+    };
+  }
+  
   protected void waitForLocatorToStart(final LocatorLauncher launcher, int timeout, int interval, boolean throwOnTimeout) throws Exception {
     assertEventuallyTrue("waiting for process to start: " + launcher.status(), new Callable<Boolean>() {
       @Override
@@ -176,4 +220,6 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     }
     assertTrue(message, done);
   }
+  
+  private static int count = 0;
 }

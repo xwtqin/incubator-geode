@@ -5,7 +5,7 @@
  * more patents listed at http://www.pivotal.io/patents.
  *=========================================================================
  */
-package dunit.standalone;
+package com.gemstone.gemfire.test.dunit.standalone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,13 +25,10 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
-import com.gemstone.gemfire.internal.sequencelog.SequenceLoggerImpl;
 
-import dunit.RemoteDUnitVMIF;
+import com.gemstone.gemfire.test.dunit.RemoteDUnitVMIF;
 
 /**
  * @author dsmith

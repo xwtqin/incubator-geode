@@ -5,7 +5,7 @@
  * one or more patents listed at http://www.pivotal.io/patents.
  *=========================================================================
  */
-package dunit;
+package com.gemstone.gemfire.test.dunit;
 
 import hydra.MethExecutorResult;
 
