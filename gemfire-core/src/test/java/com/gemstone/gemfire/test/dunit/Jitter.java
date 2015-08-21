@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * Extracted from DistributedTestCase
  */
-public class Jitter {
+class Jitter {
 
   /**
    * If true, we randomize the amount of time we wait

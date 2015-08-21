@@ -14,17 +14,20 @@ import java.util.Properties;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
  * This class tests the basic functionality of the distributed unit
  * test framework.
  */
+@Category(DistributedTest.class)
 public class BasicDUnitTest extends DistributedTestCase {
   private static final long serialVersionUID = 1L;
 
@@ -58,7 +61,7 @@ public class BasicDUnitTest extends DistributedTestCase {
   }
   
   @Test
-  public void testRemoteInvokeAsync() throws InterruptedException {
+  public void testRemoteInvokeAsync() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
     String name = this.getUniqueName();
@@ -78,7 +81,7 @@ public class BasicDUnitTest extends DistributedTestCase {
   }
 
   @Test
-  public void testRemoteInvokeAsyncWithException() throws InterruptedException {
+  public void testRemoteInvokeAsyncWithException() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
 
@@ -93,7 +96,7 @@ public class BasicDUnitTest extends DistributedTestCase {
   @Ignore("not implemented")
   public void testRemoteInvocationBoolean() {
   }
-
+  
   /**
    * Accessed via reflection.  DO NOT REMOVE
    */

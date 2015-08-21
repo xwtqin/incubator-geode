@@ -15,16 +15,19 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
  * This class tests the functionality of the {@link VM} class.
  */
+@Category(DistributedTest.class)
 public class VMDUnitTest extends DistributedTestCase {
   private static final long serialVersionUID = 1L;
   

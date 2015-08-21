@@ -1,11 +1,9 @@
 package com.gemstone.gemfire.test.dunit;
 
+import static com.gemstone.gemfire.test.dunit.DUnitEnv.*;
 import static com.gemstone.gemfire.test.dunit.Invoke.*;
-import static com.gemstone.gemfire.test.dunit.Wait.*;
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -28,7 +26,6 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem.CreationStackGenerator;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.InternalInstantiator;
@@ -42,11 +39,8 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.DataSerializerPropogationDUnitTest;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
-import com.gemstone.org.jgroups.Event;
-import com.gemstone.org.jgroups.JChannel;
 import com.gemstone.org.jgroups.stack.IpAddress;
 import com.gemstone.org.jgroups.stack.Protocol;
 import com.gemstone.org.jgroups.util.GemFireTracer;
@@ -58,20 +52,22 @@ import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
  *
  * @author David Whitlock
  */
-@SuppressWarnings({ "deprecation", "serial", "rawtypes" })
+@SuppressWarnings({ "deprecation", "rawtypes" })
 public abstract class DistributedTestCase implements java.io.Serializable {
+  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogService.getLogger();
   private static final LogWriterLogger oldLogger = LogWriterLogger.create(logger);
 
   @Rule
   public transient TestName testNameRule = new TestName();
+  private static volatile String previousTestName;
+  private static volatile String testName;
   
-  public static InternalDistributedSystem system;
-  private static Class lastSystemCreatedInTest;
-  private static Properties lastSystemProperties;
-  public static volatile String testName;
+  private static InternalDistributedSystem system;
+  private static Class previousSystemCreatedInTestClass;
+  private static Properties previousProperties;
   
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
+  private final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
   /**
    * Creates a new <code>DistributedTestCase</code> test.
@@ -80,83 +76,135 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     DUnitLauncher.launchIfNeeded();
   }
 
-  private static void setUpCreationStackGenerator() {
-    // the following is moved from InternalDistributedSystem to fix #51058
-    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
-    new CreationStackGenerator() {
+  //---------------------------------------------------------------------------
+  // setUp methods
+  //---------------------------------------------------------------------------
+  
+  @Before
+  public final void setUpDistributedTestCase() throws Exception {
+    setUpCreationStackGenerator();
+    testName = getMethodName();
+    
+    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");
+    GemFireCacheImpl.setDefaultDiskStoreName(getDefaultDiskStoreName()); // TODO: not thread safe
+    
+    for (int h = 0; h < Host.getHostCount(); h++) {
+      Host host = Host.getHost(h);
+      for (int v = 0; v < host.getVMCount(); v++) {
+        VM vm = host.getVM(v);
+        final String vmDefaultDiskStoreName = "DiskStore-" + h + "-" + v + "-" + getClass().getSimpleName() + "." + testName;
+        setUpInVM(vm, testName, vmDefaultDiskStoreName);
+      }
+    }
+    //System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
+  }
+
+  private void setUpInVM(final VM vm, final String testNameToUse, final String diskStoreNameToUse) {
+    vm.invoke(new SerializableRunnable() {
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public Throwable generateCreationStack(final DistributionConfig config) {
-        final StringBuilder sb = new StringBuilder();
-        final String[] validAttributeNames = config.getAttributeNames();
-        for (int i = 0; i < validAttributeNames.length; i++) {
-          final String attName = validAttributeNames[i];
-          final Object actualAtt = config.getAttributeObject(attName);
-          String actualAttStr = actualAtt.toString();
-          sb.append("  ");
-          sb.append(attName);
-          sb.append("=\"");
-          if (actualAtt.getClass().isArray()) {
-            actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
-          }
-          sb.append(actualAttStr);
-          sb.append("\"");
-          sb.append("\n");
-        }
-        return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
+      public void run() {
+        setUpCreationStackGenerator();
+        testName = testNameToUse;
+        System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
+        GemFireCacheImpl.setDefaultDiskStoreName(diskStoreNameToUse); // TODO: not thread safe
       }
     });
   }
   
-  private static void tearDownCreationStackGenerator() {
-    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
+  //---------------------------------------------------------------------------
+  // tearDown methods
+  //---------------------------------------------------------------------------
+  
+  /**
+   * For logPerTest to work, we have to disconnect from the DS, but all
+   * subclasses do not call super.tearDown(). To prevent this scenario
+   * this method has been declared final. Subclasses must now override
+   * {@link #tearDownBefore()} instead.
+   * @throws Exception
+   */
+  @After
+  public final void tearDownDistributedTestCase() throws Exception {
+    tearDownBefore();
+    realTearDown();
+    tearDownAfter();
+    
+    tearDownCreationStackGenerator();
+    previousTestName = testName;
+    testName = null;
+
+    tearDownInEveryVM();
+  }
+
+  private void tearDownInEveryVM() {
+    invokeInEveryVM(new SerializableRunnable() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void run() {    
+        tearDownCreationStackGenerator();
+        previousTestName = testName;
+        testName = null;
+      }
+    });
   }
   
-  private Class getTestClass() {
-    Class clazz = getClass();
-    while (clazz.getDeclaringClass() != null) {
-      clazz = clazz.getDeclaringClass();
+  protected void realTearDown() throws Exception {
+    if (logPerTest) {
+      disconnectFromDS();
+      invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
     }
-    return clazz;
+    cleanupAllVms();
   }
   
   /**
-   * This finds the log level configured for the test run.  It should be used
-   * when creating a new distributed system if you want to specify a log level.
-   * 
-   * @return the dunit log-level setting
+   * Tears down the test. This method is called by the final {@link #tearDown()} method and should be overridden to
+   * perform actual test cleanup and release resources used by the test.  The tasks executed by this method are
+   * performed before the DUnit test framework using Hydra cleans up the client VMs.
+   * <p/>
+   * @throws Exception if the tear down process and test cleanup fails.
+   * @see #tearDown
+   * @see #tearDownAfter()
    */
-  public static String getDUnitLogLevel() { // TODO: delete
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    String result = p.getProperty(DistributionConfig.LOG_LEVEL_NAME);
-    if (result == null) {
-      result = ManagerLogWriter.levelToString(DistributionConfig.DEFAULT_LOG_LEVEL);
-    }
-    return result;
+  protected void tearDownBefore() throws Exception {
   }
 
-  public final static Properties getAllDistributedSystemProperties(Properties props) { // TODO: delete
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    
-    // our tests do not expect auto-reconnect to be on by default
-    if (!p.contains(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME)) {
-      p.put(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME, "true");
-    }
-        
-    for (Iterator iter = props.entrySet().iterator();
-    iter.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      String key = (String) entry.getKey();
-      Object value = entry.getValue();
-      p.put(key, value);
-    }
-    return p;
+  /**
+   * Tears down the test.  Performs additional tear down tasks after the DUnit tests framework using Hydra cleans up
+   * the client VMs.  This method is called by the final {@link #tearDown()} method and should be overridden to perform
+   * post tear down activities.
+   * <p/>
+   * @throws Exception if the test tear down process fails.
+   * @see #tearDown()
+   * @see #tearDownBefore()
+   */
+  protected void tearDownAfter() throws Exception {
   }
 
-  public void setSystem(Properties props, DistributedSystem ds) { // TODO: delete
-    system = (InternalDistributedSystem)ds;
-    lastSystemProperties = props;
-    lastSystemCreatedInTest = getTestClass();
+  //---------------------------------------------------------------------------
+  // test name methods
+  //---------------------------------------------------------------------------
+  
+  public final String getMethodName() {
+    return this.testNameRule.getMethodName();
   }
+  
+  /**
+   * Returns a unique name for this test method.  It is based on the
+   * name of the class as well as the name of the method.
+   */
+  public final String getUniqueName() { // TODO: consider using FQCN
+    return getClass().getSimpleName() + "_" + getTestName();
+  }
+
+  protected static String getTestName() {
+    return testName;
+  }
+
+  //---------------------------------------------------------------------------
+  // public final methods
+  //---------------------------------------------------------------------------
   
   /**
    * Returns this VM's connection to the distributed system.  If
@@ -169,125 +217,127 @@ public abstract class DistributedTestCase implements java.io.Serializable {
    * @see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public final InternalDistributedSystem getSystem(Properties props) {
-    // Setting the default disk store name is now done in setUp
+  public final InternalDistributedSystem getSystem(Properties properties) {
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
     }
+    
     if (system == null || !system.isConnected()) {
-      // Figure out our distributed system properties
-      Properties p = getAllDistributedSystemProperties(props);
-      lastSystemCreatedInTest = getTestClass();
+      // there is no previous system yet
+      final Properties newProperties = getAllDistributedSystemProperties(properties);
+      previousSystemCreatedInTestClass = getTestClass();
       if (logPerTest) {
-        String testMethod = getTestName();
-        String testName = lastSystemCreatedInTest.getName() + '-' + testMethod;
-        String oldLogFile = p.getProperty(DistributionConfig.LOG_FILE_NAME);
-        p.put(DistributionConfig.LOG_FILE_NAME, 
-            oldLogFile.replace("system.log", testName+".log"));
-        String oldStatFile = p.getProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME);
-        p.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, 
-            oldStatFile.replace("statArchive.gfs", testName+".gfs"));
+        newProperties.put(DistributionConfig.LOG_FILE_NAME, getUniqueName() + ".log");
+        newProperties.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getUniqueName() + ".gfs");
       }
-      system = (InternalDistributedSystem)DistributedSystem.connect(p);
-      lastSystemProperties = p;
+      system = (InternalDistributedSystem)DistributedSystem.connect(newProperties);
+      previousProperties = newProperties;
+      
     } else {
+      // there is a previous system
       boolean needNewSystem = false;
-      if(!getTestClass().equals(lastSystemCreatedInTest)) {
-        Properties newProps = getAllDistributedSystemProperties(props);
-        needNewSystem = !newProps.equals(lastSystemProperties);
-        if(needNewSystem) {
-          getLogWriter().info(
+      //if (!getUniqueName().equals(previousTestName)) {
+      if (!getTestClass().equals(previousSystemCreatedInTestClass)) {
+        // previous system was created in a previous test class
+        final Properties newProperties = getAllDistributedSystemProperties(properties);
+        if (logPerTest) {
+          newProperties.put(DistributionConfig.LOG_FILE_NAME, getUniqueName() + ".log");
+          newProperties.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getUniqueName() + ".gfs");
+        }
+        needNewSystem = !newProperties.equals(previousProperties);
+        if (needNewSystem) {
+          logger.info(
               "Test class has changed and the new DS properties are not an exact match. "
                   + "Forcing DS disconnect. Old props = "
-                  + lastSystemProperties + "new props=" + newProps);
+                  + previousProperties + "new props=" + newProperties);
         }
+        
       } else {
-        Properties activeProps = system.getProperties();
-        for (Iterator iter = props.entrySet().iterator();
-        iter.hasNext(); ) {
-          Map.Entry entry = (Map.Entry) iter.next();
-          String key = (String) entry.getKey();
-          String value = (String) entry.getValue();
-          if (!value.equals(activeProps.getProperty(key))) {
+        // previous system was created in this test class
+        final Properties currentProperties = system.getProperties();
+        for (Iterator iter = properties.entrySet().iterator(); iter.hasNext(); ) {
+          final Map.Entry entry = (Map.Entry) iter.next();
+          final String key = (String) entry.getKey();
+          final String value = (String) entry.getValue();
+          if (!value.equals(currentProperties.getProperty(key))) {
             needNewSystem = true;
-            getLogWriter().info("Forcing DS disconnect. For property " + key
-                                + " old value = " + activeProps.getProperty(key)
+            logger.info("Forcing DS disconnect. For property " + key
+                                + " old value = " + currentProperties.getProperty(key)
                                 + " new value = " + value);
             break;
           }
         }
       }
-      if(needNewSystem) {
+      
+      if (needNewSystem) {
         // the current system does not meet our needs to disconnect and
         // call recursively to get a new system.
-        getLogWriter().info("Disconnecting from current DS in order to make a new one");
+        logger.info("Disconnecting from current DS in order to make a new one");
         disconnectFromDS();
-        getSystem(props);
+        getSystem(properties);
       }
     }
     return system;
   }
-
-  /**
-   * Crash the cache in the given VM in such a way that it immediately stops communicating with
-   * peers.  This forces the VM's membership manager to throw a ForcedDisconnectException by
-   * forcibly terminating the JGroups protocol stack with a fake EXIT event.<p>
-   * 
-   * NOTE: if you use this method be sure that you clean up the VM before the end of your
-   * test with disconnectFromDS() or disconnectAllFromDS().
-   */
-  public static boolean crashDistributedSystem(VM vm) { // TODO: move
-    return (Boolean)vm.invoke(new SerializableCallable("crash distributed system") {
-      public Object call() throws Exception {
-        DistributedSystem msys = InternalDistributedSystem.getAnyInstance();
-        crashDistributedSystem(msys);
-        return true;
-      }
-    });
-  }
   
-  /**
-   * Crash the cache in the given VM in such a way that it immediately stops communicating with
-   * peers.  This forces the VM's membership manager to throw a ForcedDisconnectException by
-   * forcibly terminating the JGroups protocol stack with a fake EXIT event.<p>
-   * 
-   * NOTE: if you use this method be sure that you clean up the VM before the end of your
-   * test with disconnectFromDS() or disconnectAllFromDS().
-   */
-  public static void crashDistributedSystem(final DistributedSystem msys) { // TODO: move
-    MembershipManagerHelper.inhibitForcedDisconnectLogging(true);
-    MembershipManagerHelper.playDead(msys);
-    JChannel c = MembershipManagerHelper.getJChannel(msys);
-    Protocol udp = c.getProtocolStack().findProtocol("UDP");
-    udp.stop();
-    udp.passUp(new Event(Event.EXIT, new RuntimeException("killing member's ds")));
-    try {
-      MembershipManagerHelper.getJChannel(msys).waitForClose();
-    }
-    catch (InterruptedException ie) {
-      Thread.currentThread().interrupt();
-      // attempt rest of work with interrupt bit set
-    }
-    MembershipManagerHelper.inhibitForcedDisconnectLogging(false);
-    WaitCriterion wc = new WaitCriterion() {
-      public boolean done() {
-        return !msys.isConnected();
-      }
-      public String description() {
-        return "waiting for distributed system to finish disconnecting: " + msys;
-      }
-    };
-//    try {
-      waitForCriterion(wc, 10000, 1000, true);
-//    } finally {
-//      dumpMyThreads(getLogWriter());
+//  public /*final*/ InternalDistributedSystem getSystem(Properties props) {
+//    // Setting the default disk store name is now done in setUp
+//    if (system == null) {
+//      system = InternalDistributedSystem.getAnyInstance();
 //    }
-  }
-
-  private String getDefaultDiskStoreName() { // TODO: move
-    String vmid = System.getProperty("vmid");
-    return "DiskStore-"  + vmid + "-"+ getTestClass().getCanonicalName() + "." + getTestName();
-  }
+//    if (system == null || !system.isConnected()) {
+//      // Figure out our distributed system properties
+//      Properties p = getAllDistributedSystemProperties(props);
+//      lastSystemCreatedInTest = getTestClass();
+//      if (logPerTest) {
+//        String testMethod = getTestName();
+//        String testName = lastSystemCreatedInTest.getName() + '-' + testMethod;
+//        String oldLogFile = p.getProperty(DistributionConfig.LOG_FILE_NAME);
+//        p.put(DistributionConfig.LOG_FILE_NAME, 
+//            oldLogFile.replace("system.log", testName+".log"));
+//        String oldStatFile = p.getProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME);
+//        p.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, 
+//            oldStatFile.replace("statArchive.gfs", testName+".gfs"));
+//      }
+//      system = (InternalDistributedSystem)DistributedSystem.connect(p);
+//      previousProperties = p;
+//    } else {
+//      boolean needNewSystem = false;
+//      if(!getTestClass().equals(lastSystemCreatedInTest)) {
+//        Properties newProps = getAllDistributedSystemProperties(props);
+//        needNewSystem = !newProps.equals(previousProperties);
+//        if(needNewSystem) {
+//          getLogWriter().info(
+//              "Test class has changed and the new DS properties are not an exact match. "
+//                  + "Forcing DS disconnect. Old props = "
+//                  + previousProperties + "new props=" + newProps);
+//        }
+//      } else {
+//        Properties activeProps = system.getProperties();
+//        for (Iterator iter = props.entrySet().iterator();
+//        iter.hasNext(); ) {
+//          Map.Entry entry = (Map.Entry) iter.next();
+//          String key = (String) entry.getKey();
+//          String value = (String) entry.getValue();
+//          if (!value.equals(activeProps.getProperty(key))) {
+//            needNewSystem = true;
+//            getLogWriter().info("Forcing DS disconnect. For property " + key
+//                                + " old value = " + activeProps.getProperty(key)
+//                                + " new value = " + value);
+//            break;
+//          }
+//        }
+//      }
+//      if(needNewSystem) {
+//        // the current system does not meet our needs to disconnect and
+//        // call recursively to get a new system.
+//        getLogWriter().info("Disconnecting from current DS in order to make a new one");
+//        disconnectFromDS();
+//        getSystem(props);
+//      }
+//    }
+//    return system;
+//  }
 
   /**
    * Returns this VM's connection to the distributed system.  If
@@ -363,6 +413,10 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     return system != null && system.isConnected();
   }
 
+  //---------------------------------------------------------------------------
+  // public methods
+  //---------------------------------------------------------------------------
+  
   /**
    * Returns a <code>Properties</code> object used to configure a
    * connection to a {@link
@@ -376,97 +430,92 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     return new Properties();
   }
 
+  //---------------------------------------------------------------------------
+  // delete
+  //---------------------------------------------------------------------------
+
+  public void setSystem(Properties props, DistributedSystem ds) { // TODO: delete
+    system = (InternalDistributedSystem)ds;
+    previousProperties = props;
+    previousSystemCreatedInTestClass = getTestClass();
+  }
+  
+  //---------------------------------------------------------------------------
+  // private
+  //---------------------------------------------------------------------------
+
+  private Class getTestClass() {
+    Class clazz = getClass();
+    while (clazz.getDeclaringClass() != null) {
+      clazz = clazz.getDeclaringClass();
+    }
+    return clazz;
+  }
+  
+  private String getDefaultDiskStoreName() { // TODO: move
+    String vmid = System.getProperty("vmid");
+    return "DiskStore-"  + vmid + "-"+ getTestClass().getCanonicalName() + "." + getTestName();
+  }
+
+  //---------------------------------------------------------------------------
+  // deprecated static methods
+  //---------------------------------------------------------------------------
+  
   /**
-   * Sets up the test (noop).
+   * Returns a <code>LogWriter</code> for logging information
+   * @deprecated Use a static logger from the log4j2 LogService.getLogger instead.
    */
-  @Before
-  public final void setUpDistributedTestCase() throws Exception {
-    setUpCreationStackGenerator();
-    testName = getName();
-    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");
-    
-    if (testName != null) {
-      GemFireCacheImpl.setDefaultDiskStoreName(getDefaultDiskStoreName());
-      String baseDefaultDiskStoreName = getTestClass().getCanonicalName() + "." + getTestName();
-      for (int h = 0; h < Host.getHostCount(); h++) {
-        Host host = Host.getHost(h);
-        for (int v = 0; v < host.getVMCount(); v++) {
-          VM vm = host.getVM(v);
-          String vmDefaultDiskStoreName = "DiskStore-" + h + "-" + v + "-" + baseDefaultDiskStoreName;
-          vm.invoke(DistributedTestCase.class, "perVMSetUp", new Object[] {testName, vmDefaultDiskStoreName});
+  @Deprecated
+  public static InternalLogWriter getLogWriter() { // TODO: delete
+    return oldLogger;
+  }
+
+  //---------------------------------------------------------------------------
+  // private static methods
+  //---------------------------------------------------------------------------
+  
+  private static void setUpCreationStackGenerator() {
+    // the following is moved from InternalDistributedSystem to fix #51058
+    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
+    new CreationStackGenerator() {
+      @Override
+      public Throwable generateCreationStack(final DistributionConfig config) {
+        final StringBuilder sb = new StringBuilder();
+        final String[] validAttributeNames = config.getAttributeNames();
+        for (int i = 0; i < validAttributeNames.length; i++) {
+          final String attName = validAttributeNames[i];
+          final Object actualAtt = config.getAttributeObject(attName);
+          String actualAttStr = actualAtt.toString();
+          sb.append("  ");
+          sb.append(attName);
+          sb.append("=\"");
+          if (actualAtt.getClass().isArray()) {
+            actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
+          }
+          sb.append(actualAttStr);
+          sb.append("\"");
+          sb.append("\n");
         }
+        return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
       }
-    }
-    System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
-  }
-
-  public static void perVMSetUp(String name, String defaultDiskStoreName) { // TODO: move
-    setTestName(name);
-    GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
-    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
+    });
   }
   
-  public static void setTestName(String name) {
-    testName = name;
+  private static void tearDownCreationStackGenerator() {
+    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
   }
   
-  public static String getTestName() {
-    return testName;
-  }
-
-  /**
-   * For logPerTest to work, we have to disconnect from the DS, but all
-   * subclasses do not call super.tearDown(). To prevent this scenario
-   * this method has been declared final. Subclasses must now override
-   * {@link #tearDown2()} instead.
-   * @throws Exception
-   */
-  @After
-  public final void tearDownDistributedTestCase() throws Exception {
-    tearDownCreationStackGenerator();
-    tearDown2();
-    realTearDown();
-    tearDownAfter();
-  }
-
-  /**
-   * Tears down the test. This method is called by the final {@link #tearDown()} method and should be overridden to
-   * perform actual test cleanup and release resources used by the test.  The tasks executed by this method are
-   * performed before the DUnit test framework using Hydra cleans up the client VMs.
-   * <p/>
-   * @throws Exception if the tear down process and test cleanup fails.
-   * @see #tearDown
-   * @see #tearDownAfter()
-   */
-  // TODO rename this method to tearDownBefore and change the access modifier to protected!
-  public void tearDown2() throws Exception { // TODO: rename
-  }
-
-  protected void realTearDown() throws Exception {
-    if (logPerTest) {
-      disconnectFromDS();
-      invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
-    }
-    cleanupAllVms();
-  }
+  //---------------------------------------------------------------------------
+  // tearDown methods
+  //---------------------------------------------------------------------------
   
-  /**
-   * Tears down the test.  Performs additional tear down tasks after the DUnit tests framework using Hydra cleans up
-   * the client VMs.  This method is called by the final {@link #tearDown()} method and should be overridden to perform
-   * post tear down activities.
-   * <p/>
-   * @throws Exception if the test tear down process fails.
-   * @see #tearDown()
-   * @see #tearDown2()
-   */
-  protected void tearDownAfter() throws Exception {
-  }
-
-  public static void cleanupAllVms()
-  {
+  public static void cleanupAllVms() {
     cleanupThisVM();
     invokeInEveryVM(DistributedTestCase.class, "cleanupThisVM");
     invokeInLocator(new SerializableRunnable() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
       public void run() {
         DistributionMessageObserver.setInstance(null);
         unregisterInstantiatorsInThisVM();
@@ -475,6 +524,73 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     DUnitLauncher.closeAndCheckForSuspects();
   }
 
+  public static void unregisterAllDataSerializersFromAllVms() {
+    unregisterDataSerializerInThisVM();
+    invokeInEveryVM(new SerializableRunnable() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void run() {
+        unregisterDataSerializerInThisVM();
+      }
+    });
+    invokeInLocator(new SerializableRunnable() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void run() {
+        unregisterDataSerializerInThisVM();
+      }
+    });
+  }
+
+  public static void unregisterInstantiatorsInThisVM() {
+    // unregister all the instantiators
+    InternalInstantiator.reinitialize();
+    assertEquals(0, InternalInstantiator.getInstantiators().length);
+  }
+  
+  public static void unregisterDataSerializerInThisVM() {
+    DataSerializerPropogationDUnitTest.successfullyLoadedTestDataSerializer = false;
+    // unregister all the Dataserializers
+    InternalDataSerializer.reinitialize();
+    // ensure that all are unregistered
+    assertEquals(0, InternalDataSerializer.getSerializers().length);
+  }
+
+  protected static void disconnectAllFromDS() {
+    disconnectFromDS();
+    invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
+  }
+
+  /**
+   * Disconnects this VM from the distributed system
+   */
+  public static void disconnectFromDS() {
+    GemFireCacheImpl.testCacheXml = null;
+    if (system != null) {
+      system.disconnect();
+      system = null;
+    }
+    
+    for (;;) {
+      DistributedSystem ds = InternalDistributedSystem.getConnectedInstance();
+      if (ds == null) {
+        break;
+      }
+      try {
+        ds.disconnect();
+      }
+      catch (Exception e) {
+        // ignore
+      }
+    }
+    
+    AdminDistributedSystemImpl ads = AdminDistributedSystemImpl.getConnectedInstance();
+    if (ads != null) {// && ads.isConnected()) {
+      ads.disconnect();
+    }
+  }
 
   private static void cleanupThisVM() {
     IpAddress.resolve_dns = true;
@@ -503,157 +619,4 @@ public abstract class DistributedTestCase implements java.io.Serializable {
       ex.remove();
     }
   }
-  
-  public static void unregisterAllDataSerializersFromAllVms() // TODO: move
-  {
-    unregisterDataSerializerInThisVM();
-    invokeInEveryVM(new SerializableRunnable() {
-      public void run() {
-        unregisterDataSerializerInThisVM();
-      }
-    });
-    invokeInLocator(new SerializableRunnable() {
-      public void run() {
-        unregisterDataSerializerInThisVM();
-      }
-    });
-  }
-
-  public static void unregisterInstantiatorsInThisVM() { // TODO: move
-    // unregister all the instantiators
-    InternalInstantiator.reinitialize();
-    assertEquals(0, InternalInstantiator.getInstantiators().length);
-  }
-  
-  public static void unregisterDataSerializerInThisVM() // TODO: move
-  {
-    DataSerializerPropogationDUnitTest.successfullyLoadedTestDataSerializer = false;
-    // unregister all the Dataserializers
-    InternalDataSerializer.reinitialize();
-    // ensure that all are unregistered
-    assertEquals(0, InternalDataSerializer.getSerializers().length);
-  }
-
-
-  protected static void disconnectAllFromDS() {
-    disconnectFromDS();
-    invokeInEveryVM(DistributedTestCase.class,
-                    "disconnectFromDS");
-  }
-
-  /**
-   * Disconnects this VM from the distributed system
-   */
-  public static void disconnectFromDS() {
-    testName = null;
-    GemFireCacheImpl.testCacheXml = null;
-    if (system != null) {
-      system.disconnect();
-      system = null;
-    }
-    
-    for (;;) {
-      DistributedSystem ds = InternalDistributedSystem.getConnectedInstance();
-      if (ds == null) {
-        break;
-      }
-      try {
-        ds.disconnect();
-      }
-      catch (Exception e) {
-        // ignore
-      }
-    }
-    
-    {
-      AdminDistributedSystemImpl ads = 
-          AdminDistributedSystemImpl.getConnectedInstance();
-      if (ads != null) {// && ads.isConnected()) {
-        ads.disconnect();
-      }
-    }
-  }
-
-  /**
-   * Strip the package off and gives just the class name.
-   * Needed because of Windows file name limits.
-   */
-  private String getShortClassName() {
-    String result = this.getClass().getName();
-    int idx = result.lastIndexOf('.');
-    if (idx != -1) {
-      result = result.substring(idx+1);
-    }
-    return result;
-  }
-  
-  /** get the host name to use for a server cache in client/server dunit
-   * testing
-   * @param host
-   * @return the host name
-   */
-  public static String getServerHostName(Host host) { // TODO: move
-    return System.getProperty("gemfire.server-bind-address") != null?
-        System.getProperty("gemfire.server-bind-address")
-        : host.getHostName();
-  }
-
-  /** get the IP literal name for the current host, use this instead of  
-   * "localhost" to avoid IPv6 name resolution bugs in the JDK/machine config.
-   * @return an ip literal, this method honors java.net.preferIPvAddresses
-   */
-  public static String getIPLiteral() { // TODO: move
-    try {
-      return SocketCreator.getLocalHost().getHostAddress();
-    } catch (UnknownHostException e) {
-      throw new Error("problem determining host IP address", e);
-    }
-  }
- 
- 
-  /**
-   * Get the port that the standard dunit locator is listening on.
-   * @return
-   */
-  public static int getDUnitLocatorPort() { // TODO: move
-    return DUnitEnv.get().getLocatorPort();
-  }
-    
-  public String getName() {
-    return this.testNameRule.getMethodName();
-  }
-  
-  /**
-   * Returns a unique name for this test method.  It is based on the
-   * name of the class as well as the name of the method.
-   */
-  public String getUniqueName() {
-    return getClass().getSimpleName() + "_" + getName();
-  }
-
-  /**
-   * Returns a <code>LogWriter</code> for logging information
-   * @deprecated Use a static logger from the log4j2 LogService.getLogger instead.
-   */
-  @Deprecated
-  public static InternalLogWriter getLogWriter() { // TODO: delete
-    return oldLogger;
-  }
-
-  /** 
-   * Delete locator state files.  Use this after getting a random port
-   * to ensure that an old locator state file isn't picked up by the
-   * new locator you're starting.
-   * 
-   * @param ports
-   */
-  public static void deleteLocatorStateFile(final int... ports) { // TODO: move
-    for (int i=0; i<ports.length; i++) {
-      final File stateFile = new File("locator"+ports[i]+"state.dat");
-      if (stateFile.exists()) {
-        stateFile.delete();
-      }
-    }
-  }
-  
 }

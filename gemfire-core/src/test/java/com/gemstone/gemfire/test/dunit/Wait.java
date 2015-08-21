@@ -10,6 +10,9 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
  */
 public class Wait {
 
+  protected Wait() {
+  }
+  
   /**
    * Wait until given criterion is met
    * 

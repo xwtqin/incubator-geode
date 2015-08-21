@@ -36,7 +36,6 @@ public class Invoke {
   public static void invokeInEveryVM(final SerializableRunnable work) {
     for (int h = 0; h < Host.getHostCount(); h++) {
       Host host = Host.getHost(h);
-
       for (int v = 0; v < host.getVMCount(); v++) {
         VM vm = host.getVM(v);
         vm.invoke(work);

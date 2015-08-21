@@ -41,9 +41,10 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.ReplyMessage;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.partitioned.PersistentPartitionedRegionTestBase;
+import com.gemstone.gemfire.internal.process.PidUnavailableException;
+import com.gemstone.gemfire.internal.process.ProcessUtils;
 
 import dunit.AsyncInvocation;
-import dunit.DUnitEnv;
 import dunit.Host;
 import dunit.SerializableCallable;
 import dunit.SerializableRunnable;
@@ -533,10 +534,18 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
     vm.invoke(validateUserFileBackup);
   }
 
+  private int identifyPid() {
+    try {
+      return ProcessUtils.identifyPid();
+    } catch (PidUnavailableException e) {
+      throw new AssertionError(e.getMessage(), e);
+    }
+  }
+  
   protected long setBackupFiles(final VM vm) {
     SerializableCallable setUserBackups = new SerializableCallable("set user backups") {
       public Object call() {
-        final int pid = DUnitEnv.get().getPid();
+        final int pid = identifyPid();
         File vmdir = new File("userbackup_"+pid);
         File test1 = new File(vmdir, "test1");
         File test2 = new File(test1, "test2");
@@ -568,7 +577,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
   protected void verifyUserFileRestored(VM vm, final long lm) {
     vm.invoke(new SerializableRunnable() {
       public void run() {
-        final int pid = DUnitEnv.get().getPid();
+        final int pid = identifyPid();
         File vmdir = new File("userbackup_"+pid);
         File mytext = new File(vmdir, "test1/test2/my.txt");
         assertTrue(mytext.exists());

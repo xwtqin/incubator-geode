@@ -281,7 +281,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
         public void run() {
           InternalDistributedSystem sys = getSystem();
           final String expectedMyGroup = makeGroupsString(vm);
-          assertEquals(expectedMyGroup, sys.getConfig().getGroups());
+          assertEquals("vm-"+vm, expectedMyGroup, sys.getConfig().getGroups());
           
           DM dm = sys.getDistributionManager();
           DistributedMember self = sys.getDistributedMember();

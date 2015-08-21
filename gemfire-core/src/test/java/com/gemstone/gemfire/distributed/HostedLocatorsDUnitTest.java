@@ -37,7 +37,7 @@ import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.categories.MembershipTest;
-import com.gemstone.gemfire.test.junit.rules.Retry;
+import com.gemstone.gemfire.test.junit.rules.RetryRule;
 
 /**
  * Extracted from LocatorLauncherLocalJUnitTest.
@@ -61,7 +61,7 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
   public final transient Timeout globalTimeout = Timeout.seconds(2 * 60 * 1000);
   
   @Rule
-  public final transient Retry retry = new Retry(2);
+  public final transient RetryRule retry = new RetryRule(2);
   
   @Before
   public void setUp() throws Exception {

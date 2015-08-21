@@ -420,7 +420,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBefore() throws Exception {
     // locally destroy all root regions and close the cache
     remoteTearDown();
     // Now invoke it in every VM
@@ -431,7 +431,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         vm.invoke(CacheTestCase.class, "remoteTearDown");
       }
     }
-    super.tearDown2(); 
+    super.tearDownBefore(); 
   }
 
   /**
