@@ -7,13 +7,15 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
-import hydra.MethExecutorResult;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.concurrent.Callable;
+
+import com.gemstone.gemfire.test.dunit.standalone.BounceResult;
+import com.gemstone.gemfire.test.dunit.standalone.MethExecutorResult;
+import com.gemstone.gemfire.test.dunit.standalone.RemoteDUnitVMIF;
 
 /**
  * This class represents a Java Virtual Machine that runs on a host.
@@ -123,32 +125,33 @@ public class VM implements java.io.Serializable {
             new IllegalStateException(s));
     }
     MethExecutorResult result = null;
-    int retryCount = 120;
-    do {
+//    int retryCount = 120;
+//    do {
     try {
       result = this.client.executeMethodOnClass(c.getName(), methodName, args);
-      break; // out of while loop
+      //break; // out of while loop
     } catch( RemoteException e ) {
-      boolean isWindows = false;
-      String os = System.getProperty("os.name");
-      if (os != null) {
-        if (os.indexOf("Windows") != -1) {
-          isWindows = true;
-        }
-      }
-      if (isWindows && retryCount-- > 0) {
-        boolean interrupted = Thread.interrupted();
-        try { Thread.sleep(1000); } catch (InterruptedException ignore) {interrupted = true;}
-        finally {
-          if (interrupted) {
-            Thread.currentThread().interrupt();
-          }
-        }
-      } else {
-        throw new RMIException(this, c.getName(), methodName, e );
-      }
+//      boolean isWindows = false;
+//      String os = System.getProperty("os.name");
+//      if (os != null) {
+//        if (os.indexOf("Windows") != -1) {
+//          isWindows = true;
+//        }
+//      }
+//      if (isWindows && retryCount-- > 0) {
+//        boolean interrupted = Thread.interrupted();
+//        try { Thread.sleep(1000); } catch (InterruptedException ignore) {interrupted = true;}
+//        finally {
+//          if (interrupted) {
+//            Thread.currentThread().interrupt();
+//          }
+//        }
+//      } else {
+//        throw new RMIException(this, c.getName(), methodName, e );
+//      }
+      throw new RMIException(this, c.getName(), methodName, e );
     }
-    } while (true);
+//    } while (true);
 
     if (!result.exceptionOccurred()) {
       return result.getResult();
@@ -326,28 +329,14 @@ public class VM implements java.io.Serializable {
             new IllegalStateException(s));
     }
     MethExecutorResult result = null;
-    int retryCount = 120;
-    do {
     try {
       if ( args == null )
         result = this.client.executeMethodOnObject(o, methodName);
       else
         result = this.client.executeMethodOnObject(o, methodName, args);
-      break; // out of while loop
     } catch( RemoteException e ) {
-      if (retryCount-- > 0) {
-        boolean interrupted = Thread.interrupted();
-        try { Thread.sleep(1000); } catch (InterruptedException ignore) {interrupted = true;}
-        finally {
-          if (interrupted) {
-            Thread.currentThread().interrupt();
-          }
-        }
-      } else {
-        throw new RMIException(this, o.getClass().getName(), methodName, e );
-      }
+      throw new RMIException(this, o.getClass().getName(), methodName, e );
     }
-    } while (true);
 
     if (!result.exceptionOccurred()) {
       return result.getResult();

@@ -21,6 +21,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.internal.logging.LogWriterFactory;
 import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
+import com.gemstone.gemfire.test.dunit.standalone.BounceResult;
 
 /**
  * This class provides an abstraction over the environment

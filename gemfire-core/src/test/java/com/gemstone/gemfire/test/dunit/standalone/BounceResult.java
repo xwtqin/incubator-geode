@@ -1,4 +1,4 @@
-package com.gemstone.gemfire.test.dunit;
+package com.gemstone.gemfire.test.dunit.standalone;
 
 public class BounceResult {
   private final int newPid;

@@ -28,8 +28,6 @@ import org.apache.commons.io.FileUtils;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.logging.LogService;
 
-import com.gemstone.gemfire.test.dunit.RemoteDUnitVMIF;
-
 /**
  * @author dsmith
  *

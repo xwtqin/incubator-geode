@@ -7,9 +7,6 @@
  */
 package com.gemstone.gemfire.test.dunit.standalone;
 
-import hydra.Log;
-import hydra.MethExecutorResult;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,11 +43,8 @@ import batterytest.greplogs.LogConsumer;
 import com.gemstone.gemfire.distributed.Locator;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.logging.LogService;
-
-import com.gemstone.gemfire.test.dunit.BounceResult;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.RemoteDUnitVMIF;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -137,7 +131,7 @@ public class DUnitLauncher {
   
   private static void launch() throws URISyntaxException, AlreadyBoundException, IOException, InterruptedException, NotBoundException  {
 //  initialize the log writer that hydra uses
-    Log.createLogWriter( "dunit-master", LOG_LEVEL );
+    //Log.createLogWriter( "dunit-master", LOG_LEVEL );
 
     DUNIT_SUSPECT_FILE = new File(SUSPECT_FILENAME);
     DUNIT_SUSPECT_FILE.delete();

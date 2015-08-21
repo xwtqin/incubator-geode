@@ -25,10 +25,6 @@ import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher.MasterRemote;
  */
 public class ChildVM {
   
-  static {
-    createHydraLogWriter();
-  }
-  
   private final static Logger logger = LogService.getLogger();
   
   public static void main(String[] args) throws Throwable {
@@ -50,13 +46,6 @@ public class ChildVM {
     } catch (Throwable t) {
       t.printStackTrace();
       System.exit(1);
-    }
-  }
-
-  private static void createHydraLogWriter() {
-    try {
-      Log.createLogWriter("dunit-childvm", "fine");
-    } catch (HydraRuntimeException ignore) {
     }
   }
 }
