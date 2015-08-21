@@ -1,0 +1,106 @@
+package com.gemstone.gemfire.test.junit.rules;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import org.junit.AssumptionViolatedException;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import com.gemstone.gemfire.test.junit.IgnoreUntil;
+import com.gemstone.gemfire.test.junit.IgnoreCondition;
+import com.gemstone.gemfire.test.junit.support.IgnoreConditionEvaluationException;
+
+/**
+ * The IgnoreUntilRule class...
+ *
+ * @author John Blum
+ * @see org.junit.rules.TestRule
+ * @see org.junit.runner.Description
+ * @see org.junit.runners.model.Statement
+ * @see com.gemstone.gemfire.test.junit.IgnoreUntil
+ * @see com.gemstone.gemfire.test.junit.IgnoreCondition
+ */
+@SuppressWarnings("unused")
+public class IgnoreUntilRule implements TestRule {
+
+  protected static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
+  protected static final String DEFAULT_MESSAGE = "Ignoring test case (%1$s) of test class (%2$s)!";
+
+  protected static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+
+  @Override
+  public Statement apply(final Statement base, final Description description) {
+    return new Statement() {
+      @Override public void evaluate() throws Throwable {
+        IgnoreUntilRule.this.evaluate(base, description);
+      }
+    };
+  }
+
+  public final void evaluate(Statement statement, Description description) throws Throwable {
+    throwOnIgnoreTest(statement, description).evaluate();
+  }
+
+  protected Statement throwOnIgnoreTest(Statement statement, Description description) {
+    if (isTest(description)) {
+      boolean ignoreTest = false;
+      String message = "";
+
+      IgnoreUntil testCaseAnnotation = description.getAnnotation(IgnoreUntil.class);
+
+      if (testCaseAnnotation != null) {
+        ignoreTest = evaluate(testCaseAnnotation, description);
+        message = testCaseAnnotation.value();
+      }
+      else if (description.getTestClass().isAnnotationPresent(IgnoreUntil.class)) {
+        IgnoreUntil testClassAnnotation = description.getTestClass().getAnnotation(IgnoreUntil.class);
+
+        ignoreTest = evaluate(testClassAnnotation, description);
+        message = testClassAnnotation.value();
+      }
+
+      if (ignoreTest) {
+        throw new AssumptionViolatedException(format(message, description));
+      }
+    }
+
+    return statement;
+  }
+
+  protected boolean isTest(final Description description) {
+    return (description.isSuite() || description.isTest());
+  }
+
+  protected String format(String message, Description description) {
+    message = (!message.isEmpty() ? message : DEFAULT_MESSAGE);
+    return String.format(message, description.getMethodName(), description.getClassName());
+  }
+
+  protected boolean evaluate(IgnoreUntil conditionalIgnoreAnnotation, Description description) {
+    return (evaluateCondition(conditionalIgnoreAnnotation.condition(), description)
+      || evaluateUntil(conditionalIgnoreAnnotation.deadline()));
+  }
+
+  protected boolean evaluateCondition(Class<? extends IgnoreCondition> ignoreConditionType, Description description) {
+    try {
+      return ignoreConditionType.newInstance().evaluate(description);
+    }
+    catch (Exception e) {
+      throw new IgnoreConditionEvaluationException(String.format("failed to evaluate IgnoreCondition: %1$s",
+        ignoreConditionType.getName()), e);
+    }
+  }
+
+  protected boolean evaluateUntil(String timestamp) {
+    try {
+      return DATE_FORMAT.parse(timestamp).after(Calendar.getInstance().getTime());
+    }
+    catch (ParseException e) {
+      return false;
+    }
+  }
+
+}
