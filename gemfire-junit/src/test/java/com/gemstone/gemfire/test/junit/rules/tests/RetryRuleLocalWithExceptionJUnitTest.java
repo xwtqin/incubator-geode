@@ -1,5 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
+import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.StringContains.containsString;
@@ -7,29 +8,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 import com.gemstone.gemfire.test.junit.Retry;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import com.gemstone.gemfire.test.junit.rules.RetryRule;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.FailsOnSecondAttempt;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.FailsOnThirdAttempt;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.FailsUnused;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.PassesOnSecondAttempt;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.PassesOnThirdAttempt;
-import com.gemstone.gemfire.test.junit.rules.tests.RetryRuleLocalWithErrorJUnitTest.PassesUnused;
 
 /**
  * Unit tests for Retry JUnit Rule involving local scope (ie Rule affects 
@@ -107,11 +97,6 @@ public class RetryRuleLocalWithExceptionJUnitTest {
     
     assertTrue(result.wasSuccessful());
     assertThat(PassesOnThirdAttempt.count, is(3));
-  }
-  
-  private static Result runTest(Class<?> test) {
-    JUnitCore junitCore = new JUnitCore();
-    return junitCore.run(Request.aClass(test).getRunner());
   }
   
   public static class CustomException extends Exception {

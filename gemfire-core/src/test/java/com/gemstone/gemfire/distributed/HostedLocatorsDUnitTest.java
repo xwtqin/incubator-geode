@@ -2,7 +2,6 @@ package com.gemstone.gemfire.distributed;
 
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -16,9 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.Timeout;
 
 import com.gemstone.gemfire.distributed.AbstractLauncher.Status;
 import com.gemstone.gemfire.distributed.LocatorLauncher.Builder;
@@ -35,9 +32,9 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.rules.DistributedRestoreSystemProperties;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.categories.MembershipTest;
-import com.gemstone.gemfire.test.junit.rules.RetryRule;
 
 /**
  * Extracted from LocatorLauncherLocalJUnitTest.
@@ -54,14 +51,8 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
   protected transient volatile int locatorPort;
   protected transient volatile LocatorLauncher launcher;
   
-  @Rule // not serializable and yet we're setting/clearing in other JVMs
-  public final transient RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
-  
   @Rule
-  public final transient Timeout globalTimeout = Timeout.seconds(2 * 60 * 1000);
-  
-  @Rule
-  public final transient RetryRule retry = new RetryRule(2);
+  public final DistributedRestoreSystemProperties restoreSystemProperties = new DistributedRestoreSystemProperties();
   
   @Before
   public void setUp() throws Exception {
@@ -85,7 +76,7 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     final String uniqueName = getUniqueName();
     for (int i = 0 ; i < 4; i++) {
       final int whichvm = i;
-      Host.getHost(0).getVM(whichvm).invoke(new SerializableCallable() {
+      Host.getHost(0).getVM(whichvm).invoke(new SerializableCallable<Object>() {
         @Override
         public Object call() throws Exception {
           try {
@@ -105,7 +96,7 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     
             launcher = builder.build();
             assertEquals(Status.ONLINE, launcher.start().getStatus());
-            //was: waitForLocatorToStart(launcher, TIMEOUT_MILLISECONDS, 10, true);
+            //was: waitForLocatorToStart(launcher, TIMEOUT_MILLISECONDS, 10, true); --> Awaitility
             with().pollInterval(10, MILLISECONDS).await().atMost(5, MINUTES).until( isLocatorStarted() );
             return null;
           } finally {
@@ -181,14 +172,6 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     }
   }
 
-  @Test
-  public void unreliableTestWithRaceConditions() {
-    count++;
-    if (count < 2) {
-      assertThat(count, is(2)); // doomed to fail
-    }
-  }
-  
   private Callable<Boolean> isLocatorStarted() {
     return new Callable<Boolean>() {
       public Boolean call() throws Exception {
@@ -220,6 +203,4 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     }
     assertTrue(message, done);
   }
-  
-  private static int count = 0;
 }

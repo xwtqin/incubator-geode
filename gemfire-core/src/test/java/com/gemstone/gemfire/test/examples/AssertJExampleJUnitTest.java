@@ -1,4 +1,4 @@
-package com.gemstone.gemfire.test.assertj;
+package com.gemstone.gemfire.test.examples;
 
 import static org.assertj.core.api.Assertions.*;
 

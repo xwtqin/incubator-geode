@@ -44,7 +44,15 @@ public class RepeatRule implements TestRule {
     int repetitions = DEFAULT_REPETITIONS;
 
     if (repeat != null) {
-      repetitions = repeat.value();
+      if (!"".equals(repeat.property())) {
+        repetitions = Integer.getInteger(repeat.property(), DEFAULT_REPETITIONS);
+      } else {
+        repetitions = repeat.value();
+      }
+    }
+    
+    if (repetitions < 1) {
+      throw new IllegalArgumentException("Repeat value must be a positive integer");
     }
 
     return repetitions;

@@ -10,6 +10,12 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 import org.junit.rules.Timeout;
 
+/**
+ * Serializable version of Timeout JUnit Rule. JUnit lifecycle is not
+ * executed in remote JVMs.
+ * 
+ * @author Kirk Lund
+ */
 @SuppressWarnings("serial")
 public class SerializableTimeout extends Timeout implements Serializable {
 

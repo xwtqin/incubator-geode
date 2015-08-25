@@ -1,5 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
+import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.StringContains.containsString;
@@ -14,8 +15,6 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
@@ -99,11 +98,6 @@ public class RetryRuleLocalWithErrorJUnitTest {
     
     assertTrue(result.wasSuccessful());
     assertThat(PassesOnThirdAttempt.count, is(3));
-  }
-  
-  private static Result runTest(Class<?> test) {
-    JUnitCore junitCore = new JUnitCore();
-    return junitCore.run(Request.aClass(test).getRunner());
   }
   
   public static class FailsUnused {

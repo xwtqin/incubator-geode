@@ -1,4 +1,4 @@
-package com.gemstone.gemfire.test.catchexception;
+package com.gemstone.gemfire.test.examples;
 
 import static com.googlecode.catchexception.CatchException.*;
 import static com.googlecode.catchexception.apis.BDDCatchException.when;

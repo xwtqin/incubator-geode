@@ -1,5 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
+import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
 import static org.hamcrest.core.StringContains.*;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsInstanceOf.*;
@@ -12,8 +13,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
@@ -111,11 +110,6 @@ public class ExpectedTimeoutRuleJUnitTest {
     Failure failure = failures.get(0);
     assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
     assertThat(failure.getException().getMessage(), containsString("Expected test to throw (an instance of " + TimeoutException.class.getName() + " and exception with message a string containing \"" + FailsWhenTimeoutIsLate.message + "\")"));
-  }
-  
-  private static Result runTest(Class<?> test) {
-    JUnitCore junitCore = new JUnitCore();
-    return junitCore.run(Request.aClass(test).getRunner());
   }
   
   public static class AbstractExpectedTimeoutRuleTest {

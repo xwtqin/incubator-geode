@@ -1,5 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
+import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -11,8 +12,6 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
@@ -54,19 +53,33 @@ public class RepeatRuleJUnitTest {
   }
 
   @Test
-  public void failingTestShouldBeSkippedWhenRepeatIsZero() {
-    Result result = runTest(FailingTestShouldBeSkippedWhenRepeatIsZero.class);
+  public void zeroValueShouldThrowIllegalArgumentException() {
+    Result result = runTest(ZeroValueShouldThrowIllegalArgumentException.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(FailingTestShouldBeSkippedWhenRepeatIsZero.count, is(0));
-  }
+    assertFalse(result.wasSuccessful());
+    
+    List<Failure> failures = result.getFailures();
+    assertEquals("Failures: " + failures, 1, failures.size());
 
+    Failure failure = failures.get(0);
+    assertThat(failure.getException(), is(instanceOf(IllegalArgumentException.class)));
+    assertThat(failure.getException().getMessage(), containsString("Repeat value must be a positive integer"));
+    assertThat(ZeroValueShouldThrowIllegalArgumentException.count, is(0));
+  }
+  
   @Test
-  public void passingTestShouldBeSkippedWhenRepeatIsZero() {
-    Result result = runTest(PassingTestShouldBeSkippedWhenRepeatIsZero.class);
+  public void negativeValueShouldThrowIllegalArgumentException() {
+    Result result = runTest(NegativeValueShouldThrowIllegalArgumentException.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassingTestShouldBeSkippedWhenRepeatIsZero.count, is(0));
+    assertFalse(result.wasSuccessful());
+    
+    List<Failure> failures = result.getFailures();
+    assertEquals("Failures: " + failures, 1, failures.size());
+
+    Failure failure = failures.get(0);
+    assertThat(failure.getException(), is(instanceOf(IllegalArgumentException.class)));
+    assertThat(failure.getException().getMessage(), containsString("Repeat value must be a positive integer"));
+    assertThat(NegativeValueShouldThrowIllegalArgumentException.count, is(0));
   }
 
   @Test
@@ -138,11 +151,6 @@ public class RepeatRuleJUnitTest {
     assertThat(PassingTestShouldPassThreeTimesWhenRepeatIsThree.count, is(3));
   }
 
-  private static Result runTest(Class<?> test) {
-    JUnitCore junitCore = new JUnitCore();
-    return junitCore.run(Request.aClass(test).getRunner());
-  }
-  
   public static class FailingTestShouldFailOneTimeWhenRepeatIsUnused {
     protected static int count = 0;
     
@@ -168,7 +176,7 @@ public class RepeatRuleJUnitTest {
     }
   }
 
-  public static class FailingTestShouldBeSkippedWhenRepeatIsZero {
+  public static class ZeroValueShouldThrowIllegalArgumentException {
     protected static int count = 0;
     
     @Rule
@@ -178,7 +186,19 @@ public class RepeatRuleJUnitTest {
     @Repeat(0)
     public void doTest() throws Exception {
       count++;
-      fail(ASSERTION_ERROR_MESSAGE);
+    }
+  }
+
+  public static class NegativeValueShouldThrowIllegalArgumentException {
+    protected static int count = 0;
+    
+    @Rule
+    public RepeatRule repeat = new RepeatRule();
+
+    @Test
+    @Repeat(-1)
+    public void doTest() throws Exception {
+      count++;
     }
   }
 

@@ -7,20 +7,22 @@
  */
 package com.gemstone.gemfire.distributed;
 
-import static java.util.concurrent.TimeUnit.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.googlecode.catchexception.CatchException.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static com.jayway.awaitility.Duration.*;
+import static java.util.concurrent.TimeUnit.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import com.gemstone.gemfire.IncompatibleSystemException;
 import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.internal.lang.SystemUtils;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,13 +39,10 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
 
-import com.gemstone.gemfire.test.junit.ConditionalIgnore;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.categories.MembershipTest;
-import com.gemstone.gemfire.test.junit.rules.ConditionalIgnoreRule;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -58,15 +57,12 @@ import com.gemstone.gemfire.test.dunit.VM;
  */
 @SuppressWarnings("serial")
 @Category({ DistributedTest.class, MembershipTest.class })
-public class DistributedMemberDUnitTest extends DistributedTestCase {
+public class DistributedMemberDUnitTest implements Serializable {
 
+  @Rule
+  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  
   private Properties config;
-  
-  @Rule
-  public final transient ExpectedException expectedException = ExpectedException.none();
-  
-  @Rule
-  public final transient ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
   
   @BeforeClass
   public static void beforeClass() {
@@ -154,36 +150,30 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
 
   @Test
   public void secondMemberUsingSameNameShouldFail() {
-    Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
+    // arrange
+    Host.getHost(0).getVM(0).invoke(getSystemWithName("name0"));
+    Host.getHost(0).getVM(1).invoke(getSystemWithName("name1"));
+    
+    // act
+    catchException(Host.getHost(0).getVM(2)).invoke(getSystemWithName("name0"));
+    
+    // assert
+    assertThat(caughtException())
+        .isInstanceOf(RMIException.class);
+    
+    assertThat(caughtException().getCause())
+        .isInstanceOf(IncompatibleSystemException.class)
+        .hasMessageContaining("used the same name");
+  }
+
+  private SerializableRunnable getSystemWithName(final String name) {
+    return new SerializableRunnable() {
       public void run() {
         Properties config = createConfig();
-        config.setProperty(DistributionConfig.NAME_NAME, "name0");
+        config.setProperty(DistributionConfig.NAME_NAME, name);
         getSystem(config);
       }
-    });
-    Host.getHost(0).getVM(1).invoke(new SerializableRunnable() {
-      public void run() {
-        Properties config = createConfig();
-        config.setProperty(DistributionConfig.NAME_NAME, "name1");
-        getSystem(config);
-      }
-    });
-    
-    expectedException.expect(RMIException.class);
-    expectedException.expectCause(isA(IncompatibleSystemException.class));
-    //expectedException.expectMessage("used the same name");
-    
-    Host.getHost(0).getVM(2).invoke(new SerializableRunnable() {
-      public void run() {
-        Properties config = createConfig();
-        config.setProperty(DistributionConfig.NAME_NAME, "name0");
-//        try {
-          getSystem(config);
-//          fail("expected IncompatibleSystemException");
-//        } catch (IncompatibleSystemException expected) {
-//        }
-      }
-    });
+    };
   }
   
   /**
@@ -192,7 +182,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
    */
   @Test
   public void allMembersShouldSeeRoles() {
-    // connect all four vms...
+    // arrange
     final String[] vmRoles = new String[] {"VM_A","VM_B","VM_C","VM_D"};
     for (int i = 0; i < vmRoles.length; i++) {
       final int vm = i;
@@ -205,7 +195,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
       });
     }
     
-    // validate roles from each vm...
+    // act (and assert)
     for (int i = 0; i < vmRoles.length; i++) {
       final int vm = i;
       Host.getHost(0).getVM(vm).invoke(new SerializableRunnable() {
@@ -223,7 +213,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
           assertTrue(vmRoles[vm].equals(myRole.getName()));
           
           with().pollInterval(TWO_HUNDRED_MILLISECONDS).await().atMost(60, SECONDS).until( numberOfOtherMembers(), equalTo(3) );
-          // used to have a for-loop here
+          // Awaitility: used to have a for-loop here
           
           Set<InternalDistributedMember> members = sys.getDM().getOtherNormalDistributionManagerIds();
           for (Iterator<InternalDistributedMember> iterMembers = members.iterator(); iterMembers.hasNext();) {
@@ -262,7 +252,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
    */
   @Test
   public void allMembersShouldSeeGroups() {  
-    // connect all four vms...
+    // arrange
     for (int i = 0; i < 4; i++) {
       final int vm = i;
       Host.getHost(0).getVM(vm).invoke(new SerializableRunnable() {
@@ -274,7 +264,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
       });
     }
     
-    // validate group from each vm...
+    // act (and assert)
     for (int i = 0; i < 4; i++) {
       final int vm = i;
       Host.getHost(0).getVM(vm).invoke(new SerializableRunnable() {
@@ -351,12 +341,15 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
    */
   @Test
   public void getIdShouldIdentifyMember() {
+    // arrange
     this.config.setProperty(DistributionConfig.LOCATORS_NAME, "");
     this.config.setProperty(DistributionConfig.NAME_NAME, "foobar");
 
+    // act
     final InternalDistributedSystem system = getSystem(this.config);
     final DistributedMember member = system.getDistributedMember();
     
+    // assert
     assertThat(system.getMemberId(), is(member.getId()));
     assertThat(member.getId(), containsString("foobar"));
   }
@@ -375,6 +368,7 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
     final DistributedMember member2 = createSystemAndGetId(vm2, "name2");
     
     vm0.invoke(new SerializableCallable() { // SerializableRunnable
+      @Override
       public Object call() throws Exception { // public void run() 
         DistributedSystem system = getSystem();
         assertEquals(member0, system.findDistributedMember("name0"));
@@ -391,24 +385,9 @@ public class DistributedMemberDUnitTest extends DistributedTestCase {
         // Members will contain the locator as well. Just make sure it has the members we're looking for.
         assertTrue("Expected" + expected + " got " + members, members.containsAll(expected));
         assertEquals(4, members.size());
-//        } catch (UnknownHostException e) {
-//          fail("Unable to get IpAddress", e);
-//        }
         return null;
       }
     });
-  }
-  
-  @Test
-  public void linuxSpecificTest() {
-    assumeTrue(SystemUtils.isLinux());
-    // do something that is only supported on linux
-  }
-  
-  @Test
-  @ConditionalIgnore(value="#55555: summary of bug #55555", until="2016-01-01")
-  public void someBrokenTest() {
-    throw new Error("Bug #55555");
   }
   
   private DistributedMember createSystemAndGetId(final VM vm, final String name) {

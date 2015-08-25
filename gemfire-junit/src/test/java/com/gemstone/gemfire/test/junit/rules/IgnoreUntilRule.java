@@ -81,7 +81,7 @@ public class IgnoreUntilRule implements TestRule {
 
   protected boolean evaluate(IgnoreUntil conditionalIgnoreAnnotation, Description description) {
     return (evaluateCondition(conditionalIgnoreAnnotation.condition(), description)
-      || evaluateUntil(conditionalIgnoreAnnotation.deadline()));
+      || evaluateUntil(conditionalIgnoreAnnotation.until()));
   }
 
   protected boolean evaluateCondition(Class<? extends IgnoreCondition> ignoreConditionType, Description description) {

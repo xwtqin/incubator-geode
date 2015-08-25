@@ -10,19 +10,19 @@ import com.gemstone.gemfire.test.examples.CatchExceptionExampleDUnitTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  BasicDUnitTest.class,
-  DistributedTestNameDUnitTest.class,
+//  BasicDUnitTest.class,
+//  DistributedTestNameDUnitTest.class,
   DistributedTestNameWithRuleDUnitTest.class,
   SerializableTemporaryFolderDUnitTest.class,
   SerializableTestNameDUnitTest.class,
   SerializableTestWatcherDUnitTest.class,
-  VMDUnitTest.class,
-  VMMoreDUnitTest.class,
+//  VMDUnitTest.class,
+//  VMMoreDUnitTest.class,
   
   CatchExceptionExampleDUnitTest.class,
   DistributedMemberDUnitTest.class,
-  HostedLocatorsDUnitTest.class,
-  OutOfOffHeapMemoryDUnitTest.class,
+//  HostedLocatorsDUnitTest.class,
+//  OutOfOffHeapMemoryDUnitTest.class,
 })
-public class MyTestSuite {
+public class DUnitTestRuleTestSuite {
 }

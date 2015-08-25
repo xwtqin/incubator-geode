@@ -26,7 +26,7 @@ public @interface IgnoreUntil {
 
   Class<? extends IgnoreCondition> condition() default DefaultIgnoreCondition.class;
 
-  String deadline() default "1970-01-01";
+  String until() default "1970-01-01";
 
   String value() default "";
 

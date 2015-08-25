@@ -78,7 +78,7 @@ public abstract class DUnitEnv {
   // static methods
   //---------------------------------------------------------------------------
   
-  public static final Properties getAllDistributedSystemProperties(Properties props) { // TODO: delete
+  public static final Properties getAllDistributedSystemProperties(final Properties props) { // TODO: delete
     Properties p = DUnitEnv.get().getDistributedSystemProperties();
     
     // our tests do not expect auto-reconnect to be on by default

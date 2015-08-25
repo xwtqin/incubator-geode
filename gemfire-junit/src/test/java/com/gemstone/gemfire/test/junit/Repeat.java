@@ -23,4 +23,5 @@ public @interface Repeat {
   
   int value() default DEFAULT;
 
+  String property() default "";
 }
