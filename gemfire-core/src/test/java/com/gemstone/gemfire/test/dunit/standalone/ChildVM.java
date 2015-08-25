@@ -7,9 +7,6 @@
  */
 package com.gemstone.gemfire.test.dunit.standalone;
 
-import hydra.HydraRuntimeException;
-import hydra.Log;
-
 import java.rmi.Naming;
 
 import org.apache.logging.log4j.Logger;

@@ -12,7 +12,12 @@ import com.gemstone.gemfire.test.catchexception.CatchExceptionExampleDUnitTest;
 @Suite.SuiteClasses({
   BasicDUnitTest.class,
   DistributedTestNameDUnitTest.class,
+  DistributedTestNameWithRuleDUnitTest.class,
+  SerializableTemporaryFolderDUnitTest.class,
+  SerializableTestNameDUnitTest.class,
+  SerializableTestWatcherDUnitTest.class,
   VMDUnitTest.class,
+  VMMoreDUnitTest.class,
   
   CatchExceptionExampleDUnitTest.class,
   DistributedMemberDUnitTest.class,

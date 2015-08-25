@@ -28,8 +28,8 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
  * test framework.
  */
 @Category(DistributedTest.class)
+@SuppressWarnings("serial")
 public class BasicDUnitTest extends DistributedTestCase {
-  private static final long serialVersionUID = 1L;
 
   private static final String REMOTE_THROW_EXCEPTION_MESSAGE = "Throwing remoteThrowException";
   

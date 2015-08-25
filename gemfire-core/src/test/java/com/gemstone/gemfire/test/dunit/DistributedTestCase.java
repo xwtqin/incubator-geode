@@ -64,10 +64,10 @@ public abstract class DistributedTestCase implements java.io.Serializable {
   private static volatile String testName;
   
   private static InternalDistributedSystem system;
-  private static Class previousSystemCreatedInTestClass;
-  private static Properties previousProperties;
+  protected static Class previousSystemCreatedInTestClass;
+  protected static Properties previousProperties;
   
-  private final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
+  protected volatile boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
   /**
    * Creates a new <code>DistributedTestCase</code> test.
@@ -99,7 +99,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     //System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
   }
 
-  private void setUpInVM(final VM vm, final String testNameToUse, final String diskStoreNameToUse) {
+  private static void setUpInVM(final VM vm, final String testNameToUse, final String diskStoreNameToUse) {
     vm.invoke(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;
 
@@ -137,7 +137,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     tearDownInEveryVM();
   }
 
-  private void tearDownInEveryVM() {
+  private static void tearDownInEveryVM() {
     invokeInEveryVM(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;
 
@@ -240,10 +240,6 @@ public abstract class DistributedTestCase implements java.io.Serializable {
       if (!getTestClass().equals(previousSystemCreatedInTestClass)) {
         // previous system was created in a previous test class
         final Properties newProperties = getAllDistributedSystemProperties(properties);
-        if (logPerTest) {
-          newProperties.put(DistributionConfig.LOG_FILE_NAME, getUniqueName() + ".log");
-          newProperties.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getUniqueName() + ".gfs");
-        }
         needNewSystem = !newProperties.equals(previousProperties);
         if (needNewSystem) {
           logger.info(

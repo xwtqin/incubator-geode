@@ -28,8 +28,8 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
  * This class tests the functionality of the {@link VM} class.
  */
 @Category(DistributedTest.class)
+@SuppressWarnings("serial")
 public class VMDUnitTest extends DistributedTestCase {
-  private static final long serialVersionUID = 1L;
   
   private static final boolean BOOLEAN_VALUE = true;
   private static final byte BYTE_VALUE = (byte) 40;

@@ -1,8 +1,10 @@
 package com.gemstone.gemfire.test.dunit.tests;
 
-import static com.gemstone.gemfire.test.dunit.Invoke.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static com.gemstone.gemfire.test.dunit.Invoke.invokeInEveryVM;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.Serializable;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,20 +12,17 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
-/**
- * Verifies that test name is available and consistent in the controller JVM 
- * and all 4 dunit JVMs.
- * 
- * @author Kirk Lund
- */
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
-public class DistributedTestNameDUnitTest extends DistributedTestCase {
+public class DistributedTestNameWithRuleDUnitTest implements Serializable {
 
+  @Rule
+  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  
   @Rule
   public transient TestWatcher watchman = new TestWatcher() {
     protected void starting(final Description description) {
@@ -31,36 +30,36 @@ public class DistributedTestNameDUnitTest extends DistributedTestCase {
     }
   };
   
-  private String testMethodName;
+  private transient String testMethodName;
   
   @Test
   public void testNameShouldBeConsistentInAllJVMs() throws Exception {
     final String methodName = this.testMethodName;
     
     // JUnit Rule provides getMethodName in Controller JVM
-    assertThat(getMethodName(), is(methodName));
+    assertThat(this.dunitTestRule.getMethodName(), is(methodName));
     
     // Controller JVM sets testName = getMethodName in itself and all 4 other JVMs
-    assertThat(getTestName(), is(methodName));
+    assertThat(DUnitTestRule.getTestMethodName(), is(methodName));
     
-    invokeInEveryVM(new SerializableRunnable(getMethodName()) {
+    invokeInEveryVM(new SerializableRunnable(this.dunitTestRule.getMethodName()) {
       @Override
       public void run() {
-        assertThat(getTestName(), is(methodName));
+        assertThat(DUnitTestRule.getTestMethodName(), is(methodName));
       }
     });
   }
 
   @Test
   public void uniqueNameShouldBeConsistentInAllJVMs() throws Exception {
-    final String uniqueName = getClass().getSimpleName() + "_" + testMethodName;
+    final String uniqueName = getClass().getName() + "_" + testMethodName;
     
-    assertThat(getUniqueName(), is(uniqueName));
+    assertThat(this.dunitTestRule.getUniqueName(), is(uniqueName));
     
-    invokeInEveryVM(new SerializableRunnable(getMethodName()) {
+    invokeInEveryVM(new SerializableRunnable(this.dunitTestRule.getMethodName()) {
       @Override
       public void run() {
-        assertThat(getUniqueName(), is(uniqueName));
+        assertThat(dunitTestRule.getUniqueName(), is(uniqueName));
       }
     });
   }

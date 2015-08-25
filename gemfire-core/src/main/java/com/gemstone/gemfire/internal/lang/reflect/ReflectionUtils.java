@@ -37,5 +37,20 @@ public abstract class ReflectionUtils {
   public static String getMethodName() {
     return Thread.currentThread().getStackTrace()[2].getMethodName();
   }
-}
+  
+  public static String getSimpleClassName(final String className) {
+    if (className.indexOf(".") > -1) {
+      return className.substring(className.lastIndexOf(".")+1);
+    } else {
+      return className;
+    }
+  }
 
+  public static String getSimpleClassName(final int depth) {
+    return getSimpleClassName(Thread.currentThread().getStackTrace()[depth].getClassName());
+  }
+
+  public static String getSimpleClassName() {
+    return getSimpleClassName(Thread.currentThread().getStackTrace()[2].getClassName());
+  }
+}

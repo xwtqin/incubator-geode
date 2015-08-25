@@ -33,25 +33,43 @@ public class ReflectionUtilsJUnitTest {
   private String testMethodName;
   
   @Test
-  public void getClassNameZeroShouldReturnReflectionUtilsClass() {
+  public void getClassNameZeroShouldReturnThreadClassName() {
     assertThat(getClassName(0), is(Thread.class.getName()));
   }
   
   @Test
-  public void getClassNameOneShouldReturnReflectionUtilsClass() {
+  public void getSimpleClassNameZeroShouldReturnThreadClassSimpleName() {
+    assertThat(getSimpleClassName(0), is(Thread.class.getSimpleName()));
+  }
+  
+  @Test
+  public void getClassNameOneShouldReturnReflectionUtilsClassName() {
     assertThat(getClassName(1), is(ReflectionUtils.class.getName()));
   }
   
   @Test
-  public void getClassNameTwoShouldReturnReflectionUtilsClass() {
-    assertThat(getClassName(2), is(getClass().getName()));
+  public void getSimpleClassNameOneShouldReturnReflectionUtilsClassSimpleName() {
+    assertThat(getSimpleClassName(1), is(ReflectionUtils.class.getSimpleName()));
+  }
+  
+  @Test
+  public void getClassNameTwoShouldReturnThisClassName() {
     assertThat(getClassName(2), is(this.testClassName));
   }
   
   @Test
-  public void getClassNameShouldReturnReflectionUtilsClass() {
-    assertThat(getClassName(), is(getClass().getName()));
+  public void getSimpleClassNameTwoShouldReturnThisClassSimpleName() {
+    assertThat(getSimpleClassName(2), is(getSimpleClassName(this.testClassName)));
+  }
+  
+  @Test
+  public void getClassNameShouldReturnThisClassName() {
     assertThat(getClassName(), is(this.testClassName));
+  }
+  
+  @Test
+  public void getSimpleClassNameShouldReturnThisClassSimpleName() {
+    assertThat(getSimpleClassName(), is(getSimpleClassName(this.testClassName)));
   }
   
   @Test
@@ -65,14 +83,22 @@ public class ReflectionUtilsJUnitTest {
   }
   
   @Test
-  public void getMethodNameTwoShouldReturnThisMethod() {
-    assertThat(getMethodName(2), is("getMethodNameTwoShouldReturnThisMethod"));
+  public void getMethodNameTwoShouldReturnThisMethodName() {
     assertThat(getMethodName(2), is(this.testMethodName));
   }
   
   @Test
-  public void getMethodNameShouldReturnThisMethod() {
-    assertThat(getMethodName(), is("getMethodNameShouldReturnThisMethod"));
+  public void getMethodNameShouldReturnThisMethodName() {
     assertThat(getMethodName(), is(this.testMethodName));
+  }
+  
+  @Test
+  public void getSimpleClassNameWithPackageShouldRemovePackage() {
+    assertThat(getSimpleClassName(getClass().getSimpleName()), is(getClass().getSimpleName()));
+  }
+
+  @Test
+  public void getSimpleClassNameWithoutPackageShouldReturnClassName() {
+    assertThat(getSimpleClassName("SomeClass"), is("SomeClass"));
   }
 }
