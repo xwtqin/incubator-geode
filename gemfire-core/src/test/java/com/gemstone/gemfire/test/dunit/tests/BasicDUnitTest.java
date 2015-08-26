@@ -7,17 +7,20 @@
  */
 package com.gemstone.gemfire.test.dunit.tests;
 
+import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -29,11 +32,14 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
  */
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
-public class BasicDUnitTest extends DistributedTestCase {
+public class BasicDUnitTest implements Serializable {
 
   private static final String REMOTE_THROW_EXCEPTION_MESSAGE = "Throwing remoteThrowException";
   
   private static Properties bindings = new Properties();
+  
+  @Rule
+  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
 
   /**
    * Tests how the DUnit framework handles an error
@@ -64,7 +70,7 @@ public class BasicDUnitTest extends DistributedTestCase {
   public void testRemoteInvokeAsync() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
-    String name = this.getUniqueName();
+    String name = getUniqueName();
     String value = "Hello";
 
     AsyncInvocation ai = vm.invokeAsync(this.getClass(), "remoteBind", new Object[] { name, value });
@@ -105,7 +111,7 @@ public class BasicDUnitTest extends DistributedTestCase {
   }
   
   protected static void remoteBind(String name, String s) {
-    new BasicDUnitTest().getSystem(); // forces connection
+    getSystem(); // forces connection
     bindings.setProperty(name, s);
   }
 

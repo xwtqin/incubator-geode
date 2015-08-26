@@ -17,7 +17,7 @@ import com.gemstone.gemfire.test.examples.CatchExceptionExampleDUnitTest;
   SerializableTestNameDUnitTest.class,
   SerializableTestWatcherDUnitTest.class,
   VMDUnitTest.class,
-  VMMoreDUnitTest.class,
+  LogPerTestMethodDUnitTest.class,
   
   CatchExceptionExampleDUnitTest.class,
   DistributedMemberDUnitTest.class,

@@ -5,8 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  LogPerTestOneDUnitTest.class,
-  LogPerTestTwoDUnitTest.class,
+  LogPerTestClassOneDUnitTest.class,
+  LogPerTestClassTwoDUnitTest.class,
 })
-public class LogPerTestSuite {
+public class LogPerTestClassTestSuite {
 }

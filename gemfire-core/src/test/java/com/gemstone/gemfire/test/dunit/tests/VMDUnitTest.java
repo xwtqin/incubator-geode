@@ -14,11 +14,12 @@ import java.io.Serializable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -29,7 +30,7 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
  */
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
-public class VMDUnitTest extends DistributedTestCase {
+public class VMDUnitTest implements Serializable {
   
   private static final boolean BOOLEAN_VALUE = true;
   private static final byte BYTE_VALUE = (byte) 40;
@@ -38,6 +39,9 @@ public class VMDUnitTest extends DistributedTestCase {
 
   private static final AtomicInteger COUNTER = new AtomicInteger();
   
+  @Rule
+  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+
   @Test
   public void testInvokeNonExistentMethod() {
     Host host = Host.getHost(0);

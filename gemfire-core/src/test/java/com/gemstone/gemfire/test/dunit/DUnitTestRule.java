@@ -66,8 +66,13 @@ public class DUnitTestRule implements TestRule, Serializable {
     private static volatile String testMethodName;
   }
   
+  public static Builder builder() {
+    return new Builder();
+  }
+  
   protected DUnitTestRule(final Builder builder) {
-    this();
+    StaticContext.logPerTestClass = builder.logPerTestClass;
+    StaticContext.logPerTestMethod = builder.logPerTestMethod;
   }
   
   public DUnitTestRule() {
@@ -86,6 +91,16 @@ public class DUnitTestRule implements TestRule, Serializable {
   protected void starting(final Description description) {
     this.className = description.getClassName();
     this.methodName = description.getMethodName();
+    
+    boolean newTestClass = false;
+    if (StaticContext.testClassName != null && !this.className.equals(StaticContext.testClassName)) {
+      // new test class detected
+      newTestClass = true;
+    }
+    
+    if (newTestClass && StaticContext.logPerTestClass) {
+      disconnectAllFromDS();
+    }
     
     StaticContext.testClassName = this.className;
     StaticContext.testMethodName = this.methodName;
@@ -197,10 +212,15 @@ public class DUnitTestRule implements TestRule, Serializable {
   public static InternalDistributedSystem getSystem(final Properties properties) {
     if (!hasPreviousSystem()) {
       final Properties newProperties = getAllDistributedSystemProperties(properties);
-      if (StaticContext.logPerTestClass) {
+      
+      if (StaticContext.logPerTestMethod) {
         newProperties.put(DistributionConfig.LOG_FILE_NAME, getUniqueName() + ".log");
         newProperties.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getUniqueName() + ".gfs");
+      } else if (StaticContext.logPerTestClass) {
+        newProperties.put(DistributionConfig.LOG_FILE_NAME, getTestClassName() + ".log");
+        newProperties.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getTestClassName() + ".gfs");
       }
+      
       StaticContext.system = (InternalDistributedSystem)DistributedSystem.connect(newProperties);
 
       StaticContext.previousSystemCreatedInTestClass = getTestClassName();
@@ -489,7 +509,7 @@ public class DUnitTestRule implements TestRule, Serializable {
   }
 
   private static void realTearDown() throws Exception {
-    if (StaticContext.logPerTestClass) {
+    if (StaticContext.logPerTestMethod) {
       disconnectAllFromDS();
     }
     cleanupAllVms();
@@ -571,17 +591,28 @@ public class DUnitTestRule implements TestRule, Serializable {
    * @author Kirk Lund
    */
   public static class Builder {
+    private boolean logPerTestMethod;
+    private boolean logPerTestClass;
+    
     protected Builder() {}
 
     public Builder vmCount(final int vmCount) {
       return this;
     }
     
-    public Builder logPerTest(final boolean logPerTest) {
+    /**
+     * A new DistributedSystem with .log and .gfs will be created for each test method
+     */
+    public Builder logPerTestMethod(final boolean logPerTestMethod) {
+      this.logPerTestMethod = logPerTestMethod;
       return this;
     }
     
+    /**
+     * A new DistributedSystem with .log and .gfs will be created for each test class
+     */
     public Builder logPerTestClass(final boolean logPerTestClass) {
+      this.logPerTestClass = logPerTestClass;
       return this;
     }
     
