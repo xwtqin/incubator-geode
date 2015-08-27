@@ -88,7 +88,6 @@ public abstract class ResourceOperationContext extends OperationContext {
     private static final int OP_CREATE_HDFS_STORE = 64;
     private static final int OP_ALTER_HDFS_STORE = 65;
     private static final int OP_DESTROY_HDFS_STORE = 66;
-    
 
     private static final int OP_PULSE_DASHBOARD = 92;
     private static final int OP_PULSE_DATABROWSER = 93;

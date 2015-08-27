@@ -46,7 +46,7 @@ public class ResourceConstants {
   public static final String DESTROY_DISKSTORE = "DESTROY_DISKSTORE";
   public static final String DESTROY_FUNCTION = "DESTROY_FUNCTION";
   public static final String DESTROY_INDEX = "DESTROY_INDEX";
-  
+
   public static final String DESTROY_REGION = "DESTROY_REGION";
   public static final String EXECUTE_FUNCTION = "EXECUTE_FUNCTION";
   public static final String EXPORT_CONFIG = "EXPORT_CONFIG";
@@ -93,6 +93,7 @@ public class ResourceConstants {
   public static final String STOP_CONTINUOUS_QUERY = "STOP_CONTINUOUS_QUERY";
   public static final String SET_DISK_USAGE = "SET_DISK_USAGE";
   
+
   public static final String CREATE_HDFS_STORE = "CREATE_HDFS_STORE";
   public static final String ALTER_HDFS_STORE = "ALTER_HDFS_STORE";
   public static final String DESTROY_HDFS_STORE = "DESTROY_HDFS_STORE";

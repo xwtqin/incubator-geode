@@ -58,7 +58,7 @@ import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 public class HDFSStoreCommands   extends AbstractCommandsSupport {  
   @CliCommand (value = CliStrings.CREATE_HDFS_STORE, help = CliStrings.CREATE_HDFS_STORE__HELP)
   @CliMetaData (relatedTopic = CliStrings.TOPIC_GEMFIRE_HDFSSTORE, writesToSharedConfiguration = true)
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CREATE_HDFS_STORE)
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.CREATE_HDFS_STORE)
   public Result createHdfsStore(      
       @CliOption (key = CliStrings.CREATE_HDFS_STORE__NAME,                  
                   mandatory = true,
