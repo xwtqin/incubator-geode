@@ -1,10 +1,7 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
 import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
@@ -32,38 +29,36 @@ public class IgnoreUntilRuleJUnitTest {
   public void shouldIgnoreWhenUntilIsInFuture() {
     Result result = runTest(ShouldIgnoreWhenUntilIsInFuture.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(ShouldIgnoreWhenUntilIsInFuture.count, is(0));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(ShouldIgnoreWhenUntilIsInFuture.count).isEqualTo(0);
   }
   
   @Test
   public void shouldExecuteWhenUntilIsInPast() {
     Result result = runTest(ShouldExecuteWhenUntilIsInPast.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(ShouldExecuteWhenUntilIsInPast.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(ShouldExecuteWhenUntilIsInPast.count).isEqualTo(1);
   }
   
   @Test
   public void shouldExecuteWhenUntilIsDefault() {
     Result result = runTest(ShouldExecuteWhenUntilIsDefault.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(ShouldExecuteWhenUntilIsDefault.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(ShouldExecuteWhenUntilIsDefault.count).isEqualTo(1);
   }
   
   public static class ShouldIgnoreWhenUntilIsInFuture {

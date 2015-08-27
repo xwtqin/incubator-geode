@@ -1,13 +1,7 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
 import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -35,94 +29,93 @@ public class RetryRuleGlobalWithErrorJUnitTest {
   public void zeroIsIllegal() {
     Result result = runTest(ZeroIsIllegal.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(IllegalArgumentException.class)));
-    assertThat(failure.getException().getMessage(), containsString("Retry count must be greater than zero"));
-    assertThat(ZeroIsIllegal.count, is(0));
+    assertThat(failure.getException()).isExactlyInstanceOf(IllegalArgumentException.class).hasMessage(ZeroIsIllegal.message);
+    assertThat(ZeroIsIllegal.count).isEqualTo(0);
   }
   
   @Test
   public void failsWithOne() {
     Result result = runTest(FailsWithOne.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(FailsWithOne.message));
-    assertThat(FailsWithOne.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(FailsWithOne.message);
+    assertThat(FailsWithOne.count).isEqualTo(1);
   }
   
   @Test
   public void passesWithOne() {
     Result result = runTest(PassesWithOne.class);
     
-    assertTrue(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassesWithOne.count).isEqualTo(1);
   }
   
   @Test
   public void passesWithUnused() {
     Result result = runTest(PassesWhenUnused.class);
     
-    assertTrue(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassesWhenUnused.count).isEqualTo(1);
   }
   
   @Test
   public void failsOnSecondAttempt() {
     Result result = runTest(FailsOnSecondAttempt.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals(1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(FailsOnSecondAttempt.message));
-    assertThat(FailsOnSecondAttempt.count, is(2));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(FailsOnSecondAttempt.message);
+    assertThat(FailsOnSecondAttempt.count).isEqualTo(2);
   }
 
   @Test
   public void passesOnSecondAttempt() {
     Result result = runTest(PassesOnSecondAttempt.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassesOnSecondAttempt.count, is(2));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassesOnSecondAttempt.count).isEqualTo(2);
   }
   
   @Test
   public void failsOnThirdAttempt() {
     Result result = runTest(FailsOnThirdAttempt.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals(1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(FailsOnThirdAttempt.message));
-    assertThat(FailsOnThirdAttempt.count, is(3));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(FailsOnThirdAttempt.message);
+    assertThat(FailsOnThirdAttempt.count).isEqualTo(3);
   }
 
   @Test
   public void passesOnThirdAttempt() {
     Result result = runTest(PassesOnThirdAttempt.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassesOnThirdAttempt.count, is(3));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassesOnThirdAttempt.count).isEqualTo(3);
   }
   
   public static class ZeroIsIllegal {
     protected static int count;
+    protected static final String message = "Retry count must be greater than zero";
 
     @Rule
     public RetryRule retryRule = new RetryRule(0);

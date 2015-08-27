@@ -36,6 +36,7 @@ public class DistributedRestoreSystemProperties extends RestoreSystemProperties 
   
   @Override
   protected void before() throws Throwable {
+    System.out.println("KIRK DistributedRestoreSystemProperties before");
     super.before();
     this.invoker.remoteInvokeInEveryVMAndLocator(new SerializableRunnable() {
       @Override
@@ -48,6 +49,7 @@ public class DistributedRestoreSystemProperties extends RestoreSystemProperties 
 
   @Override
   protected void after() {
+    System.out.println("KIRK DistributedRestoreSystemProperties after");
     super.after();
     this.invoker.remoteInvokeInEveryVMAndLocator(new SerializableRunnable() {
       @Override

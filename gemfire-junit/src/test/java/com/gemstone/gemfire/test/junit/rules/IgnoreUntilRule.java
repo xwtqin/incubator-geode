@@ -1,5 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,8 +24,8 @@ import com.gemstone.gemfire.test.junit.support.IgnoreConditionEvaluationExceptio
  * @see com.gemstone.gemfire.test.junit.IgnoreUntil
  * @see com.gemstone.gemfire.test.junit.IgnoreCondition
  */
-@SuppressWarnings("unused")
-public class IgnoreUntilRule implements TestRule {
+@SuppressWarnings({ "serial", "unused" })
+public class IgnoreUntilRule implements TestRule, Serializable {
 
   protected static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
   protected static final String DEFAULT_MESSAGE = "Ignoring test case (%1$s) of test class (%2$s)!";

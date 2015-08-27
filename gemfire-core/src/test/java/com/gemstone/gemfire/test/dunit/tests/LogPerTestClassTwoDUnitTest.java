@@ -1,6 +1,5 @@
 package com.gemstone.gemfire.test.dunit.tests;
 
-
 import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
 import static org.assertj.core.api.Assertions.*;
 

@@ -1,10 +1,12 @@
 package com.gemstone.gemfire.distributed;
 
+import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.RuleChain;
 
 import com.gemstone.gemfire.distributed.AbstractLauncher.Status;
 import com.gemstone.gemfire.distributed.LocatorLauncher.Builder;
@@ -27,8 +30,7 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.util.StopWatch;
-
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -42,28 +44,38 @@ import com.gemstone.gemfire.test.junit.categories.MembershipTest;
  * @author Kirk Lund
  * @since 8.0
  */
-@SuppressWarnings("serial")
 @Category({ DistributedTest.class, MembershipTest.class })
-public class HostedLocatorsDUnitTest extends DistributedTestCase {
+@SuppressWarnings("serial")
+public class HostedLocatorsDUnitTest implements Serializable {
 
-  //protected static final int TIMEOUT_MILLISECONDS = 5 * 60 * 1000; // 5 minutes
+  protected static final int TIMEOUT_MINUTES = 5;
 
   protected transient volatile int locatorPort;
   protected transient volatile LocatorLauncher launcher;
   
+//  @Rule
+//  public transient RuleChain chain = RuleChain
+//      .outerRule(new DUnitTestRule())
+//      .around(new DistributedRestoreSystemProperties());
+  
+  
   @Rule
-  public final DistributedRestoreSystemProperties restoreSystemProperties = new DistributedRestoreSystemProperties();
-  
-  @Before
-  public void setUp() throws Exception {
-    disconnectAllFromDS();
-  }
-  
-  @After
-  public void tearDown() throws Exception {
-    disconnectAllFromDS();
-  }
-  
+  public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
+      .disconnectBefore(true)
+      .disconnectAfter(true)
+      .chainRule(new DistributedRestoreSystemProperties())
+      .build();
+
+//  @Before
+//  public void before() {
+//    disconnectAllFromDS();
+//  }
+//  
+//  @After
+//  public void after() {
+//    disconnectAllFromDS();
+//  }
+
   @Test
   public void getAllHostedLocators() throws Exception {
     final InternalDistributedSystem system = getSystem();
@@ -96,8 +108,7 @@ public class HostedLocatorsDUnitTest extends DistributedTestCase {
     
             launcher = builder.build();
             assertEquals(Status.ONLINE, launcher.start().getStatus());
-            //was: waitForLocatorToStart(launcher, TIMEOUT_MILLISECONDS, 10, true); --> Awaitility
-            with().pollInterval(10, MILLISECONDS).await().atMost(5, MINUTES).until( isLocatorStarted() );
+            with().pollInterval(10, MILLISECONDS).await().atMost(TIMEOUT_MINUTES, MINUTES).until( isLocatorStarted() );
             return null;
           } finally {
             System.clearProperty("gemfire.locators");

@@ -1,5 +1,7 @@
 package com.gemstone.gemfire.test.junit.rules;
 
+import java.io.Serializable;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -8,16 +10,14 @@ import com.gemstone.gemfire.test.junit.Repeat;
 /**
  * The RepeatRule class is a JUnit TestRule that enables an appropriately @Repeat annotated test case method
  * to be repeated a specified number of times.
- * 
- * TODO: disallow 0 because @Retry(0) is equivalent to @Ignore apparently
  *
  * @author John Blum
  * @see org.junit.rules.TestRule
  * @see org.junit.runner.Description
  * @see org.junit.runners.model.Statement
  */
-@SuppressWarnings("unused")
-public class RepeatRule implements TestRule {
+@SuppressWarnings({ "serial", "unused" })
+public class RepeatRule implements TestRule, Serializable {
 
   protected static final int DEFAULT_REPETITIONS = 1;
 

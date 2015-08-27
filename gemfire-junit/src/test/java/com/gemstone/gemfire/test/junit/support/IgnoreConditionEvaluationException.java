@@ -6,7 +6,7 @@ package com.gemstone.gemfire.test.junit.support;
  * @author John Blum
  * @see java.lang.RuntimeException
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({ "serial", "unused" })
 public class IgnoreConditionEvaluationException extends RuntimeException {
 
   public IgnoreConditionEvaluationException() {

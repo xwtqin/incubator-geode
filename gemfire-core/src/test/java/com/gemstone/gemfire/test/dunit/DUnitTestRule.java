@@ -6,7 +6,9 @@ import static com.gemstone.gemfire.test.dunit.Invoke.invokeInLocator;
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,6 +56,9 @@ public class DUnitTestRule implements TestRule, Serializable {
   private volatile String className;
   private volatile String methodName;
   
+  private final boolean disconnectBefore;
+  private final boolean disconnectAfter;
+  
   private static class StaticContext {
     private static volatile boolean logPerTestClass;
     private static volatile boolean logPerTestMethod;
@@ -73,10 +78,17 @@ public class DUnitTestRule implements TestRule, Serializable {
   protected DUnitTestRule(final Builder builder) {
     StaticContext.logPerTestClass = builder.logPerTestClass;
     StaticContext.logPerTestMethod = builder.logPerTestMethod;
+    this.disconnectBefore = builder.disconnectBefore;
+    this.disconnectAfter = builder.disconnectAfter;
+    if (!builder.ruleChain.isEmpty()) {
+      
+    }
   }
   
   public DUnitTestRule() {
     StaticContext.logPerTestClass = Boolean.getBoolean(LOG_PER_TEST_CLASS_PROPERTY);
+    this.disconnectBefore = false;
+    this.disconnectAfter = false;
   }
   
   @Override
@@ -107,12 +119,22 @@ public class DUnitTestRule implements TestRule, Serializable {
   }
   
   protected void before() throws Throwable {
+    System.out.println("KIRK DUnitTestRule before");
     DUnitLauncher.launchIfNeeded();
     
     setUpDistributedTestCase();
+    
+    if (this.disconnectBefore) {
+      disconnectAllFromDS();
+    }
   }
 
   protected void after() throws Throwable {
+    System.out.println("KIRK DUnitTestRule after");
+    if (this.disconnectAfter) {
+      disconnectAllFromDS();
+    }
+
     tearDownDistributedTestCase();
   }
   
@@ -593,6 +615,9 @@ public class DUnitTestRule implements TestRule, Serializable {
   public static class Builder {
     private boolean logPerTestMethod;
     private boolean logPerTestClass;
+    private boolean disconnectBefore;
+    private boolean disconnectAfter;
+    private List<TestRule> ruleChain = new ArrayList<TestRule>();
     
     protected Builder() {}
 
@@ -613,6 +638,21 @@ public class DUnitTestRule implements TestRule, Serializable {
      */
     public Builder logPerTestClass(final boolean logPerTestClass) {
       this.logPerTestClass = logPerTestClass;
+      return this;
+    }
+    
+    public Builder disconnectBefore(final boolean disconnectBefore) {
+      this.disconnectBefore = disconnectBefore;
+      return this;
+    }
+    
+    public Builder disconnectAfter(final boolean disconnectAfter) {
+      this.disconnectAfter = disconnectAfter;
+      return this;
+    }
+    
+    public Builder chainRule(final TestRule enclosedRule) {
+      this.ruleChain.add(enclosedRule);
       return this;
     }
     

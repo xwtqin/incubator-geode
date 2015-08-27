@@ -1,5 +1,7 @@
 package com.gemstone.gemfire.test.junit.rules;
 
+import java.io.Serializable;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -39,7 +41,9 @@ import com.gemstone.gemfire.test.junit.Retry;
  * This version of RetryRule will retry a test that fails because of any kind 
  * of Throwable.
  */
-public class RetryRule implements TestRule {
+@SuppressWarnings("serial")
+public class RetryRule implements TestRule, Serializable {
+  
   /**
    * Enables printing of failures to System.err even if test passes on a retry
    */

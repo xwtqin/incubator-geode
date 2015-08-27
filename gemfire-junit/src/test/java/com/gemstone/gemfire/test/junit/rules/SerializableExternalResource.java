@@ -15,6 +15,7 @@ import org.junit.runners.model.Statement;
  */
 @SuppressWarnings("serial")
 public abstract class SerializableExternalResource implements Serializable, TestRule {
+  
   public Statement apply(Statement base, Description description) {
     return statement(base);
   }

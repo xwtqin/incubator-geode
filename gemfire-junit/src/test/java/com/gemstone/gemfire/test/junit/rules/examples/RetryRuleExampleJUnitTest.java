@@ -1,7 +1,6 @@
 package com.gemstone.gemfire.test.junit.rules.examples;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +21,7 @@ public class RetryRuleExampleJUnitTest {
   public void unreliableTestWithRaceConditions() {
     count++;
     if (count < 2) {
-      assertThat(count, is(2)); // doomed to fail
+      assertThat(count).isEqualTo(2); // doomed to fail
     }
   }
 }

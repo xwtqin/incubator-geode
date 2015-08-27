@@ -6,6 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   ExpectedTimeoutRuleJUnitTest.class,
+  IgnoreUntilRuleJUnitTest.class,
   RepeatRuleJUnitTest.class,
   RetryRuleGlobalWithErrorJUnitTest.class,
   RetryRuleGlobalWithExceptionJUnitTest.class,

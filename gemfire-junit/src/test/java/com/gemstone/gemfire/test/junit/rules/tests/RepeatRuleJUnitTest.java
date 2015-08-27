@@ -1,11 +1,7 @@
 package com.gemstone.gemfire.test.junit.rules.tests;
 
 import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
@@ -33,122 +29,116 @@ public class RepeatRuleJUnitTest {
   public void failingTestShouldFailOneTimeWhenRepeatIsUnused() {
     Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsUnused.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsUnused.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsUnused.count).isEqualTo(1);
   }
 
   @Test
   public void passingTestShouldPassOneTimeWhenRepeatIsUnused() {
     Result result = runTest(PassingTestShouldPassOneTimeWhenRepeatIsUnused.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassingTestShouldPassOneTimeWhenRepeatIsUnused.count, is(1));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassingTestShouldPassOneTimeWhenRepeatIsUnused.count).isEqualTo(1);
   }
 
   @Test
   public void zeroValueShouldThrowIllegalArgumentException() {
     Result result = runTest(ZeroValueShouldThrowIllegalArgumentException.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(IllegalArgumentException.class)));
-    assertThat(failure.getException().getMessage(), containsString("Repeat value must be a positive integer"));
-    assertThat(ZeroValueShouldThrowIllegalArgumentException.count, is(0));
+    assertThat(failure.getException()).isExactlyInstanceOf(IllegalArgumentException.class).hasMessage("Repeat value must be a positive integer");
+    assertThat(ZeroValueShouldThrowIllegalArgumentException.count).isEqualTo(0);
   }
   
   @Test
   public void negativeValueShouldThrowIllegalArgumentException() {
     Result result = runTest(NegativeValueShouldThrowIllegalArgumentException.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(IllegalArgumentException.class)));
-    assertThat(failure.getException().getMessage(), containsString("Repeat value must be a positive integer"));
-    assertThat(NegativeValueShouldThrowIllegalArgumentException.count, is(0));
+    assertThat(failure.getException()).isExactlyInstanceOf(IllegalArgumentException.class).hasMessage("Repeat value must be a positive integer");
+    assertThat(NegativeValueShouldThrowIllegalArgumentException.count).isEqualTo(0);
   }
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsOne() {
     Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsOne.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsOne.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsOne.count).isEqualTo(1);
   }
 
   @Test
   public void passingTestShouldPassOneTimeWhenRepeatIsOne() {
     Result result = runTest(PassingTestShouldPassOneTimeWhenRepeatIsOne.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassingTestShouldPassOneTimeWhenRepeatIsOne.count, is(1));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassingTestShouldPassOneTimeWhenRepeatIsOne.count).isEqualTo(1);
   }
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsTwo() {
     Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsTwo.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsTwo.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsTwo.count).isEqualTo(1);
   }
 
   @Test
   public void passingTestShouldPassTwoTimesWhenRepeatIsTwo() {
     Result result = runTest(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.count, is(2));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.count).isEqualTo(2);
   }
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsThree() {
     Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsThree.class);
     
-    assertFalse(result.wasSuccessful());
+    assertThat(result.wasSuccessful()).isFalse();
     
     List<Failure> failures = result.getFailures();
-    assertEquals("Failures: " + failures, 1, failures.size());
+    assertThat(failures.size()).as("Failures: " + failures).isEqualTo(1);
 
     Failure failure = failures.get(0);
-    assertThat(failure.getException(), is(instanceOf(AssertionError.class)));
-    assertThat(failure.getException().getMessage(), containsString(ASSERTION_ERROR_MESSAGE));
-    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsThree.count, is(1));
+    assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
+    assertThat(FailingTestShouldFailOneTimeWhenRepeatIsThree.count).isEqualTo(1);
   }
 
   @Test
   public void passingTestShouldPassThreeTimesWhenRepeatIsThree() {
     Result result = runTest(PassingTestShouldPassThreeTimesWhenRepeatIsThree.class);
     
-    assertTrue(result.wasSuccessful());
-    assertThat(PassingTestShouldPassThreeTimesWhenRepeatIsThree.count, is(3));
+    assertThat(result.wasSuccessful()).isTrue();
+    assertThat(PassingTestShouldPassThreeTimesWhenRepeatIsThree.count).isEqualTo(3);
   }
 
   public static class FailingTestShouldFailOneTimeWhenRepeatIsUnused {
