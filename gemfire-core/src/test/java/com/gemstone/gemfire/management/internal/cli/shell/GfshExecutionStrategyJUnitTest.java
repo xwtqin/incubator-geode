@@ -29,6 +29,9 @@ import com.gemstone.gemfire.management.internal.cli.result.ResultBuilder;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
 import com.gemstone.gemfire.management.internal.cli.shell.GfshConfig;
 import com.gemstone.gemfire.management.internal.cli.shell.GfshExecutionStrategy;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
@@ -92,17 +95,20 @@ public class GfshExecutionStrategyJUnitTest {
 
     @CliCommand(value = { COMMAND1_NAME, COMMAND1_NAME_ALIAS }, help = COMMAND1_HELP)
     @CliMetaData(shellOnly = true )
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result command1() {     
       return ResultBuilder.createInfoResult(COMMAND1_SUCESS);      
     }
 
     @CliCommand(value = { COMMAND2_NAME })
     @CliMetaData(shellOnly = false )
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result command2() {
       return ResultBuilder.createInfoResult(COMMAND2_SUCESS);      
     }
 
     @CliCommand(value = { "testParamConcat" })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result testParamConcat(
         @CliOption(key = { "string" })
         String string,
@@ -119,6 +125,7 @@ public class GfshExecutionStrategyJUnitTest {
     }
 
     @CliCommand(value = { "testMultiWordArg" })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result testMultiWordArg(@CliArgument(name = "arg1")
     String arg1, @CliArgument(name = "arg2")
     String arg2) {

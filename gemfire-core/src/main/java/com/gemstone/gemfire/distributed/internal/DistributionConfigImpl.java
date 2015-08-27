@@ -220,6 +220,9 @@ public class DistributionConfigImpl
   /** The post-processing client authorization method name*/
   private String securityClientAccessorPP = DEFAULT_SECURITY_CLIENT_ACCESSOR_PP;
 
+  /** The token service method name*/
+  private String securityRestTokenService = DEFAULT_SECURITY_REST_TOKEN_SERVICE;
+
   /**
    * The level at which security related log messages are logged
    *
@@ -556,6 +559,9 @@ public class DistributionConfigImpl
     this.httpServiceSSLProperties = other.getHttpServiceSSLProperties();
     
     this.startDevRestApi = other.getStartDevRestApi();
+
+    // Following added for 8.2
+    this.securityRestTokenService = other.getSecurityRestTokenService();
 
     // following added for 9.0
     this.offHeapMemorySize = other.getOffHeapMemorySize();
@@ -1952,6 +1958,10 @@ public class DistributionConfigImpl
     return securityClientAuthenticator;
   }
 
+  public String getSecurityRestTokenService() {
+    return securityRestTokenService;
+  }
+
   public boolean getEnableNetworkPartitionDetection() {
     return this.enableNetworkPartitionDetection;
   }
@@ -1969,6 +1979,11 @@ public class DistributionConfigImpl
   public void setSecurityClientAuthenticator(String value) {
     checkSecurityClientAuthenticator(value);
     securityClientAuthenticator = value;
+  }
+
+  public void setSecurityRestTokenService(String value) {
+    checkSecurityRestTokenService(value);
+    securityRestTokenService = value;
   }
 
   public String getSecurityClientDHAlgo() {
@@ -2851,6 +2866,15 @@ public class DistributionConfigImpl
         return false;
     } else if (!userDefinedProps.equals(other.userDefinedProps))
       return false;
+
+      
+    if (securityRestTokenService == null) {
+      if (other.securityRestTokenService != null)
+        return false;
+    } else if (!securityRestTokenService
+        .equals(other.securityRestTokenService))
+      return false;
+
     return true;
   }
 
@@ -3120,6 +3144,13 @@ public class DistributionConfigImpl
         + ((userCommandPackages == null) ? 0 : userCommandPackages.hashCode());
     result = prime * result
         + ((userDefinedProps == null) ? 0 : userDefinedProps.hashCode());
+
+
+    result = prime
+        * result
+        + ((securityRestTokenService == null) ? 0 : securityRestTokenService
+            .hashCode());
+
     return result;
   }
   

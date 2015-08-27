@@ -173,7 +173,7 @@ public class JSONAuthCodeTest extends TestCase {
   }
 
   private void checkAccessControlMBean() throws Exception {
-    ObjectName name = new ObjectName(ManagementInterceptor.OBJECT_NAME_ACCESSCONTROL);
+    ObjectName name = new ObjectName(ResourceConstants.OBJECT_NAME_ACCESSCONTROL);
     MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
     Set<ObjectName> names = platformMBeanServer.queryNames(name, null);
     assertFalse(names.isEmpty());

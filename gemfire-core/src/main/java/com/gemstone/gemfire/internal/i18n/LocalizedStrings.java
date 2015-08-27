@@ -1285,8 +1285,9 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId AuthorizeRequestPP_0_NOT_AUTHORIZED_TO_PERFORM_EXECUTE_REGION_FUNCTION_1= new StringIdImpl(4664, "{0}: In post-process: Not authorized to perform EXECUTE_REGION_FUNCTION operation on region [{1}]");
   public static final StringId PartitionedRegionLoadModel_INCOMPLETE_COLOCATION= new StringIdImpl(4665, "PartitionedRegionLoadModel - member {0} has incomplete colocation, but it has buckets for some regions. Should have colocated regions {1}  but had {2}  and contains buckets {3}");
   public static final StringId HeapMemoryMonitor_OVERRIDDING_MEMORYPOOLMXBEAN_HEAP_0_NAME_1 = new StringIdImpl(4666, "Overridding MemoryPoolMXBean heap threshold bytes {0} on pool {1}");
+  public static final StringId AbstractDistributionConfig_SECURITY_REST_TOKEN_SERVICE_NAME_0 = new StringIdImpl(4667, "User defined fully qualified method name of a class implementing the TokenService interface for REST client verification. Defaults to \"{0}\". Legal values can be any \"method name\" of a static method that is present in the classpath.");
   
-  // 4667-4668 is UNUSED.
+  // 4668 is UNUSED.
   
   public static final StringId MemoryMonitor_MEMBER_ABOVE_CRITICAL_THRESHOLD = new StringIdImpl(4669, "Member: {0} above {1} critical threshold");
   public static final StringId MemoryMonitor_MEMBER_ABOVE_HIGH_THRESHOLD = new StringIdImpl(4670, "Member: {0} above {1} eviction threshold");

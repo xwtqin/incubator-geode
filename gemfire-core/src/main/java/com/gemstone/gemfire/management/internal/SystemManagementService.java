@@ -121,6 +121,8 @@ public final class SystemManagementService extends BaseManagementService {
    * GemFire comes with a default aggregator. 
    */
   private List<ProxyListener> proxyListeners;
+  
+  private AuthManager authManager;
 
 
   private UniversalListenerContainer universalListenerContainer = new UniversalListenerContainer();
@@ -171,6 +173,7 @@ public final class SystemManagementService extends BaseManagementService {
       this.listener = new ManagementMembershipListener(this);
       system.getDistributionManager().addMembershipListener(listener);
       isStarted = true;
+      this.authManager = new AuthManager(cache);
       return this;
     } catch (CancelException e) {
       // Rethrow all CancelExceptions (fix for defect 46339)
@@ -262,7 +265,8 @@ public final class SystemManagementService extends BaseManagementService {
       }
       if (this.agent != null && this.agent.isRunning()) {
         this.agent.stopAgent();
-      }     
+      }
+      this.authManager.expireAllAuthZ();
       getGemFireCacheImpl().getJmxManagerAdvisor().broadcastChange();
       instances.remove(cache);
       localManager  = null;
@@ -825,5 +829,9 @@ public final class SystemManagementService extends BaseManagementService {
   @Override
   public void removeMembershipListener(MembershipListener listener) {
     universalListenerContainer.removeMembershipListener(listener);    
+  }
+  
+  public AuthManager getAuthManager(){
+    return this.authManager;
   }
 }

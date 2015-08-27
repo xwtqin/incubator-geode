@@ -39,6 +39,9 @@ import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData.S
 import com.gemstone.gemfire.management.internal.cli.result.ResultBuilder;
 import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 /***
  *
@@ -54,6 +57,7 @@ public class MemberCommands implements CommandMarker {
 
   @CliCommand(value = { CliStrings.LIST_MEMBER }, help = CliStrings.LIST_MEMBER__HELP)
   @CliMetaData(shellOnly = false, relatedTopic = CliStrings.TOPIC_GEMFIRE_SERVER)
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result listMember(
 		  @CliOption(key = { CliStrings.LIST_MEMBER__GROUP },
 		             unspecifiedDefaultValue = "",
@@ -98,6 +102,7 @@ public class MemberCommands implements CommandMarker {
 
   @CliCommand(value = { CliStrings.DESCRIBE_MEMBER }, help = CliStrings.DESCRIBE_MEMBER__HELP)
   @CliMetaData(shellOnly = false, relatedTopic = CliStrings.TOPIC_GEMFIRE_SERVER)
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result describeMember(
   	@CliOption(key = CliStrings.DESCRIBE_MEMBER__IDENTIFIER,
   	             optionContext = ConverterHint.ALL_MEMBER_IDNAME,

@@ -2016,6 +2016,35 @@ public interface DistributionConfig extends Config, LogConfig {
   public static final String DEFAULT_SECURITY_CLIENT_AUTHENTICATOR = "";
 
   /**
+   * Returns user module name generating token in <a
+   * href="../DistributedSystem.html#security-rest-token-service">"security-rest-token-service"</a>
+   */
+  public String getSecurityRestTokenService();
+
+  /**
+   * Sets the user defined method name in <a
+   * href="../DistributedSystem.html#security-rest-token-service">"security-rest-token-service"</a>
+   * property.
+   */
+  public void setSecurityRestTokenService(String attValue);
+
+  /**
+   * Returns true if the value of the token service method name can
+   * currently be modified. Some attributes can not be modified while the
+   * system is running.
+   */
+  public boolean isSecurityRestTokenServiceModifiable();
+
+  /** The name of factory method for "security-rest-token-service" property */
+  public static final String SECURITY_REST_TOKEN_SERVICE_NAME = "security-rest-token-service";
+
+  /**
+   * The default REST token service method name.
+   * <p> Actual value of this is fully qualified <code>"method name"</code>.
+   */
+  public static final String DEFAULT_SECURITY_REST_TOKEN_SERVICE = "";
+
+  /**
    * Returns name of algorithm to use for Diffie-Hellman key exchange <a
    * href="../DistributedSystem.html#security-client-dhalgo">"security-client-dhalgo"</a>
    */

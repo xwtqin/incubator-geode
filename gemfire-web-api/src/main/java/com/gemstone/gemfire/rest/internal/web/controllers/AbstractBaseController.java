@@ -68,6 +68,7 @@ import com.gemstone.gemfire.rest.internal.web.exception.GemfireRestException;
 import com.gemstone.gemfire.rest.internal.web.exception.MalformedJsonException;
 import com.gemstone.gemfire.rest.internal.web.exception.RegionNotFoundException;
 import com.gemstone.gemfire.rest.internal.web.exception.ResourceNotFoundException;
+import com.gemstone.gemfire.rest.internal.web.security.RestRequestFilter;
 import com.gemstone.gemfire.rest.internal.web.util.ArrayUtils;
 import com.gemstone.gemfire.rest.internal.web.util.IdentifiableUtils;
 import com.gemstone.gemfire.rest.internal.web.util.JSONUtils;
@@ -96,6 +97,7 @@ public abstract class AbstractBaseController {
   protected static final String UTF_8 = "UTF-8";
   protected static final String DEFAULT_ENCODING = UTF_8;
   private static final AtomicLong ID_SEQUENCE = new AtomicLong(0l);
+  protected static final String AUTH_TOKEN_HEADER = "security-gfrest-authtoken";
   
   //private Cache cache = GemFireCacheImpl.getExisting(null);
   
@@ -184,13 +186,13 @@ public abstract class AbstractBaseController {
     }              
   }
   
-  public ResponseEntity<String> processQueryResponse (Object  queryResult, String queryId) throws JSONException {
+  public ResponseEntity<String> processQueryResponse (Object  queryResult, String queryId, HttpHeaders headers) throws JSONException {
     if(queryResult instanceof Collection<?>){
       Collection<Object> result = (Collection<Object>) queryResult;
       String queryResultAsJson =  JSONUtils.convertCollectionToJson(result);
       
-      final HttpHeaders headers = new HttpHeaders();
-      headers.setLocation(toUri("queries", queryId));    
+      headers.setLocation(toUri("queries", queryId)); 
+ 
       return new ResponseEntity<String>(queryResultAsJson, headers, HttpStatus.OK);
     }else {
       throw new GemfireRestException("Server has encountered error while generating query result into restful format(JSON)!");
@@ -680,7 +682,7 @@ public abstract class AbstractBaseController {
     } 
   }
   
-  public ResponseEntity<String> updateSingleKey(final String region, final String key, final String json, final String opValue){    
+  public ResponseEntity<String> updateSingleKey(final String region, final String key, final String json, final String opValue, HttpHeaders headers){    
     
     final JSONTypes jsonType = validateJsonAndFindType(json);
     
@@ -707,13 +709,12 @@ public abstract class AbstractBaseController {
         }
     }
         
-    final HttpHeaders headers = new HttpHeaders();
     headers.setLocation(toUri(region, key));
     return new ResponseEntity<String>(existingValue, headers, (existingValue == null ? HttpStatus.OK : HttpStatus.CONFLICT));        
   }
   
   
-  public ResponseEntity<String> updateMultipleKeys(final String region, final String[] keys, final String json){
+  public ResponseEntity<String> updateMultipleKeys(final String region, final String[] keys, final String json, HttpHeaders headers){
     
     JSONArray jsonArr = null;
     try {
@@ -743,8 +744,7 @@ public abstract class AbstractBaseController {
     if(!CollectionUtils.isEmpty(map)){ 
       putPdxValues(region, map);
     }
-    
-    HttpHeaders headers = new HttpHeaders();
+   
     headers.setLocation(toUri(region, StringUtils.arrayToCommaDelimitedString(keys)));
     return new ResponseEntity<String>(headers, HttpStatus.OK);
   }
@@ -829,4 +829,22 @@ public abstract class AbstractBaseController {
     targetedMembers.add(c.getDistributedSystem().getDistributedMember());
     return targetedMembers;
   }
+  
+  protected void setAuthTokenHeader(HttpHeaders headers) {
+    Map<String, Object> envMap = (Map<String, Object>)RestRequestFilter.getEnvironment();
+    boolean isSecurityEnabled = (boolean) envMap.get("isSecurityEnabled");
+  
+    if(isSecurityEnabled == false)
+      return;
+  
+    headers.set(AUTH_TOKEN_HEADER,(String)envMap.get("authToken"));
+    
+  }
+  
+  protected String getAuthToken(){
+    Map<String, Object> envMap = (Map<String, Object>)RestRequestFilter.getEnvironment();
+    return (String)envMap.get("authToken");
+  }
+  
 }
+

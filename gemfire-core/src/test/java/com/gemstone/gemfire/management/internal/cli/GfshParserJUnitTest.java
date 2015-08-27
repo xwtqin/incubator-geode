@@ -38,6 +38,9 @@ import com.gemstone.gemfire.management.internal.cli.converters.StringListConvert
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.parser.SyntaxConstants;
 import com.gemstone.gemfire.management.internal.cli.result.ResultBuilder;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
@@ -1042,6 +1045,7 @@ public class GfshParserJUnitTest {
   static class Commands implements CommandMarker {
 
     @CliCommand(value = { COMMAND1_NAME, COMMAND1_NAME_ALIAS }, help = COMMAND1_HELP)
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static String command1(
         @CliArgument(name = ARGUMENT1_NAME, argumentContext = ARGUMENT1_CONTEXT, help = ARGUMENT1_HELP, mandatory = true)
         String argument1,
@@ -1057,11 +1061,13 @@ public class GfshParserJUnitTest {
     }
 
     @CliCommand(value = { COMMAND2_NAME })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static String command2() {
       return null;
     }
 
     @CliCommand(value = { "testParamConcat" })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result testParamConcat(
         @CliOption(key = { "string" }) String string,
         @CliOption(key = { "stringArray" }) @CliMetaData(valueSeparator = ",") String[] stringArray,
@@ -1072,6 +1078,7 @@ public class GfshParserJUnitTest {
     }
 
     @CliCommand(value = { "testMultiWordArg" })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public static Result testMultiWordArg(
         @CliArgument(name = "arg1" ) String arg1,
         @CliArgument(name = "arg2" ) String arg2) {
@@ -1128,17 +1135,18 @@ public class GfshParserJUnitTest {
     static final String C2_MSG_AVAILABLE   = C2_NAME + " is available.";
 
     @CliCommand(value = { C1_NAME })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public Result command1() {
       return ResultBuilder.createInfoResult(C1_MSG_AVAILABLE);
     }
 
     @CliCommand(value = { C2_NAME })
+    @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
     public Result command2() {
       return ResultBuilder.createInfoResult(C2_MSG_AVAILABLE);
     }
 
-    @CliAvailabilityIndicator(C1_NAME)
-    @CliMetaData.AvailabilityMetadata(availabilityDescription=C1_MSG_UNAVAILABLE)
+    @CliAvailabilityIndicator(C1_NAME)    
     public boolean isCommand1Available() {
       return Boolean.getBoolean(C1_PROP);
     }

@@ -11,6 +11,9 @@ package com.gemstone.gemfire.management;
 import java.util.Map;
 
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 
 /**
@@ -137,6 +140,7 @@ public interface MemberMXBean {
    * @param numberOfLines
    *          Number of lines to return, up to a maximum of 100.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.SHOW_LOG)
   public String showLog(int numberOfLines);
 
   /**
@@ -152,6 +156,7 @@ public interface MemberMXBean {
    * 
    * @return A list of names of the disk stores that were compacted.
    */
+  @ResourceOperation(resource=Resource.DISKSTORE, operation=ResourceConstants.COMPACT_DISKSTORE)
   public String[] compactAllDiskStores();
   
   /**
@@ -159,12 +164,14 @@ public interface MemberMXBean {
    * 
    * @return True if the Manager MBean was successfully create, false otherwise.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.CREATE_MANAGER)
   public boolean createManager();
   
   /**
    * Shuts down the member. This is an asynchronous call and it will 
    * return immediately without waiting for a result.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.SHUTDOWN)
   public void shutDownMember();
   
   /**
@@ -185,6 +192,7 @@ public interface MemberMXBean {
    * 
    * @return Result of the execution in JSON format.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.LIST_DS)
   String processCommand(String commandString);
   
   /**
@@ -196,6 +204,7 @@ public interface MemberMXBean {
    *          Environmental properties to use during command execution.
    * @return Result of the execution in JSON format.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.LIST_DS)
   String processCommand(String commandString, Map<String, String> env);
   
   /**
@@ -209,6 +218,7 @@ public interface MemberMXBean {
    *          Binary data specific to the command being executed.
    * @return Result of the execution in JSON format.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.LIST_DS)
   String processCommand(String commandString, Map<String, String> env, Byte[][] binaryData);
 
   /**
@@ -265,6 +275,7 @@ public interface MemberMXBean {
   /**
    * Returns the status.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.LIST_DS)
   public String status();
 
   /**

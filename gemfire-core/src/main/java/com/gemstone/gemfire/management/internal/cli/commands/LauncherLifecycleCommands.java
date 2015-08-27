@@ -104,6 +104,11 @@ import com.gemstone.gemfire.management.internal.cli.util.VisualVmNotFoundExcepti
 import com.gemstone.gemfire.management.internal.configuration.domain.SharedConfigurationStatus;
 import com.gemstone.gemfire.management.internal.configuration.messages.SharedConfigurationStatusRequest;
 import com.gemstone.gemfire.management.internal.configuration.messages.SharedConfigurationStatusResponse;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
+import com.gemstone.gemfire.security.GemFireSecurityException;
+//import com.gemstone.org.jgroups.stack.tcpserver.TcpClient;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
@@ -194,6 +199,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.START_LOCATOR, help = CliStrings.START_LOCATOR__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_LOCATOR, CliStrings.TOPIC_GEMFIRE_LIFECYCLE })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startLocator(@CliOption(key = CliStrings.START_LOCATOR__MEMBER_NAME,
                                         mandatory = true,
                                         unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
@@ -599,7 +605,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
         }
 
         getGfsh().setOperationInvoker(new JmxOperationInvoker(memberEndpoint.getHost(), memberEndpoint.getPort(),
-          null, null, configurationProperties));
+          null, null, configurationProperties, null));
 
         String shellAndLogMessage = CliStrings.format(CliStrings.CONNECT__MSG__SUCCESS, memberEndpoint.toString(false));
 
@@ -774,6 +780,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.STATUS_LOCATOR, help = CliStrings.STATUS_LOCATOR__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_LOCATOR, CliStrings.TOPIC_GEMFIRE_LIFECYCLE })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result statusLocator(@CliOption(key = CliStrings.STATUS_LOCATOR__MEMBER,
                                          optionContext = ConverterHint.LOCATOR_MEMBER_IDNAME,
                                          unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
@@ -850,6 +857,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value=CliStrings.STOP_LOCATOR, help=CliStrings.STOP_LOCATOR__HELP)
   @CliMetaData(shellOnly=true, relatedTopic = {CliStrings.TOPIC_GEMFIRE_LOCATOR, CliStrings.TOPIC_GEMFIRE_LIFECYCLE})
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result stopLocator(@CliOption(key = CliStrings.STOP_LOCATOR__MEMBER,
                                        optionContext = ConverterHint.LOCATOR_MEMBER_IDNAME,
                                        unspecifiedDefaultValue=CliMetaData.ANNOTATION_NULL_VALUE,
@@ -1365,6 +1373,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.START_SERVER, help = CliStrings.START_SERVER__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_SERVER, CliStrings.TOPIC_GEMFIRE_LIFECYCLE })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startServer(@CliOption(key = CliStrings.START_SERVER__ASSIGN_BUCKETS,
                                       unspecifiedDefaultValue = "false",
                                       specifiedDefaultValue = "true",
@@ -1931,6 +1940,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.STATUS_SERVER, help = CliStrings.STATUS_SERVER__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_SERVER, CliStrings.TOPIC_GEMFIRE_LIFECYCLE })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result statusServer(@CliOption(key = CliStrings.STATUS_SERVER__MEMBER,
                                         optionContext = ConverterHint.MEMBERIDNAME,
                                         unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
@@ -2001,6 +2011,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.STOP_SERVER, help = CliStrings.STOP_SERVER__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_SERVER, CliStrings.TOPIC_GEMFIRE_LIFECYCLE })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result stopServer(@CliOption(key = CliStrings.STOP_SERVER__MEMBER,
                                       optionContext = ConverterHint.MEMBERIDNAME,
                                       unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
@@ -2097,6 +2108,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   //@CliCommand(value=CliStrings.START_MANAGER, help=CliStrings.START_MANAGER__HELP)
   //@CliMetaData(shellOnly=true, relatedTopic = {CliStrings.TOPIC_GEMFIRE_MANAGER, CliStrings.TOPIC_GEMFIRE_JMX, CliStrings.TOPIC_GEMFIRE_LIFECYCLE})
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startManager(@CliOption(key=CliStrings.START_MANAGER__MEMBERNAME,
                               unspecifiedDefaultValue=CliMetaData.ANNOTATION_NULL_VALUE,
                               help=CliStrings.START_MANAGER__MEMBERNAME__HELP)
@@ -2139,6 +2151,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.START_JCONSOLE, help = CliStrings.START_JCONSOLE__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_MANAGER, CliStrings.TOPIC_GEMFIRE_JMX, CliStrings.TOPIC_GEMFIRE_M_AND_M })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startJConsole(@CliOption(key = CliStrings.START_JCONSOLE__INTERVAL,
                                          unspecifiedDefaultValue = "4",
                                          help = CliStrings.START_JCONSOLE__INTERVAL__HELP)
@@ -2332,6 +2345,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.START_JVISUALVM, help = CliStrings.START_JVISUALVM__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_MANAGER, CliStrings.TOPIC_GEMFIRE_JMX, CliStrings.TOPIC_GEMFIRE_M_AND_M })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startJVisualVM(@CliOption(key = CliStrings.START_JCONSOLE__J,
                                           optionContext = ConverterHint.STRING_LIST,
                                           unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
@@ -2421,6 +2435,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value = CliStrings.START_PULSE, help = CliStrings.START_PULSE__HELP)
   @CliMetaData(shellOnly = true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_MANAGER, CliStrings.TOPIC_GEMFIRE_JMX, CliStrings.TOPIC_GEMFIRE_M_AND_M })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   // TODO change url parameter type to URL when I figure out the Converter logic in Gfsh
   public Result startPulse(@CliOption(key = CliStrings.START_PULSE__URL,
                                       unspecifiedDefaultValue = "http://localhost:7070/pulse",
@@ -2512,6 +2527,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
 
   @CliCommand(value=CliStrings.START_VSD, help=CliStrings.START_VSD__HELP)
   @CliMetaData(shellOnly=true, relatedTopic = { CliStrings.TOPIC_GEMFIRE_M_AND_M, CliStrings.TOPIC_GEMFIRE_STATISTICS })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result startVsd(@CliOption(key=CliStrings.START_VSD__FILE, help=CliStrings.START_VSD__FILE__HELP)
                          final String[] statisticsArchiveFilePathnames)
   {

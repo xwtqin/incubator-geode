@@ -46,4 +46,14 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
   
+  <filter>
+    <filter-name>restRequestFilter</filter-name>
+    <filter-class>com.gemstone.gemfire.rest.internal.web.security.RestRequestFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>restRequestFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
 </web-app>

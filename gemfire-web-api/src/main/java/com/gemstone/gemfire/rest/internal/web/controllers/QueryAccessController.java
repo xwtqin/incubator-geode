@@ -8,6 +8,7 @@
 
 package com.gemstone.gemfire.rest.internal.web.controllers;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.operations.OperationContext;
+import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
+import com.gemstone.gemfire.cache.operations.PutOperationContext;
+import com.gemstone.gemfire.cache.operations.QueryOperationContext;
 import com.gemstone.gemfire.cache.query.FunctionDomainException;
 import com.gemstone.gemfire.cache.query.NameResolutionException;
 import com.gemstone.gemfire.cache.query.Query;
@@ -37,8 +42,10 @@ import com.gemstone.gemfire.cache.query.internal.DefaultQuery;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.rest.internal.web.exception.GemfireRestException;
 import com.gemstone.gemfire.rest.internal.web.exception.ResourceNotFoundException;
+import com.gemstone.gemfire.rest.internal.web.security.AuthorizationProvider;
 import com.gemstone.gemfire.rest.internal.web.util.JSONUtils;
 import com.gemstone.gemfire.rest.internal.web.util.ValidationUtils;
+import com.gemstone.gemfire.security.NotAuthorizedException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -98,12 +105,24 @@ public class QueryAccessController extends AbstractBaseController {
     if (logger.isDebugEnabled()) {
       logger.debug("Listing all parameterized Queries in GemFire...");
     }
-    
-    final Region<String, String> parameterizedQueryRegion = getQueryStore(PARAMETERIZED_QUERIES_REGION);
-    
-    String queryListAsJson =  JSONUtils.formulateJsonForListQueriesCall(parameterizedQueryRegion);
+  
     final HttpHeaders headers = new HttpHeaders();  
     headers.setLocation(toUri("queries"));
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.listQueriesAuthorize(OperationCode.LIST, true, "LIST_QUERIES");
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
+    final Region<String, String> parameterizedQueryRegion = getQueryStore(PARAMETERIZED_QUERIES_REGION);    
+    String queryListAsJson =  JSONUtils.formulateJsonForListQueriesCall(parameterizedQueryRegion);
+
     return new ResponseEntity<String>(queryListAsJson, headers, HttpStatus.OK);
   } 
   
@@ -134,13 +153,25 @@ public class QueryAccessController extends AbstractBaseController {
     if (logger.isDebugEnabled()) {
       logger.debug("Creating a named, parameterized Query ({}) with ID ({})...", oqlStatement, queryId);
     }
-
-    // store the compiled OQL statement with 'queryId' as the Key into the hidden, ParameterizedQueries Region...
-    final String existingOql = createNamedQuery(PARAMETERIZED_QUERIES_REGION, queryId, oqlStatement);
-
+    
     final HttpHeaders headers = new HttpHeaders();
     headers.setLocation(toUri("queries", queryId));
-
+    
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.createQueryAuthorize(OperationCode.CREATE_QUERY, true, "CREATE_QUERY", queryId, oqlStatement);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
+    // store the compiled OQL statement with 'queryId' as the Key into the hidden, ParameterizedQueries Region...
+    final String existingOql = createNamedQuery(PARAMETERIZED_QUERIES_REGION, queryId, oqlStatement);
+    
     if (existingOql != null) {
       headers.setContentType(MediaType.APPLICATION_JSON);
       return new ResponseEntity<String>(JSONUtils.formulateJsonForExistingQuery(queryId, existingOql), headers, HttpStatus.CONFLICT);
@@ -171,14 +202,38 @@ public class QueryAccessController extends AbstractBaseController {
     if (logger.isDebugEnabled()) {
       logger.debug("Running an adhoc Query ({})...", oql);
     }
+    
+    HttpHeaders headers = new HttpHeaders();
     oql = decode(oql);
     final Query query = getQueryService().newQuery(oql);
+    
+    Set regionNames = ((DefaultQuery)query).getRegionsInQuery(null);
+    
+    //Do request(Pre) authorization if security is enabled.
+    QueryOperationContext queryAuthzContext = null;
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        queryAuthzContext = AuthorizationProvider.queryAuthorize(oql, regionNames, null);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
     
     // NOTE Query.execute throws many checked Exceptions; let the BaseControllerAdvice Exception handlers catch
     // and handle the Exceptions appropriately (500 Server Error)!
     try {
       Object queryResult =  query.execute();
-      return processQueryResponse(queryResult, "adhoc?q=" + oql);
+      
+      //Post authorization
+      if(AuthorizationProvider.isSecurityEnabled()){
+        queryAuthzContext = AuthorizationProvider.queryAuthorizePP(oql, regionNames, queryResult, queryAuthzContext, null);
+        if(queryAuthzContext != null){
+          queryResult = queryAuthzContext.getQueryResult();
+        }
+      }
+      return processQueryResponse(queryResult, "adhoc?q=" + oql, headers);
     } catch (FunctionDomainException fde) {
       throw new GemfireRestException("A function was applied to a parameter that is improper for that function!", fde);
     } catch (TypeMismatchException tme) {
@@ -227,6 +282,7 @@ public class QueryAccessController extends AbstractBaseController {
       logger.debug("Running named Query with ID ({})...", queryId);
     }
     queryId = decode(queryId);
+    HttpHeaders headers = new HttpHeaders();
     
     if (arguments != null) {
       // Its a compiled query.
@@ -234,11 +290,10 @@ public class QueryAccessController extends AbstractBaseController {
       //Convert arguments into Object[]
       Object args[] = jsonToObjectArray(arguments);
       
+      final String oql = getValue(PARAMETERIZED_QUERIES_REGION, queryId);
       Query compiledQuery = compiledQueries.get(queryId);
       if (compiledQuery == null) {
         // This is first time the query is seen by this server.
-        final String oql = getValue(PARAMETERIZED_QUERIES_REGION, queryId);
-        
         ValidationUtils.returnValueThrowOnNull(oql, new ResourceNotFoundException(
           String.format("No Query with ID (%1$s) was found!", queryId)));
         try {   
@@ -248,11 +303,35 @@ public class QueryAccessController extends AbstractBaseController {
         }
         compiledQueries.putIfAbsent(queryId, (DefaultQuery)compiledQuery);
       }  
-       // NOTE Query.execute throws many checked Exceptions; let the BaseControllerAdvice Exception handlers catch
+       
+      Set regionNames = ((DefaultQuery)compiledQuery).getRegionsInQuery(args);
+      
+      //Do request(Pre) authorization if security is enabled.
+      QueryOperationContext queryAuthzContext = null;
+      if(AuthorizationProvider.isSecurityEnabled()){
+        setAuthTokenHeader(headers);
+        AuthorizationProvider.init();
+        try{
+          queryAuthzContext= AuthorizationProvider.queryAuthorize(oql, regionNames, args);
+        }catch(NotAuthorizedException nae) {
+          return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+        }
+      }
+      
+      // NOTE Query.execute throws many checked Exceptions; let the BaseControllerAdvice Exception handlers catch
        // and handle the Exceptions appropriately (500 Server Error)!
        try {
          Object queryResult =  compiledQuery.execute(args);
-         return processQueryResponse(queryResult, queryId);
+         
+         //Post authorization
+         if(AuthorizationProvider.isSecurityEnabled()){
+           queryAuthzContext = AuthorizationProvider.queryAuthorizePP(oql, regionNames, queryResult, queryAuthzContext, args);
+           if(queryAuthzContext != null){
+             queryResult = queryAuthzContext.getQueryResult();
+           }
+         }
+         
+         return processQueryResponse(queryResult, queryId, headers);
        } catch (FunctionDomainException fde) {
          throw new GemfireRestException("A function was applied to a parameter that is improper for that function!", fde);
        } catch (TypeMismatchException tme) {
@@ -299,17 +378,30 @@ public class QueryAccessController extends AbstractBaseController {
                                    @RequestBody(required = false) final String oqlInBody) {
     
     final String oqlStatement = validateQuery(oqlInUrl, oqlInBody);
-
+    
     if (logger.isDebugEnabled()) {
       logger.debug("Updating a named, parameterized Query ({}) with ID ({})...", oqlStatement, queryId);
     }
-
+    
+    HttpHeaders headers = new HttpHeaders();
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.updateQueryAuthorize(OperationCode.UPDATE_QUERY, true, "UPDATE_QUERY", queryId, oqlStatement);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
     // update the OQL statement with 'queryId' as the Key into the hidden, ParameterizedQueries Region...
     checkForQueryIdExist(PARAMETERIZED_QUERIES_REGION, queryId);
     updateNamedQuery(PARAMETERIZED_QUERIES_REGION, queryId, oqlStatement);
     compiledQueries.remove(queryId);
 
-    return new ResponseEntity<Object>(HttpStatus.OK);
+    return new ResponseEntity<Object>(headers, HttpStatus.OK);
   }
 
   //delete named, parameterized query
@@ -334,11 +426,24 @@ public class QueryAccessController extends AbstractBaseController {
       logger.debug("Deleting a named, parameterized Query with ID ({}).", queryId);
     }
     
+    HttpHeaders headers = new HttpHeaders();
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.deleteQueryAuthorize(OperationCode.DELETE_QUERY, true, "DELETE_QUERY", queryId);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
     //delete the OQL statement with 'queryId' as the Key into the hidden,
     // ParameterizedQueries Region...
     deleteNamedQuery(PARAMETERIZED_QUERIES_REGION, queryId);
     compiledQueries.remove(queryId);
-    return new ResponseEntity<Object>(HttpStatus.OK);
+    return new ResponseEntity<Object>(headers, HttpStatus.OK);
   }
   
 }

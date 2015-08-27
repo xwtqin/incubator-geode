@@ -153,7 +153,7 @@ public interface DistributedSystemMXBean {
    *          Minimum level for alerts to be delivered.
    *          Must be one of: WARNING, ERROR, SEVERE or NONE.
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CHANGE_ALERT_LEVEL_DS) 
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CHANGE_ALERT_LEVEL) 
   public void changeAlertLevel(String alertLevel) throws Exception;
 
   /**
@@ -236,7 +236,7 @@ public interface DistributedSystemMXBean {
    *          path of the directory for baseline backup.
    * @return The results of the backup request.
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.BACKUP_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.BACKUP_MEMBERS)
   public DiskBackupStatus backupAllMembers(String targetDirPath, String baselineDirPath)
       throws Exception;
 
@@ -321,7 +321,7 @@ public interface DistributedSystemMXBean {
    *
    * @return List of names of all distributed members that were shutdown.
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.SHUTDOWN_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.SHUTDOWN)
   public String[] shutDownAllMembers() throws Exception;
 
   /**
@@ -341,7 +341,7 @@ public interface DistributedSystemMXBean {
    *          UUID of the disk store to remove
    * @return True if the request is successful, false otherwise.
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.REMOVE_DISKSTORE_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.REVOKE_MISSING_DISKSTORE)
   public boolean revokeMissingDiskStores(String diskStoreId)
       throws Exception;
 
@@ -617,7 +617,7 @@ public interface DistributedSystemMXBean {
    *          will be set.
    * @return a JSON formated string containing data and its type
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERYDATA_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERY)
   public String queryData(String queryString, String members, int limit) throws Exception;
   
   /**
@@ -647,7 +647,7 @@ public interface DistributedSystemMXBean {
    *          will be set.
    * @return a byte[] which is a compressed JSON string.
    */
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERYDATA_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERY)
   public byte[] queryDataForCompressedResult(String queryString, String members, int limit) throws Exception;
   
   
@@ -673,7 +673,7 @@ public interface DistributedSystemMXBean {
    */
   public int getQueryResultSetLimit();
 
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERYDATA_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERY)
   public void setQueryResultSetLimit(int queryResultSetLimit);
 
   /**
@@ -683,6 +683,6 @@ public interface DistributedSystemMXBean {
    */
   public int getQueryCollectionsDepth();
 
-  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERYDATA_DS)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.QUERY)
   public void setQueryCollectionsDepth(int queryCollectionsDepth);
 }

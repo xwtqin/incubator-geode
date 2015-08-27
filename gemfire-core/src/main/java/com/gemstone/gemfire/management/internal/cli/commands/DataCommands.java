@@ -1009,6 +1009,7 @@ public class DataCommands implements CommandMarker {
   @CliMetaData(shellOnly = false, relatedTopic = {
       CliStrings.TOPIC_GEMFIRE_DATA, CliStrings.TOPIC_GEMFIRE_REGION })
   @CliCommand(value = { CliStrings.GET }, help = CliStrings.GET__HELP)
+  @ResourceOperation(resource = Resource.REGION, operation= ResourceConstants.GET)
   public Result get(
       @CliOption(key = { CliStrings.GET__KEY }, mandatory = true, help = CliStrings.GET__KEY__HELP) String key,
       @CliOption(key = { CliStrings.GET__REGIONNAME }, mandatory = true, help = CliStrings.GET__REGIONNAME__HELP, optionContext = ConverterHint.REGIONPATH) String regionPath,
@@ -1111,6 +1112,7 @@ public class DataCommands implements CommandMarker {
   @CliMetaData(shellOnly = false, relatedTopic = {
       CliStrings.TOPIC_GEMFIRE_DATA, CliStrings.TOPIC_GEMFIRE_REGION })
   @CliCommand(value = { CliStrings.REMOVE }, help = CliStrings.REMOVE__HELP)
+  @ResourceOperation(resource = Resource.REGION, operation= ResourceConstants.REMOVE)
   public Result remove(
       @CliOption(key = { CliStrings.REMOVE__KEY }, help = CliStrings.REMOVE__KEY__HELP) String key,
       @CliOption(key = { CliStrings.REMOVE__REGION }, mandatory = true, help = CliStrings.REMOVE__REGION__HELP, optionContext = ConverterHint.REGIONPATH) String regionPath,
@@ -1165,7 +1167,7 @@ public class DataCommands implements CommandMarker {
       CliStrings.TOPIC_GEMFIRE_DATA, CliStrings.TOPIC_GEMFIRE_REGION })
   @MultiStepCommand
   @CliCommand(value = { CliStrings.QUERY }, help = CliStrings.QUERY__HELP)
-  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.QUERYDATA_DS)
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.QUERY)
   public Object query(
       @CliOption(key = CliStrings.QUERY__QUERY, help = CliStrings.QUERY__QUERY__HELP, mandatory = true) final String query,
       @CliOption(key = CliStrings.QUERY__STEPNAME, mandatory = false, help = "Stpe name", unspecifiedDefaultValue = CliStrings.QUERY__STEPNAME__DEFAULTVALUE) String stepName,

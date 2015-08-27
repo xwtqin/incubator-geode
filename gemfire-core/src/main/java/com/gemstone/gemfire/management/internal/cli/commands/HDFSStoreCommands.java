@@ -42,6 +42,9 @@ import com.gemstone.gemfire.management.internal.cli.util.HDFSStoreNotFoundExcept
 import com.gemstone.gemfire.management.internal.cli.util.MemberNotFoundException;
 import com.gemstone.gemfire.management.internal.configuration.SharedConfigurationWriter;
 import com.gemstone.gemfire.management.internal.configuration.domain.XmlEntity;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 /**
  * The HdfsStoreCommands class encapsulates all GemFire Hdfs Store commands in Gfsh.
@@ -55,6 +58,7 @@ import com.gemstone.gemfire.management.internal.configuration.domain.XmlEntity;
 public class HDFSStoreCommands   extends AbstractCommandsSupport {  
   @CliCommand (value = CliStrings.CREATE_HDFS_STORE, help = CliStrings.CREATE_HDFS_STORE__HELP)
   @CliMetaData (relatedTopic = CliStrings.TOPIC_GEMFIRE_HDFSSTORE, writesToSharedConfiguration = true)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CREATE_HDFS_STORE)
   public Result createHdfsStore(      
       @CliOption (key = CliStrings.CREATE_HDFS_STORE__NAME,                  
                   mandatory = true,
@@ -290,6 +294,7 @@ public class HDFSStoreCommands   extends AbstractCommandsSupport {
   
   @CliCommand(value = CliStrings.DESCRIBE_HDFS_STORE, help = CliStrings.DESCRIBE_HDFS_STORE__HELP)
   @CliMetaData(shellOnly = false, relatedTopic = { CliStrings.TOPIC_GEMFIRE_HDFSSTORE})
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public Result describeHdfsStore(
       @CliOption(key = CliStrings.DESCRIBE_HDFS_STORE__MEMBER, 
                  mandatory = true, optionContext = ConverterHint.MEMBERIDNAME, 
@@ -380,6 +385,7 @@ public class HDFSStoreCommands   extends AbstractCommandsSupport {
   
   @CliCommand(value = CliStrings.LIST_HDFS_STORE, help = CliStrings.LIST_HDFS_STORE__HELP)
   @CliMetaData(shellOnly = false, relatedTopic = { CliStrings.TOPIC_GEMFIRE_HDFSSTORE })
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public Result listHdfsStore() {  
     try {
       Set<DistributedMember> dataMembers = getNormalMembers(getCache());
@@ -457,6 +463,7 @@ public class HDFSStoreCommands   extends AbstractCommandsSupport {
 
   @CliCommand(value=CliStrings.DESTROY_HDFS_STORE, help=CliStrings.DESTROY_HDFS_STORE__HELP)
   @CliMetaData(shellOnly=false, relatedTopic={CliStrings.TOPIC_GEMFIRE_HDFSSTORE}, writesToSharedConfiguration=true)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.DESTROY_HDFS_STORE)
   public Result destroyHdfstore(
       @CliOption  (key=CliStrings.DESTROY_HDFS_STORE__NAME, 
                    optionContext=ConverterHint.HDFSSTORE_ALL,
@@ -536,6 +543,7 @@ public class HDFSStoreCommands   extends AbstractCommandsSupport {
   }
   @CliCommand(value=CliStrings.ALTER_HDFS_STORE, help=CliStrings.ALTER_HDFS_STORE__HELP)
   @CliMetaData(shellOnly=false, relatedTopic={CliStrings.TOPIC_GEMFIRE_HDFSSTORE}, writesToSharedConfiguration=true)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.ALTER_HDFS_STORE)
   public Result alterHdfstore(
       @CliOption (key = CliStrings.ALTER_HDFS_STORE__NAME,                  
           mandatory = true,

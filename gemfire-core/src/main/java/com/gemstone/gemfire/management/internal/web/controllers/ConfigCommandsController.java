@@ -8,11 +8,13 @@
 package com.gemstone.gemfire.management.internal.web.controllers;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
+import com.gemstone.gemfire.management.internal.web.controllers.support.EnvironmentVariablesHandlerInterceptor;
 import com.gemstone.gemfire.management.internal.web.util.ConvertUtils;
 
 import org.springframework.http.HttpStatus;
@@ -160,9 +162,11 @@ public class ConfigCommandsController extends AbstractMultiPartCommandsControlle
       command.addOption(CliStrings.EXPORT_CONFIG__DIR, decode(directory));
     }
 
+    final Properties credentials = EnvironmentVariablesHandlerInterceptor.CREDENTIALS.get();
+    
     return new Callable<ResponseEntity<String>>() {
       @Override public ResponseEntity<String> call() throws Exception {
-        return new ResponseEntity<String>(processCommand(command.toString()), HttpStatus.OK);
+        return new ResponseEntity<String>(processCommandWithCredentials(command.toString(), credentials), HttpStatus.OK);
       }
     };
   }
@@ -179,9 +183,11 @@ public class ConfigCommandsController extends AbstractMultiPartCommandsControlle
       command.addOption(CliStrings.EXPORT_SHARED_CONFIG__DIR, directory);
     }
 
+    final Properties credentials = EnvironmentVariablesHandlerInterceptor.CREDENTIALS.get();
+    
     return new Callable<ResponseEntity<String>>() {
       @Override public ResponseEntity<String> call() throws Exception {
-        return new ResponseEntity<String>(processCommand(command.toString()), HttpStatus.OK);
+        return new ResponseEntity<String>(processCommandWithCredentials(command.toString(), credentials), HttpStatus.OK);
       }
     };
   }
@@ -195,9 +201,11 @@ public class ConfigCommandsController extends AbstractMultiPartCommandsControlle
 
     command.addOption(CliStrings.IMPORT_SHARED_CONFIG__ZIP, zipFileName);
 
+    final Properties credentials = EnvironmentVariablesHandlerInterceptor.CREDENTIALS.get();
+    
     return new Callable<ResponseEntity<String>>() {
       @Override public ResponseEntity<String> call() throws Exception {
-        return new ResponseEntity<String>(processCommand(command.toString(), ConvertUtils.convert(zipFileResources)), HttpStatus.OK);
+        return new ResponseEntity<String>(processCommandWithCredentials(command.toString(), ConvertUtils.convert(zipFileResources), credentials), HttpStatus.OK);
       }
     };
   }

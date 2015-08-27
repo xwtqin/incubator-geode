@@ -11,6 +11,9 @@ package com.gemstone.gemfire.management;
 import javax.management.JMException;
 
 import com.gemstone.gemfire.management.internal.Manager;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 
 /**
@@ -35,6 +38,7 @@ public interface ManagerMXBean {
    * 
    * @return True if the manager service was successfully started, false otherwise.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.START_MANAGER)
   public boolean start() throws JMException;
 
   /**
@@ -42,6 +46,7 @@ public interface ManagerMXBean {
    * 
    * @return True if the manager service was successfully stopped, false otherwise.
    */
+  @ResourceOperation(resource=Resource.MEMBER, operation=ResourceConstants.STOP_MANAGER)
   public boolean stop() throws JMException;
 
   /**
@@ -55,6 +60,7 @@ public interface ManagerMXBean {
    * @param pulseURL
    *          The URL for the Pulse application.
    */
+  @ResourceOperation(resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public void setPulseURL(String pulseURL);
 
   /**
@@ -71,5 +77,6 @@ public interface ManagerMXBean {
    * @param message
    *          The status message.
    */
+  @ResourceOperation(resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public void setStatusMessage(String message);
 }

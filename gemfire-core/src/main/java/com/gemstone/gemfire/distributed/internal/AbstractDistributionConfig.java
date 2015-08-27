@@ -1122,6 +1122,14 @@ public abstract class AbstractDistributionConfig
     return _modifiableDefault();
   }
 
+  protected void checkSecurityRestTokenService(String value) {
+    _checkIfModifiable(SECURITY_REST_TOKEN_SERVICE_NAME);
+  }
+
+  public boolean isSecurityRestTokenServiceModifiable() {
+    return _modifiableDefault();
+  }
+
   protected void checkSecurityClientDHAlgo(String value) {
     _checkIfModifiable(SECURITY_CLIENT_DHALGO_NAME);
   }
@@ -1586,6 +1594,7 @@ public abstract class AbstractDistributionConfig
       HTTP_SERVICE_SSL_PROTOCOLS_NAME,
       HTTP_SERVICE_SSL_CIPHERS_NAME,
       HTTP_SERVICE_SSL_KEYSTORE_NAME,HTTP_SERVICE_SSL_KEYSTORE_TYPE_NAME,HTTP_SERVICE_SSL_KEYSTORE_PASSWORD_NAME,HTTP_SERVICE_SSL_TRUSTSTORE_NAME,HTTP_SERVICE_SSL_TRUSTSTORE_PASSWORD_NAME,
+      SECURITY_REST_TOKEN_SERVICE_NAME,
       OFF_HEAP_MEMORY_SIZE_NAME, 
       LOCK_MEMORY_NAME,
       DISTRIBUTED_TRANSACTIONS_NAME
@@ -1888,6 +1897,8 @@ public abstract class AbstractDistributionConfig
       this.setHttpServiceSSLTrustStorePassword((String)attValue);
     } else if (attName.equalsIgnoreCase(START_DEV_REST_API_NAME)) {
       this.setStartDevRestApi(((Boolean)attValue).booleanValue());
+    } else if (attName.equalsIgnoreCase(SECURITY_REST_TOKEN_SERVICE_NAME)) {
+      this.setSecurityRestTokenService((String)attValue);
     } else if (attName.equalsIgnoreCase(OFF_HEAP_MEMORY_SIZE_NAME)) {
       this.setOffHeapMemorySize((String)attValue);
     } else if (attName.equalsIgnoreCase(LOCK_MEMORY_NAME)) {
@@ -2178,6 +2189,8 @@ public abstract class AbstractDistributionConfig
       return this.getHttpServiceSSLTrustStorePassword();
     } else if (attName.equalsIgnoreCase(START_DEV_REST_API_NAME)) {
       return this.getStartDevRestApi();
+    } else if (attName.equalsIgnoreCase(SECURITY_REST_TOKEN_SERVICE_NAME)) {
+      return this.getSecurityRestTokenService();
     } else if (attName.equalsIgnoreCase(OFF_HEAP_MEMORY_SIZE_NAME)) {
       return this.getOffHeapMemorySize();
     } else if (attName.equalsIgnoreCase(LOCK_MEMORY_NAME)) {
@@ -2471,6 +2484,8 @@ public abstract class AbstractDistributionConfig
       return this.isHttpServiceSSLTrustStorePasswordModifiable();
     } else if (attName.equalsIgnoreCase(START_DEV_REST_API_NAME)) {
       return this.isStartDevRestApiModifiable();
+    } else if (attName.equalsIgnoreCase(SECURITY_REST_TOKEN_SERVICE_NAME)) {
+      return this.isSecurityRestTokenServiceModifiable();    
     } else if (attName.equalsIgnoreCase(LOCK_MEMORY_NAME)) {
       return this.isLockMemoryModifiable();
     } else if (attName.equals(DISTRIBUTED_TRANSACTIONS_NAME)) {
@@ -2762,6 +2777,8 @@ public abstract class AbstractDistributionConfig
       return String.class;
     } else if (attName.equalsIgnoreCase(START_DEV_REST_API_NAME)) {
       return Boolean.class;
+    } else if (attName.equalsIgnoreCase(SECURITY_REST_TOKEN_SERVICE_NAME)) {
+      return String.class;
     } else if (attName.equalsIgnoreCase(OFF_HEAP_MEMORY_SIZE_NAME)) {
       return String.class;
     } else if (attName.equalsIgnoreCase(LOCK_MEMORY_NAME)) {
@@ -3056,6 +3073,10 @@ public abstract class AbstractDistributionConfig
     m.put(SECURITY_CLIENT_AUTHENTICATOR_NAME, 
       LocalizedStrings.AbstractDistributionConfig_SECURITY_CLIENT_AUTHENTICATOR_NAME_0
         .toLocalizedString(DEFAULT_SECURITY_CLIENT_AUTHENTICATOR));
+
+    m.put(SECURITY_REST_TOKEN_SERVICE_NAME, 
+        LocalizedStrings.AbstractDistributionConfig_SECURITY_REST_TOKEN_SERVICE_NAME_0
+          .toLocalizedString(DEFAULT_SECURITY_REST_TOKEN_SERVICE));
 
     m.put(SECURITY_CLIENT_DHALGO_NAME, 
       LocalizedStrings.AbstractDistributionConfig_SECURITY_CLIENT_DHALGO_NAME_0

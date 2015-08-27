@@ -33,10 +33,16 @@ import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
+import com.gemstone.gemfire.cache.operations.ExecuteFunctionOperationContext;
+import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.management.internal.RestAgent;
 import com.gemstone.gemfire.rest.internal.web.exception.GemfireRestException;
+import com.gemstone.gemfire.rest.internal.web.security.AuthorizationProvider;
+import com.gemstone.gemfire.rest.internal.web.security.FunctionExecutionPostAuthzRC;
 import com.gemstone.gemfire.rest.internal.web.util.ArrayUtils;
 import com.gemstone.gemfire.rest.internal.web.util.JSONUtils;
+import com.gemstone.gemfire.security.NotAuthorizedException;
 import org.json.JSONException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -93,10 +99,22 @@ public class FunctionAccessController extends AbstractBaseController {
       logger.debug("Listing all registered Functions in GemFire...");
     }
     
-    final Map<String, Function> registeredFunctions = FunctionService.getRegisteredFunctions();
-    String listFunctionsAsJson =  JSONUtils.formulateJsonForListFunctionsCall(registeredFunctions.keySet());
     final HttpHeaders headers = new HttpHeaders();  
     headers.setLocation(toUri("functions"));
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);  
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.listFunctionsAuthorize(OperationCode.LIST, true, "LIST_FUNCTIONS");
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
+    final Map<String, Function> registeredFunctions = FunctionService.getRegisteredFunctions();
+    String listFunctionsAsJson =  JSONUtils.formulateJsonForListFunctionsCall(registeredFunctions.keySet());
     return new ResponseEntity<String>(listFunctionsAsJson, headers, HttpStatus.OK);
   } 
   
@@ -132,6 +150,27 @@ public class FunctionAccessController extends AbstractBaseController {
   {
     Execution function = null;
     functionId = decode(functionId);
+    
+    boolean isOptimizedForWrite = FunctionService.getFunction(functionId).optimizeForWrite();
+    Object[] args = null;
+    final HttpHeaders headers = new HttpHeaders();
+    
+    if(argsInBody != null) 
+    {
+      args = jsonToObjectArray(argsInBody);
+    }
+    
+    //Request(Pre) authorization if security is enabled.
+    ExecuteFunctionOperationContext fContext = null;
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        fContext = AuthorizationProvider.executeFunctionAuthorize(functionId, region, null, args, isOptimizedForWrite);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
     
     if (StringUtils.hasText(region)) {
       if(logger.isDebugEnabled()){
@@ -181,23 +220,32 @@ public class FunctionAccessController extends AbstractBaseController {
         throw new GemfireRestException("Disributed system does not contain any valid data node to run the specified  function!", fe);
       }
     }
-
+    
     final ResultCollector<?, ?> results;
     
     try {
-      if(argsInBody != null) 
-      {
-        Object[] args = jsonToObjectArray(argsInBody);
-        
-        //execute function with specified arguments
-        if(args.length == 1){
-          results = function.withArgs(args[0]).execute(functionId);
-        } else {
-          results = function.withArgs(args).execute(functionId);
+      //Post Authorization if security is enabled.
+      if(AuthorizationProvider.isSecurityEnabled() && RestAgent.getAuthorizeRequestPP(getAuthToken()) != null) {
+        if (fContext == null){
+          fContext = new ExecuteFunctionOperationContext(functionId, region, null, args, isOptimizedForWrite, true);
         }
-      }else { 
-        //execute function with no args
-        results = function.execute(functionId);
+        if(args != null && args.length == 1){        
+          results = function.withArgs(args[0]).withCollector(new FunctionExecutionPostAuthzRC(fContext)).execute(functionId);
+        }else if (args != null && args.length > 1) {
+          results = function.withArgs(args).withCollector(new FunctionExecutionPostAuthzRC(fContext)).execute(functionId);
+        }else {
+          //execute function with no args
+          results = function.withCollector(new FunctionExecutionPostAuthzRC(fContext)).execute(functionId);
+        }
+      }else {
+        if(args != null && args.length == 1){        
+          results = function.withArgs(args[0]).execute(functionId);
+        }else if (args != null && args.length > 1) {
+          results = function.withArgs(args).execute(functionId);
+        }else {
+          //execute function with no args
+          results = function.execute(functionId);
+        }
       }
     } catch(ClassCastException cce){
       throw new GemfireRestException("Key is of an inappropriate type for this region!", cce);
@@ -215,7 +263,6 @@ public class FunctionAccessController extends AbstractBaseController {
       Object functionResult = results.getResult();
     
       if(functionResult instanceof List<?>) {
-        final HttpHeaders headers = new HttpHeaders();
         headers.setLocation(toUri("functions", functionId));
       
         try {

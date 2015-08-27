@@ -10,6 +10,7 @@ package com.gemstone.gemfire.rest.internal.web.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -24,12 +25,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gemstone.gemfire.cache.operations.PutOperationContext;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.internal.security.AuthorizeRequest;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gemfire.rest.internal.web.controllers.support.JSONTypes;
 import com.gemstone.gemfire.rest.internal.web.controllers.support.RegionData;
 import com.gemstone.gemfire.rest.internal.web.controllers.support.RegionEntryData;
 import com.gemstone.gemfire.rest.internal.web.exception.ResourceNotFoundException;
+import com.gemstone.gemfire.rest.internal.web.security.AuthorizationProvider;
+import com.gemstone.gemfire.rest.internal.web.security.RestRequestFilter;
+import com.gemstone.gemfire.security.NotAuthorizedException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -95,8 +101,23 @@ public class PdxBasedCrudController extends CommonCrudController {
           json, region, key);
     }
     region = decode(region);
-    Object existingPdxObj = null;
     
+    final HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(toUri(region, key));
+    
+    //Do request (Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        //TODO: add isJson type in OperationContext
+        AuthorizationProvider.putAuthorize(region, key, json, true/*isJson*/, null, PutOperationContext.CREATE);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
+    Object existingPdxObj = null;
     //Check whether the user has supplied single JSON doc or Array of JSON docs  
     final JSONTypes jsonType = validateJsonAndFindType(json);
     if(JSONTypes.JSON_ARRAY.equals(jsonType)){
@@ -104,9 +125,6 @@ public class PdxBasedCrudController extends CommonCrudController {
     }else {
       existingPdxObj = postValue(region, key, convert(json));  
     }
-    
-    final HttpHeaders headers = new HttpHeaders();
-    headers.setLocation(toUri(region, key));
     
     if (existingPdxObj != null) {
       final RegionEntryData<Object> data = new RegionEntryData<Object>(region);
@@ -144,16 +162,38 @@ public class PdxBasedCrudController extends CommonCrudController {
     }
     region = decode(region);
       
+    final HttpHeaders headers = new HttpHeaders();
+   
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.getAllAuthorize(region, getRegion(region).keySet(), null);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
     Map<Object, Object> valueObjs = null;
     final RegionData<Object> data = new RegionData<Object>(region);
-
-    final HttpHeaders headers = new HttpHeaders();
+    
     String keyList = null;
     int regionSize = getRegion(region).size();
     List<Object> keys = new ArrayList<Object>(regionSize);
     List<Object> values = new ArrayList<Object>(regionSize);
     
     for (Map.Entry<Object, Object> entry : getValues(region).entrySet() ) {
+      //Do post authorization if security is enabled.
+      if(AuthorizationProvider.isSecurityEnabled()){
+        try{
+          AuthorizationProvider.getAuthorizePP(region, entry.getKey(), entry.getValue());
+        }catch(NotAuthorizedException nae) {
+          //Sending UNAUTHORIZED response, if any one of the key has UNAUTHORIZED access configured.
+          return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+        }
+      }
+      
       Object value = entry.getValue();
       if (value != null) {
         keys.add(entry.getKey());
@@ -170,7 +210,7 @@ public class PdxBasedCrudController extends CommonCrudController {
         if(maxLimit < 0){
           String errorMessage = String.format("Negative limit param (%1$s) is not valid!", maxLimit);
           return new ResponseEntity<String>(
-              convertErrorAsJson(errorMessage), HttpStatus.BAD_REQUEST);
+              convertErrorAsJson(errorMessage), headers, HttpStatus.BAD_REQUEST);
         }
         
         int mapSize = keys.size();
@@ -187,7 +227,7 @@ public class PdxBasedCrudController extends CommonCrudController {
         // for BAD_REQUEST
         String errorMessage = String.format("limit param (%1$s) is not valid!", limit);
         return new ResponseEntity<String>(
-            convertErrorAsJson(errorMessage), HttpStatus.BAD_REQUEST);
+            convertErrorAsJson(errorMessage), headers, HttpStatus.BAD_REQUEST);
       }  
     } 
     
@@ -227,12 +267,32 @@ public class PdxBasedCrudController extends CommonCrudController {
     final HttpHeaders headers = new HttpHeaders();
     region = decode(region);
     
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.getAuthorize(region, keys, null);
+      } catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
     if (keys.length == 1) { 
       /* GET op on single key */
       Object value = getValue(region, keys[0]);
       //if region.get(K) return null (i.e INVLD or TOMBSTONE case) We consider 404, NOT Found case  
       if(value == null) {
         throw new ResourceNotFoundException(String.format("Key (%1$s) does not exist for region (%2$s) in cache!", keys[0], region));
+      }
+      
+      //Do post authorization if security is enabled.
+      if(AuthorizationProvider.isSecurityEnabled()){
+        try{
+          AuthorizationProvider.getAuthorizePP(region, keys[0], value);
+        }catch(NotAuthorizedException nae) {
+          return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+        }
       }
       
       final RegionEntryData<Object> data = new RegionEntryData<Object>(region);
@@ -246,7 +306,7 @@ public class PdxBasedCrudController extends CommonCrudController {
           && !(ignoreMissingKey.equalsIgnoreCase("true") || ignoreMissingKey.equalsIgnoreCase("false"))){
         String errorMessage = String.format("ignoreMissingKey param (%1$s) is not valid. valid usage is ignoreMissingKey=true!", ignoreMissingKey);
         return new ResponseEntity<String>(
-            convertErrorAsJson(errorMessage), HttpStatus.BAD_REQUEST);
+            convertErrorAsJson(errorMessage), headers, HttpStatus.BAD_REQUEST);
       }
       
       if(!("true".equalsIgnoreCase(ignoreMissingKey))) { 
@@ -259,7 +319,18 @@ public class PdxBasedCrudController extends CommonCrudController {
       }  
       
       final Map<Object, Object> valueObjs = getValues(region, keys);
-
+      
+      //Do post authorization if security is enabled.
+      if(AuthorizationProvider.isSecurityEnabled()){
+        for (Map.Entry<Object, Object> entry : valueObjs.entrySet() ) {
+          try{
+            AuthorizationProvider.getAuthorizePP(region, entry.getKey(), entry.getValue());
+          }catch(NotAuthorizedException nae) {
+            return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+          }
+        }
+      }
+      
       // Do we need to remove null values from Map..?
       // To Remove null value entries from map.
       // valueObjs.values().removeAll(Collections.singleton(null));
@@ -306,14 +377,33 @@ public class PdxBasedCrudController extends CommonCrudController {
     if(logger.isDebugEnabled()){
       logger.debug("updating key(s) for region ({}) ", region);
     }
+    
     region = decode(region);
+    HttpHeaders headers = new HttpHeaders();
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        //TODO: add isJson type in OperationContext
+        if(keys.length > 1){
+          AuthorizationProvider.putAllAuthorize(region, json, null);
+        }else {
+          //TODO: add isJson type in OperationContext
+          AuthorizationProvider.putAuthorize(region, keys[0], json, false /*isObject*/, /*isJson,*/ null, PutOperationContext.UPDATE);
+        }
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
     
     if(keys.length > 1){
       //putAll case
-      return updateMultipleKeys(region, keys, json);
+      return updateMultipleKeys(region, keys, json, headers);
     } else {
       //put case
-      return updateSingleKey(region, keys[0], json, opValue);
+      return updateSingleKey(region, keys[0], json, opValue, headers);
     }
   }
     
@@ -335,9 +425,9 @@ public class PdxBasedCrudController extends CommonCrudController {
       logger.debug("Determining the number of entries in Region ({})...", region);
     }
     region = decode(region);
-      
-    final HttpHeaders headers = new HttpHeaders();
+    //Not Authorized at REST APIs level as even client-server does not provide authz  
     
+    final HttpHeaders headers = new HttpHeaders();
     headers.set("Resource-Count", String.valueOf(getRegion(region).size()) );
     return new ResponseEntity<RegionData<?>>(headers, HttpStatus.OK);
   }

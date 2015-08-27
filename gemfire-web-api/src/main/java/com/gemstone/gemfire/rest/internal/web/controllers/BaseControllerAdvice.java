@@ -25,6 +25,9 @@ import com.gemstone.gemfire.rest.internal.web.exception.GemfireRestException;
 import com.gemstone.gemfire.rest.internal.web.exception.MalformedJsonException;
 import com.gemstone.gemfire.rest.internal.web.exception.RegionNotFoundException;
 import com.gemstone.gemfire.rest.internal.web.exception.ResourceNotFoundException;
+import com.gemstone.gemfire.security.AuthenticationFailedException;
+import com.gemstone.gemfire.security.AuthenticationRequiredException;
+import com.gemstone.gemfire.security.NotAuthorizedException;
 
 /**
  * The CrudControllerAdvice class handles exception thrown while serving the REST request
@@ -33,7 +36,7 @@ import com.gemstone.gemfire.rest.internal.web.exception.ResourceNotFoundExceptio
  * @since 8.0
  */
 
-@ControllerAdvice
+//@ControllerAdvice
 @SuppressWarnings("unused")
 public class BaseControllerAdvice extends AbstractBaseController{
 
@@ -134,5 +137,42 @@ public class BaseControllerAdvice extends AbstractBaseController{
     return convertErrorAsJson(cause.getMessage());
   }
   
+  /**
+   * Handles NotAuthorizedException, occurring when REST service encounters unAuthorized access.
+   * <p/>
+   * @param e the RuntimeException thrown when request is not authorized to perform the operation.
+   * @return the String message from the RuntimeException.
+   */
+  @ExceptionHandler({ NotAuthorizedException.class })
+  @ResponseBody
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public String handleException(final NotAuthorizedException e) {
+    return convertErrorAsJson(e.getMessage());
+  }
+  
+  /**
+   * Handles AuthenticationFailedException, occurring when REST service can not authenticate the request.
+   * <p/>
+   * @param e the RuntimeException thrown when request is not authenticated to perform the operation.
+   * @return the String message from the RuntimeException.
+   */
+  @ExceptionHandler({ AuthenticationFailedException.class })
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public String handleException(final AuthenticationFailedException e) {
+    return convertErrorAsJson(e.getMessage());
+  }
+  
+  /**
+   * Handles AuthenticationRequiredException, occurring when REST service can not find the security credentials i nthe request.
+   * <p/>
+   * @param e the RuntimeException thrown when request does not contains security credentials for authentication.
+   * @return the String message from the RuntimeException.
+   */
+  @ExceptionHandler({ AuthenticationRequiredException.class })
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public String handleException(final AuthenticationRequiredException e) {
+    return convertErrorAsJson(e.getMessage());
+  }
 }
-

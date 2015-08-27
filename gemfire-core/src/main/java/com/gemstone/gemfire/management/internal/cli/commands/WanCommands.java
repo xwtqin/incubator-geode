@@ -58,6 +58,9 @@ import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
 import com.gemstone.gemfire.management.internal.configuration.SharedConfigurationWriter;
 import com.gemstone.gemfire.management.internal.configuration.domain.XmlEntity;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 public class WanCommands implements CommandMarker {
 
@@ -67,6 +70,7 @@ public class WanCommands implements CommandMarker {
   
   @CliCommand(value = CliStrings.CREATE_GATEWAYSENDER, help = CliStrings.CREATE_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN, writesToSharedConfiguration=true)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CREATE_GW_SENDER)
   public Result createGatewaySender(
       @CliOption(key = CliStrings.CREATE_GATEWAYSENDER__GROUP,
       optionContext = ConverterHint.MEMBERGROUP,
@@ -183,6 +187,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.START_GATEWAYSENDER, help = CliStrings.START_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_SENDER, operation=ResourceConstants.START_GW_SENDER)
   public Result startGatewaySender(
       @CliOption(key = CliStrings.START_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -325,6 +330,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.PAUSE_GATEWAYSENDER, help = CliStrings.PAUSE_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_SENDER, operation=ResourceConstants.PAUSE_GW_SENDER)
   public Result pauseGatewaySender(
       @CliOption(key = CliStrings.PAUSE_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -417,6 +423,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.RESUME_GATEWAYSENDER, help = CliStrings.RESUME_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_SENDER, operation=ResourceConstants.RESUME_GW_SENDER)
   public Result resumeGatewaySender(
       @CliOption(key = CliStrings.RESUME_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -556,6 +563,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.STOP_GATEWAYSENDER, help = CliStrings.STOP_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_SENDER, operation=ResourceConstants.STOP_GW_SENDER)
   public Result stopGatewaySender(
       @CliOption(key = CliStrings.STOP_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -631,6 +639,7 @@ public class WanCommands implements CommandMarker {
   
   @CliCommand(value = CliStrings.CREATE_GATEWAYRECEIVER, help = CliStrings.CREATE_GATEWAYRECEIVER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.CREATE_GW_RECEIVER)
   public Result createGatewayReceiver(
       @CliOption(key = CliStrings.CREATE_GATEWAYRECEIVER__GROUP,
       optionContext = ConverterHint.MEMBERGROUP,
@@ -710,6 +719,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.LOAD_BALANCE_GATEWAYSENDER, help = CliStrings.LOAD_BALANCE_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LOAD_BALANCE_GW_SENDER)
   public Result loadBalanceGatewaySender(
       @CliOption(key = CliStrings.LOAD_BALANCE_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -775,6 +785,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.START_GATEWAYRECEIVER, help = CliStrings.START_GATEWAYRECEIVER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_RECEIVER, operation=ResourceConstants.START_GW_RECEIVER)
   public Result startGatewayReceiver(
       @CliOption(key = CliStrings.START_GATEWAYRECEIVER__GROUP,
       optionContext = ConverterHint.MEMBERGROUP,
@@ -836,6 +847,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.STOP_GATEWAYRECEIVER, help = CliStrings.STOP_GATEWAYRECEIVER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.GATEWAY_RECEIVER, operation=ResourceConstants.STOP_GW_RECEIVER)
   public Result stopGatewayReceiver(
       
       @CliOption(key = CliStrings.STOP_GATEWAYRECEIVER__GROUP, 
@@ -909,6 +921,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.LIST_GATEWAY, help = CliStrings.LIST_GATEWAY__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public Result listGateway(
       @CliOption(key = CliStrings.LIST_GATEWAY__MEMBER,
       optionContext = ConverterHint.MEMBERIDNAME,
@@ -999,6 +1012,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.STATUS_GATEWAYSENDER, help = CliStrings.STATUS_GATEWAYSENDER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public Result statusGatewaySender(
       @CliOption(key = CliStrings.STATUS_GATEWAYSENDER__ID, 
       mandatory = true, 
@@ -1065,6 +1079,7 @@ public class WanCommands implements CommandMarker {
 
   @CliCommand(value = CliStrings.STATUS_GATEWAYRECEIVER, help = CliStrings.STATUS_GATEWAYRECEIVER__HELP)
   @CliMetaData(relatedTopic = CliStrings.TOPIC_GEMFIRE_WAN)
+  @ResourceOperation( resource=Resource.DISTRIBUTED_SYSTEM, operation=ResourceConstants.LIST_DS)
   public Result statusGatewayReceiver(
       @CliOption(key = CliStrings.STATUS_GATEWAYRECEIVER__GROUP, 
       optionContext = ConverterHint.MEMBERGROUP,

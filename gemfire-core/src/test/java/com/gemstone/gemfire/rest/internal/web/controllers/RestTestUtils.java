@@ -11,12 +11,14 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -97,5 +99,13 @@ public class RestTestUtils  {
   public static URI toUri(final URI baseUrl, final String... pathSegments) {
     return UriComponentsBuilder.fromUri(baseUrl).pathSegment(pathSegments)
         .build().toUri();
+  }
+  
+  public static String createRestURL(String baseURL, Object requestPart) {
+    if(StringUtils.isEmpty(requestPart)) {
+      return baseURL + RestTestUtils.GEMFIRE_REST_API_CONTEXT + RestTestUtils.GEMFIRE_REST_API_VERSION;
+    }else {
+      return baseURL + RestTestUtils.GEMFIRE_REST_API_CONTEXT + RestTestUtils.GEMFIRE_REST_API_VERSION + requestPart;
+    }
   }
 }

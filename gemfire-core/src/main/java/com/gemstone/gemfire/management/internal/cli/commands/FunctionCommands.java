@@ -55,6 +55,9 @@ import com.gemstone.gemfire.management.internal.cli.result.ErrorResultData;
 import com.gemstone.gemfire.management.internal.cli.result.ResultBuilder;
 import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
+import com.gemstone.gemfire.management.internal.security.Resource;
+import com.gemstone.gemfire.management.internal.security.ResourceConstants;
+import com.gemstone.gemfire.management.internal.security.ResourceOperation;
 
 /**
  * @author David Hoots
@@ -71,6 +74,7 @@ public class FunctionCommands implements CommandMarker {
   
   @CliCommand(value = CliStrings.EXECUTE_FUNCTION, help = CliStrings.EXECUTE_FUNCTION__HELP)
   @CliMetaData(relatedTopic = { CliStrings.TOPIC_GEMFIRE_FUNCTION })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.EXECUTE_FUNCTION)
   public Result executeFunction(
       //TODO: Add optioncontext for functionID
       @CliOption(key = CliStrings.EXECUTE_FUNCTION__ID, 
@@ -442,7 +446,8 @@ public class FunctionCommands implements CommandMarker {
   
   @CliCommand(value = CliStrings.DESTROY_FUNCTION, help = CliStrings.DESTROY_FUNCTION__HELP)
   @CliMetaData(relatedTopic = { CliStrings.TOPIC_GEMFIRE_FUNCTION } ,
-      interceptor = "com.gemstone.gemfire.management.internal.cli.commands.FunctionCommands$Interceptor")  
+      interceptor = "com.gemstone.gemfire.management.internal.cli.commands.FunctionCommands$Interceptor")
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.DESTROY_FUNCTION)
   //TODO: Add optioncontext for functionId
   public Result destroyFunction(
       @CliOption(key = CliStrings.DESTROY_FUNCTION__ID, 
@@ -566,6 +571,7 @@ public class FunctionCommands implements CommandMarker {
   
   @CliCommand(value = CliStrings.LIST_FUNCTION, help = CliStrings.LIST_FUNCTION__HELP)
   @CliMetaData(relatedTopic = { CliStrings.TOPIC_GEMFIRE_FUNCTION })
+  @ResourceOperation(resource = Resource.DISTRIBUTED_SYSTEM, operation= ResourceConstants.LIST_DS)
   public Result listFunction(
       @CliOption(key = CliStrings.LIST_FUNCTION__MATCHES, 
                  help = CliStrings.LIST_FUNCTION__MATCHES__HELP)String matches,

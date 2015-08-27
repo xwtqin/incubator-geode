@@ -27,12 +27,17 @@ import com.gemstone.gemfire.cache.execute.Execution;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
+import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.internal.security.AuthorizeRequest;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gemfire.rest.internal.web.controllers.support.RestServersResultCollector;
 import com.gemstone.gemfire.rest.internal.web.exception.GemfireRestException;
+import com.gemstone.gemfire.rest.internal.web.security.AuthorizationProvider;
+import com.gemstone.gemfire.rest.internal.web.security.RestRequestFilter;
 import com.gemstone.gemfire.rest.internal.web.util.JSONUtils;
+import com.gemstone.gemfire.security.NotAuthorizedException;
 import org.json.JSONException;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -71,10 +76,23 @@ public abstract class CommonCrudController extends AbstractBaseController {
       logger.debug("Listing all resources (Regions) in GemFire...");
     }
     
-    final Set<Region<?, ?>> regions = getCache().rootRegions();
-    String listRegionsAsJson =  JSONUtils.formulateJsonForListRegions(regions, "regions");
     final HttpHeaders headers = new HttpHeaders();  
     headers.setLocation(toUri());
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.listRegionsAuthorize(OperationCode.LIST, true, "LIST_REGIONS");
+      }catch(NotAuthorizedException nae){
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+   
+    final Set<Region<?, ?>> regions = getCache().rootRegions();
+    String listRegionsAsJson =  JSONUtils.formulateJsonForListRegions(regions, "regions");
+    
     return new ResponseEntity<String>(listRegionsAsJson, headers, HttpStatus.OK);
   }
   
@@ -98,16 +116,35 @@ public abstract class CommonCrudController extends AbstractBaseController {
   public ResponseEntity<?> keys(@PathVariable("region") String region){ 
     
     if(logger.isDebugEnabled()){
-      logger.debug("Reading all Keys in Region ({})...", region);
+      logger.debug("Listing all Keys in Region ({})...", region);
     }
     
     region = decode(region);
-    
-    Object[] keys = getKeys(region, null);  
-    
-    String listKeysAsJson =  JSONUtils.formulateJsonForListKeys(keys, "keys");
     final HttpHeaders headers = new HttpHeaders();  
     headers.setLocation(toUri(region, "keys"));
+    
+    //Request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.keySetAuthorize(region);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    
+    Set<Object> keys = getRegion(region).keySet();
+    
+    //Post authorization
+    if(AuthorizationProvider.isSecurityEnabled()){
+      try{
+        AuthorizationProvider.keySetAuthorizePP(region, keys);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
+    String listKeysAsJson =  JSONUtils.formulateJsonForListKeys(keys.toArray(), "keys");
     return new ResponseEntity<String>(listKeysAsJson, headers, HttpStatus.OK);
   }
   
@@ -136,9 +173,21 @@ public abstract class CommonCrudController extends AbstractBaseController {
     }
     
     region = decode(region);
+    final HttpHeaders headers = new HttpHeaders(); 
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.deleteAuthorize(region, keys, null);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
     
     deleteValues(region, (Object[])keys);
-    return new ResponseEntity<Object>(HttpStatus.OK);
+    return new ResponseEntity<Object>(headers, HttpStatus.OK);
   }
 
   /**
@@ -164,9 +213,21 @@ public abstract class CommonCrudController extends AbstractBaseController {
     }
     
     region = decode(region);
+    final HttpHeaders headers = new HttpHeaders(); 
+    
+    //Do request(Pre) authorization if security is enabled.
+    if(AuthorizationProvider.isSecurityEnabled()){
+      setAuthTokenHeader(headers);
+      AuthorizationProvider.init();
+      try{
+        AuthorizationProvider.deleteAllAuthorize(region, null);
+      }catch(NotAuthorizedException nae) {
+        return new ResponseEntity<String>(headers, HttpStatus.UNAUTHORIZED);
+      }
+    }
     
     deleteValues(region);
-    return new ResponseEntity<Object>(HttpStatus.OK);
+    return new ResponseEntity<Object>(headers, HttpStatus.OK);
   }
   
   @RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD }, value = "/ping")
@@ -180,6 +241,7 @@ public abstract class CommonCrudController extends AbstractBaseController {
     @ApiResponse( code = 500, message = "if GemFire throws an error or exception" )   
   } )
   public ResponseEntity<?> ping() {
+    // Request Authorization not required.
     return new ResponseEntity<Object>(HttpStatus.OK);
   }
   
@@ -194,12 +256,13 @@ public abstract class CommonCrudController extends AbstractBaseController {
     @ApiResponse( code = 500, message = "if GemFire throws an error or exception" )   
   } )
   public ResponseEntity<?> servers() {
+    //Request Authorization not required.
     Execution function = null;
       
     if(logger.isDebugEnabled()){
       logger.debug("Executing function to get REST enabled gemfire nodes in the DS!");
     }
-      
+    
     try {
       function = FunctionService.onMembers(getAllMembersInDS());
     } catch(FunctionException fe) {

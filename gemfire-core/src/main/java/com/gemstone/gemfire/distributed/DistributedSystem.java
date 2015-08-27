@@ -587,6 +587,16 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *   <dd><U>Allowed values</U>: jar file:class name</dd>
  *</dl>
  * 
+ *<dl>
+ *   <a name="security-rest-token-service"><dt>security-rest-token-service</dt></a>
+ *   <dd><U>Description</U>: Token service module name for REST servers that that is 
+ *   required to manage tokens.
+ *   Module must implement TokenService interface.
+ *   </dd>
+ *   <dd><U>Default</U>: ""</dd>
+ *   <dd><U>Allowed values</U>: jar file:class name.method name</dd>
+ *</dl>
+ *
  * <dl>
  * <a name="delta-propagation">
  * <dt>delta-propagation</dt>
