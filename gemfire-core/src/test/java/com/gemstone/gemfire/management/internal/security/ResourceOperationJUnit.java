@@ -432,7 +432,7 @@ public class ResourceOperationJUnit  extends TestCase {
     GemFireCacheImpl cache = null;
     DistributedSystem ds = null;
     Properties pr = new Properties();
-    pr.put("name", "testJMXOperationContext");
+    pr.put("name", "testAuthenticationUsingPropertiesBag");
     pr.put(DistributionConfig.JMX_MANAGER_NAME, "true");
     pr.put(DistributionConfig.JMX_MANAGER_START_NAME, "true");
     int port = AvailablePortHelper.getRandomAvailableTCPPort();
@@ -474,9 +474,10 @@ public class ResourceOperationJUnit  extends TestCase {
       fail("Authentication should fail");
     } catch (AuthenticationFailedException e) {
       //expected
-    } catch (SecurityException e) {
+    } catch(SecurityException e){
       //expected
-    } catch(Exception e){
+    }
+    catch(Exception e){
       e.printStackTrace();
       fail("Unexpected error " + e.getMessage());      
     }
