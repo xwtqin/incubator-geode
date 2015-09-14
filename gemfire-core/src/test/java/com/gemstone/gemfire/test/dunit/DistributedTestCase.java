@@ -5,6 +5,7 @@ import static com.gemstone.gemfire.test.dunit.Invoke.*;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 
@@ -57,6 +58,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogService.getLogger();
   private static final LogWriterLogger oldLogger = LogWriterLogger.create(logger);
+  private static final LinkedHashSet<String> testHistory = new LinkedHashSet<String>();
 
   @Rule
   public transient TestName testNameRule = new TestName();
@@ -82,6 +84,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
   
   @Before
   public final void setUpDistributedTestCase() throws Exception {
+    logTestHistory();
     setUpCreationStackGenerator();
     testName = getMethodName();
     
@@ -99,6 +102,16 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     //System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
   }
 
+  /**
+   * Write a message to the log about what tests have ran previously. This
+   * makes it easier to figure out if a previous test may have caused problems
+   */
+  private void logTestHistory() {
+    String classname = getClass().getSimpleName();
+    testHistory.add(classname);
+    System.out.println("Previously run tests: " + testHistory);
+  }  
+  
   private static void setUpInVM(final VM vm, final String testNameToUse, final String diskStoreNameToUse) {
     vm.invoke(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;
@@ -127,6 +140,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
   @After
   public final void tearDownDistributedTestCase() throws Exception {
     tearDownBefore();
+    preTestCaseTearDown();
     realTearDown();
     tearDownAfter();
     
@@ -137,6 +151,12 @@ public abstract class DistributedTestCase implements java.io.Serializable {
     tearDownInEveryVM();
   }
 
+  /**
+   * Override this in CacheTest to closeCache and destroyRegions
+   */
+  protected void preTestCaseTearDown() {
+  }
+  
   private static void tearDownInEveryVM() {
     invokeInEveryVM(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;

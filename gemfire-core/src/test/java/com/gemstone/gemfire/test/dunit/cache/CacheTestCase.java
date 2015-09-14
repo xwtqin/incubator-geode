@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
@@ -440,29 +441,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   protected synchronized static void remoteTearDown() {
     try {
       DistributionMessageObserver.setInstance(null);
-      if (cache != null && !cache.isClosed()) {
-        //try to destroy the root regions first so that
-        //we clean up any persistent files.
-        for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
-          Region root = (Region)itr.next();
-//          String name = root.getName();
-          //for colocated regions you can't locally destroy a partitioned
-          //region.
-    if(root.isDestroyed() || root instanceof HARegion || root instanceof PartitionedRegion) {
-            continue;
-          }
-          try {
-            root.localDestroyRegion("teardown");
-          }
-          catch (VirtualMachineError e) {
-            SystemFailure.initiateFailure(e);
-            throw e;
-          }
-          catch (Throwable t) {
-            getLogWriter().error(t);
-          }
-        }
-      }
+      destroyRegions(cache);
     }
     finally {
       try {
@@ -482,6 +461,46 @@ public abstract class CacheTestCase extends DistributedTestCase {
       cleanDiskDirs();
     } catch(IOException e) {
       getLogWriter().error("Error cleaning disk dirs", e);
+    }
+  }
+  
+  @Override
+  protected void preTestCaseTearDown() {
+    destroyRegionsAndCloseCache();
+    invokeInEveryVM(CacheTestCase.class, "destroyRegionsAndCloseCache");
+  }
+
+  private static void destroyRegionsAndCloseCache() {
+    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+    if(cache != null && !cache.isClosed()) {
+      destroyRegions(cache);
+      cache.close();
+    }
+  }
+
+  private static final void destroyRegions(Cache cache) 
+      throws InternalGemFireError, Error, VirtualMachineError {
+    if (cache != null && !cache.isClosed()) {
+      //try to destroy the root regions first so that
+      //we clean up any persistent files.
+      for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
+        Region root = (Region)itr.next();
+        //for colocated regions you can't locally destroy a partitioned
+        //region.
+        if(root.isDestroyed() || root instanceof HARegion || root instanceof PartitionedRegion) {
+          continue;
+        }
+        try {
+          root.localDestroyRegion("teardown");
+        }
+        catch (VirtualMachineError e) {
+          SystemFailure.initiateFailure(e);
+          throw e;
+        }
+        catch (Throwable t) {
+          getLogWriter().error(t);
+        }
+      }
     }
   }
   
