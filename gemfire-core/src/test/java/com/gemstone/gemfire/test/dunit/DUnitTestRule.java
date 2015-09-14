@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.Logger;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -43,12 +44,19 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.DataSerializerPropogatio
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
+import com.gemstone.gemfire.test.junit.rules.SerializableTestRule;
 import com.gemstone.org.jgroups.stack.IpAddress;
 import com.gemstone.org.jgroups.stack.Protocol;
 import com.gemstone.org.jgroups.util.GemFireTracer;
 
+/**
+ * TestRule for DistributedTest. Use this for DUnit tests using JUnit 4.x 
+ * syntax instead of extending DistributedTestCase. 
+ *
+ * @author Kirk Lund
+ */
 @SuppressWarnings("serial")
-public class DUnitTestRule implements TestRule, Serializable {
+public class DUnitTestRule implements SerializableTestRule {
   private static final Logger logger = LogService.getLogger();
 
   private static final String LOG_PER_TEST_CLASS_PROPERTY = "dunitLogPerTest";
@@ -56,8 +64,12 @@ public class DUnitTestRule implements TestRule, Serializable {
   private volatile String className;
   private volatile String methodName;
   
+  private final boolean disconnectBeforeClass;
+  private final boolean disconnectAfterClass;
   private final boolean disconnectBefore;
   private final boolean disconnectAfter;
+  
+  private final transient RuleChain ruleChain;
   
   private static class StaticContext {
     private static volatile boolean logPerTestClass;
@@ -75,26 +87,100 @@ public class DUnitTestRule implements TestRule, Serializable {
     return new Builder();
   }
   
+  public static DUnitTestRule build() {
+    return new Builder().build();
+  }
+  
   protected DUnitTestRule(final Builder builder) {
     StaticContext.logPerTestClass = builder.logPerTestClass;
     StaticContext.logPerTestMethod = builder.logPerTestMethod;
+    this.disconnectBeforeClass = builder.disconnectBeforeClass;
+    this.disconnectAfterClass = builder.disconnectAfterClass;
     this.disconnectBefore = builder.disconnectBefore;
     this.disconnectAfter = builder.disconnectAfter;
-    if (!builder.ruleChain.isEmpty()) {
-      
+    this.ruleChain = buildRuleChain(builder, new ThisRule());
+  }
+  
+  private static RuleChain buildRuleChain(final Builder builder, final ThisRule thisRule) {
+    final List<TestRule> rules = new ArrayList<TestRule>();
+    
+    for (TestRule testRule : builder.outerRule) {
+      rules.add(testRule);
     }
+    rules.add(thisRule);
+    for (TestRule testRule : builder.innerRule) {
+      rules.add(testRule);
+    }
+
+    RuleChain ruleChain = RuleChain.outerRule(rules.get(0));
+    for (int i = 1; i < rules.size(); i++) {
+      ruleChain = ruleChain.around(rules.get(i));
+    }
+    
+    return ruleChain;
   }
   
   public DUnitTestRule() {
     StaticContext.logPerTestClass = Boolean.getBoolean(LOG_PER_TEST_CLASS_PROPERTY);
+    this.disconnectBeforeClass = false;
+    this.disconnectAfterClass = false;
     this.disconnectBefore = false;
     this.disconnectAfter = false;
+    this.ruleChain = RuleChain.outerRule(new ThisRule());
+  }
+  
+  private class ThisRule implements TestRule, Serializable {
+    @Override
+    public Statement apply(final Statement base, final Description description) {
+      if (description.isTest()) {
+        starting(description);
+        return statement(base, description);
+      } else if (description.isSuite()) {
+        startingSuite(description);
+        return statementSuite(base, description);
+      }
+      return base;
+    }
   }
   
   @Override
   public Statement apply(final Statement base, final Description description) {
-    starting(description);
-    return statement(base);
+    return this.ruleChain.apply(base, description);
+  }
+  
+  /**
+   * Invoked when a suite is about to start
+   */
+  protected void startingSuite(final Description description) {
+    this.className = description.getClassName();
+
+    boolean newTestClass = false;
+    if (StaticContext.testClassName != null && !this.className.equals(StaticContext.testClassName)) {
+      // new test class detected
+      newTestClass = true;
+    }
+    
+    if (newTestClass && StaticContext.logPerTestClass) {
+      disconnectAllFromDS();
+    }
+    
+    StaticContext.testClassName = this.className;
+  }
+  
+  protected void beforeSuite() throws Throwable {
+    DUnitLauncher.launchIfNeeded();
+    
+    setUpDistributedTestCase();
+    
+    if (this.disconnectBeforeClass) {
+      disconnectAllFromDS();
+    }
+  }
+
+  protected void afterSuite() throws Throwable {
+    if (this.disconnectAfterClass) {
+      disconnectAllFromDS();
+    }
   }
   
   /**
@@ -119,7 +205,6 @@ public class DUnitTestRule implements TestRule, Serializable {
   }
   
   protected void before() throws Throwable {
-    System.out.println("KIRK DUnitTestRule before");
     DUnitLauncher.launchIfNeeded();
     
     setUpDistributedTestCase();
@@ -130,7 +215,6 @@ public class DUnitTestRule implements TestRule, Serializable {
   }
 
   protected void after() throws Throwable {
-    System.out.println("KIRK DUnitTestRule after");
     if (this.disconnectAfter) {
       disconnectAllFromDS();
     }
@@ -158,7 +242,21 @@ public class DUnitTestRule implements TestRule, Serializable {
     return StaticContext.testMethodName;
   }
   
-  private Statement statement(final Statement base) {
+  private Statement statementSuite(final Statement base, final Description description) {
+    return new Statement() {
+      @Override
+      public void evaluate() throws Throwable {
+        beforeSuite();
+        try {
+          base.evaluate();
+        } finally {
+          afterSuite();
+        }
+      }
+    };
+  }
+  
+  private Statement statement(final Statement base, final Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
@@ -615,9 +713,12 @@ public class DUnitTestRule implements TestRule, Serializable {
   public static class Builder {
     private boolean logPerTestMethod;
     private boolean logPerTestClass;
+    private boolean disconnectBeforeClass;
+    private boolean disconnectAfterClass;
     private boolean disconnectBefore;
     private boolean disconnectAfter;
-    private List<TestRule> ruleChain = new ArrayList<TestRule>();
+    private final List<TestRule> outerRule = new ArrayList<TestRule>();
+    private final List<TestRule> innerRule = new ArrayList<TestRule>();
     
     protected Builder() {}
 
@@ -640,19 +741,52 @@ public class DUnitTestRule implements TestRule, Serializable {
       this.logPerTestClass = logPerTestClass;
       return this;
     }
+
+    /**
+     * DistributedSystem will be disconnected before each test class
+     */
+    public Builder disconnectBeforeClass(final boolean disconnectBeforeClass) {
+      this.disconnectBeforeClass = disconnectBeforeClass;
+      return this;
+    }
     
+    /**
+     * DistributedSystem will be disconnected before each test method
+     */
     public Builder disconnectBefore(final boolean disconnectBefore) {
       this.disconnectBefore = disconnectBefore;
       return this;
     }
     
+    /**
+     * DistributedSystem will be disconnected after each test class
+     */
+    public Builder disconnectAfterClass(final boolean disconnectAfterClass) {
+      this.disconnectAfterClass = disconnectAfterClass;
+      return this;
+    }
+    
+    /**
+     * DistributedSystem will be disconnected after each test method
+     */
     public Builder disconnectAfter(final boolean disconnectAfter) {
       this.disconnectAfter = disconnectAfter;
       return this;
     }
     
-    public Builder chainRule(final TestRule enclosedRule) {
-      this.ruleChain.add(enclosedRule);
+    /**
+     * Chain the specified TestRule around the DUnitTestRule
+     */
+    public Builder outerRule(final TestRule testRule) {
+      this.outerRule.add(testRule);
+      return this;
+    }
+    
+    /**
+     * Chain the specified TestRule within the DUnitTestRule
+     */
+    public Builder innerRule(final TestRule testRule) {
+      this.innerRule.add(testRule);
       return this;
     }
     

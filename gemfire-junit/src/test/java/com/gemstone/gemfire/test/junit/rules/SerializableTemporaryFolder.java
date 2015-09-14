@@ -3,7 +3,6 @@ package com.gemstone.gemfire.test.junit.rules;
 import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import org.junit.rules.TemporaryFolder;
@@ -15,7 +14,7 @@ import org.junit.rules.TemporaryFolder;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class SerializableTemporaryFolder extends TemporaryFolder implements Serializable {
+public class SerializableTemporaryFolder extends TemporaryFolder implements SerializableTestRule {
 
   private void writeObject(final ObjectOutputStream out) throws Exception {
     writeParentFolder(out);

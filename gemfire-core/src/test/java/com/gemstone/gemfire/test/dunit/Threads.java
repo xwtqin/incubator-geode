@@ -10,8 +10,8 @@ import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 
 /**
  * A set of thread dump methods useful for writing tests. 
- * <pr/>
- * These methods can be used directly:
+ * 
+ * <p>These methods can be used directly:
  * <code>ThreadDump.dumpStack(...)</code>, however, they read better if they
  * are referenced through static import:
  * 
@@ -20,16 +20,16 @@ import com.gemstone.gemfire.internal.logging.LogWriterImpl;
  *    ...
  *    dumpStack(...);
  * </pre>
- * <pr/>
- * Extracted from DistributedTestCase
+ * 
+ * <p>Extracted from DistributedTestCase
  * 
  * @see VM
  * @see Host
  */
 @SuppressWarnings("serial")
-public class ThreadDump {
+public class Threads {
 
-  protected ThreadDump() {
+  protected Threads() {
   }
   
   /** 
@@ -98,13 +98,23 @@ public class ThreadDump {
   
   /**
    * Wait for a thread to join
-   * @param t thread to wait on
-   * @param ms maximum time to wait
+   * @param thread thread to wait on
+   * @param timeoutMillis maximum time to wait
    * @throws AssertionFailure if the thread does not terminate
    */
-  static public void join(Thread t, long ms, LogWriter logger) {
-    final long tilt = System.currentTimeMillis() + ms;
-    final long incrementalWait = jitterInterval(ms);
+  public static void join(final Thread thread, final long timeoutMillis) {
+    join(thread, timeoutMillis, new LocalLogWriter(LogWriterImpl.INFO_LEVEL, System.out));
+  }
+
+  /**
+   * Wait for a thread to join // TODO: remove LogWriter
+   * @param thread thread to wait on
+   * @param timeoutMillis maximum time to wait
+   * @throws AssertionFailure if the thread does not terminate
+   */
+  public static void join(final Thread thread, final long timeoutMillis, final LogWriter logWriter) {
+    final long tilt = System.currentTimeMillis() + timeoutMillis;
+    final long incrementalWait = jitterInterval(timeoutMillis);
     final long start = System.currentTimeMillis();
     for (;;) {
       // I really do *not* understand why this check is necessary
@@ -112,11 +122,11 @@ public class ThreadDump {
       // and the javadocs, one would think that join() would exit immediately
       // if the thread is dead.  However, I can tell you from experimentation
       // that this is not the case. :-(  djp 2008-12-08
-      if (!t.isAlive()) {
+      if (!thread.isAlive()) {
         break;
       }
       try {
-        t.join(incrementalWait);
+        thread.join(incrementalWait);
       } catch (InterruptedException e) {
         fail("interrupted");
       }
@@ -124,25 +134,19 @@ public class ThreadDump {
         break;
       }
     } // for
-    if (logger == null) {
-      logger = new LocalLogWriter(LogWriterImpl.INFO_LEVEL, System.out);
-    }
-    if (t.isAlive()) {
-      logger.info("HUNG THREAD");
-      dumpStackTrace(t, t.getStackTrace(), logger);
-      dumpMyThreads(logger);
-      t.interrupt(); // We're in trouble!
-      fail("Thread did not terminate after " + ms + " ms: " + t);
-//      getLogWriter().warning("Thread did not terminate" 
-//          /* , new Exception()*/
-//          );
+    if (thread.isAlive()) {
+      logWriter.info("HUNG THREAD");
+      dumpStackTrace(thread, thread.getStackTrace(), logWriter);
+      dumpMyThreads(logWriter);
+      thread.interrupt(); // We're in trouble!
+      fail("Thread did not terminate after " + timeoutMillis + " ms: " + thread);
     }
     long elapsedMs = (System.currentTimeMillis() - start);
     if (elapsedMs > 0) {
-      String msg = "Thread " + t + " took " 
+      String msg = "Thread " + thread + " took " 
         + elapsedMs
         + " ms to exit.";
-      logger.info(msg);
+      logWriter.info(msg);
     }
   }
 

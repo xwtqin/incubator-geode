@@ -12,9 +12,14 @@ import static com.googlecode.catchexception.CatchException.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static com.jayway.awaitility.Duration.*;
 import static java.util.concurrent.TimeUnit.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.gemstone.gemfire.IncompatibleSystemException;
 import com.gemstone.gemfire.distributed.internal.DM;
@@ -55,12 +60,12 @@ import com.gemstone.gemfire.test.dunit.VM;
  * @author Kirk Lund
  * @since 5.0
  */
-@SuppressWarnings("serial")
 @Category({ DistributedTest.class, MembershipTest.class })
+@SuppressWarnings("serial")
 public class DistributedMemberDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DUnitTestRule dunitTestRule = DUnitTestRule.build();
   
   private Properties config;
   
@@ -75,10 +80,10 @@ public class DistributedMemberDUnitTest implements Serializable {
   }
   
   @After
-  public void tearDown() {
+  public void after() {
     disconnectAllFromDS();
   }
-
+  
   /**
    * Tests default configuration values.
    */
@@ -367,7 +372,7 @@ public class DistributedMemberDUnitTest implements Serializable {
     final DistributedMember member1 = createSystemAndGetId(vm1, "name1");
     final DistributedMember member2 = createSystemAndGetId(vm2, "name2");
     
-    vm0.invoke(new SerializableCallable() { // SerializableRunnable
+    vm0.invoke(new SerializableCallable<Object>() { // SerializableRunnable
       @Override
       public Object call() throws Exception { // public void run() 
         DistributedSystem system = getSystem();
@@ -391,7 +396,7 @@ public class DistributedMemberDUnitTest implements Serializable {
   }
   
   private DistributedMember createSystemAndGetId(final VM vm, final String name) {
-    return (DistributedMember) vm.invoke(new SerializableCallable("create system and get member") {
+    return (DistributedMember) vm.invoke(new SerializableCallable<Object>("create system and get member") {
       @Override
       public Object call() throws Exception {
         final Properties config = createConfig();

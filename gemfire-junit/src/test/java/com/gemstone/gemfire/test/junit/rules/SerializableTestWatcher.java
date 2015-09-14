@@ -1,7 +1,5 @@
 package com.gemstone.gemfire.test.junit.rules;
 
-import java.io.Serializable;
-
 import org.junit.rules.TestWatcher;
 
 /**
@@ -11,5 +9,5 @@ import org.junit.rules.TestWatcher;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class SerializableTestWatcher extends TestWatcher implements Serializable {
+public class SerializableTestWatcher extends TestWatcher implements SerializableTestRule {
 }

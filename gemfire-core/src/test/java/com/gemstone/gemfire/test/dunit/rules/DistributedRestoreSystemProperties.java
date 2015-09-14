@@ -1,15 +1,14 @@
 package com.gemstone.gemfire.test.dunit.rules;
 
-import static com.gemstone.gemfire.test.dunit.Invoke.*;
 import static java.lang.System.getProperties;
 import static java.lang.System.setProperties;
 
-import java.io.Serializable;
 import java.util.Properties;
 
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.junit.rules.SerializableTestRule;
 
 /**
  * Distributed version of RestoreSystemProperties which affects all DUnit 
@@ -18,7 +17,7 @@ import com.gemstone.gemfire.test.dunit.SerializableRunnable;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class DistributedRestoreSystemProperties extends RestoreSystemProperties implements Serializable {
+public class DistributedRestoreSystemProperties extends RestoreSystemProperties implements SerializableTestRule {
   
   private static volatile Properties originalProperties;
 
@@ -33,10 +32,8 @@ public class DistributedRestoreSystemProperties extends RestoreSystemProperties 
     this.invoker = invoker;
   }
   
-  
   @Override
   protected void before() throws Throwable {
-    System.out.println("KIRK DistributedRestoreSystemProperties before");
     super.before();
     this.invoker.remoteInvokeInEveryVMAndLocator(new SerializableRunnable() {
       @Override
@@ -49,7 +46,6 @@ public class DistributedRestoreSystemProperties extends RestoreSystemProperties 
 
   @Override
   protected void after() {
-    System.out.println("KIRK DistributedRestoreSystemProperties after");
     super.after();
     this.invoker.remoteInvokeInEveryVMAndLocator(new SerializableRunnable() {
       @Override
@@ -58,12 +54,5 @@ public class DistributedRestoreSystemProperties extends RestoreSystemProperties 
         originalProperties = null;
       }
     });
-  }
-  
-  public static class RemoteInvoker implements Serializable {
-    public void remoteInvokeInEveryVMAndLocator(final SerializableRunnable runnable) {
-      invokeInEveryVM(runnable);
-      invokeInLocator(runnable);
-    }
   }
 }

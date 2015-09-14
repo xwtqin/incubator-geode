@@ -10,7 +10,6 @@ import java.util.Properties;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.RuleChain;
 
 import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -33,14 +32,12 @@ public class DistributedRestoreSystemPropertiesDUnitTest implements Serializable
   private static final String NEW_VALUE = "NEW_VALUE"; 
 
   @Rule
-  public transient RuleChain chain = RuleChain
-      .outerRule(new SetUp())
-      .around(new Restore())
-      .around(new Verify())
-      .around(new DistributedRestoreSystemProperties());
-      
-  @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
+      .innerRule(new SetUp())
+      .innerRule(new Restore())
+      .innerRule(new Verify())
+      .innerRule(new DistributedRestoreSystemProperties())
+      .build();
   
   @Test
   public void shouldRestoreInAllVMs() {

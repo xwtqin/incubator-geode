@@ -12,7 +12,6 @@ import org.junit.experimental.categories.Category;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.test.dunit.DUnitTestRule;
-import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 @Category(DistributedTest.class)
@@ -41,16 +40,5 @@ public class LogPerTestMethodDUnitTest implements Serializable {
     
     assertThat(mySystem.getProperties()).containsEntry(DistributionConfig.LOG_FILE_NAME, getUniqueName() + ".log");
     assertThat(mySystem.getProperties()).containsEntry(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getUniqueName() + ".gfs");
-  }
-  
-  public static class InnerClass {
-    public static SerializableRunnable staticSerializableRunnable() {
-      return new SerializableRunnable() {
-        @Override
-        public void run() {
-          System.out.println("printing from static SerializableRunnable");
-        }
-      };
-    }
   }
 }

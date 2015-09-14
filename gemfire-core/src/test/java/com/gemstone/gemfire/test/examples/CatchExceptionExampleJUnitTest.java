@@ -52,7 +52,7 @@ public class CatchExceptionExampleJUnitTest {
     when(myList).get(1);
 
     // then: we expect an IndexOutOfBoundsException
-    then(caughtException())
+    then((Exception)caughtException())
             .isInstanceOf(IndexOutOfBoundsException.class)
             .hasMessage("Index: 1, Size: 0")
             .hasNoCause();

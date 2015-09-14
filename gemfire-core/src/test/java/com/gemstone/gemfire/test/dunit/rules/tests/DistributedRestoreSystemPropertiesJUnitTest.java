@@ -1,7 +1,6 @@
 package com.gemstone.gemfire.test.dunit.rules.tests;
 
 import static com.gemstone.gemfire.test.junit.rules.tests.RunTest.*;
-import static com.gemstone.gemfire.test.dunit.rules.DistributedRestoreSystemProperties.*;
 import static java.lang.System.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -17,6 +16,7 @@ import org.junit.runner.Result;
 
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.rules.DistributedRestoreSystemProperties;
+import com.gemstone.gemfire.test.dunit.rules.RemoteInvoker;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
@@ -70,5 +70,4 @@ public class DistributedRestoreSystemPropertiesJUnitTest {
       setProperty(SOME_PROPERTY, SOME_PROPERTY_NEW_VALUE);
     }
   }
-  
 }

@@ -2,7 +2,6 @@ package com.gemstone.gemfire.test.junit.rules;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import org.junit.rules.TestName;
@@ -14,7 +13,7 @@ import org.junit.rules.TestName;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class SerializableTestName extends TestName implements Serializable {
+public class SerializableTestName extends TestName implements SerializableTestRule {
 
   private void writeObject(final ObjectOutputStream out) throws Exception {
     writeName(out);

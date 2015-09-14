@@ -1,7 +1,7 @@
 package com.gemstone.gemfire.test.examples;
 
 import static com.googlecode.catchexception.CatchException.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.StrictAssertions.*;
 
 import java.io.Serializable;
 

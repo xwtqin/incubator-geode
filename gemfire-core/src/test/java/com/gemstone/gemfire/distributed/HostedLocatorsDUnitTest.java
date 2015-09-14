@@ -1,8 +1,10 @@
 package com.gemstone.gemfire.distributed;
 
 import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.Invoke.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -37,6 +39,7 @@ import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.rules.DistributedRestoreSystemProperties;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.categories.MembershipTest;
+import com.gemstone.gemfire.test.junit.rules.SerializableExternalResource;
 
 /**
  * Extracted from LocatorLauncherLocalJUnitTest.
@@ -53,28 +56,12 @@ public class HostedLocatorsDUnitTest implements Serializable {
   protected transient volatile int locatorPort;
   protected transient volatile LocatorLauncher launcher;
   
-//  @Rule
-//  public transient RuleChain chain = RuleChain
-//      .outerRule(new DUnitTestRule())
-//      .around(new DistributedRestoreSystemProperties());
-  
-  
   @Rule
   public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
       .disconnectBefore(true)
       .disconnectAfter(true)
-      .chainRule(new DistributedRestoreSystemProperties())
+      .innerRule(new DistributedRestoreSystemProperties())
       .build();
-
-//  @Before
-//  public void before() {
-//    disconnectAllFromDS();
-//  }
-//  
-//  @After
-//  public void after() {
-//    disconnectAllFromDS();
-//  }
 
   @Test
   public void getAllHostedLocators() throws Exception {
@@ -111,8 +98,8 @@ public class HostedLocatorsDUnitTest implements Serializable {
             with().pollInterval(10, MILLISECONDS).await().atMost(TIMEOUT_MINUTES, MINUTES).until( isLocatorStarted() );
             return null;
           } finally {
-            System.clearProperty("gemfire.locators");
-            System.clearProperty("gemfire.mcast-port");
+//            System.clearProperty("gemfire.locators");
+//            System.clearProperty("gemfire.mcast-port");
           }
         }
       });

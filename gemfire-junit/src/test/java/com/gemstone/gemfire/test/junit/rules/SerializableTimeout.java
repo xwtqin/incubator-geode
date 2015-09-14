@@ -2,7 +2,6 @@ package com.gemstone.gemfire.test.junit.rules;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +16,7 @@ import org.junit.rules.Timeout;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class SerializableTimeout extends Timeout implements Serializable {
+public class SerializableTimeout extends Timeout implements SerializableTestRule {
 
   public static Builder builder() {
     return new Builder();
