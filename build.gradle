@@ -345,15 +345,25 @@ subprojects {
   task distributedTest(type:Test) {
     include '**/*DUnitTest.class'
     
-// TODO add @Category(DistributedTest.class) to dunit tests
-//    useJUnit {
-//      excludeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
-//      excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
-//      includeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
-//    }    
+    // exclde all categories so that dunitTest task is only task executing categorized dunit tests
+    useJUnit {
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
+    }    
     
     //I'm hoping this might deal with SOME OOMEs I've seen
     forkEvery 30
+  }
+  
+  task dunitTest(type:Test) {
+    include '**/*DUnitTest.class'
+    
+    useJUnit {
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
+      includeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
+    }    
   }
   
   // apply common test configuration
