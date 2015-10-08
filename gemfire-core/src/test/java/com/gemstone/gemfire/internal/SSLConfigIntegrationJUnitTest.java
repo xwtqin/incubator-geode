@@ -22,6 +22,7 @@ public class SSLConfigIntegrationJUnitTest {
   @Test
   public void test51531() {
     Cache mCache = new CacheFactory().set("mcast-port", "0").set("jmx-manager", "true").create();
+    try {
     ManagementService mService = ManagementService.getManagementService(mCache);
     MemberMXBean mMemberBean = mService.getMemberMXBean();
     GemFireProperties mGemFireProperties = mMemberBean.listGemFireProperties();
@@ -30,6 +31,10 @@ public class SSLConfigIntegrationJUnitTest {
     assertTrue(mGemFireProperties.isClusterSSLRequireAuthentication());
     assertTrue(mGemFireProperties.isGatewaySSLRequireAuthentication());
     assertTrue(mGemFireProperties.isJmxManagerSSLRequireAuthentication());
-    mCache.close();
+    // unlike all others, http-server defaults to false
+    assertFalse(mGemFireProperties.isHttpServiceSSLRequireAuthentication());
+    } finally {
+      mCache.close();
+    }
   }
 }
