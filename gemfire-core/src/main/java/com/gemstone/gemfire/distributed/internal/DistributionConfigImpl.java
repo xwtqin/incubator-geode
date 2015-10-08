@@ -819,6 +819,20 @@ public class DistributionConfigImpl
       }      
       this.clusterSSLProperties.putAll(this.sslProperties);
     }  
+    if (false/*clusterSSLOverriden*/) {
+      if (this.sourceMap.get(CLUSTER_SSL_CIPHERS_NAME)==null && this.sourceMap.get(SSL_CIPHERS_NAME) != null) {
+        this.setServerSSLCiphers(this.sslCiphers);
+        this.sourceMap.put(CLUSTER_SSL_CIPHERS_NAME, this.sourceMap.get(SSL_CIPHERS_NAME));
+      }
+      if (this.sourceMap.get(CLUSTER_SSL_PROTOCOLS_NAME)==null && this.sourceMap.get(SSL_PROTOCOLS_NAME) != null) {
+        this.setServerSSLProtocols(this.sslProtocols);
+        this.sourceMap.put(CLUSTER_SSL_PROTOCOLS_NAME, this.sourceMap.get(SSL_PROTOCOLS_NAME));
+      }
+      if (this.sourceMap.get(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME)==null && this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME) != null) {
+        this.setServerSSLRequireAuthentication(this.sslRequireAuthentication);
+        this.sourceMap.put(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME, this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME));
+      }
+    }
   }
   
   /*
@@ -2120,6 +2134,12 @@ public class DistributionConfigImpl
         // use sslProperties as base and let props with suffix GATEWAY_SSL_PROPS_SUFFIX override that base
         this.gatewaySslProperties.setProperty(attName, attValue);
       }
+//      if (!this.httpServiceSSLProperties.containsKey(attName)) {
+//        this.httpServiceSSLProperties.setProperty(attName, attValue);
+//      }
+//      if (!this.clusterSSLProperties.containsKey(attName)) {
+//        this.clusterSSLProperties.setProperty(attName, attValue);
+//      }
     }
   }
 
