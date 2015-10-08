@@ -1290,7 +1290,7 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *   <dd><U>Description</U>: If false, allow ciphers that do not require the client
  *   side of the connection to be authenticated.
  *   </dd>
- *   <dd><U>Default</U>: <code>any</code></dd>
+ *   <dd><U>Default</U>: <code>true</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
  * </dl>
  * 
@@ -1374,7 +1374,7 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *   <dd><U>Description</U>: If false, allow ciphers that do not require the Gateway Sender
  *   side of the connection to be authenticated.
  *   </dd>
- *   <dd><U>Default</U>: <code>any</code></dd>
+ *   <dd><U>Default</U>: <code>true</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
  * </dl>
  * 
