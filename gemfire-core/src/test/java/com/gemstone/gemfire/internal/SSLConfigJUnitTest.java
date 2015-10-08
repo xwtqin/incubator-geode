@@ -150,11 +150,17 @@ public class SSLConfigJUnitTest {
   }
   
   @Test
-  public void testConfigCopyWithClusterSSL( ) throws Exception {
+  public void testClusterSSL( ) throws Exception {
     Properties props = new Properties();
     props.setProperty("cluster-ssl-ciphers", "RSA_WITH_GARBAGE" );
     props.setProperty("cluster-ssl-protocols", "SSLv7" );
     props.setProperty("cluster-ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("cluster-ssl-keystore", "clusterKeyStore");
+    props.setProperty("cluster-ssl-keystore-type", "clusterKeyStoreType");
+    props.setProperty("cluster-ssl-keystore-password", "clusterKeyStorePassword");
+    props.setProperty("cluster-ssl-truststore", "clusterTrustStore");
+    props.setProperty("cluster-ssl-truststore-password", "clusterTrustStorePassword");
+    props.setProperty("javax.net.ssl.FOO", "BAR");
     props.setProperty("cluster-ssl-enabled", String.valueOf( true ) );
     props.setProperty("mcast-port", "0" );
     DistributionConfigImpl config = new DistributionConfigImpl( props );
@@ -162,6 +168,325 @@ public class SSLConfigJUnitTest {
     isEqual( config.getClusterSSLCiphers(), "RSA_WITH_GARBAGE" );
     isEqual( config.getClusterSSLProtocols(), "SSLv7" );
     isEqual( config.getClusterSSLRequireAuthentication(), false );
+    isEqual( config.getClusterSSLKeyStore(), "clusterKeyStore" );
+    isEqual( config.getClusterSSLKeyStoreType(), "clusterKeyStoreType" );
+    isEqual( config.getClusterSSLKeyStorePassword(), "clusterKeyStorePassword" );
+    isEqual( config.getClusterSSLTrustStore(), "clusterTrustStore" );
+    isEqual( config.getClusterSSLTrustStorePassword(), "clusterTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "clusterKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "clusterKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "clusterKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "clusterTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "clusterTrustStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.FOO", "BAR");
+    isEqual( expectedSSLProps, config.getClusterSSLProperties() );
+  }
+  
+  @Test
+  public void testServerSSL( ) throws Exception {
+    Properties props = new Properties();
+    props.setProperty("server-ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("server-ssl-protocols", "SSLv7" );
+    props.setProperty("server-ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("server-ssl-keystore", "serverKeyStore");
+    props.setProperty("server-ssl-keystore-type", "serverKeyStoreType");
+    props.setProperty("server-ssl-keystore-password", "serverKeyStorePassword");
+    props.setProperty("server-ssl-truststore", "serverTrustStore");
+    props.setProperty("server-ssl-truststore-password", "serverTrustStorePassword");
+    props.setProperty("javax.net.ssl.FOO", "BAR");
+    props.setProperty("server-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getServerSSLEnabled(), true );
+    isEqual( config.getServerSSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getServerSSLProtocols(), "SSLv7" );
+    isEqual( config.getServerSSLRequireAuthentication(), false );
+    isEqual( config.getServerSSLKeyStore(), "serverKeyStore" );
+    isEqual( config.getServerSSLKeyStoreType(), "serverKeyStoreType" );
+    isEqual( config.getServerSSLKeyStorePassword(), "serverKeyStorePassword" );
+    isEqual( config.getServerSSLTrustStore(), "serverTrustStore" );
+    isEqual( config.getServerSSLTrustStorePassword(), "serverTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "serverKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "serverKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "serverKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "serverTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "serverTrustStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.FOO", "BAR");
+    isEqual( expectedSSLProps, config.getServerSSLProperties() );
+  }
+  
+  @Test
+  public void testGatewaySSL( ) throws Exception {
+    Properties props = new Properties();
+    props.setProperty("gateway-ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("gateway-ssl-protocols", "SSLv7" );
+    props.setProperty("gateway-ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("gateway-ssl-keystore", "gatewayKeyStore");
+    props.setProperty("gateway-ssl-keystore-type", "gatewayKeyStoreType");
+    props.setProperty("gateway-ssl-keystore-password", "gatewayKeyStorePassword");
+    props.setProperty("gateway-ssl-truststore", "gatewayTrustStore");
+    props.setProperty("gateway-ssl-truststore-password", "gatewayTrustStorePassword");
+    props.setProperty("javax.net.ssl.FOO", "BAR");
+    props.setProperty("gateway-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getGatewaySSLEnabled(), true );
+    isEqual( config.getGatewaySSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getGatewaySSLProtocols(), "SSLv7" );
+    isEqual( config.getGatewaySSLRequireAuthentication(), false );
+    isEqual( config.getGatewaySSLKeyStore(), "gatewayKeyStore" );
+    isEqual( config.getGatewaySSLKeyStoreType(), "gatewayKeyStoreType" );
+    isEqual( config.getGatewaySSLKeyStorePassword(), "gatewayKeyStorePassword" );
+    isEqual( config.getGatewaySSLTrustStore(), "gatewayTrustStore" );
+    isEqual( config.getGatewaySSLTrustStorePassword(), "gatewayTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "gatewayKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "gatewayKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "gatewayKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "gatewayTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "gatewayTrustStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.FOO", "BAR");
+    isEqual( expectedSSLProps, config.getGatewaySSLProperties() );
+  }
+  
+  @Test
+  public void testJmxManagerSSL( ) throws Exception {
+    Properties props = new Properties();
+    props.setProperty("jmx-manager-ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("jmx-manager-ssl-protocols", "SSLv7" );
+    props.setProperty("jmx-manager-ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("jmx-manager-ssl-keystore", "jmx-managerKeyStore");
+    props.setProperty("jmx-manager-ssl-keystore-type", "jmx-managerKeyStoreType");
+    props.setProperty("jmx-manager-ssl-keystore-password", "jmx-managerKeyStorePassword");
+    props.setProperty("jmx-manager-ssl-truststore", "jmx-managerTrustStore");
+    props.setProperty("jmx-manager-ssl-truststore-password", "jmx-managerTrustStorePassword");
+    props.setProperty("javax.net.ssl.FOO", "BAR");
+    props.setProperty("jmx-manager-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getJmxManagerSSLEnabled(), true );
+    isEqual( config.getJmxManagerSSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getJmxManagerSSLProtocols(), "SSLv7" );
+    isEqual( config.getJmxManagerSSLRequireAuthentication(), false );
+    isEqual( config.getJmxManagerSSLKeyStore(), "jmx-managerKeyStore" );
+    isEqual( config.getJmxManagerSSLKeyStoreType(), "jmx-managerKeyStoreType" );
+    isEqual( config.getJmxManagerSSLKeyStorePassword(), "jmx-managerKeyStorePassword" );
+    isEqual( config.getJmxManagerSSLTrustStore(), "jmx-managerTrustStore" );
+    isEqual( config.getJmxManagerSSLTrustStorePassword(), "jmx-managerTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "jmx-managerKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "jmx-managerKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "jmx-managerKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "jmx-managerTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "jmx-managerTrustStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.FOO", "BAR");
+    isEqual( expectedSSLProps, config.getJmxSSLProperties() );
+  }
+  
+  @Test
+  public void testHttpServiceSSL( ) throws Exception {
+    Properties props = new Properties();
+    props.setProperty("http-service-ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("http-service-ssl-protocols", "SSLv7" );
+    props.setProperty("http-service-ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("http-service-ssl-keystore", "http-serviceKeyStore");
+    props.setProperty("http-service-ssl-keystore-type", "http-serviceKeyStoreType");
+    props.setProperty("http-service-ssl-keystore-password", "http-serviceKeyStorePassword");
+    props.setProperty("http-service-ssl-truststore", "http-serviceTrustStore");
+    props.setProperty("http-service-ssl-truststore-password", "http-serviceTrustStorePassword");
+    props.setProperty("javax.net.ssl.FOO", "BAR");
+    props.setProperty("http-service-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getHttpServiceSSLEnabled(), true );
+    isEqual( config.getHttpServiceSSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getHttpServiceSSLProtocols(), "SSLv7" );
+    isEqual( config.getHttpServiceSSLRequireAuthentication(), false );
+    isEqual( config.getHttpServiceSSLKeyStore(), "http-serviceKeyStore" );
+    isEqual( config.getHttpServiceSSLKeyStoreType(), "http-serviceKeyStoreType" );
+    isEqual( config.getHttpServiceSSLKeyStorePassword(), "http-serviceKeyStorePassword" );
+    isEqual( config.getHttpServiceSSLTrustStore(), "http-serviceTrustStore" );
+    isEqual( config.getHttpServiceSSLTrustStorePassword(), "http-serviceTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "http-serviceKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "http-serviceKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "http-serviceKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "http-serviceTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "http-serviceTrustStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.FOO", "BAR");
+    isEqual( expectedSSLProps, config.getHttpServiceSSLProperties() );
+  }
+  
+  /**
+   * Test that a javax.net.ssl.* property has lower precedence than the corresponding cluster-ssl-* property
+   */
+  @Test
+  public void testJavaxDoesNotOverrideCluster() {
+    Properties props = new Properties();
+    props.setProperty("cluster-ssl-keystore", "clusterKeyStore");
+    props.setProperty("cluster-ssl-keystore-type", "clusterKeyStoreType");
+    props.setProperty("cluster-ssl-keystore-password", "clusterKeyStorePassword");
+    props.setProperty("cluster-ssl-truststore", "clusterTrustStore");
+    props.setProperty("cluster-ssl-truststore-password", "clusterTrustStorePassword");
+    props.setProperty("javax.net.ssl.keyStore", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStoreType", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStorePassword", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStore", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStorePassword", "BOGUS");
+    props.setProperty("cluster-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getClusterSSLEnabled(), true );
+    isEqual( config.getClusterSSLKeyStore(), "clusterKeyStore" );
+    isEqual( config.getClusterSSLKeyStoreType(), "clusterKeyStoreType" );
+    isEqual( config.getClusterSSLKeyStorePassword(), "clusterKeyStorePassword" );
+    isEqual( config.getClusterSSLTrustStore(), "clusterTrustStore" );
+    isEqual( config.getClusterSSLTrustStorePassword(), "clusterTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "clusterKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "clusterKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "clusterKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "clusterTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "clusterTrustStorePassword");
+    isEqual( expectedSSLProps, config.getClusterSSLProperties() );
+  }
+
+  /**
+   * Test that a javax.net.ssl.* property has lower precedence than the corresponding server-ssl-* property
+   */
+  @Test
+  public void testJavaxDoesNotOverrideServer() {
+    Properties props = new Properties();
+    props.setProperty("server-ssl-keystore", "serverKeyStore");
+    props.setProperty("server-ssl-keystore-type", "serverKeyStoreType");
+    props.setProperty("server-ssl-keystore-password", "serverKeyStorePassword");
+    props.setProperty("server-ssl-truststore", "serverTrustStore");
+    props.setProperty("server-ssl-truststore-password", "serverTrustStorePassword");
+    props.setProperty("javax.net.ssl.keyStore", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStoreType", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStorePassword", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStore", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStorePassword", "BOGUS");
+    props.setProperty("server-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getServerSSLEnabled(), true );
+    isEqual( config.getServerSSLKeyStore(), "serverKeyStore" );
+    isEqual( config.getServerSSLKeyStoreType(), "serverKeyStoreType" );
+    isEqual( config.getServerSSLKeyStorePassword(), "serverKeyStorePassword" );
+    isEqual( config.getServerSSLTrustStore(), "serverTrustStore" );
+    isEqual( config.getServerSSLTrustStorePassword(), "serverTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "serverKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "serverKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "serverKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "serverTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "serverTrustStorePassword");
+    isEqual( expectedSSLProps, config.getServerSSLProperties() );
+  }
+
+  /**
+   * Test that a javax.net.ssl.* property has lower precedence than the corresponding gateway-ssl-* property
+   */
+  @Test
+  public void testJavaxDoesNotOverrideGateway() {
+    Properties props = new Properties();
+    props.setProperty("gateway-ssl-keystore", "gatewayKeyStore");
+    props.setProperty("gateway-ssl-keystore-type", "gatewayKeyStoreType");
+    props.setProperty("gateway-ssl-keystore-password", "gatewayKeyStorePassword");
+    props.setProperty("gateway-ssl-truststore", "gatewayTrustStore");
+    props.setProperty("gateway-ssl-truststore-password", "gatewayTrustStorePassword");
+    props.setProperty("javax.net.ssl.keyStore", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStoreType", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStorePassword", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStore", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStorePassword", "BOGUS");
+    props.setProperty("gateway-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getGatewaySSLEnabled(), true );
+    isEqual( config.getGatewaySSLKeyStore(), "gatewayKeyStore" );
+    isEqual( config.getGatewaySSLKeyStoreType(), "gatewayKeyStoreType" );
+    isEqual( config.getGatewaySSLKeyStorePassword(), "gatewayKeyStorePassword" );
+    isEqual( config.getGatewaySSLTrustStore(), "gatewayTrustStore" );
+    isEqual( config.getGatewaySSLTrustStorePassword(), "gatewayTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "gatewayKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "gatewayKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "gatewayKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "gatewayTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "gatewayTrustStorePassword");
+    isEqual( expectedSSLProps, config.getGatewaySSLProperties() );
+  }
+
+  /**
+   * Test that a javax.net.ssl.* property has lower precedence than the corresponding jmx-manager-ssl-* property
+   */
+  @Test
+  public void testJavaxDoesNotOverrideJmxManager() {
+    Properties props = new Properties();
+    props.setProperty("jmx-manager-ssl-keystore", "jmx-managerKeyStore");
+    props.setProperty("jmx-manager-ssl-keystore-type", "jmx-managerKeyStoreType");
+    props.setProperty("jmx-manager-ssl-keystore-password", "jmx-managerKeyStorePassword");
+    props.setProperty("jmx-manager-ssl-truststore", "jmx-managerTrustStore");
+    props.setProperty("jmx-manager-ssl-truststore-password", "jmx-managerTrustStorePassword");
+    props.setProperty("javax.net.ssl.keyStore", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStoreType", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStorePassword", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStore", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStorePassword", "BOGUS");
+    props.setProperty("jmx-manager-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getJmxManagerSSLEnabled(), true );
+    isEqual( config.getJmxManagerSSLKeyStore(), "jmx-managerKeyStore" );
+    isEqual( config.getJmxManagerSSLKeyStoreType(), "jmx-managerKeyStoreType" );
+    isEqual( config.getJmxManagerSSLKeyStorePassword(), "jmx-managerKeyStorePassword" );
+    isEqual( config.getJmxManagerSSLTrustStore(), "jmx-managerTrustStore" );
+    isEqual( config.getJmxManagerSSLTrustStorePassword(), "jmx-managerTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "jmx-managerKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "jmx-managerKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "jmx-managerKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "jmx-managerTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "jmx-managerTrustStorePassword");
+    isEqual( expectedSSLProps, config.getJmxSSLProperties() );
+  }
+
+  /**
+   * Test that a javax.net.ssl.* property has lower precedence than the corresponding http-service-ssl-* property
+   */
+  @Test
+  public void testJavaxDoesNotOverrideHttpService() {
+    Properties props = new Properties();
+    props.setProperty("http-service-ssl-keystore", "http-serviceKeyStore");
+    props.setProperty("http-service-ssl-keystore-type", "http-serviceKeyStoreType");
+    props.setProperty("http-service-ssl-keystore-password", "http-serviceKeyStorePassword");
+    props.setProperty("http-service-ssl-truststore", "http-serviceTrustStore");
+    props.setProperty("http-service-ssl-truststore-password", "http-serviceTrustStorePassword");
+    props.setProperty("javax.net.ssl.keyStore", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStoreType", "BOGUS");
+    props.setProperty("javax.net.ssl.keyStorePassword", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStore", "BOGUS");
+    props.setProperty("javax.net.ssl.trustStorePassword", "BOGUS");
+    props.setProperty("http-service-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getHttpServiceSSLEnabled(), true );
+    isEqual( config.getHttpServiceSSLKeyStore(), "http-serviceKeyStore" );
+    isEqual( config.getHttpServiceSSLKeyStoreType(), "http-serviceKeyStoreType" );
+    isEqual( config.getHttpServiceSSLKeyStorePassword(), "http-serviceKeyStorePassword" );
+    isEqual( config.getHttpServiceSSLTrustStore(), "http-serviceTrustStore" );
+    isEqual( config.getHttpServiceSSLTrustStorePassword(), "http-serviceTrustStorePassword" );
+    Properties expectedSSLProps = new Properties();
+    expectedSSLProps.setProperty("javax.net.ssl.keyStore", "http-serviceKeyStore");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStoreType", "http-serviceKeyStoreType");
+    expectedSSLProps.setProperty("javax.net.ssl.keyStorePassword", "http-serviceKeyStorePassword");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStore", "http-serviceTrustStore");
+    expectedSSLProps.setProperty("javax.net.ssl.trustStorePassword", "http-serviceTrustStorePassword");
+    isEqual( expectedSSLProps, config.getHttpServiceSSLProperties() );
   }
 
   @Test

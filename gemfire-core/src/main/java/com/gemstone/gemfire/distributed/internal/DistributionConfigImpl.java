@@ -822,7 +822,6 @@ public class DistributionConfigImpl
         this.clusterSSLRequireAuthentication = this.sslRequireAuthentication;
         this.sourceMap.put(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME,this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME));
       }      
-      this.clusterSSLProperties.putAll(this.sslProperties);
     }  
     if (false/*clusterSSLOverriden*/) {
       if (this.sourceMap.get(CLUSTER_SSL_CIPHERS_NAME)==null && this.sourceMap.get(SSL_CIPHERS_NAME) != null) {
@@ -2139,12 +2138,12 @@ public class DistributionConfigImpl
         // use sslProperties as base and let props with suffix GATEWAY_SSL_PROPS_SUFFIX override that base
         this.gatewaySslProperties.setProperty(attName, attValue);
       }
-//      if (!this.httpServiceSSLProperties.containsKey(attName)) {
-//        this.httpServiceSSLProperties.setProperty(attName, attValue);
-//      }
-//      if (!this.clusterSSLProperties.containsKey(attName)) {
-//        this.clusterSSLProperties.setProperty(attName, attValue);
-//      }
+      if (!this.httpServiceSSLProperties.containsKey(attName)) {
+        this.httpServiceSSLProperties.setProperty(attName, attValue);
+      }
+      if (!this.clusterSSLProperties.containsKey(attName)) {
+        this.clusterSSLProperties.setProperty(attName, attValue);
+      }
     }
   }
 
