@@ -103,17 +103,14 @@ public class SSLConfigJUnitTest {
     Properties props = new Properties( );
     // default mcast-port is not 0.
     props.setProperty( "ssl-enabled", "true" );
-    
     try {
       new DistributionConfigImpl( props );
+      fail("Expected IllegalArgumentException");
     } catch ( IllegalArgumentException e ) {
       if (! e.toString().matches( ".*Could not set \"ssl-enabled.*" ) ) {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
-    
-    props.setProperty( "mcast-port", "0" );
-    new DistributionConfigImpl( props );
   }
   
   @Test
@@ -121,17 +118,14 @@ public class SSLConfigJUnitTest {
     Properties props = new Properties( );
     // default mcast-port is not 0.
     props.setProperty( "cluster-ssl-enabled", "true" );
-    
     try {
       new DistributionConfigImpl( props );
+      fail("Expected IllegalArgumentException");
     } catch ( IllegalArgumentException e ) {
       if (! e.toString().matches( ".*Could not set \"cluster-ssl-enabled.*" ) ) {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
-    
-    props.setProperty( "mcast-port", "0" );
-    new DistributionConfigImpl( props );
   }
   
   @Test
@@ -250,78 +244,76 @@ public class SSLConfigJUnitTest {
     isEqual( config.getClusterSSLRequireAuthentication(), requireAuth );
   }
 
-  @Test
-  public void testManagerDefaultConfig() throws Exception {
-    boolean sslenabled = false;
-    String sslprotocols = "any";
-    String sslciphers = "any";
-    boolean requireAuth = true;
-
-    boolean jmxManagerSsl = false;
-    boolean jmxManagerSslenabled = false;
-    String jmxManagerSslprotocols = "any";
-    String jmxManagerSslciphers = "any";
-    boolean jmxManagerSslRequireAuth = true;
-
+  public void testClusterDefaultConfig() throws Exception {
     DistributionConfigImpl config = new DistributionConfigImpl( new Properties() );
-    isEqual( config.getClusterSSLEnabled(), sslenabled );
-    isEqual( config.getClusterSSLProtocols(), sslprotocols );
-    isEqual( config.getClusterSSLCiphers(), sslciphers );
-    isEqual( config.getClusterSSLRequireAuthentication(), requireAuth );
-    
-    isEqual( config.getJmxManagerSSLEnabled(), jmxManagerSsl);
-    isEqual( config.getJmxManagerSSLEnabled(), jmxManagerSslenabled );
-    isEqual( config.getJmxManagerSSLProtocols(), jmxManagerSslprotocols );
-    isEqual( config.getJmxManagerSSLCiphers(), jmxManagerSslciphers );
-    isEqual( config.getJmxManagerSSLRequireAuthentication(), jmxManagerSslRequireAuth );
+    isEqual( config.getClusterSSLEnabled(), false );
+    isEqual( config.getClusterSSLProtocols(), "any" );
+    isEqual( config.getClusterSSLCiphers(), "any" );
+    isEqual( config.getClusterSSLRequireAuthentication(), true );
+    isEqual( config.getClusterSSLKeyStore(), "" );
+    isEqual( config.getClusterSSLKeyStoreType(), "" );
+    isEqual( config.getClusterSSLKeyStorePassword(), "" );
+    isEqual( config.getClusterSSLTrustStore(), "" );
+    isEqual( config.getClusterSSLTrustStorePassword(), "" );
+    isEqual( config.getClusterSSLProperties(), new Properties() );
+  }
+
+  public void testManagerDefaultConfig() throws Exception {
+    DistributionConfigImpl config = new DistributionConfigImpl( new Properties() );
+    isEqual( config.getJmxManagerSSLEnabled(), false );
+    isEqual( config.getJmxManagerSSLProtocols(), "any" );
+    isEqual( config.getJmxManagerSSLCiphers(), "any" );
+    isEqual( config.getJmxManagerSSLRequireAuthentication(), true );
+    isEqual( config.getJmxManagerSSLKeyStore(), "" );
+    isEqual( config.getJmxManagerSSLKeyStoreType(), "" );
+    isEqual( config.getJmxManagerSSLKeyStorePassword(), "" );
+    isEqual( config.getJmxManagerSSLTrustStore(), "" );
+    isEqual( config.getJmxManagerSSLTrustStorePassword(), "" );
+    isEqual( config.getJmxSSLProperties(), new Properties() );
   }
   
   @Test
   public void testCacheServerDefaultConfig() throws Exception {
-    boolean sslenabled = false;
-    String sslprotocols = "any";
-    String sslciphers = "any";
-    boolean requireAuth = true;
-
-    boolean cacheServerSslenabled = false;
-    String cacheServerSslprotocols = "any";
-    String cacheServerSslciphers = "any";
-    boolean cacheServerSslRequireAuth = true;
-
     DistributionConfigImpl config = new DistributionConfigImpl( new Properties() );
-    isEqual( config.getClusterSSLEnabled(), sslenabled );
-    isEqual( config.getClusterSSLProtocols(), sslprotocols );
-    isEqual( config.getClusterSSLCiphers(), sslciphers );
-    isEqual( config.getClusterSSLRequireAuthentication(), requireAuth );
-
-    isEqual( config.getServerSSLEnabled(), cacheServerSslenabled );
-    isEqual( config.getServerSSLProtocols(), cacheServerSslprotocols );
-    isEqual( config.getServerSSLCiphers(), cacheServerSslciphers );
-    isEqual( config.getServerSSLRequireAuthentication(), cacheServerSslRequireAuth );
+    isEqual( config.getServerSSLEnabled(), false );
+    isEqual( config.getServerSSLProtocols(), "any" );
+    isEqual( config.getServerSSLCiphers(), "any" );
+    isEqual( config.getServerSSLRequireAuthentication(), true );
+    isEqual( config.getServerSSLKeyStore(), "" );
+    isEqual( config.getServerSSLKeyStoreType(), "" );
+    isEqual( config.getServerSSLKeyStorePassword(), "" );
+    isEqual( config.getServerSSLTrustStore(), "" );
+    isEqual( config.getServerSSLTrustStorePassword(), "" );
+    isEqual( config.getServerSSLProperties(), new Properties() );
   }
   
   @Test
   public void testGatewayDefaultConfig() throws Exception {
-    boolean sslenabled = false;
-    String sslprotocols = "any";
-    String sslciphers = "any";
-    boolean requireAuth = true;
-
-    boolean gatewaySslenabled = false;
-    String gatewaySslprotocols = "any";
-    String gatewaySslciphers = "any";
-    boolean gatewaySslRequireAuth = true;
-
     DistributionConfigImpl config = new DistributionConfigImpl( new Properties() );
-    isEqual( config.getClusterSSLEnabled(), sslenabled );
-    isEqual( config.getClusterSSLProtocols(), sslprotocols );
-    isEqual( config.getClusterSSLCiphers(), sslciphers );
-    isEqual( config.getClusterSSLRequireAuthentication(), requireAuth );
-
-    isEqual( config.getGatewaySSLEnabled(), gatewaySslenabled );
-    isEqual( config.getGatewaySSLProtocols(), gatewaySslprotocols );
-    isEqual( config.getGatewaySSLCiphers(), gatewaySslciphers );
-    isEqual( config.getGatewaySSLRequireAuthentication(), gatewaySslRequireAuth );
+    isEqual( config.getGatewaySSLEnabled(), false );
+    isEqual( config.getGatewaySSLProtocols(), "any" );
+    isEqual( config.getGatewaySSLCiphers(), "any" );
+    isEqual( config.getGatewaySSLRequireAuthentication(), true );
+    isEqual( config.getGatewaySSLKeyStore(), "" );
+    isEqual( config.getGatewaySSLKeyStoreType(), "" );
+    isEqual( config.getGatewaySSLKeyStorePassword(), "" );
+    isEqual( config.getGatewaySSLTrustStore(), "" );
+    isEqual( config.getGatewaySSLTrustStorePassword(), "" );
+    isEqual( config.getGatewaySSLProperties(), new Properties() );
+  }
+  
+  public void testHttpServiceDefaultConfig() throws Exception {
+    DistributionConfigImpl config = new DistributionConfigImpl( new Properties() );
+    isEqual( config.getHttpServiceSSLEnabled(), false );
+    isEqual( config.getHttpServiceSSLProtocols(), "any" );
+    isEqual( config.getHttpServiceSSLCiphers(), "any" );
+    isEqual( config.getHttpServiceSSLRequireAuthentication(), false );
+    isEqual( config.getHttpServiceSSLKeyStore(), "" );
+    isEqual( config.getHttpServiceSSLKeyStoreType(), "" );
+    isEqual( config.getHttpServiceSSLKeyStorePassword(), "" );
+    isEqual( config.getHttpServiceSSLTrustStore(), "" );
+    isEqual( config.getHttpServiceSSLTrustStorePassword(), "" );
+    isEqual( config.getHttpServiceSSLProperties(), new Properties() );
   }
   
 
