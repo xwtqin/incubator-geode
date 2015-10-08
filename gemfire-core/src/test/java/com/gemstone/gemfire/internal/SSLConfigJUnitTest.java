@@ -254,11 +254,8 @@ public class SSLConfigJUnitTest {
     boolean jmxManagerSslRequireAuth = true;
 
     Properties gemFireProps = new Properties();
-    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_NAME, String.valueOf(jmxManagerSsl));
-    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_ENABLED_NAME, String.valueOf(jmxManagerSslenabled));
-    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_PROTOCOLS_NAME, jmxManagerSslprotocols);
-    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_CIPHERS_NAME, jmxManagerSslciphers);
-    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_REQUIRE_AUTHENTICATION_NAME, String.valueOf(jmxManagerSslRequireAuth));
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_NAME, "true");
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_ENABLED_NAME, "false");
     try{
       DistributionConfigImpl config = new DistributionConfigImpl( gemFireProps );
       fail("Expected IllegalArgumentException");
@@ -267,6 +264,15 @@ public class SSLConfigJUnitTest {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
+    // make sure they can both be set to the same value
+    gemFireProps = new Properties();
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_NAME, "true");
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_ENABLED_NAME, "true");
+    new DistributionConfigImpl( gemFireProps );
+    gemFireProps = new Properties();
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_NAME, "false");
+    gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_ENABLED_NAME, "false");
+    new DistributionConfigImpl( gemFireProps );
     
     gemFireProps = new Properties();
     gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, String.valueOf(sslenabled));
@@ -379,7 +385,7 @@ public class SSLConfigJUnitTest {
     Properties gemFireProps = new Properties();
     gemFireProps.setProperty( "mcast-port", "0" );
     gemFireProps.put(DistributionConfig.SSL_ENABLED_NAME, "true");
-    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "false");
     DistributionConfigImpl config = null;
     try{
       config = new DistributionConfigImpl( gemFireProps );
@@ -393,9 +399,8 @@ public class SSLConfigJUnitTest {
     //ssl-protocol and cluster-ssl-protocol set at the same time
     gemFireProps = new Properties();
     gemFireProps.setProperty( "mcast-port", "0" );
-    gemFireProps.put(DistributionConfig.SSL_ENABLED_NAME, "true");
     gemFireProps.put(DistributionConfig.SSL_PROTOCOLS_NAME, sslprotocols);
-    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "false");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
     gemFireProps.put(DistributionConfig.CLUSTER_SSL_PROTOCOLS_NAME, clusterSslprotocols);
     try{
       config = new DistributionConfigImpl( gemFireProps );
@@ -405,13 +410,19 @@ public class SSLConfigJUnitTest {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
+    // make sure they can both be set to the same value
+    gemFireProps = new Properties();
+    gemFireProps.setProperty( "mcast-port", "0" );
+    gemFireProps.put(DistributionConfig.SSL_PROTOCOLS_NAME, sslprotocols);
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_PROTOCOLS_NAME, sslprotocols);
+    config = new DistributionConfigImpl( gemFireProps );
     
     //ssl-cipher and cluster-ssl-cipher set at the same time
     gemFireProps = new Properties();
     gemFireProps.setProperty( "mcast-port", "0" );
-    gemFireProps.put(DistributionConfig.SSL_ENABLED_NAME, "true");
     gemFireProps.put(DistributionConfig.SSL_CIPHERS_NAME, sslciphers);
-    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "false");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
     gemFireProps.put(DistributionConfig.CLUSTER_SSL_CIPHERS_NAME, clusterSslciphers);
     try{
       config = new DistributionConfigImpl( gemFireProps );
@@ -421,22 +432,36 @@ public class SSLConfigJUnitTest {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
+    // make sure they can both be set to the same value
+    gemFireProps = new Properties();
+    gemFireProps.setProperty( "mcast-port", "0" );
+    gemFireProps.put(DistributionConfig.SSL_CIPHERS_NAME, clusterSslciphers);
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_CIPHERS_NAME, clusterSslciphers);
+    config = new DistributionConfigImpl( gemFireProps );
     
   //ssl-require-authentication and cluster-ssl-require-authentication set at the same time
     gemFireProps = new Properties();
     gemFireProps.setProperty( "mcast-port", "0" );
-    gemFireProps.put(DistributionConfig.SSL_ENABLED_NAME, "true");
     gemFireProps.put(DistributionConfig.SSL_REQUIRE_AUTHENTICATION_NAME, "true");
-    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "false");
-    gemFireProps.put(DistributionConfig.CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME, "false");
     try{
       config = new DistributionConfigImpl( gemFireProps );
-      //fail("Expected IllegalArgumentException");
+      fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException e){
       if (! e.toString().contains( "Gemfire property \'ssl-require-authentication\' and \'cluster-ssl-require-authentication\' can not be used at the same time") ) {
         throw new Exception( "did not get expected exception, got this instead...", e );
       }
     }
+    // make sure they can both be set to the same value
+    gemFireProps = new Properties();
+    gemFireProps.setProperty( "mcast-port", "0" );
+    gemFireProps.put(DistributionConfig.SSL_REQUIRE_AUTHENTICATION_NAME, "false");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_ENABLED_NAME, "true");
+    gemFireProps.put(DistributionConfig.CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME, "false");
+    config = new DistributionConfigImpl( gemFireProps );
+
     
     // only ssl-* properties provided. same should reflect in cluster-ssl properties
     gemFireProps = new Properties();

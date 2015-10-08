@@ -744,27 +744,24 @@ public class DistributionConfigImpl
     if(sslEnabledString != null && clusterSSLEnabledString != null){
       boolean sslEnabled = new Boolean(sslEnabledString).booleanValue();
       boolean clusterSSLEnabled =new Boolean(clusterSSLEnabledString).booleanValue();
-      if (sslEnabled != DEFAULT_SSL_ENABLED
-          && clusterSSLEnabled != DEFAULT_CLUSTER_SSL_ENABLED) {
+      if (sslEnabled != clusterSSLEnabled) {
         throw new IllegalArgumentException(
-            "Gemfire property \'ssl-enabled\' and \'cluster-ssl-enabled\' can not be used at the same time. Prefer way is to use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
+            "Gemfire property \'ssl-enabled\' and \'cluster-ssl-enabled\' can not be used at the same time. Use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
       }
     }
     
     String sslCipher = (String)props.get(SSL_CIPHERS_NAME);
     String clusterSSLCipher = (String)props.get(CLUSTER_SSL_CIPHERS_NAME);
-    if (sslCipher != null && sslCipher != DEFAULT_SSL_CIPHERS
-        && clusterSSLCipher != null && clusterSSLCipher != DEFAULT_CLUSTER_SSL_CIPHERS) {
+    if (sslCipher != null && clusterSSLCipher != null && !sslCipher.equals(clusterSSLCipher)) {
       throw new IllegalArgumentException(
-          "Gemfire property \'ssl-cipher\' and \'cluster-ssl-cipher\' can not be used at the same time. Prefer way is to use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
+          "Gemfire property \'ssl-cipher\' and \'cluster-ssl-cipher\' can not be used at the same time. Use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
     }
 
     String sslProtocol = (String)props.get(SSL_PROTOCOLS_NAME);
     String clusterSSLProtocol = (String)props.get(CLUSTER_SSL_PROTOCOLS_NAME);
-    if (sslProtocol != null && sslProtocol != DEFAULT_SSL_PROTOCOLS
-        && clusterSSLProtocol != null && clusterSSLProtocol != DEFAULT_CLUSTER_SSL_PROTOCOLS ) {
+    if (sslProtocol != null && clusterSSLProtocol != null && !sslProtocol.equals(clusterSSLProtocol)) {
       throw new IllegalArgumentException(
-          "Gemfire property \'ssl-protocols\' and \'cluster-ssl-protocols\' can not be used at the same time. Prefer way is to use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
+          "Gemfire property \'ssl-protocols\' and \'cluster-ssl-protocols\' can not be used at the same time. Use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
     }
     
     String sslReqAuthString = (String)props.get(SSL_REQUIRE_AUTHENTICATION_NAME);
@@ -772,10 +769,9 @@ public class DistributionConfigImpl
     if(sslReqAuthString != null && clusterReqAuthString != null){
       boolean sslReqAuth = new Boolean(sslReqAuthString).booleanValue();
       boolean clusterSSLReqAuth =new Boolean(clusterReqAuthString).booleanValue();
-      if (sslReqAuth != DEFAULT_SSL_REQUIRE_AUTHENTICATION
-          && clusterSSLReqAuth != DEFAULT_CLUSTER_SSL_REQUIRE_AUTHENTICATION) {
+      if (sslReqAuth != clusterSSLReqAuth) {
         throw new IllegalArgumentException(
-            "Gemfire property \'ssl-require-authentication\' and \'cluster-ssl-require-authentication\' can not be used at the same time. Prefer way is to use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
+            "Gemfire property \'ssl-require-authentication\' and \'cluster-ssl-require-authentication\' can not be used at the same time. Use all \'cluster-ssl*\' properties instead of \'ssl-*\'.");
       }
     }
     
@@ -784,11 +780,20 @@ public class DistributionConfigImpl
     if(jmxSSLString != null && jmxSSLEnabledString != null){
       boolean jmxSSL = new Boolean(jmxSSLString).booleanValue();
       boolean jmxSSLEnabled =new Boolean(jmxSSLEnabledString).booleanValue();
-      if (jmxSSL != DEFAULT_SSL_ENABLED
-          && jmxSSLEnabled != DEFAULT_CLUSTER_SSL_ENABLED) {
+      if (jmxSSL != jmxSSLEnabled) {
         throw new IllegalArgumentException(
-            "Gemfire property \'jmx-manager-ssl\' and \'jmx-manager-ssl-enabled\' can not be used at the same time. Prefer way is to use \'jmx-manager-ssl-enabled\' instead of \'jmx-manager-ssl\'.");
+            "Gemfire property \'jmx-manager-ssl\' and \'jmx-manager-ssl-enabled\' can not be used at the same time. Use \'jmx-manager-ssl-enabled\' instead of \'jmx-manager-ssl\'.");
       }
+    }
+  }
+  
+  private static boolean equals(Object o1, Object o2) {
+    if (o1 != null) {
+      return o1.equals(o2);
+    } else if (o2 != null) {
+      return o2.equals(o1);
+    } else {
+      return o1 == o2;
     }
   }
   
