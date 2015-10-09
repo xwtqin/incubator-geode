@@ -705,8 +705,8 @@ public class DistributionConfigImpl
     
     // this is case of locator and DS is started through
     // Locator.startLocatorAndDS, In this case I don't need to validate SSL
-    // properties. This fix is till the time we support SSL properties. Once SSl
-    // properties is depprecated, boolean isConnected will be removed
+    // properties. This fix is till the time we support SSL properties. Once SSL
+    // properties are deprecated, boolean isConnected will be removed
     if (!isConnected) {
       validateOldSSLVsNewSSLProperties(props);
     }
@@ -730,11 +730,18 @@ public class DistributionConfigImpl
     }
     computeMcastPortDefault();
     if (!isConnected) {
+      // Allow attributes to be modified
+      this.modifiable = true;
+      try {
       copySSLPropsToClusterSSLProps();
       copySSLPropsToServerSSLProps();
       copySSLPropsToJMXSSLProps();
       copyClusterSSLPropsToGatewaySSLProps();
       copySSLPropsToHTTPSSLProps();
+      } finally {
+        // Make attributes read only
+        this.modifiable = false;
+      }
     }
   }
   
@@ -805,35 +812,35 @@ public class DistributionConfigImpl
     boolean p2pSSLOverRidden = this.sourceMap.get(SSL_ENABLED_NAME)!=null;
     
     if(p2pSSLOverRidden && !clusterSSLOverriden) {
-      this.clusterSSLEnabled  = this.sslEnabled;
+      this.setClusterSSLEnabled(true);
       this.sourceMap.put(CLUSTER_SSL_ENABLED_NAME,this.sourceMap.get(SSL_ENABLED_NAME));
       
       if(this.sourceMap.get(SSL_CIPHERS_NAME)!=null) {
-        this.clusterSSLCiphers = this.sslCiphers;
+        setClusterSSLCiphers(this.sslCiphers);
         this.sourceMap.put(CLUSTER_SSL_CIPHERS_NAME,this.sourceMap.get(SSL_CIPHERS_NAME));
       }
       
       if(this.sourceMap.get(SSL_PROTOCOLS_NAME)!=null) {
-        this.clusterSSLProtocols = this.sslProtocols;
+        setClusterSSLProtocols(this.sslProtocols);
         this.sourceMap.put(CLUSTER_SSL_PROTOCOLS_NAME,this.sourceMap.get(SSL_PROTOCOLS_NAME));
       }
       
       if(this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME)!=null) {
-        this.clusterSSLRequireAuthentication = this.sslRequireAuthentication;
+        setClusterSSLRequireAuthentication(this.sslRequireAuthentication);
         this.sourceMap.put(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME,this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME));
       }      
     }  
-    if (false/*clusterSSLOverriden*/) {
+    if (clusterSSLOverriden) {
       if (this.sourceMap.get(CLUSTER_SSL_CIPHERS_NAME)==null && this.sourceMap.get(SSL_CIPHERS_NAME) != null) {
-        this.setServerSSLCiphers(this.sslCiphers);
+        setClusterSSLCiphers(this.sslCiphers);
         this.sourceMap.put(CLUSTER_SSL_CIPHERS_NAME, this.sourceMap.get(SSL_CIPHERS_NAME));
       }
       if (this.sourceMap.get(CLUSTER_SSL_PROTOCOLS_NAME)==null && this.sourceMap.get(SSL_PROTOCOLS_NAME) != null) {
-        this.setServerSSLProtocols(this.sslProtocols);
+        setClusterSSLProtocols(this.sslProtocols);
         this.sourceMap.put(CLUSTER_SSL_PROTOCOLS_NAME, this.sourceMap.get(SSL_PROTOCOLS_NAME));
       }
       if (this.sourceMap.get(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME)==null && this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME) != null) {
-        this.setServerSSLRequireAuthentication(this.sslRequireAuthentication);
+        setClusterSSLRequireAuthentication(this.sslRequireAuthentication);
         this.sourceMap.put(CLUSTER_SSL_REQUIRE_AUTHENTICATION_NAME, this.sourceMap.get(SSL_REQUIRE_AUTHENTICATION_NAME));
       }
     }

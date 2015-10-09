@@ -150,6 +150,37 @@ public class SSLConfigJUnitTest {
   }
   
   @Test
+  /**
+   * Make sure that the old ssl-* properties work correctly
+   * with the new cluster-ssl-* properties.
+   */
+  public void testDeprecatedSSLWithCluster() {
+    Properties props = new Properties();
+    props.setProperty("ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("ssl-protocols", "SSLv7" );
+    props.setProperty("ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    DistributionConfigImpl config = new DistributionConfigImpl( props );
+    isEqual( config.getClusterSSLEnabled(), true );
+    isEqual( config.getClusterSSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getClusterSSLProtocols(), "SSLv7" );
+    isEqual( config.getClusterSSLRequireAuthentication(), false );
+    
+    // now do the same thing but just set cluster-ssl-enabled
+    props.setProperty("ssl-ciphers", "RSA_WITH_GARBAGE" );
+    props.setProperty("ssl-protocols", "SSLv7" );
+    props.setProperty("ssl-require-authentication", String.valueOf( false ) );
+    props.setProperty("cluster-ssl-enabled", String.valueOf( true ) );
+    props.setProperty("mcast-port", "0" );
+    config = new DistributionConfigImpl( props );
+    isEqual( config.getClusterSSLEnabled(), true );
+    isEqual( config.getClusterSSLCiphers(), "RSA_WITH_GARBAGE" );
+    isEqual( config.getClusterSSLProtocols(), "SSLv7" );
+    isEqual( config.getClusterSSLRequireAuthentication(), false );
+  }
+  
+  @Test
   public void testClusterSSL( ) throws Exception {
     Properties props = new Properties();
     props.setProperty("cluster-ssl-ciphers", "RSA_WITH_GARBAGE" );
