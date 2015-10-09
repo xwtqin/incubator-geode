@@ -597,6 +597,7 @@ public class SSLConfigJUnitTest {
   
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testManagerConfig() throws Exception {
     boolean sslenabled = false;
     String  sslprotocols = "any";
@@ -613,7 +614,7 @@ public class SSLConfigJUnitTest {
     gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_NAME, "true");
     gemFireProps.put(DistributionConfig.JMX_MANAGER_SSL_ENABLED_NAME, "false");
     try{
-      DistributionConfigImpl config = new DistributionConfigImpl( gemFireProps );
+      new DistributionConfigImpl( gemFireProps );
       fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException e){
       if (! e.toString().contains( "Gemfire property \'jmx-manager-ssl\' and \'jmx-manager-ssl-enabled\' can not be used at the same time")) {
@@ -725,6 +726,7 @@ public class SSLConfigJUnitTest {
   }
   
   @Test
+  @SuppressWarnings("deprecation")
   public void testCustomizedClusterSslConfig() throws Exception {
     
     boolean sslenabled = true;
