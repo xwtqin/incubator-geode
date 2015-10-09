@@ -919,11 +919,7 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="jmx-manager-ssl"><dt>jmx-manager-ssl</dt></a>
- *   <dd><U>Description</U>: If true and jmx-manager-port is not zero then the jmx-manager
- *   will only accept ssl connections. Note that the ssl-enabled property does not apply to the jmx-manager
- *   but the other ssl properties do. This allows ssl to be configured for just the jmx-manager
- *   without needing to configure it for the other GemFire connections.
- *   Ignored if jmx-manager is false.
+ *   <dd><U>Description</U>: See jmx-manager-ssl-enabled.
  *   </dd>
  *   <dd><U>Default</U>: "false"</dd>
  *   <dd><U>Deprecated</U>: as of 8.0 use <a href="#jmx-manager-ssl-enabled"><code>jmx-manager-ssl-enabled</code></a> instead.</dd>
@@ -931,42 +927,55 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-enabled"><dt>jmx-manager-ssl-enabled</dt></a>
- *   <dd><U>Description</U>: If true and jmx-manager-port is not zero then the jmx-manager
- *   will only accept ssl connections. Note that the ssl-enabled property does not apply to the jmx-manager
- *   but the other ssl properties do. This allows ssl to be configured for just the jmx-manager
- *   without needing to configure it for the other GemFire connections.
- *   Ignored if jmx-manager is false.
+ *   <dd><U>Description</U>: If specified then it determines if the jmx manager
+ *   will use ssl.
+ *   If not specified its value is inherited from cluster-ssl-enabled.
  *   </dd>
- *   <dd><U>Default</U>: "false"</dd>
+ *   <dd><U>Default</U>: <code>false</code></dd>
+ *   <dd><U>Since</U>: 8.0</dd>
  * </dl> 
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-ciphers"><dt>jmx-manager-ssl-ciphers</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL cipher suites to enable.
- *   Those listed must be supported by the available providers.
- *   </dd>   
- *   <dd><U>Default</U>: "any"</dd>
- * </dl>
- * 
- * <dl>
- *   <a name="jmx-manager-ssl-protocols"><dt>jmx-manager-ssl-protocols</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL protocols to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl ciphers
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-ciphers.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is a space separated list of the SSL cipher suites.
  *   Those listed must be supported by the available providers.
  *   </dd>
- *   <dd><U>Default</U>: "any"</dd>
+ *   <dd><U>Default</U>: <code>any</code></dd>
  * </dl>
- * 
+ *  
+ * <dl>
+ *   <a name="jmx-manager-ssl-protocols"><dt>jmx-manager-ssl-protocols</dt></a>
+ *   <dd><U>Description</U>: If specified then it determines the ssl protocols
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-protocols.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is a space separated list of the SSL protocols.
+ *   Those listed must be supported by the available providers.
+ *   </dd>
+ *   <dd><U>Default</U>: <code>any</code></dd>
+ * </dl>
+ *  
  * <dl>
  *   <a name="jmx-manager-ssl-require-authentication"><dt>jmx-manager-ssl-require-authentication</dt></a>
- *   <dd><U>Description</U>: If false, allow ciphers that do not require the client
- *   side of the connection to be authenticated.
- *   </dd>   
- *   <dd><U>Default</U>: "true"</dd>
+ *   <dd><U>Description</U>: If specified then it determines if ssl authentication
+ *   will be done by the jmx manager on incoming connections.
+ *   If not specified its value is inherited from cluster-ssl-require-authentication.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   </dd>
+ *   <dd><U>Default</U>: <code>true</code></dd>
  * </dl>
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-keystore"><dt>jmx-manager-ssl-keystore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-keystore.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing
  *   certificate and private key.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -975,7 +984,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-keystore-type"><dt>jmx-manager-ssl-keystore-type</dt></a>
- *   <dd><U>Description</U>For Java keystore file format, this property has the
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore type
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-keystore-type.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   For Java keystore file format, this property has the
  *   value jks (or JKS).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -984,8 +997,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-keystore-password"><dt>jmx-manager-ssl-keystore-password</dt></a>
- *   <dd><U>Description</U>Password to access the private key from the keystore
- *   file specified by javax.net.ssl.keyStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore password
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-keystore-password.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is the password to access the private key from the keystore.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -993,17 +1009,24 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="jmx-manager-ssl-truststore"><dt>jmx-manager-ssl-truststore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing the
- *   collection of CA certificates trusted by manager (trust store).
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-truststore.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing the
+ *   collection of CA certificates trusted by server (trust store).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
  * </dl>
- * 
+ *  
  * <dl>
  *   <a name="jmx-manager-ssl-truststore-password"><dt>jmx-manager-ssl-truststore-password</dt></a>
- *   <dd><U>Description</U>Password to unlock the keystore file (store password)
- *   specified by javax.net.ssl.trustStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore password
+ *   to use for the jmx manager.
+ *   If not specified its value is inherited from cluster-ssl-truststore-password.
+ *   This property is ignored if jmx-manager-ssl-enabled is false.
+ *   Value is the password to unlock the truststore file.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1106,10 +1129,9 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-enabled"><dt>http-service-ssl-enabled</dt></a>
- *   <dd><U>Description</U>: Specifies if http service is started with separate ssl configuration.
- *   If not specified, global property cluster-ssl-enabled (and its other related properties) are used
- *   to secure http service. All http-service-ssl-* properties are inherited from cluster-ssl-* properties. 
- *   User can ovverride them using specific http-service-ssl-* property.
+ *   <dd><U>Description</U>: If specified then it determines if the http service
+ *   will use ssl.
+ *   If not specified its value is inherited from cluster-ssl-enabled.
  *   </dd>
  *   <dd><U>Default</U>: <code>false</code></dd>
  *   <dd><U>Since</U>: 8.1</dd>
@@ -1117,7 +1139,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-ciphers"><dt>http-service-ssl-ciphers</dt></a>
- *   <dd><U>Description</U>: A space separated list of the SSL cipher suites to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl ciphers
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-ciphers.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is a space separated list of the SSL cipher suites.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1126,7 +1152,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="http-service-ssl-protocols"><dt>http-service-ssl-protocols</dt></a>
- *   <dd><U>Description</U>: A space separated list of the SSL protocols to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl protocols
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-protocols.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is a space separated list of the SSL protocols.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1135,8 +1165,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="http-service-ssl-require-authentication"><dt>http-service-ssl-require-authentication</dt></a>
- *   <dd><U>Description</U>: If false, allow ciphers that do not require the client
- *   side of the connection to be authenticated.
+ *   <dd><U>Description</U>: If specified then it determines if ssl authentication
+ *   will be done by the http service.
+ *   If not specified its value is inherited from cluster-ssl-require-authentication.
+ *   This property is ignored if http-service-ssl-enabled is false.
  *   </dd>
  *   <dd><U>Default</U>: <code>false</code></dd>
  *   <dd><U>Since</U>: 8.1</dd>
@@ -1144,7 +1176,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-keystore"><dt>http-service-ssl-keystore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-keystore.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing
  *   certificate and private key.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1153,7 +1189,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-keystore-type"><dt>http-service-ssl-keystore-type</dt></a>
- *   <dd><U>Description</U>For Java keystore file format, this property has the
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore type
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-keystore-type.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   For Java keystore file format, this property has the
  *   value jks (or JKS).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1162,8 +1202,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-keystore-password"><dt>http-service-ssl-keystore-password</dt></a>
- *   <dd><U>Description</U>Password to access the private key from the keystore
- *   file specified by javax.net.ssl.keyStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore password
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-keystore-password.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is the password to access the private key from the keystore.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.1</dd>
@@ -1171,7 +1214,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="http-service-ssl-truststore"><dt>http-service-ssl-truststore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing the
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-truststore.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing the
  *   collection of CA certificates trusted by server (trust store).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1180,8 +1227,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="http-service-ssl-truststore-password"><dt>http-service-ssl-truststore-password</dt></a>
- *   <dd><U>Description</U>Password to unlock the keystore file (store password)
- *   specified by javax.net.ssl.trustStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore password
+ *   to use for the http service.
+ *   If not specified its value is inherited from cluster-ssl-truststore-password.
+ *   This property is ignored if http-service-ssl-enabled is false.
+ *   Value is the password to unlock the truststore file.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.1</dd>
@@ -1259,9 +1309,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-enabled"><dt>server-ssl-enabled</dt></a>
- *   <dd><U>Description</U>: Specifies if server is started with separate ssl configuration.
- *   If not specified global property ssl-enabled (and its other related properties) are used
- *   to create server socket
+ *   <dd><U>Description</U>: If specified then it determines if client server connections
+ *   will use ssl. These properties can be used on both the server side and
+ *   the client side.
+ *   If not specified its value is inherited from cluster-ssl-enabled.
  *   </dd>
  *   <dd><U>Default</U>: <code>false</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1269,7 +1320,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-ciphers"><dt>server-ssl-ciphers</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL cipher suites to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl ciphers
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-ciphers.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is a space separated list of the SSL cipher suites.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1278,7 +1333,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="server-ssl-protocols"><dt>server-ssl-protocols</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL protocols to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl protocols
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-protocols.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is a space separated list of the SSL protocols.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1287,8 +1346,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="server-ssl-require-authentication"><dt>server-ssl-require-authentication</dt></a>
- *   <dd><U>Description</U>: If false, allow ciphers that do not require the client
- *   side of the connection to be authenticated.
+ *   <dd><U>Description</U>: If specified then it determines if ssl authentication
+ *   will be done for the other side of client server connections.
+ *   If not specified its value is inherited from cluster-ssl-require-authentication.
+ *   This property is ignored if server-ssl-enabled is false.
  *   </dd>
  *   <dd><U>Default</U>: <code>true</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1296,7 +1357,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-keystore"><dt>server-ssl-keystore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing
  *   certificate and private key.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1305,7 +1370,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-keystore-type"><dt>server-ssl-keystore-type</dt></a>
- *   <dd><U>Description</U>For Java keystore file format, this property has the
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore type
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore-type.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   For Java keystore file format, this property has the
  *   value jks (or JKS).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1314,8 +1383,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-keystore-password"><dt>server-ssl-keystore-password</dt></a>
- *   <dd><U>Description</U>Password to access the private key from the keystore
- *   file specified by javax.net.ssl.keyStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore password
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore-password.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is the password to access the private key from the keystore.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1323,17 +1395,24 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="server-ssl-truststore"><dt>server-ssl-truststore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing the
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-truststore.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing the
  *   collection of CA certificates trusted by server (trust store).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
  * </dl>
- * 
+ *  
  * <dl>
  *   <a name="server-ssl-truststore-password"><dt>server-ssl-truststore-password</dt></a>
- *   <dd><U>Description</U>Password to unlock the keystore file (store password)
- *   specified by javax.net.ssl.trustStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore password
+ *   to use for client server connections.
+ *   If not specified its value is inherited from cluster-ssl-truststore-password.
+ *   This property is ignored if server-ssl-enabled is false.
+ *   Value is the password to unlock the truststore file.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1343,9 +1422,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-enabled"><dt>gateway-ssl-enabled</dt></a>
- *   <dd><U>Description</U>: Specifies if gateway is started with separate ssl configuration.
- *   If not specified global property ssl-enabled (and its other related properties) are used
- *   to create gateway socket
+ *   <dd><U>Description</U>: If specified then it determines if gateway connections
+ *   will use ssl. These properties can be used on both the server side and
+ *   the client side.
+ *   If not specified its value is inherited from cluster-ssl-enabled.
  *   </dd>
  *   <dd><U>Default</U>: <code>false</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1353,7 +1433,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-ciphers"><dt>gateway-ssl-ciphers</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL cipher suites to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl ciphers
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-ciphers.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is a space separated list of the SSL cipher suites.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1362,7 +1446,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="gateway-ssl-protocols"><dt>gateway-ssl-protocols</dt></a>
- *   <dd><U>Description</U>: A space seperated list of the SSL protocols to enable.
+ *   <dd><U>Description</U>: If specified then it determines the ssl protocols
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-protocols.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is a space separated list of the SSL protocols.
  *   Those listed must be supported by the available providers.
  *   </dd>
  *   <dd><U>Default</U>: <code>any</code></dd>
@@ -1371,8 +1459,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *  
  * <dl>
  *   <a name="gateway-ssl-require-authentication"><dt>gateway-ssl-require-authentication</dt></a>
- *   <dd><U>Description</U>: If false, allow ciphers that do not require the Gateway Sender
- *   side of the connection to be authenticated.
+ *   <dd><U>Description</U>: If specified then it determines if ssl authentication
+ *   will be done for the other side of gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-require-authentication.
+ *   This property is ignored if gateway-ssl-enabled is false.
  *   </dd>
  *   <dd><U>Default</U>: <code>true</code></dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1380,7 +1470,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-keystore"><dt>gateway-ssl-keystore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing
  *   certificate and private key.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1389,7 +1483,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-keystore-type"><dt>gateway-ssl-keystore-type</dt></a>
- *   <dd><U>Description</U>For Java keystore file format, this property has the
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore type
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore-type.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   For Java keystore file format, this property has the
  *   value jks (or JKS).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
@@ -1398,8 +1496,11 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-keystore-password"><dt>gateway-ssl-keystore-password</dt></a>
- *   <dd><U>Description</U>Password to access the private key from the keystore
- *   file specified by javax.net.ssl.keyStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl keystore password
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-keystore-password.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is the password to access the private key from the keystore.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
@@ -1407,17 +1508,24 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * 
  * <dl>
  *   <a name="gateway-ssl-truststore"><dt>gateway-ssl-truststore</dt></a>
- *   <dd><U>Description</U>Location of the Java keystore file containing the
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-truststore.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is the location of the Java keystore file containing the
  *   collection of CA certificates trusted by server (trust store).
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
  * </dl>
- * 
+ *  
  * <dl>
  *   <a name="gateway-ssl-truststore-password"><dt>gateway-ssl-truststore-password</dt></a>
- *   <dd><U>Description</U>Password to unlock the keystore file (store password)
- *   specified by javax.net.ssl.trustStore.
+ *   <dd><U>Description</U>If specified then it determines the ssl truststore password
+ *   to use for gateway connections.
+ *   If not specified its value is inherited from cluster-ssl-truststore-password.
+ *   This property is ignored if gateway-ssl-enabled is false.
+ *   Value is the password to unlock the truststore file.
  *   </dd>
  *   <dd><U>Default</U>: ""</dd>
  *   <dd><U>Since</U>: 8.0</dd>
