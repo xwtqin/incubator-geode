@@ -1493,7 +1493,7 @@ public class SSLConfigJUnitTest {
       // Add "-cacheserver" suffix for CacheServer properties.
       gfSecurityProps.put(entry.getKey(), entry.getValue());
     }
-    gfSecurityProps.list(System.out);
+    //gfSecurityProps.list(System.out);
     return gfSecurityProps;
   }
 
@@ -1513,7 +1513,7 @@ public class SSLConfigJUnitTest {
     for (Entry<Object, Object> entry : entrySet) {
       gfSecurityProps.put(entry.getKey(), entry.getValue());
     }
-    gfSecurityProps.list(System.out);
+    //gfSecurityProps.list(System.out);
     return gfSecurityProps;
   }
   
