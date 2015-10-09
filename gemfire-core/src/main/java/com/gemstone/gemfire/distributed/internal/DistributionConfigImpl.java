@@ -134,9 +134,13 @@ public class DistributionConfigImpl
   protected int logDiskSpaceLimit = DEFAULT_LOG_DISK_SPACE_LIMIT;
   protected int logFileSizeLimit = DEFAULT_LOG_FILE_SIZE_LIMIT;
 
+  @SuppressWarnings("deprecation")
   protected boolean sslEnabled = DEFAULT_SSL_ENABLED;
+  @SuppressWarnings("deprecation")
   protected String sslProtocols = DEFAULT_SSL_PROTOCOLS;
+  @SuppressWarnings("deprecation")
   protected String sslCiphers = DEFAULT_SSL_CIPHERS;
+  @SuppressWarnings("deprecation")
   protected boolean sslRequireAuthentication = DEFAULT_SSL_REQUIRE_AUTHENTICATION;
 
   protected boolean clusterSSLEnabled = DEFAULT_CLUSTER_SSL_ENABLED;
@@ -329,6 +333,7 @@ public class DistributionConfigImpl
   private int jmxManagerHttpPort = DEFAULT_HTTP_SERVICE_PORT; 
   private int jmxManagerUpdateRate = DEFAULT_JMX_MANAGER_UPDATE_RATE;
  
+  @SuppressWarnings("deprecation")
   private boolean jmxManagerSSL = DEFAULT_JMX_MANAGER_SSL;
   private boolean jmxManagerSSLEnabled = DEFAULT_JMX_MANAGER_SSL_ENABLED;
   private boolean jmxManagerSslRequireAuthentication = DEFAULT_JMX_MANAGER_SSL_REQUIRE_AUTHENTICATION;
@@ -395,6 +400,7 @@ public class DistributionConfigImpl
    * Create a new <code>DistributionConfigImpl</code> from the
    * contents of another <code>DistributionConfig</code>.
    */
+  @SuppressWarnings("deprecation")
   public DistributionConfigImpl(DistributionConfig other) {
     this.name = other.getName();
     this.tcpPort = other.getTcpPort();
@@ -745,6 +751,7 @@ public class DistributionConfigImpl
     }
   }
   
+  @SuppressWarnings("deprecation")
   private void validateOldSSLVsNewSSLProperties(Map props) {
     String sslEnabledString = (String)props.get(SSL_ENABLED_NAME);
     String clusterSSLEnabledString =(String)props.get(CLUSTER_SSL_ENABLED_NAME);
@@ -794,19 +801,10 @@ public class DistributionConfigImpl
     }
   }
   
-  private static boolean equals(Object o1, Object o2) {
-    if (o1 != null) {
-      return o1.equals(o2);
-    } else if (o2 != null) {
-      return o2.equals(o1);
-    } else {
-      return o1 == o2;
-    }
-  }
-  
   /*
    * ssl-* properties will be copied in cluster-ssl-* properties. Socket is using cluster-ssl-* properties
    */
+  @SuppressWarnings("deprecation")
   private void copySSLPropsToClusterSSLProps() {
     boolean clusterSSLOverriden = this.sourceMap.get(CLUSTER_SSL_ENABLED_NAME)!=null;
     boolean p2pSSLOverRidden = this.sourceMap.get(SSL_ENABLED_NAME)!=null;
@@ -851,6 +849,7 @@ public class DistributionConfigImpl
    * if jmx-manager-ssl-enabled is false, then use the properties from cluster-ssl-* properties
    * if jmx-manager-ssl-*properties are given then use them, and copy the unspecified jmx-manager properties from cluster-properties 
    */
+  @SuppressWarnings("deprecation")
   private void copySSLPropsToJMXSSLProps() {
     boolean jmxSSLEnabledOverriden = this.sourceMap.get(JMX_MANAGER_SSL_ENABLED_NAME)!=null;
     boolean jmxSSLOverriden = this.sourceMap.get(JMX_MANAGER_SSL_NAME)!=null;
@@ -1220,6 +1219,7 @@ public class DistributionConfigImpl
     }
   }
   
+  @SuppressWarnings("deprecation")
   public static boolean specialPropName(String propName) {
     return propName.equalsIgnoreCase(SSL_ENABLED_NAME) ||
         propName.equalsIgnoreCase(CLUSTER_SSL_ENABLED_NAME) ||
@@ -1307,6 +1307,7 @@ public class DistributionConfigImpl
     }
   }
   
+  @SuppressWarnings("deprecation")
   private void initialize(Map props) {
     // Allow attributes to be modified
     this.modifiable = true;
@@ -1355,9 +1356,9 @@ public class DistributionConfigImpl
     props.remove(SECURITY_SYSTEM_PREFIX + SECURITY_PEER_AUTH_INIT_NAME);
     props.remove(SECURITY_SYSTEM_PREFIX + SECURITY_PEER_AUTHENTICATOR_NAME);
 
-    Iterator iter = security.keySet().iterator();
+    Iterator<Object> iter = security.keySet().iterator();
     while (iter.hasNext()) {
-      props.remove(SECURITY_SYSTEM_PREFIX + (String)iter.next());
+      props.remove(SECURITY_SYSTEM_PREFIX + iter.next());
     }
     System.setProperties(props);
   }
