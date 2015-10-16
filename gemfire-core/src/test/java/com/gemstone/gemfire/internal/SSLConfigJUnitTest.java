@@ -10,6 +10,7 @@ package com.gemstone.gemfire.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import java.util.Map.Entry;
 import java.util.Properties;
