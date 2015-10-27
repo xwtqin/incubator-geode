@@ -37,6 +37,7 @@ public class Repository {
   private Boolean isEmbeddedMode;
   private boolean useSSLLocator = false;
   private boolean useSSLManager = false;
+  private boolean useGemFireCredentials = false;
   
 
   private String pulseWebAppUrl;
@@ -201,5 +202,15 @@ public class Repository {
   public ResourceBundle getResourceBundle() {
     return this.resourceBundle;
   }
+
+  public boolean isUseGemFireCredentials() {
+    return useGemFireCredentials;
+  }
+
+  public void setUseGemFireCredentials(boolean useGemFireCredentials) {
+    this.useGemFireCredentials = useGemFireCredentials;
+  }
+  
+  
 
 }

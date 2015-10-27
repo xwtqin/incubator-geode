@@ -37,6 +37,8 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.management.remote.JMXConnector;
+
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
 import com.vmware.gemfire.tools.pulse.internal.json.JSONArray;
@@ -2351,6 +2353,11 @@ public class Cluster extends Thread {
         if (LOGGER.infoEnabled()) {
           LOGGER.info("Exception Occured while updating cluster data : " + e.getMessage());
         }
+        
+        if (LOGGER.fineEnabled()) {
+          LOGGER.fine("Exception Occured while updating cluster data : ",e);          
+        }
+        
       }
 
       try {
@@ -2863,6 +2870,14 @@ public class Cluster extends Thread {
 
   public boolean deleteQueryById(String userId, String queryId) {
     return this.getDataBrowser().deleteQueryById(userId, queryId);
+  }
+  
+  public JMXConnector connectToGemFire(String user, String password) {
+    if(this.updater instanceof JMXDataUpdater) {
+      return ((JMXDataUpdater) this.updater).getJMXConnection(user, password, false);
+    } else {
+      return null;
+    }
   }
 
   /**

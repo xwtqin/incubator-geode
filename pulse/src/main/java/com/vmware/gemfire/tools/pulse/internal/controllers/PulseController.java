@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,7 @@ import com.vmware.gemfire.tools.pulse.internal.json.JSONArray;
 import com.vmware.gemfire.tools.pulse.internal.json.JSONException;
 import com.vmware.gemfire.tools.pulse.internal.json.JSONObject;
 import com.vmware.gemfire.tools.pulse.internal.log.PulseLogWriter;
+import com.vmware.gemfire.tools.pulse.internal.security.GemFireAuthentication;
 import com.vmware.gemfire.tools.pulse.internal.service.PulseService;
 import com.vmware.gemfire.tools.pulse.internal.service.PulseServiceFactory;
 import com.vmware.gemfire.tools.pulse.internal.service.SystemAlertsService;
@@ -150,17 +152,25 @@ public class PulseController {
     }
   }
 
+  /* Not used replaced by SpringSecurity Logout tag with LogoutHandler
   @RequestMapping(value = "/clusterLogout", method = RequestMethod.GET)
   public void clusterLogout(HttpServletRequest request,
       HttpServletResponse response) throws IOException {
+    PulseLogWriter LOGGER = PulseLogWriter.getLogger();   
+    LOGGER.info("Inside #clusterLogout...");    
+    if(Repository.get().isUseGemFireCredentials()) {      
+      GemFireAuthentication authentication = (GemFireAuthentication) SecurityContextHolder.getContext()
+          .getAuthentication();
+      authentication.getJmxc().close();
+      LOGGER.info("Closing GemFireAuthentication JMX Connection...");
+    }
     HttpSession session = request.getSession(false);
     if (session != null) {
-
       // End session and redirect
       session.invalidate();
     }
     response.sendRedirect("../Login.html");
-  }
+  }*/
 
   @RequestMapping(value = "/pulseVersion", method = RequestMethod.GET)
   public void pulseVersion(HttpServletRequest request,
