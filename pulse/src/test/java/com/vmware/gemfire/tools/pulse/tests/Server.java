@@ -12,6 +12,8 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -21,6 +23,7 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+import javax.management.remote.JMXAuthenticator;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
@@ -33,7 +36,7 @@ public class Server {
   private final JMXConnectorServer cs;
   private String propFile = null;
 
-  public Server(int port, String properties) throws IOException {
+  public Server(int port, String properties, boolean startIntSec) throws IOException {
     try {
       java.rmi.registry.LocateRegistry.createRegistry(port);
       System.out.println("RMI registry ready.");
@@ -45,11 +48,36 @@ public class Server {
     this.propFile = properties;
     mbs = MBeanServerFactory.createMBeanServer();
     url = new JMXServiceURL(formJMXServiceURLString(DEFAULT_HOST, "" + port));
-    cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
-
-    cs.start();
-
+    
+    if(!startIntSec) {
+      cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
+    } else {
+      Map<String,Object> env = new HashMap<String,Object>();
+      env.put(JMXConnectorServer.AUTHENTICATOR, new PropsBackedAuthenticator());
+      cs = JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
+      System.out.println("#intSec Using PropsBackedAuthenticator");
+    }
+    
+    cs.start();   
     loadMBeans();
+    if(startIntSec)
+      loadAccessControllerMBean();
+  }
+    
+
+  private void loadAccessControllerMBean() {
+    AccessControl ac = new AccessControl();
+    try {
+      mbs.registerMBean(ac, new ObjectName(AccessControl.OBJECT_NAME_ACCESSCONTROL));
+    } catch (InstanceAlreadyExistsException e) {
+      e.printStackTrace();
+    } catch (MBeanRegistrationException e) {
+      e.printStackTrace();
+    } catch (NotCompliantMBeanException e) {
+      e.printStackTrace();
+    } catch (MalformedObjectNameException e) {
+      e.printStackTrace();
+    }    
   }
 
   private String formJMXServiceURLString(String host, String port)
@@ -330,14 +358,14 @@ public class Server {
       }
     }
 
-    createServer(port, props);
+    createServer(port, props, false);
   }
 
-  public static Server createServer(int port, String properties)
+  public static Server createServer(int port, String properties, boolean intSecEnabled)
       throws MalformedObjectNameException {
     Server s = null;
     try {
-      s = new Server(port, properties);
+      s = new Server(port, properties, intSecEnabled);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

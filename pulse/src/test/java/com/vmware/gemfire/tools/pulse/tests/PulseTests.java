@@ -131,7 +131,7 @@ public class PulseTests {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     try {
-      server = Server.createServer(9999, jmxPropertiesFile);
+      server = Server.createServer(9999, jmxPropertiesFile, false);
 
       String host = "localhost";// InetAddress.getLocalHost().getHostAddress();
       int port = 8080;

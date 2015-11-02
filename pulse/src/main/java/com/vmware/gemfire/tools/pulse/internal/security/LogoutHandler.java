@@ -30,8 +30,10 @@ public class LogoutHandler extends SimpleUrlLogoutSuccessHandler implements Logo
     LOGGER.fine("Invoked #LogoutHandler ...");
     if (Repository.get().isUseGemFireCredentials()) {
       GemFireAuthentication gemauthentication = (GemFireAuthentication) authentication;
-      gemauthentication.getJmxc().close();
-      LOGGER.info("#LogoutHandler : Closing GemFireAuthentication JMX Connection...");
+      if(gemauthentication!=null) {
+        gemauthentication.getJmxc().close();
+        LOGGER.fine("#LogoutHandler : Closing GemFireAuthentication JMX Connection...");
+      }
     }
     super.onLogoutSuccess(request, response, authentication);
   }
