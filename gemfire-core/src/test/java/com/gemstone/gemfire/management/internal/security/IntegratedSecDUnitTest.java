@@ -1,6 +1,6 @@
 package com.gemstone.gemfire.management.internal.security;
 
-import hydra.Log;
+//import hydra.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,6 +16,8 @@ import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+
+import org.apache.logging.log4j.Logger;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.Cache;
@@ -34,6 +36,10 @@ import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
+import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.management.DistributedRegionMXBean;
+import com.gemstone.gemfire.management.ManagementService;
+import com.gemstone.gemfire.management.ManagerMXBean;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.cli.domain.DataCommandRequest;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
@@ -45,6 +51,7 @@ import com.gemstone.gemfire.management.internal.security.ResourceOperationContex
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 
+import dunit.DistributedTestCase;
 import dunit.Host;
 import dunit.SerializableRunnable;
 import dunit.VM;
@@ -54,6 +61,8 @@ import dunit.VM;
  * 
  */
 public class IntegratedSecDUnitTest extends CommandTestBase {
+  
+  private static Logger logger = LogService.getLogger();
 
   public static class AuthInitializer implements AuthInitialize {
 
@@ -118,7 +127,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
 
   @SuppressWarnings("rawtypes")
   public void setUpServerVM(Properties gemFireProps) throws Exception {
-    Log.getLogWriter().info("Creating server vm cache with props =" + gemFireProps);
+    logger.info("Creating server vm cache with props =" + gemFireProps);
     gemFireProps.setProperty(DistributionConfig.NAME_NAME, testName + "Server");
     createCache(gemFireProps);
     RegionFactory factory = cache.createRegionFactory(RegionShortcut.REPLICATE);
@@ -126,16 +135,14 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     assertNotNull(r);
     r.put("serverkey", "servervalue");
     assertEquals(1,r.size());
-    Log.getLogWriter().info("Created serverRegion with 1 key=serverKey");
+    logger.info("Created serverRegion with 1 key=serverKey");
   }
 
   public void setUpClientVM(Properties gemFireProps, String host, int port, String user, String password) {
     gemFireProps.setProperty(DistributionConfig.NAME_NAME, testName + "Client");
-    //gemFireProps.setProperty("security-username", user);
-    //gemFireProps.setProperty("security-password", password);
     gemFireProps.setProperty("security-client-auth-init",
         "com.gemstone.gemfire.management.internal.security.IntegratedSecDUnitTest$AuthInitializer.create");
-    Log.getLogWriter().info("Creating client cache with props =" + gemFireProps);
+    logger.info("Creating client cache with props =" + gemFireProps);
     ClientCacheFactory clientCacheFactory = new ClientCacheFactory(gemFireProps);
     clientCacheFactory.addPoolServer(host, port);
     clientCacheFactory.setPoolMultiuserAuthentication(true);
@@ -215,6 +222,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     final Host host = Host.getHost(0);
     VM serverVM = host.getVM(1);
     VM clientVM = host.getVM(2);
+    VM managerVM = host.getVM(0);
     serverVM.invoke(IntegratedSecDUnitTest.class, "setUpServerVMTask", new Object[] { props });
     serverVM.invoke(IntegratedSecDUnitTest.class, "createServerTask");
 
@@ -222,16 +230,44 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     String hostName = (String) array[0];
     int port = (Integer) array[1];
     Object params[] = new Object[] { props, hostName, port, "tushark", "password123" };
-    Log.getLogWriter().info("Starting client with server endpoint " + hostName + ":" + port);
+    logger.info("Starting client with server endpoint " + hostName + ":" + port);
     clientVM.invoke(IntegratedSecDUnitTest.class, "setUpClientVMTask", params);
     
-    Log.getLogWriter().info("Sleeping for 5 seconds to get all mbeans registered on manager");
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    
+    SerializableRunnable checkRegionMBeans = new SerializableRunnable() {
+      @Override
+      public void run() {
+        Cache cache = getCache();
+        final ManagementService service = ManagementService.getManagementService(cache);
+
+        final WaitCriterion waitForMaangerMBean = new WaitCriterion() {
+          @Override
+          public boolean done() {
+            ManagerMXBean bean1 = service.getManagerMXBean();
+            DistributedRegionMXBean bean2 = service.getDistributedRegionMXBean("/serverRegion");
+            if (bean1 == null) {
+              logger.info("Still probing for ManagerMBean");
+              return false;
+            } else {
+              logger.info("Still probing for DistributedRegionMXBean=" + bean2);
+              return (bean2 != null);
+            }
+          }
+
+          @Override
+          public String description() {
+            return "Probing for DistributedRegionMXBean for serverRegion";
+          }
+        };
+
+        DistributedTestCase.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
+
+        assertNotNull(service.getMemberMXBean());
+        assertNotNull(service.getManagerMXBean());
+        DistributedRegionMXBean bean = service.getDistributedRegionMXBean("/serverRegion");
+        assertNotNull(bean);
+      }
+    };
+    managerVM.invoke(checkRegionMBeans);        
   }
 
   @SuppressWarnings("serial")
@@ -361,14 +397,14 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
       Region region = regionService.getRegion(regionPath);
       assertNotNull(region);
       Object oldValue = region.put(key, value);
-      Log.getLogWriter().info("doPutUsingClientCache : Put key=" + key + " for user="+ user+" newValue="+ value + " oldValue="+ oldValue + " expectSuccess="+expectSuccess);
+      logger.info("doPutUsingClientCache : Put key=" + key + " for user="+ user+" newValue="+ value + " oldValue="+ oldValue + " expectSuccess="+expectSuccess);
       if (!expectSuccess)
         fail("Region Put was expected to fail");
     } catch (Exception e) {
       if (!expectSuccess) {
-        Log.getLogWriter().info("expectSuccess=false => " + e.getMessage());
+        logger.info("expectSuccess=false => " + e.getMessage());
       } else {
-        Log.getLogWriter().error("Unexpected error", e);
+        logger.error("Unexpected error", e);
         fail("Unknown reason " + e.getMessage());
       }
     }
@@ -379,13 +415,13 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     String command = "put --region=" + regionPath + " --key=" + key + " --value=" + value;
     changeGfshUser(user, password);
     CommandResult result = executeCommand(command);
-    Log.getLogWriter().info("CommandResult " + result);
+    logger.info("CommandResult " + result);
     if (expectSuccess) {
       validateGfshResult(result, expectSuccess);
       printCommandOutput(result);
     }
     else {
-      Log.getLogWriter().info("Error line :" + this.commandError);
+      logger.info("Error line :" + this.commandError);
       assertTrue(this.commandError.contains("Access Denied"));
       this.commandError = null;
       // validateGfshResultError(result);
@@ -395,7 +431,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
   private static void validateGfshResultError(CommandResult result) {
     if (result.getType().equals(ResultData.TYPE_ERROR)) {
       ErrorResultData data = (ErrorResultData) result.getResultData();
-      Log.getLogWriter().info("Error resultData : " + data.toString());
+      logger.info("Error resultData : " + data.toString());
     } else
       fail("Unexpected result type " + result.getType());
   }
@@ -420,15 +456,15 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
       Region region = regionService.getRegion(regionPath);
       assertNotNull(region);
       Object value = region.get(key);
-      Log.getLogWriter().info("doGetUsingClientCache : Get key=" + key + " for user="+ user+" value="+ value + " expectSuccess="+expectSuccess);
+      logger.info("doGetUsingClientCache : Get key=" + key + " for user="+ user+" value="+ value + " expectSuccess="+expectSuccess);
       assertNotNull(value);
       if (!expectSuccess)
         fail("Region Get was expected to fail");
     } catch (Exception e) {
       if (!expectSuccess) {
-        Log.getLogWriter().info("expectSuccess=true => " + e.getMessage());
+        logger.info("expectSuccess=true => " + e.getMessage());
       } else {
-        Log.getLogWriter().error("Unexpected error", e);
+        logger.error("Unexpected error", e);
         fail("Unknown reason " + e.getMessage());
       }
     }
@@ -444,7 +480,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
       validateGfshResult(result, expectSuccess);      
     }
     else {
-      Log.getLogWriter().info("Error line :" + this.commandError);
+      logger.info("Error line :" + this.commandError);
       assertTrue(this.commandError.contains("Access Denied"));
       this.commandError = null;
     }
@@ -468,7 +504,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
       //assertFalse(result.getType().equals(ResultData.TYPE_ERROR));
     }
     else {
-      Log.getLogWriter().info("Error line :" + this.commandError);
+      logger.info("Error line :" + this.commandError);
       assertTrue(this.commandError.contains("Access Denied"));
       this.commandError = null;
     }
@@ -476,14 +512,14 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
   
   private static void printCommandOutput(CommandResult cmdResult) {
     assertNotNull(cmdResult);
-    Log.getLogWriter().info("Command Output : ");
+    logger.info("Command Output : ");
     StringBuilder sb = new StringBuilder();
     cmdResult.resetToFirstLine();
     while (cmdResult.hasNextLine()) {
       sb.append(cmdResult.nextLine()).append(DataCommandRequest.NEW_LINE);
     }
-    Log.getLogWriter().info(sb.toString());
-    Log.getLogWriter().info("");      
+    logger.info(sb.toString());
+    logger.info("");      
   }
   
   private void doShowLogUsingJMX(boolean expectSuccess, String user, String password) {
@@ -495,21 +531,21 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
       ObjectName memberON = (ObjectName)mbeanServer.invoke(MBeanJMXAdapter.getDistributedSystemName(), "fetchMemberObjectName", 
           new Object[]{"Manager"}, new String[]{String.class.getCanonicalName()});      
       String logs = (String) mbeanServer.invoke(memberON, "showLog", new Object[]{60}, new String[]{int.class.toString()});
-      Log.getLogWriter().info("JMX Output :" + logs);
+      logger.info("JMX Output :" + logs);
       connector.close();
       if(!expectSuccess)
         fail("Expected Access Denied...");      
     } catch (InstanceNotFoundException e) {
-      Log.getLogWriter().error("Unexpected Error", e);
+      logger.error("Unexpected Error", e);
       fail("Unexpected Error " + e.getMessage());
     } catch (MBeanException e) {
-      Log.getLogWriter().error("Unexpected Error", e);
+      logger.error("Unexpected Error", e);
       fail("Unexpected Error " + e.getMessage());
     } catch (ReflectionException e) {
-      Log.getLogWriter().error("Unexpected Error", e);
+      logger.error("Unexpected Error", e);
       fail("Unexpected Error " + e.getMessage());
     } catch (IOException e) {
-      Log.getLogWriter().error("Unexpected Error", e);
+      logger.error("Unexpected Error", e);
       fail("Unexpected Error " + e.getMessage());
     } catch (SecurityException e) {
       if(expectSuccess){
@@ -635,7 +671,8 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     doCommandUsingGfsh("show metrics", true, "custom", "password123");
     doCommandUsingGfsh("show dead-locks --file=deadlocks_custom_3.txt", true, "custom", "password123");    
     
-    /* Commented due to error with gradle :  TailLogRequest/Response processed in application vm with shared logging
+    /* Commented due to error with gradle but was working with ant build earlier 
+    Error string is :  TailLogRequest/Response processed in application vm with shared logging
     //check jmx and gfsh
     doCommandUsingGfsh("show log --member=Manager", true, "monitor", "password123");
     doCommandUsingGfsh("show log --member=Manager", false, "dataWrite", "password123");

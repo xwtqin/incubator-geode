@@ -160,9 +160,6 @@ public class CommandTestBase extends CacheTestCase {
     Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
       public void run() {
         verifyManagementServiceStopped();
-        //if (Boolean.getBoolean(USE_HTTP_SYSTEM_PROPERTY)) {
-        //  System.gc();
-        //}
       }
     });
   }
@@ -291,10 +288,12 @@ public class CommandTestBase extends CacheTestCase {
       Gfsh.SUPPORT_MUTLIPLESHELL = true;
       String shellId = getClass().getSimpleName()+"_"+getName();
       HeadlessGfsh shell = new HeadlessGfsh(shellId, 300);
+      
       //Various command use ThreadLocal instance. following call makes
       //HeadlessGfsh available to all the commands
       shell.setThreadLocalInstance();
-      //Added to avoid trimming of the columns
+      
+      //Added to avoid trimming of the columns. Not needed for non-interactive shell
       //shell.setEnvProperty(Gfsh.ENV_APP_RESULT_VIEWER, "non-basic");
       //shell.start();
       info("Started headless shell: " + shell);

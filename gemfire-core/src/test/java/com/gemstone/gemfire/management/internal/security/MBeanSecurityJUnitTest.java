@@ -1,6 +1,6 @@
 package com.gemstone.gemfire.management.internal.security;
 
-import hydra.Log;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +27,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
 
 import junit.framework.TestCase;
@@ -41,6 +42,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.management.AsyncEventQueueMXBean;
 import com.gemstone.gemfire.management.CacheServerMXBean;
 import com.gemstone.gemfire.management.DiskStoreMXBean;
@@ -58,7 +60,7 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
  * Test all mbean operations by granting and revoking the access levels required
- * for performing that operation
+ * for performing that operation. Does not test wan mbeans 
  * 
  * @author tushark
  * 
@@ -66,6 +68,7 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
 @Category(UnitTest.class)
 public class MBeanSecurityJUnitTest extends TestCase {
 
+  private static Logger logger = LogService.getLogger();
   private static final String USER = "custom";
   private static final String PASSWORD = "password123";
   private JMXConnector connector = null;
@@ -86,8 +89,7 @@ public class MBeanSecurityJUnitTest extends TestCase {
   }
 
   public void testGemfireMBeans() throws IOException, InstanceNotFoundException, MBeanException, ReflectionException,
-      AttributeNotFoundException, InvalidAttributeValueException, MalformedObjectNameException {
-    Log.createLogWriter("testGemfireMBeans", "info");
+      AttributeNotFoundException, InvalidAttributeValueException, MalformedObjectNameException {    
     GemFireCacheImpl cache = null;
     DistributedSystem ds = null;
     Properties pr = new Properties();
@@ -149,14 +151,9 @@ public class MBeanSecurityJUnitTest extends TestCase {
 
     doTestDiskStoreMXBean(port);
     doTestCacheServerMXBean(port, cacheServerPort);
-    //TODO : needs WAN
-    // doTestGatewayReceiverMXBean(port);
-    // doTestGatewaySenderMXBean(port);
     doTestLockServiceMXBean(port);
     doTestManagerMXBean(port);
-    doTestRegionMXBean(port);
-    //TODO : Needs Locator in DS
-    doTestLocatorMXBean(port);
+    doTestRegionMXBean(port);    
     doTestDistributedLockServiceMXBean(port);
     doTestDistributedRegionMXBean(port);
     doTestAsyncEventQueueMXBean(port);
@@ -225,9 +222,10 @@ public class MBeanSecurityJUnitTest extends TestCase {
 
   }
 
-  private void doTestLocatorMXBean(int port) {
+  /* Has issues while starting locator hence commented out
+   private void doTestLocatorMXBean(int port) {
 
-    /*MBeanServerConnection conn = connector.getMBeanServerConnection();
+    MBeanServerConnection conn = connector.getMBeanServerConnection();
     ObjectName regionON = (ObjectName) conn.invoke(MBeanJMXAdapter.getDistributedSystemName(), "fetchRegionObjectName",
         new Object[] { "testGemfireMBeans", "/region1" },
         new String[] { String.class.getCanonicalName(), String.class.getCanonicalName() });
@@ -246,9 +244,9 @@ public class MBeanSecurityJUnitTest extends TestCase {
         
       checkMethod(port, LocatorMXBean.class, locatorON, "listManagers", null,
         ResourceOperationCode.LIST_DS);                            
-        */
+        
     
-  }
+  }*/
 
   private void doTestRegionMXBean(int port) throws IOException, InstanceNotFoundException, MBeanException,
       ReflectionException {
@@ -329,9 +327,6 @@ public class MBeanSecurityJUnitTest extends TestCase {
         "MaxConnections", "Running" });
     
     checkMethod(port, CacheServerMXBean.class, cacheServerON, "showAllClientStats", null, ResourceOperationCode.LIST_DS);
-
-    /*checkMethod(port, CacheServerMXBean.class, cacheServerON, "showClientQueueDetails", null,
-        ResourceOperationCode.LIST_DS);*/
     
     checkMethod(port, CacheServerMXBean.class, cacheServerON, "removeIndex", new Object[]{"indexName"},
         ResourceOperationCode.DESTROY_INDEX);
@@ -434,13 +429,13 @@ public class MBeanSecurityJUnitTest extends TestCase {
       }
       testObject(proxy, methodName, args, true);
       TestAccessControl.grantResourceOp(USER, opCode);
-      Log.getLogWriter().info("Grant opCode " + opCode);
+      logger.info("Grant opCode " + opCode);
       testObject(proxy, methodName, args, false);
       boolean removed = TestAccessControl.revokeResourceOp(USER, opCode);
       if (!removed)
         fail("Fail to removed opCode " + opCode);
       else
-        Log.getLogWriter().info("Revoke opCode " + opCode);
+        logger.info("Revoke opCode " + opCode);
 
     }
   }
@@ -519,11 +514,11 @@ public class MBeanSecurityJUnitTest extends TestCase {
       }
     }
     try {
-      Log.getLogWriter().info("Invoking method " + methodName);
+      logger.info("Invoking method " + methodName);
       mt.invoke(proxy, args);
       if (securityExceptionExpected)
         fail("Expected call to method " + methodName + " was expected to fail with security exception");
-      Log.getLogWriter().info("Successfully Invoked method " + methodName);
+      logger.info("Successfully Invoked method " + methodName);
     } catch (IllegalAccessException e) {
       error("UnExpected error ", e);
       fail(e.getMessage());
