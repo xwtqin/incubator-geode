@@ -31,11 +31,18 @@ dependencies {
 
   providedCompile 'commons-logging:commons-logging:1.1.3'
   providedCompile 'commons-codec:commons-codec:1.6'
-  providedCompile 'org.apache.httpcomponents:fluent-hc:4.3.3'
-  providedCompile 'org.apache.httpcomponents:httpclient:4.3.3'
-  providedCompile 'org.apache.httpcomponents:httpclient-cache:4.3.3'
-  providedCompile 'org.apache.httpcomponents:httpcore:4.3.2'
-  providedCompile 'org.apache.httpcomponents:httpmime:4.3.3'
+  
+//  providedCompile 'org.apache.httpcomponents:fluent-hc:4.3.3'
+//  providedCompile 'org.apache.httpcomponents:httpclient:4.3.3'
+//  providedCompile 'org.apache.httpcomponents:httpclient-cache:4.3.3'
+//  providedCompile 'org.apache.httpcomponents:httpcore:4.3.2'
+//  providedCompile 'org.apache.httpcomponents:httpmime:4.3.3'
+  
+  providedCompile 'org.apache.httpcomponents:fluent-hc:4.4.1'
+  providedCompile 'org.apache.httpcomponents:httpclient:4.4.1'
+  providedCompile 'org.apache.httpcomponents:httpclient-cache:4.4.1'
+  providedCompile 'org.apache.httpcomponents:httpcore:4.4.1'
+  providedCompile 'org.apache.httpcomponents:httpmime:4.4.1'
 
   provided 'org.mortbay.jetty:servlet-api:2.5-20081211'
 
@@ -43,8 +50,23 @@ dependencies {
   testCompile 'org.apache.tomcat.embed:tomcat-embed-core:7.0.30'
   testCompile 'org.apache.tomcat.embed:tomcat-embed-jasper:7.0.30'
   testCompile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.30'
-  testCompile 'org.seleniumhq.selenium:selenium-server-standalone:2.41.0'
+//  testCompile 'org.seleniumhq.selenium:selenium-server-standalone:2.41.0'
 //  testCompile 'org.seleniumhq.selenium:selenium-server:2.47.1'
+
+  testCompile 'cglib:cglib-nodep:3.1'
+  testCompile 'com.google.code.gson:gson:2.4'
+  testCompile 'com.google.guava:guava:18.0'
+  testCompile 'net.java.dev.jna:jna:4.2.0'
+  testCompile 'net.java.dev.jna:jna-platform:4.2.0'
+  testCompile 'org.apache.commons:commons-exec:1.3'
+  testCompile 'org.apache.httpcomponents:httpclient:4.4.1'  
+  
+  testCompile 'org.seleniumhq.selenium:selenium-support:2.47.1'
+  testCompile 'org.seleniumhq.selenium:selenium-api:2.47.1'
+  testCompile 'org.seleniumhq.selenium:selenium-java:2.47.1'
+  testCompile 'org.seleniumhq.selenium:selenium-firefox-driver:2.47.1'
+  testCompile 'org.seleniumhq.selenium:selenium-remote-driver:2.47.1'
+  testCompile 'org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1'
 
   // Required only for creating test categories
 //  testPulseCompile project(path: ':gemfire-junit', configuration: 'testOutput')
