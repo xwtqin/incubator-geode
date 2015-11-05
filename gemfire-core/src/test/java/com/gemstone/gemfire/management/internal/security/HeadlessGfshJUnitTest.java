@@ -47,7 +47,7 @@ public class HeadlessGfshJUnitTest {
     cache = (GemFireCacheImpl) CacheFactory.create(ds);
     ObjectName name = MBeanJMXAdapter.getDistributedSystemName();
     
-    HeadlessGfsh gfsh = new HeadlessGfsh("Test",20);
+    HeadlessGfsh gfsh = new HeadlessGfsh("Test",25);
     for(int i=0;i<5;i++) {
       gfsh.executeCommand("connect --jmx-manager=localhost["+port+"]");
       Object result = gfsh.getResult();
@@ -60,6 +60,13 @@ public class HeadlessGfshJUnitTest {
       gfsh.executeCommand("disconnect");
       gfsh.getResult();
     }
+    
+    long l1 = System.currentTimeMillis();
+    gfsh.executeCommand("exit");
+    long l2 = System.currentTimeMillis();
+    gfsh.getResult();
+    long l3 = System.currentTimeMillis();
+    System.out.println("L3-l2="+ (l3-l2) + " Total time= " + (l3-l1)/1000);
     gfsh.terminate();    
     cache.close();
     ds.disconnect();

@@ -83,12 +83,25 @@ public class HeadlessGfsh  implements ResultHandler {
   }
   
   public Object getResult() throws InterruptedException {
-    Object result = queue.poll(timeout, TimeUnit.SECONDS);
-    queue.clear();
-    return result;
+    //Dont wait for when some command calls gfsh.stop();
+    if(shell.stopCalledThroughAPI)
+      return null;
+    try {
+      Object result = queue.poll(timeout, TimeUnit.SECONDS);
+      queue.clear();
+      return result;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw e;
+    }
   }
   
   public void clear(){
+    queue.clear();
+    outputString = null;
+  }
+  
+  public void clearEvents(){
     queue.clear();
     outputString = null;
   }
@@ -107,7 +120,11 @@ public class HeadlessGfsh  implements ResultHandler {
 
   public boolean hasError() {
     return shell.hasError();
-  }   
+  }
+  
+  public String getError() {
+    return shell.errorString;
+  }
   
   public static class HeadlessGfshShell extends Gfsh {
 
@@ -117,6 +134,7 @@ public class HeadlessGfsh  implements ResultHandler {
     private ByteArrayOutputStream output = null;
     private String errorString = null;
     private boolean hasError = false;
+    boolean stopCalledThroughAPI=false;
 
     protected HeadlessGfshShell(String testName, ResultHandler handler) throws ClassNotFoundException, IOException {
       super(false, new String[] {}, new HeadlessGfshConfig(testName));
@@ -147,6 +165,10 @@ public class HeadlessGfsh  implements ResultHandler {
       closeShell();
       stopPromptLoop();
       stop();
+    }
+    
+    public void stop(){
+      stopCalledThroughAPI = true;
     }
     
     private void stopPromptLoop() {
