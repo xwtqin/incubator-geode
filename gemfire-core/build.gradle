@@ -224,3 +224,16 @@ configurations {
 dependencies {
   classesOutput sourceSets.main.output
 }
+
+test {  
+  def assemblyPath = project(':gemfire-assembly').buildDir
+  def distributionBaseName = "apache-geode"
+  environment 'GEMFIRE', "$assemblyPath/install/${distributionBaseName}"
+}
+
+distributedTest {  
+  def assemblyPath = project(':gemfire-assembly').buildDir
+  def distributionBaseName = "apache-geode"
+  environment 'GEMFIRE', "$assemblyPath/install/${distributionBaseName}"
+}
+

@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import util.TestException;
-//import util.TestHelper;
 
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache30.CacheTestCase;
@@ -144,12 +143,14 @@ public class CommandTestBase extends CacheTestCase {
   @SuppressWarnings("serial")
   protected final void destroyDefaultSetup() {
     if (this.shell != null) {
-      // Note: HeadlessGfsh doesn't use Launcher & code that does System.exit()
-      // for gfsh is in Launcher. This is just to ensure cleanup.
-      executeCommand(shell, "exit");
+      
       if(shell.isConnectedAndReady()){
         executeCommand(shell, "disconnect");
       }
+      
+      // Note: HeadlessGfsh doesn't use Launcher & code that does System.exit()
+      // for gfsh is in Launcher. This is just to ensure cleanup.
+      executeCommand(shell, "exit");
 
       this.shell.terminate();
       this.shell = null;
@@ -379,8 +380,9 @@ public class CommandTestBase extends CacheTestCase {
     try {
       
       boolean status = shell.executeCommand(command);
+      info("Waiting for result");
       result = shell.getResult();
-      
+      info("Got the Result");
       info("CommandExecutionSuccess=" + status );
       info("Status=" + shell.getCommandExecutionStatus());
       info("ShellOutputString=<" + shell.outputString + ">");
