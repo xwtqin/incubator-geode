@@ -26,6 +26,12 @@ dependencies {
 
   provided 'javax.servlet:javax.servlet-api:3.1.0'
   provided project(':gemfire-core')
+  
+  testCompile 'org.apache.httpcomponents:httpclient:4.3.3'
+  testCompile 'org.apache.httpcomponents:httpcore:4.3.3'
+    
+  provided project(path: ':gemfire-junit', configuration: 'testOutput')
+  provided project(path: ':gemfire-core', configuration: 'testOutput')
 }
 
 jar {
@@ -38,5 +44,17 @@ artifacts {
 
 war {
   classpath configurations.runtime
+}
+
+test {  
+  def assemblyPath = project(':gemfire-assembly').buildDir
+  def distributionBaseName = "apache-geode"
+  environment 'GEMFIRE', "$assemblyPath/install/${distributionBaseName}"
+}
+
+distributedTest {  
+  def assemblyPath = project(':gemfire-assembly').buildDir
+  def distributionBaseName = "apache-geode"
+  environment 'GEMFIRE', "$assemblyPath/install/${distributionBaseName}"
 }
 
