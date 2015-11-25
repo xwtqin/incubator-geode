@@ -222,21 +222,7 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     this.ooohml = oooml;
     this.stats = stats;
     this.slabs = slabs;
-    if(GemFireCacheImpl.sqlfSystem()) {
-      throw new IllegalStateException("offheap sqlf not supported");
-//       String provider = GemFireCacheImpl.SQLF_FACTORY_PROVIDER;
-//       try {
-//         Class<?> factoryProvider = Class.forName(provider);
-//         Method method = factoryProvider.getDeclaredMethod("getChunkFactory");        
-//         this.chunkFactory  = (ChunkFactory)method.invoke(null, (Object [])null);
-//       }catch (Exception e) {
-//         throw new IllegalStateException("Exception in obtaining ChunkFactory class",  e);
-//       }
-
-    }else {
-      
-      this.chunkFactory = new GemFireChunkFactory();
-    }
+    this.chunkFactory = new GemFireChunkFactory();
     
     if (PRETOUCH) {
       final int tc;
