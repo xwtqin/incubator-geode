@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.OutOfOffHeapMemoryException;
+import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 @Category(UnitTest.class)
@@ -38,6 +39,14 @@ public class SimpleMemoryAllocatorJUnitTest {
 
   private static int round(int multiple, int v) {
     return ((v+multiple-1)/multiple)*multiple;
+  }
+  @Test
+  public void testNullGetAllocator() {
+    try {
+      SimpleMemoryAllocatorImpl.getAllocator();
+      fail("expected CacheClosedException");
+    } catch (CacheClosedException expected) {
+    }
   }
   @Test
   public void testBasics() {

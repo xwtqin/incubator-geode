@@ -95,7 +95,7 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
   private volatile MemoryUsageListener[] memoryUsageListeners = new MemoryUsageListener[0];
   
   private static SimpleMemoryAllocatorImpl singleton = null;
-  private static final AtomicReference<Thread> asyncCleanupThread = new AtomicReference<Thread>();
+  private static final AtomicReference<Thread> asyncCleanupThread = new AtomicReference<>();
   final ChunkFactory chunkFactory;
   
   public static SimpleMemoryAllocatorImpl getAllocator() {
