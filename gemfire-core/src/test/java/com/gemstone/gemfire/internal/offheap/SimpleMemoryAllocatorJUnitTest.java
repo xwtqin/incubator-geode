@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -52,12 +53,9 @@ public class SimpleMemoryAllocatorJUnitTest {
   public void testBasics() {
     int BATCH_SIZE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.BATCH_SIZE;
     int TINY_MULTIPLE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.TINY_MULTIPLE;
-//    int BIG_MULTIPLE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.FreeListManager.BIG_MULTIPLE;
     int HUGE_MULTIPLE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.HUGE_MULTIPLE;
     int perObjectOverhead = com.gemstone.gemfire.internal.offheap.Chunk.OFF_HEAP_HEADER_SIZE;
     int maxTiny = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.MAX_TINY-perObjectOverhead;
-//    int MIN_BIG_SIZE = round(BIG_MULTIPLE, maxTiny+perObjectOverhead+1)-perObjectOverhead;
-//    int maxBig = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.FreeListManager.MAX_BIG-perObjectOverhead;
     int minHuge = maxTiny+1;
     int TOTAL_MEM = (maxTiny+perObjectOverhead)*BATCH_SIZE /*+ (maxBig+perObjectOverhead)*BATCH_SIZE*/ + round(TINY_MULTIPLE, minHuge+1+perObjectOverhead)*BATCH_SIZE + (TINY_MULTIPLE+perObjectOverhead)*BATCH_SIZE /*+ (MIN_BIG_SIZE+perObjectOverhead)*BATCH_SIZE*/ + round(TINY_MULTIPLE, minHuge+perObjectOverhead+1);
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(TOTAL_MEM);
@@ -66,14 +64,10 @@ public class SimpleMemoryAllocatorJUnitTest {
       assertEquals(TOTAL_MEM, ma.getFreeMemory());
       assertEquals(TOTAL_MEM, ma.freeList.getFreeFragmentMemory());
       assertEquals(0, ma.freeList.getFreeTinyMemory());
-//      assertEquals(0, ma.freeList.getFreeBigMemory());
       assertEquals(0, ma.freeList.getFreeHugeMemory());
       MemoryChunk tinymc = ma.allocate(maxTiny, null);
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       assertEquals(round(TINY_MULTIPLE, maxTiny+perObjectOverhead)*(BATCH_SIZE-1), ma.freeList.getFreeTinyMemory());
-//      MemoryChunk bigmc = ma.allocate(maxBig);
-//      assertEquals(TOTAL_MEM-round(BIG_MULTIPLE, maxBig+perObjectOverhead)-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
-//      assertEquals(round(BIG_MULTIPLE, maxBig+perObjectOverhead)*(BATCH_SIZE-1), ma.getFreeList().getFreeBigMemory());
       MemoryChunk hugemc = ma.allocate(minHuge, null);
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, minHuge+perObjectOverhead)/*-round(BIG_MULTIPLE, maxBig+perObjectOverhead)*/-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       long freeSlab = ma.freeList.getFreeFragmentMemory();
@@ -82,9 +76,6 @@ public class SimpleMemoryAllocatorJUnitTest {
       hugemc.release();
       assertEquals(round(TINY_MULTIPLE, minHuge+perObjectOverhead), ma.freeList.getFreeHugeMemory()-oldFreeHugeMemory);
       assertEquals(TOTAL_MEM/*-round(BIG_MULTIPLE, maxBig+perObjectOverhead)*/-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
-//      long oldFreeBigMemory = ma.freeList.getFreeBigMemory();
-//      bigmc.free();
-//      assertEquals(round(BIG_MULTIPLE, maxBig+perObjectOverhead), ma.freeList.getFreeBigMemory()-oldFreeBigMemory);
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       long oldFreeTinyMemory = ma.freeList.getFreeTinyMemory();
       tinymc.release();
@@ -94,17 +85,12 @@ public class SimpleMemoryAllocatorJUnitTest {
       tinymc = ma.allocate(maxTiny, null);
       assertEquals(oldFreeTinyMemory, ma.freeList.getFreeTinyMemory());
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
-//      bigmc = ma.allocate(maxBig);
-//      assertEquals(oldFreeBigMemory, ma.freeList.getFreeBigMemory());
-//      assertEquals(TOTAL_MEM-round(BIG_MULTIPLE, maxBig+perObjectOverhead)-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       hugemc = ma.allocate(minHuge, null);
       assertEquals(oldFreeHugeMemory, ma.freeList.getFreeHugeMemory());
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, minHuge+perObjectOverhead)/*-round(BIG_MULTIPLE, maxBig+perObjectOverhead)*/-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       hugemc.release();
       assertEquals(round(TINY_MULTIPLE, minHuge+perObjectOverhead), ma.freeList.getFreeHugeMemory()-oldFreeHugeMemory);
       assertEquals(TOTAL_MEM/*-round(BIG_MULTIPLE, maxBig+perObjectOverhead)*/-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
-//      bigmc.free();
-//      assertEquals(round(BIG_MULTIPLE, maxBig+perObjectOverhead), ma.freeList.getFreeBigMemory()-oldFreeBigMemory);
       assertEquals(TOTAL_MEM-round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.getFreeMemory());
       tinymc.release();
       assertEquals(round(TINY_MULTIPLE, maxTiny+perObjectOverhead), ma.freeList.getFreeTinyMemory()-oldFreeTinyMemory);
@@ -117,9 +103,6 @@ public class SimpleMemoryAllocatorJUnitTest {
       freeSlab = ma.freeList.getFreeFragmentMemory();
       tinymc.release();
       assertEquals(round(TINY_MULTIPLE, maxTiny+perObjectOverhead)+(round(TINY_MULTIPLE, 1+perObjectOverhead)*BATCH_SIZE), ma.freeList.getFreeTinyMemory()-oldFreeTinyMemory);
-//      bigmc = ma.allocate(MIN_BIG_SIZE);
-//      assertEquals(MIN_BIG_SIZE+perObjectOverhead, bigmc.getSize());
-//      assertEquals(freeSlab-((MIN_BIG_SIZE+perObjectOverhead)*BATCH_SIZE), ma.freeList.getFreeFragmentMemory());
       
       hugemc = ma.allocate(minHuge+1, null);
       assertEquals(round(TINY_MULTIPLE, minHuge+1+perObjectOverhead), hugemc.getSize());
@@ -138,13 +121,6 @@ public class SimpleMemoryAllocatorJUnitTest {
       assertEquals(round(TINY_MULTIPLE, minHuge+perObjectOverhead)*BATCH_SIZE, ma.freeList.getFreeHugeMemory());
       // now that we do compaction the following allocate works.
       hugemc = ma.allocate(minHuge + HUGE_MULTIPLE + HUGE_MULTIPLE-1, null);
-
-      //      assertEquals(minHuge+minHuge+1, ma.freeList.getFreeHugeMemory());
-//      hugemc.free();
-//      assertEquals(minHuge+minHuge+1+minHuge + HUGE_MULTIPLE + HUGE_MULTIPLE-1, ma.freeList.getFreeHugeMemory());
-//      hugemc = ma.allocate(minHuge + HUGE_MULTIPLE);
-//      assertEquals(minHuge + HUGE_MULTIPLE + HUGE_MULTIPLE-1, hugemc.getSize());
-//      assertEquals(minHuge+minHuge+1, ma.freeList.getFreeHugeMemory());
     } finally {
       SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
@@ -168,6 +144,22 @@ public class SimpleMemoryAllocatorJUnitTest {
       ByteBuffer dbb = c.createDirectByteBuffer();
       assertEquals(true, dbb.isDirect());
       assertEquals(bb, dbb);
+    } finally {
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+    }
+  }
+  
+  @Test
+  public void testDebugLog() {
+    SimpleMemoryAllocatorImpl.debugLog("test debug log", false);
+    SimpleMemoryAllocatorImpl.debugLog("test debug log", true);
+  }
+  @Test
+  public void testGetLostChunks() {
+    UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
+    try {
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      assertEquals(Collections.emptyList(), ma.getLostChunks());
     } finally {
       SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
