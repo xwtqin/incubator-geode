@@ -164,6 +164,17 @@ public class SimpleMemoryAllocatorJUnitTest {
       SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
+  @Test
+  public void testClose() {
+    UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
+    try {
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      ma.close();
+    } finally {
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+    }
+    
+  }
   
   @Test
   public void testCompaction() {
