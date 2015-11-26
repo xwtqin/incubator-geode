@@ -167,11 +167,24 @@ public class SimpleMemoryAllocatorJUnitTest {
   @Test
   public void testClose() {
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
+    boolean freeSlab = true;
     try {
       SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
       ma.close();
+      ma.close();
+      System.setProperty(SimpleMemoryAllocatorImpl.FREE_OFF_HEAP_MEMORY_PROPERTY, "true");
+      try {
+      ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      ma.close();
+      freeSlab = false;
+      ma.close();
+      } finally {
+        System.clearProperty(SimpleMemoryAllocatorImpl.FREE_OFF_HEAP_MEMORY_PROPERTY);
+      }
     } finally {
-      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+      if (freeSlab) {
+        SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+      }
     }
     
   }
