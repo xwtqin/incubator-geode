@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.internal.offheap.MemoryBlock.State;
 
 /**
  * Basic implementation of MemoryBlock for test validation only.

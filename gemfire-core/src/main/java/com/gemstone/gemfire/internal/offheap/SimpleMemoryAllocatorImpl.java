@@ -490,7 +490,7 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
   /**
    * Return the slabId of the slab that contains the given addr.
    */
-  protected int findSlab(long addr) {
+  int findSlab(long addr) {
     for (int i=0; i < this.slabs.length; i++) {
       UnsafeMemoryChunk slab = this.slabs[i];
       long slabAddr = slab.getMemoryAddress();

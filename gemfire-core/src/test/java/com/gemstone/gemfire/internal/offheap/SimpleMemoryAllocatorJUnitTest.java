@@ -165,6 +165,28 @@ public class SimpleMemoryAllocatorJUnitTest {
     }
   }
   @Test
+  public void testFindSlab() {
+    final int SLAB_SIZE = 1024*1024;
+    UnsafeMemoryChunk slab = new UnsafeMemoryChunk(SLAB_SIZE);
+    try {
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      assertEquals(0, ma.findSlab(slab.getMemoryAddress()));
+      assertEquals(0, ma.findSlab(slab.getMemoryAddress()+SLAB_SIZE-1));
+      try {
+        ma.findSlab(slab.getMemoryAddress()-1);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+      }
+      try {
+        ma.findSlab(slab.getMemoryAddress()+SLAB_SIZE);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+      }
+    } finally {
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+    }
+  }
+  @Test
   public void testClose() {
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
     boolean freeSlab = true;
