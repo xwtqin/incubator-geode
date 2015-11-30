@@ -70,6 +70,8 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
    * Sizes are always rounded up to the next multiple of this constant
    * so internal fragmentation will be limited to TINY_MULTIPLE-1 bytes per allocation
    * and on average will be TINY_MULTIPLE/2 given a random distribution of size requests.
+   * This does not account for the additional internal fragmentation caused by the off-heap header
+   * which currently is always 8 bytes.
    */
   public final static int TINY_MULTIPLE = Integer.getInteger("gemfire.OFF_HEAP_ALIGNMENT", 8);
   /**
@@ -77,6 +79,9 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
    */
   public final static int TINY_FREE_LIST_COUNT = Integer.getInteger("gemfire.OFF_HEAP_FREE_LIST_COUNT", 16384);
   public final static int MAX_TINY = TINY_MULTIPLE*TINY_FREE_LIST_COUNT;
+  /**
+   * How many unused bytes are allowed in a huge memory allocation.
+   */
   public final static int HUGE_MULTIPLE = 256;
   
   volatile OffHeapMemoryStats stats;
@@ -106,7 +111,6 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     return result;
   }
 
-  private static final boolean PRETOUCH = Boolean.getBoolean("gemfire.OFF_HEAP_PRETOUCH_PAGES");
   static final int OFF_HEAP_PAGE_SIZE = Integer.getInteger("gemfire.OFF_HEAP_PAGE_SIZE", UnsafeMemoryChunk.getPageSize());
   private static final boolean DO_EXPENSIVE_VALIDATION = Boolean.getBoolean("gemfire.OFF_HEAP_DO_EXPENSIVE_VALIDATION");
   
@@ -147,10 +151,8 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
         }
       }
 
-      result = new SimpleMemoryAllocatorImpl(ooohml, stats, slabs);
+      result = create(ooohml, stats, slabs);
       created = true;
-      singleton = result;
-      LifecycleListener.invokeAfterCreate(result);
     }
     } finally {
       if (!created) {
@@ -162,11 +164,17 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
   }
   // for unit tests
   public static SimpleMemoryAllocatorImpl create(OutOfOffHeapMemoryListener oooml, OffHeapMemoryStats stats, UnsafeMemoryChunk[] slabs) {
-    SimpleMemoryAllocatorImpl result = new SimpleMemoryAllocatorImpl(oooml, stats, slabs);
+    return create(oooml, stats, slabs, TINY_MULTIPLE, BATCH_SIZE, TINY_FREE_LIST_COUNT, HUGE_MULTIPLE);
+  }
+  // for unit tests
+  static SimpleMemoryAllocatorImpl create(OutOfOffHeapMemoryListener oooml, OffHeapMemoryStats stats, UnsafeMemoryChunk[] slabs,
+      int tinyMultiple, int batchSize, int tinyFreeListCount, int hugeMultiple) {
+    SimpleMemoryAllocatorImpl result = new SimpleMemoryAllocatorImpl(oooml, stats, slabs, tinyMultiple, batchSize, tinyFreeListCount, hugeMultiple);
     singleton = result;
     LifecycleListener.invokeAfterCreate(result);
     return result;
   }
+  
   
   private void reuse(OutOfOffHeapMemoryListener oooml, LogWriter lw, OffHeapMemoryStats newStats, long offHeapMemorySize) {
     if (isClosed()) {
@@ -200,62 +208,34 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     }
   }
   
-  private SimpleMemoryAllocatorImpl(final OutOfOffHeapMemoryListener oooml, final OffHeapMemoryStats stats, final UnsafeMemoryChunk[] slabs) {
+  private SimpleMemoryAllocatorImpl(final OutOfOffHeapMemoryListener oooml, final OffHeapMemoryStats stats, final UnsafeMemoryChunk[] slabs,
+      int tinyMultiple, int batchSize, int tinyFreeListCount, int hugeMultiple) {
     if (oooml == null) {
       throw new IllegalArgumentException("OutOfOffHeapMemoryListener is null");
     }
-    if (TINY_MULTIPLE <= 0 || (TINY_MULTIPLE & 3) != 0) {
+    if (tinyMultiple <= 0 || (tinyMultiple & 3) != 0) {
       throw new IllegalStateException("gemfire.OFF_HEAP_ALIGNMENT must be a multiple of 8.");
     }
-    if (TINY_MULTIPLE > 256) {
+    if (tinyMultiple > 256) {
       // this restriction exists because of the dataSize field in the object header.
       throw new IllegalStateException("gemfire.OFF_HEAP_ALIGNMENT must be <= 256 and a multiple of 8.");
     }
-    if (BATCH_SIZE <= 0) {
+    if (batchSize <= 0) {
       throw new IllegalStateException("gemfire.OFF_HEAP_BATCH_ALLOCATION_SIZE must be >= 1.");
     }
-    if (TINY_FREE_LIST_COUNT <= 0) {
+    if (tinyFreeListCount <= 0) {
       throw new IllegalStateException("gemfire.OFF_HEAP_FREE_LIST_COUNT must be >= 1.");
     }
-    assert HUGE_MULTIPLE <= 256;
+    if (hugeMultiple > 256 || hugeMultiple < 0) {
+      // this restriction exists because of the dataSize field in the object header.
+      throw new IllegalStateException("HUGE_MULTIPLE must be >= 0 and <= 256 but it was " + hugeMultiple);
+    }
     
     this.ooohml = oooml;
     this.stats = stats;
     this.slabs = slabs;
     this.chunkFactory = new GemFireChunkFactory();
     
-    if (PRETOUCH) {
-      final int tc;
-      if (Runtime.getRuntime().availableProcessors() > 1) {
-        tc = Runtime.getRuntime().availableProcessors() / 2;
-      } else {
-        tc = 1;
-      }
-      Thread[] threads = new Thread[tc];
-      for (int i=0; i < tc; i++) {
-        final int threadId = i;
-        threads[i] = new Thread(new Runnable() {
-          @Override
-          public void run() {
-            for (int slabId=threadId; slabId < slabs.length; slabId+=tc) {
-              final int slabSize = slabs[slabId].getSize();
-              for (int pageId=0; pageId < slabSize; pageId+=OFF_HEAP_PAGE_SIZE) {
-                slabs[slabId].writeByte(pageId, (byte) 0);
-              }
-            }
-          }
-        });
-        threads[i].start();
-      }
-      for (int i=0; i < tc; i++) {
-        try {
-          threads[i].join();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          break;
-        }
-      }
-    }
     //OSProcess.printStacks(0, InternalDistributedSystem.getAnyInstance().getLogWriter(), false);
     this.stats.setFragments(slabs.length);
     largestSlab = slabs[0].getSize();

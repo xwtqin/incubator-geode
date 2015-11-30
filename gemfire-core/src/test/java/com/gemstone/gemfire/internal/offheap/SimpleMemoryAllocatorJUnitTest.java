@@ -52,6 +52,57 @@ public class SimpleMemoryAllocatorJUnitTest {
     }
   }
   @Test
+  public void testConstructor() {
+    try {
+      SimpleMemoryAllocatorImpl.create(null, null, null);
+      fail("expected IllegalArgumentException");
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, -1, 0, 0, 0);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("gemfire.OFF_HEAP_ALIGNMENT must be a multiple of 8"));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 9, 0, 0, 0);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("gemfire.OFF_HEAP_ALIGNMENT must be a multiple of 8"));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 256+8, 0, 0, 0);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("gemfire.OFF_HEAP_ALIGNMENT must be <= 256"));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 8, 0, 0, 0);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("gemfire.OFF_HEAP_BATCH_ALLOCATION_SIZE must be >= 1."));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 8, 1, 0, 0);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("gemfire.OFF_HEAP_FREE_LIST_COUNT must be >= 1."));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 8, 1, 1, -1);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("HUGE_MULTIPLE must be >= 0 and <= 256 but it was -1"));
+    }
+    try {
+      SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), null, null, 8, 1, 1, 257);
+      fail("expected IllegalStateException");
+    } catch (IllegalStateException expected) {
+      assertEquals(true, expected.getMessage().contains("HUGE_MULTIPLE must be >= 0 and <= 256 but it was 257"));
+    }
+     
+  }
+  @Test
   public void testBasics() {
     int BATCH_SIZE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.BATCH_SIZE;
     int TINY_MULTIPLE = com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.TINY_MULTIPLE;
