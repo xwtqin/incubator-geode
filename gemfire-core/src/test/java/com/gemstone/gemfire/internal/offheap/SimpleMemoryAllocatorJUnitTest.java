@@ -353,8 +353,18 @@ public class SimpleMemoryAllocatorJUnitTest {
       smc = ma.allocate(SMALL_ALLOC_SIZE-perObjectOverhead, null);
       assertEquals(true, this.memoryUsageEventReceived);
       
+      MemoryUsageListener unaddedListener = new MemoryUsageListener() {
+        @Override
+        public void updateMemoryUsed(final long bytesUsed) {
+          throw new IllegalStateException("Should never be called");
+        }
+      };
+      ma.removeMemoryUsageListener(unaddedListener);
+      
       ma.removeMemoryUsageListener(listener);
       
+      ma.removeMemoryUsageListener(unaddedListener);
+
       this.expectedMemoryUsage = SMALL_ALLOC_SIZE * 2;
       this.memoryUsageEventReceived = false;
       smc = ma.allocate(SMALL_ALLOC_SIZE-perObjectOverhead, null);
