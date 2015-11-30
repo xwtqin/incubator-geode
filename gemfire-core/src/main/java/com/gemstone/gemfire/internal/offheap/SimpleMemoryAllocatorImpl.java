@@ -672,21 +672,6 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
   }
 
   @Override
-  public List<MemoryBlock> getDeallocatedBlocks() {
-    return null;
-  }
-
-  @Override
-  public List<MemoryBlock> getUnusedBlocks() {
-    return null;
-  }
-  
-  @Override
-  public MemoryBlock getBlockContaining(long memoryAddress) {
-    return null;
-  }
-  
-  @Override
   public MemoryBlock getBlockAfter(MemoryBlock block) {
     if (block == null) {
       return null;

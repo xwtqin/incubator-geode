@@ -154,4 +154,17 @@ public class MemoryBlockNode implements MemoryBlock {
   public ChunkType getChunkType() {
     return this.block.getChunkType();
   }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof MemoryBlockNode) {
+      o = ((MemoryBlockNode)o).block;
+    }
+    return this.block.equals(o);
+  }
+  
+  @Override
+  public int hashCode() {
+    return this.block.hashCode();
+  }
 }

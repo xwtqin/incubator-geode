@@ -17,11 +17,13 @@
 package com.gemstone.gemfire.internal.offheap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -223,6 +225,44 @@ public class SimpleMemoryAllocatorJUnitTest {
       SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
+  @Test
+  public void testMemoryInspection() {
+    final int SLAB_SIZE = 1024*1024;
+    UnsafeMemoryChunk slab = new UnsafeMemoryChunk(SLAB_SIZE);
+    try {
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      MemoryInspector inspector = ma.getMemoryInspector();
+      assertNotNull(inspector);
+      assertEquals(null, inspector.getFirstBlock());
+      assertEquals(Collections.emptyList(), ma.getInspectionSnapshot());
+      assertEquals(Collections.emptyList(), ma.getAllocatedBlocks());
+      assertEquals(null, ma.getBlockAfter(null));
+      inspector.createInspectionSnapshot();
+      // call this twice for code coverage
+      inspector.createInspectionSnapshot();
+      try {
+        assertEquals(ma.getAllBlocks(), ma.getInspectionSnapshot());
+        MemoryBlock firstBlock = inspector.getFirstBlock();
+        assertNotNull(firstBlock);
+        assertEquals(1024*1024, firstBlock.getBlockSize());
+        assertEquals("N/A", firstBlock.getDataType());
+        assertEquals(-1, firstBlock.getFreeListId());
+        assertTrue(firstBlock.getMemoryAddress() > 0);
+        assertNull(firstBlock.getNextBlock());
+        assertEquals(0, firstBlock.getRefCount());
+        assertEquals(0, firstBlock.getSlabId());
+        assertEquals(MemoryBlock.State.UNUSED, firstBlock.getState());
+        assertFalse(firstBlock.isCompressed());
+        assertFalse(firstBlock.isSerialized());
+        assertEquals(null, ma.getBlockAfter(firstBlock));
+      } finally {
+        inspector.clearInspectionSnapshot();
+      }
+    } finally {
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+    }
+  }
+
   @Test
   public void testClose() {
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
