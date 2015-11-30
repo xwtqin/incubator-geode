@@ -187,6 +187,43 @@ public class SimpleMemoryAllocatorJUnitTest {
     }
   }
   @Test
+  public void testValidateAddressAndSize() {
+    final int SLAB_SIZE = 1024*1024;
+    UnsafeMemoryChunk slab = new UnsafeMemoryChunk(SLAB_SIZE);
+    try {
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      try {
+        SimpleMemoryAllocatorImpl.validateAddress(0L);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+        assertEquals("Unexpected exception message: " + expected.getMessage(), true, expected.getMessage().contains("addr was smaller than expected"));
+      }
+      try {
+        SimpleMemoryAllocatorImpl.validateAddress(1L);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+        assertEquals("Unexpected exception message: " + expected.getMessage(), true, expected.getMessage().contains("Valid addresses must be in one of the following ranges:"));
+      }
+      SimpleMemoryAllocatorImpl.validateAddressAndSizeWithinSlab(slab.getMemoryAddress(), SLAB_SIZE, false);
+      SimpleMemoryAllocatorImpl.validateAddressAndSizeWithinSlab(slab.getMemoryAddress(), SLAB_SIZE, true);
+      SimpleMemoryAllocatorImpl.validateAddressAndSizeWithinSlab(slab.getMemoryAddress(), -1, true);
+      try {
+        SimpleMemoryAllocatorImpl.validateAddressAndSizeWithinSlab(slab.getMemoryAddress()-1, SLAB_SIZE, true);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+        assertEquals("Unexpected exception message: " + expected.getMessage(), true, expected.getMessage().equals(" address 0x" + Long.toString(slab.getMemoryAddress()-1, 16) + " does not address the original slab memory"));
+      }
+      try {
+        SimpleMemoryAllocatorImpl.validateAddressAndSizeWithinSlab(slab.getMemoryAddress(), SLAB_SIZE+1, true);
+        fail("expected IllegalStateException");
+      } catch (IllegalStateException expected) {
+        assertEquals("Unexpected exception message: " + expected.getMessage(), true, expected.getMessage().equals(" address 0x" + Long.toString(slab.getMemoryAddress()+SLAB_SIZE, 16) + " does not address the original slab memory"));
+      }
+    } finally {
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+    }
+  }
+  @Test
   public void testClose() {
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
     boolean freeSlab = true;

@@ -108,7 +108,7 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
 
   private static final boolean PRETOUCH = Boolean.getBoolean("gemfire.OFF_HEAP_PRETOUCH_PAGES");
   static final int OFF_HEAP_PAGE_SIZE = Integer.getInteger("gemfire.OFF_HEAP_PAGE_SIZE", UnsafeMemoryChunk.getPageSize());
-  private static final boolean DO_EXPENSIVE_VALIDATION = Boolean.getBoolean("gemfire.OFF_HEAP_DO_EXPENSIVE_VALIDATION");;
+  private static final boolean DO_EXPENSIVE_VALIDATION = Boolean.getBoolean("gemfire.OFF_HEAP_DO_EXPENSIVE_VALIDATION");
   
   public static MemoryAllocator create(OutOfOffHeapMemoryListener ooohml, OffHeapMemoryStats stats, LogWriter lw, int slabCount, long offHeapMemorySize, long maxSlabSize) {
     SimpleMemoryAllocatorImpl result = singleton;
@@ -577,11 +577,11 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     if (addr >= 0 && addr < 1024) {
       throw new IllegalStateException("addr was smaller than expected 0x" + addr);
     }
-    validateAddressAndSizeWithinSlab(addr, size);
+    validateAddressAndSizeWithinSlab(addr, size, DO_EXPENSIVE_VALIDATION);
   }
 
-  static void validateAddressAndSizeWithinSlab(long addr, int size) {
-    if (DO_EXPENSIVE_VALIDATION) {
+  static void validateAddressAndSizeWithinSlab(long addr, int size, boolean doExpensiveValidation) {
+    if (doExpensiveValidation) {
       SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.singleton;
       if (ma != null) {
         for (int i=0; i < ma.slabs.length; i++) {
