@@ -16,14 +16,8 @@
  */
 package com.gemstone.gemfire.internal.offheap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +29,8 @@ import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.OutOfOffHeapMemoryException;
 import com.gemstone.gemfire.cache.CacheClosedException;
+import com.gemstone.gemfire.internal.logging.NullLogWriter;
+import com.gemstone.gemfire.internal.offheap.UnsafeMemoryChunk.Factory;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 @Category(UnitTest.class)
@@ -101,6 +97,117 @@ public class SimpleMemoryAllocatorJUnitTest {
       assertEquals(true, expected.getMessage().contains("HUGE_MULTIPLE must be >= 0 and <= 256 but it was 257"));
     }
      
+  }
+  /**
+   * Logger that remembers the last severe message
+   */
+  private static class LastSevereLogger extends NullLogWriter {
+    private String lastSevereMessage;
+    private Throwable lastSevereThrowable;
+    
+    private void setLastSevere(String msg, Throwable ex) {
+      this.lastSevereMessage = msg;
+      this.lastSevereThrowable = ex;
+    }
+    public String getLastSevereMessage() {
+      return this.lastSevereMessage;
+    }
+    public Throwable getLastSevereThrowable() {
+      return this.lastSevereThrowable;
+    }
+    @Override
+    public void severe(String msg, Throwable ex) {
+      setLastSevere(msg, ex);
+    }
+    @Override
+    public void severe(String msg) {
+      setLastSevere(msg, null);
+    }
+    @Override
+    public void severe(Throwable ex) {
+      setLastSevere(null, ex);
+    }
+  }
+  @Test
+  public void testCreate() {
+    {
+      NullOutOfOffHeapMemoryListener listener = new NullOutOfOffHeapMemoryListener();
+      NullOffHeapMemoryStats stats = new NullOffHeapMemoryStats();
+      LastSevereLogger logger = new LastSevereLogger();
+      try {
+        SimpleMemoryAllocatorImpl.create(listener, stats, logger, 10, 950, 100,
+            new UnsafeMemoryChunk.Factory() {
+          @Override
+          public UnsafeMemoryChunk create(int size) {
+            throw new OutOfMemoryError("expected");
+          }
+        });
+      } catch (OutOfMemoryError expected) {
+      }
+      assertTrue(listener.isClosed());
+      assertTrue(stats.isClosed());
+      assertEquals(null, logger.getLastSevereThrowable());
+      assertEquals(null, logger.getLastSevereMessage());
+     }
+    {
+      NullOutOfOffHeapMemoryListener listener = new NullOutOfOffHeapMemoryListener();
+      NullOffHeapMemoryStats stats = new NullOffHeapMemoryStats();
+      LastSevereLogger logger = new LastSevereLogger();
+      int MAX_SLAB_SIZE = 100;
+      try {
+        Factory factory = new UnsafeMemoryChunk.Factory() {
+          private int createCount = 0;
+          @Override
+          public UnsafeMemoryChunk create(int size) {
+            createCount++;
+            if (createCount == 1) {
+              return new UnsafeMemoryChunk(size);
+            } else {
+              throw new OutOfMemoryError("expected");
+            }
+          }
+        };
+        SimpleMemoryAllocatorImpl.create(listener, stats, logger, 10, 950, MAX_SLAB_SIZE, factory);
+      } catch (OutOfMemoryError expected) {
+      }
+      assertTrue(listener.isClosed());
+      assertTrue(stats.isClosed());
+      assertEquals(null, logger.getLastSevereThrowable());
+      assertEquals("Off-heap memory creation failed after successfully allocating " + MAX_SLAB_SIZE + " bytes of off-heap memory.", logger.getLastSevereMessage());
+    }
+    {
+      NullOutOfOffHeapMemoryListener listener = new NullOutOfOffHeapMemoryListener();
+      NullOffHeapMemoryStats stats = new NullOffHeapMemoryStats();
+      Factory factory = new UnsafeMemoryChunk.Factory() {
+        @Override
+        public UnsafeMemoryChunk create(int size) {
+          return new UnsafeMemoryChunk(size);
+        }
+      };
+      MemoryAllocator ma = 
+        SimpleMemoryAllocatorImpl.create(listener, stats, new NullLogWriter(), 10, 950, 100, factory);
+      try {
+        assertFalse(listener.isClosed());
+        assertFalse(stats.isClosed());
+        ma.close();
+        assertTrue(listener.isClosed());
+        assertFalse(stats.isClosed());
+        listener = new NullOutOfOffHeapMemoryListener();
+        NullOffHeapMemoryStats stats2 = new NullOffHeapMemoryStats();
+        MemoryAllocator ma2 = SimpleMemoryAllocatorImpl.create(listener, stats2, new NullLogWriter(), 10, 950, 100, factory);
+        assertSame(ma, ma2);
+        assertTrue(stats.isClosed());
+        assertFalse(listener.isClosed());
+        assertFalse(stats2.isClosed());
+        stats = stats2;
+      } finally {
+        ma.close();
+        assertTrue(listener.isClosed());
+        assertFalse(stats.isClosed());
+        SimpleMemoryAllocatorImpl.freeOffHeapMemory();
+        assertTrue(stats.isClosed());
+      }
+    }
   }
   @Test
   public void testBasics() {
@@ -318,16 +425,17 @@ public class SimpleMemoryAllocatorJUnitTest {
   public void testClose() {
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024*1024);
     boolean freeSlab = true;
+    UnsafeMemoryChunk[] slabs = new UnsafeMemoryChunk[]{slab};
     try {
-      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
+      SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), slabs);
       ma.close();
       ma.close();
       System.setProperty(SimpleMemoryAllocatorImpl.FREE_OFF_HEAP_MEMORY_PROPERTY, "true");
       try {
-      ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
-      ma.close();
-      freeSlab = false;
-      ma.close();
+        ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), slabs);
+        ma.close();
+        freeSlab = false;
+        ma.close();
       } finally {
         System.clearProperty(SimpleMemoryAllocatorImpl.FREE_OFF_HEAP_MEMORY_PROPERTY);
       }
