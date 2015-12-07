@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 /** 
@@ -23,34 +32,59 @@ package com.gemstone.gemfire.cache30;
 
 
 //import com.gemstone.gemfire.*;
-import com.gemstone.gemfire.SystemFailure;
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.internal.cache.*;
-
-import dunit.*;
-
-import com.gemstone.gemfire.internal.cache.locks.TXLockService;
-import com.gemstone.gemfire.internal.cache.locks.TXLockServiceImpl;
-//import com.gemstone.gemfire.internal.cache.locks.TXLockId;
-import com.gemstone.gemfire.internal.cache.locks.TXLockBatch;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.distributed.internal.ResourceEvent;
-import com.gemstone.gemfire.distributed.internal.ResourceEventsListener;
-import com.gemstone.gemfire.distributed.internal.locks.DLockService;
-import com.gemstone.gemfire.distributed.internal.locks.DLockBatch;
-import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.MembershipManagerHelper;
-import com.gemstone.org.jgroups.Event;
-import com.gemstone.org.jgroups.JChannel;
-import com.gemstone.org.jgroups.stack.Protocol;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import junit.framework.AssertionFailedError;
+
 import org.junit.Ignore;
+
+import com.gemstone.gemfire.SystemFailure;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheLoader;
+import com.gemstone.gemfire.cache.CacheTransactionManager;
+import com.gemstone.gemfire.cache.CommitConflictException;
+import com.gemstone.gemfire.cache.CommitIncompleteException;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.DiskAccessException;
+import com.gemstone.gemfire.cache.LoaderHelper;
+import com.gemstone.gemfire.cache.MirrorType;
+import com.gemstone.gemfire.cache.Operation;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.TimeoutException;
+import com.gemstone.gemfire.distributed.internal.ResourceEvent;
+import com.gemstone.gemfire.distributed.internal.ResourceEventsListener;
+import com.gemstone.gemfire.distributed.internal.locks.DLockBatch;
+import com.gemstone.gemfire.distributed.internal.locks.DLockService;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
+import com.gemstone.gemfire.internal.cache.CommitReplyException;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
+import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.RegionEntry;
+import com.gemstone.gemfire.internal.cache.TXManagerImpl;
+import com.gemstone.gemfire.internal.cache.TXState;
+import com.gemstone.gemfire.internal.cache.TXStateInterface;
+import com.gemstone.gemfire.internal.cache.TXStateProxyImpl;
+//import com.gemstone.gemfire.internal.cache.locks.TXLockId;
+import com.gemstone.gemfire.internal.cache.locks.TXLockBatch;
+import com.gemstone.gemfire.internal.cache.locks.TXLockService;
+import com.gemstone.gemfire.internal.cache.locks.TXLockServiceImpl;
+
+import dunit.DistributedTestCase;
+import dunit.Host;
+import dunit.SerializableCallable;
+import dunit.SerializableRunnable;
+import dunit.VM;
 
 public class TXDistributedDUnitTest extends CacheTestCase {
   public TXDistributedDUnitTest(String name) {
@@ -484,9 +518,16 @@ public class TXDistributedDUnitTest extends CacheTestCase {
       });
 
   }
+  
+  @Override
+  public Properties getDistributedSystemProperties() {
+    Properties p = super.getDistributedSystemProperties();
+    p.put("log-level", getDUnitLogLevel());
+    return p;
+  }
 
   public void testHighAvailabilityFeatures() throws Exception {
-    addExpectedException("killing members ds");
+    addExpectedException("DistributedSystemDisconnectedException");
 //    final CacheTransactionManager txMgr = this.getCache().getCacheTransactionManager();
 //    final TXManagerImpl txMgrImpl = (TXManagerImpl) txMgr;
     final String rgnName = getUniqueName();
@@ -690,12 +731,22 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               fail("While creating region", e);
             }
           }
-          Region.Entry re = rgn1.getEntry("key0");
-          assertNotNull(re);
-          assertEquals("val0_3", re.getValue());
-          re = rgn1.getEntry("key1");
-          assertNotNull(re);
-          assertEquals("val1_3", re.getValue());
+          long giveUp = System.currentTimeMillis() + 10000;
+          while (giveUp > System.currentTimeMillis()) {
+            try {
+              Region.Entry re = rgn1.getEntry("key0");
+              assertNotNull(re);
+              assertEquals("val0_3", re.getValue());
+              re = rgn1.getEntry("key1");
+              assertNotNull(re);
+              assertEquals("val1_3", re.getValue());
+              break;
+            } catch (AssertionFailedError e) {
+              if (giveUp > System.currentTimeMillis()) {
+                throw e;
+              }
+            }
+          }
         }
       };
     invokeInEveryVM(nonSoloChangeValidator1);

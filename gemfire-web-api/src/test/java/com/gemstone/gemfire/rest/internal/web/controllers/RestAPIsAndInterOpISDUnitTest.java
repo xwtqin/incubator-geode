@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.cache.server.CacheServer;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,7 +42,6 @@ import com.gemstone.gemfire.cache.client.ClientRegionFactory;
 import com.gemstone.gemfire.cache.client.ClientRegionShortcut;
 import com.gemstone.gemfire.cache.client.internal.LocatorTestBase;
 import com.gemstone.gemfire.cache.server.ServerLoadProbe;
-import com.gemstone.gemfire.cache.util.BridgeServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
@@ -208,7 +208,7 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
       cache.createRegion(regions[i], attrs);
     }
     
-    BridgeServer server = cache.addBridgeServer();
+    CacheServer server = cache.addCacheServer();
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     server.setPort(serverPort);
     server.setGroups(groups);
@@ -872,11 +872,11 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
      
     // start manager (peer cache)
     int managerPort = startManagerInVM(manager,/* groups */null, locators,
-        new String[] {REGION_NAME}, BridgeServer.DEFAULT_LOAD_PROBE);
+        new String[] {REGION_NAME}, CacheServer.DEFAULT_LOAD_PROBE);
     
     //start startBridgeServer With RestService enabled
     String restEndpoint = (String)server.invoke(RestAPIsAndInterOpISDUnitTest.class,
-        "startBridgeServerWithRestServiceOnInVM", new Object[] { server ,  null, locators, new String[] {REGION_NAME}, BridgeServer.DEFAULT_LOAD_PROBE });
+        "startBridgeServerWithRestServiceOnInVM", new Object[] { server ,  null, locators, new String[] {REGION_NAME}, CacheServer.DEFAULT_LOAD_PROBE });
     
     // create a client cache
     createClientCacheInVM(client, getServerHostName(locator.getHost()),
@@ -980,7 +980,7 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
         for (int i = 0; i < regions.length; i++) {
           cache.createRegion(regions[i], attrs);
         }
-        BridgeServer server = cache.addBridgeServer();
+        CacheServer server = cache.addCacheServer();
         final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
         server.setPort(serverPort);
         server.setGroups(groups);

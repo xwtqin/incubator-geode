@@ -1,15 +1,23 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.i18n;
 
-import com.gemstone.gemfire.i18n.StringIdImpl;
+import com.gemstone.gemfire.i18n.StringId;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
-import com.gemstone.org.jgroups.util.StringId;
 
 import junit.framework.TestCase;
 
@@ -32,14 +40,14 @@ public class BasicI18nJUnitTest extends TestCase {
   private static final Locale DEFAULT_LOCALE = Locale.getDefault();
   //static final Class DEFAULT_RESOURCEBUNDLE = StringIdResourceBundle_ja.class;
   //static final Class JAPAN_RESOURCEBUNDLE = StringIdResourceBundle_ja.class;
-  private static final StringIdImpl messageId
-         = (StringIdImpl)LocalizedStrings.TESTING_THIS_IS_A_TEST_MESSAGE;
+  private static final StringId messageId
+         = (StringId)LocalizedStrings.TESTING_THIS_IS_A_TEST_MESSAGE;
   private static final String englishMessage = "This is a test message.";
   private static final String japaneseMessage = "msgID " + messageId.id + ": " + "これはテストメッセージである。";
 
   private static final Integer messageArg = new Integer(1);
-  private static final StringIdImpl messageIdWithArg
-         = (StringIdImpl)LocalizedStrings.TESTING_THIS_MESSAGE_HAS_0_MEMBERS;
+  private static final StringId messageIdWithArg
+         = (StringId)LocalizedStrings.TESTING_THIS_MESSAGE_HAS_0_MEMBERS;
   private static final String englishMessageWithArg = "Please ignore: This message has 1 members.";
   private static final String japaneseMessageWithArg
          = "msgID " + messageIdWithArg.id + ": Please ignore: このメッセージに 1 メンバーがある。";
@@ -96,7 +104,7 @@ public class BasicI18nJUnitTest extends TestCase {
    * us to not expose them to customers.
    */
   private Locale getCurrentLocale() {
-    Class<?> c = StringIdImpl.class;
+    Class<?> c = StringId.class;
     Locale locale = null;
     try {
       Method m = c.getDeclaredMethod("getCurrentLocale");
@@ -114,7 +122,7 @@ public class BasicI18nJUnitTest extends TestCase {
    *  us to not expose them to customers.
    */
   private AbstractStringIdResourceBundle getActiveResourceBundle() {
-    Class<?> c = StringIdImpl.class;
+    Class<?> c = StringId.class;
     AbstractStringIdResourceBundle rb = null;
     try {
       Method m = c.getDeclaredMethod("getActiveResourceBundle");
@@ -136,7 +144,7 @@ public class BasicI18nJUnitTest extends TestCase {
    * </code>
    */
   private void verifyStringsAreProperlyEscaped(Locale loc) {
-    StringIdImpl.setLocale(loc);
+    StringId.setLocale(loc);
 
     final Set<StringId> misquoted = new HashSet<StringId>();
 
@@ -152,7 +160,7 @@ public class BasicI18nJUnitTest extends TestCase {
       String altered = raw.replaceAll("''", "'");
       altered = altered.replaceAll("\\{([0-9]+)[^\\}]*\\}", "$1");
       if (!rb.usingRawMode()) {
-        altered = "msgID " + ((StringIdImpl)instance).id + ": " + altered;
+        altered = "msgID " + ((StringId)instance).id + ": " + altered;
       }
       String formatted = null;
       try {
@@ -160,7 +168,7 @@ public class BasicI18nJUnitTest extends TestCase {
       } catch(IllegalArgumentException iae) {
         String testName = this.getClass().getName().replaceAll("\\.", "/")
                           + ".class";
-        String exMsg = "Improper message id=" + ((StringIdImpl)instance).id + "\n"
+        String exMsg = "Improper message id=" + ((StringId)instance).id + "\n"
                + "Usually this is caused by an unmatched or nested \"{\"\n"
                + "Examples:\t\"{0]\" or \"{ {0} }\"\n"
                + "This is just the first failure, it is in your interest"
@@ -185,7 +193,7 @@ public class BasicI18nJUnitTest extends TestCase {
       for(StringId i : misquoted) {
         err.append("\n")
            .append("StringId id=")
-           .append(((StringIdImpl)i).id)
+           .append(((StringId)i).id)
            .append(" : text=\"")
            .append(i.getRawText())
            .append("\"");
@@ -197,33 +205,21 @@ public class BasicI18nJUnitTest extends TestCase {
   @Override
   public void tearDown() {
     //reset to the original
-    StringIdImpl.setLocale(DEFAULT_LOCALE);
-  }
-
-  public void testDefaults() {
-    Locale l = getCurrentLocale();
-    AbstractStringIdResourceBundle r = getActiveResourceBundle();
-    assertNotNull(l);
-    assertNotNull(r);
-    final String currentLang = l.getLanguage();
-    final String expectedLang = new Locale("en", "", "").getLanguage();
-    final String frenchLang = new Locale("fr", "", "").getLanguage();
-    // TODO this will fail if run under a locale with a language other than french or english
-    assertTrue(currentLang.equals(expectedLang) || currentLang.equals(frenchLang));
+    StringId.setLocale(DEFAULT_LOCALE);
   }
 
   public void testSetLocale() {
     //Verify we are starting in a known state
     assertTrue(DEFAULT_LOCALE.equals(getCurrentLocale()));
-    StringIdImpl.setLocale(Locale.FRANCE);
+    StringId.setLocale(Locale.FRANCE);
     assertTrue(Locale.FRANCE.equals(getCurrentLocale()));
 
-    StringIdImpl.setLocale(Locale.FRANCE);
+    StringId.setLocale(Locale.FRANCE);
     assertTrue(Locale.FRANCE.equals(getCurrentLocale()));
     StringId s = LocalizedStrings.UNSUPPORTED_AT_THIS_TIME;
     assertTrue(s.toString().equals(s.toLocalizedString()));
 
-    StringIdImpl.setLocale(Locale.JAPAN);
+    StringId.setLocale(Locale.JAPAN);
     assertTrue(Locale.JAPAN.equals(getCurrentLocale()));
     if (getActiveResourceBundle().usingRawMode()) {
       assertTrue(s.toString().equals(s.toLocalizedString()));
@@ -269,7 +265,7 @@ public class BasicI18nJUnitTest extends TestCase {
      * English resource bundle.  The second assert will fail if this isn't the
      * case.
      **/
-    StringIdImpl.setLocale(Locale.FRANCE);
+    StringId.setLocale(Locale.FRANCE);
     assertTrue(Locale.FRANCE.equals(getCurrentLocale()));
     assertEquals(messageId.toString(), englishMessage);
     assertEquals(messageId.toLocalizedString(), englishMessage);
@@ -289,7 +285,7 @@ public class BasicI18nJUnitTest extends TestCase {
      * We no longer bundle the JAPAN localized strings with the product
      * so the following now expects english msgs.
      */
-    StringIdImpl.setLocale(Locale.JAPAN);
+    StringId.setLocale(Locale.JAPAN);
     assertTrue(Locale.JAPAN.equals(getCurrentLocale()));
     assertEquals(messageId.toString(), englishMessage);
     if (getActiveResourceBundle().usingRawMode()) {
@@ -326,12 +322,12 @@ public class BasicI18nJUnitTest extends TestCase {
   }
 
   public void testEnglishLanguage() {
-    StringIdImpl.setLocale(Locale.ENGLISH);
+    StringId.setLocale(Locale.ENGLISH);
     assertEquals(messageId.toLocalizedString(), englishMessage);
   }
 
   public void testJapaneseLanguage() {
-    StringIdImpl.setLocale(Locale.JAPANESE);
+    StringId.setLocale(Locale.JAPANESE);
     if (getActiveResourceBundle().usingRawMode()) {
       assertEquals(messageId.toLocalizedString(), englishMessage);
     } else {
@@ -340,10 +336,10 @@ public class BasicI18nJUnitTest extends TestCase {
   }
 
   public void testAlternateEnglishCountries() {
-    StringIdImpl.setLocale(Locale.CANADA);
+    StringId.setLocale(Locale.CANADA);
     assertEquals(messageId.toLocalizedString(), englishMessage);
 
-    StringIdImpl.setLocale(Locale.UK);
+    StringId.setLocale(Locale.UK);
     assertEquals(messageId.toLocalizedString(), englishMessage);
   }
 
@@ -359,10 +355,10 @@ public class BasicI18nJUnitTest extends TestCase {
     final Set<StringId> duplicates = new HashSet<StringId>();
 
     for(StringId instance : getAllStringIds()) {
-      boolean isUnique = allStringIds.add(((StringIdImpl)instance).id);
+      boolean isUnique = allStringIds.add(((StringId)instance).id);
       //Duplicate ids between 0-1023 are allowed since they are duplicated
       //between String bundles to minimize compiler dependencies.
-      if((! isUnique) && ((StringIdImpl)instance).id >= 1024) {
+      if((! isUnique) && ((StringId)instance).id >= 1024) {
          boolean status = duplicates.add(instance);
          assertTrue("Failed to add " + instance + "to the list of"
                     + " duplicates because of duplicate duplicates",
@@ -374,7 +370,7 @@ public class BasicI18nJUnitTest extends TestCase {
       err.append("The following duplicate StringIds were found:");
       for(StringId i : duplicates) {
         err.append("\n")
-           .append(((StringIdImpl)i).id)
+           .append(((StringId)i).id)
            .append(" : ")
            .append(i.getRawText());
       }

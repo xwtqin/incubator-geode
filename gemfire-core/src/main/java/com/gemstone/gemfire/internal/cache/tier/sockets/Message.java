@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
@@ -136,13 +145,13 @@ public class Message  {
   // Tentative workaround to avoid OOM stated in #46754.
   public static final ThreadLocal<Integer> messageType = new ThreadLocal<Integer>();
   
-  Version destVersion;
+  Version version;
   
   /**
    * Creates a new message with the given number of parts
    */
   public Message(int numberOfParts, Version destVersion) {
-    this.destVersion = destVersion;
+    this.version = destVersion;
     Assert.assertTrue(destVersion != null, "Attempt to create an unversioned message");
     partsList = new Part[numberOfParts];
     this.numberOfParts = numberOfParts;
@@ -169,7 +178,7 @@ public class Message  {
   }
   
   public void setVersion(Version clientVersion) {
-    this.destVersion = clientVersion;
+    this.version = clientVersion;
   }
 
   /**
@@ -332,8 +341,8 @@ public class Message  {
   
   private void serializeAndAddPartNoCopying(Object o) {
     HeapDataOutputStream hdos;
-    Version v = destVersion;
-    if (destVersion.equals(Version.CURRENT)){
+    Version v = version;
+    if (version.equals(Version.CURRENT)){
       v = null;
     }
     // create the HDOS with a flag telling it that it can keep any byte[] or ByteBuffers/ByteSources passed to it.
@@ -380,8 +389,8 @@ public class Message  {
 //       addRawPart(b, true);
     } else {
       HeapDataOutputStream hdos;
-      Version v = destVersion;
-      if (destVersion.equals(Version.CURRENT)){
+      Version v = version;
+      if (version.equals(Version.CURRENT)){
         v = null;
       }
       hdos = new HeapDataOutputStream(chunkSize, v);
@@ -449,8 +458,13 @@ public class Message  {
   }
   
   public Part getPart(int index) {
-    if (index < this.numberOfParts)
-      return partsList[index];
+    if (index < this.numberOfParts) {
+      Part p = partsList[index];
+      if (this.version != null) {
+        p.setVersion(this.version);
+      }
+      return p;
+    }
     return null;
   }
 

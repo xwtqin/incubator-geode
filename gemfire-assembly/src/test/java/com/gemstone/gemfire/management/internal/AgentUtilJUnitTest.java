@@ -51,14 +51,12 @@ public class AgentUtilJUnitTest {
     assertNotNull(gemFireWarLocation, "GemFire REST API WAR File was not found");
   }
 
-  /*
-   * This test should be activated when pulse gets added to Geode
-   */
-   @Test
-   public void testPulseWarExists() {
-   String gemFireWarLocation = agentUtil.getPulseWarLocation();
-   assertNotNull(gemFireWarLocation, "Pulse WAR File was not found");
-   }
+  @Ignore("This test should be activated when pulse gets added to Geode")
+  @Test
+  public void testPulseWarExists() {
+    String gemFireWarLocation = agentUtil.getPulseWarLocation();
+    assertNotNull(gemFireWarLocation, "Pulse WAR File was not found");
+  }
 
   private String getGemfireVersion() {
     String version = null;

@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache;
@@ -65,10 +74,10 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.logging.log4j.LocalizedMessage;
 import com.gemstone.gemfire.internal.logging.log4j.LogMarker;
+import com.gemstone.gemfire.internal.offheap.Chunk;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
 import com.gemstone.gemfire.internal.offheap.OffHeapRegionEntryHelper;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
+import com.gemstone.gemfire.internal.offheap.ReferenceCountHelper;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
@@ -3348,11 +3357,11 @@ RETRY_LOOP:
     // replace is propagated to server, so no need to check
     // satisfiesOldValue on client
     if (expectedOldValue != null && !replaceOnClient) {
-      SimpleMemoryAllocatorImpl.skipRefCountTracking();
+      ReferenceCountHelper.skipRefCountTracking();
       
       @Retained @Released Object v = re._getValueRetain(event.getLocalRegion(), true);
       
-      SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+      ReferenceCountHelper.unskipRefCountTracking();
       try {
         if (!AbstractRegionEntry.checkExpectedOldValue(expectedOldValue, v, event.getLocalRegion())) {
           return false;
@@ -3383,9 +3392,9 @@ RETRY_LOOP:
       if (event.hasDelta() || event.getOperation().guaranteesOldValue()
           || GemFireCacheImpl.sqlfSystem()) {
         // In these cases we want to even get the old value from disk if it is not in memory
-        SimpleMemoryAllocatorImpl.skipRefCountTracking();
+        ReferenceCountHelper.skipRefCountTracking();
         @Released Object oldValueInVMOrDisk = re.getValueOffHeapOrDiskWithoutFaultIn(event.getLocalRegion());
-        SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+        ReferenceCountHelper.unskipRefCountTracking();
         try {
           event.setOldValue(oldValueInVMOrDisk, requireOldValue
               || GemFireCacheImpl.sqlfSystem());
@@ -3394,11 +3403,11 @@ RETRY_LOOP:
         }
       } else {
         // In these cases only need the old value if it is in memory
-        SimpleMemoryAllocatorImpl.skipRefCountTracking();
+        ReferenceCountHelper.skipRefCountTracking();
         
         @Retained @Released Object oldValueInVM = re._getValueRetain(event.getLocalRegion(), true); // OFFHEAP: re synced so can use its ref.
         
-        SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+        ReferenceCountHelper.unskipRefCountTracking();
         try {
           event.setOldValue(oldValueInVM,
               requireOldValue || GemFireCacheImpl.sqlfSystem());

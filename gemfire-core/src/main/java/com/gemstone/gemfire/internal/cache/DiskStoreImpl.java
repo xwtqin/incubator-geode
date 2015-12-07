@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache;
 
@@ -110,7 +119,7 @@ import com.gemstone.gemfire.pdx.internal.EnumInfo;
 import com.gemstone.gemfire.pdx.internal.PdxField;
 import com.gemstone.gemfire.pdx.internal.PdxType;
 import com.gemstone.gemfire.pdx.internal.PeerTypeRegistration;
-import com.gemstone.org.jgroups.util.StringId;
+import com.gemstone.gemfire.i18n.StringId;
 
 /**
  * Represents a (disk-based) persistent store for region data. Used for both
@@ -3314,7 +3323,7 @@ public class DiskStoreImpl implements DiskStore {
     
     //NOTE - do NOT use DM.cacheTimeMillis here. See bug #49920
     long timestamp = System.currentTimeMillis();
-    PersistentMemberID id = new PersistentMemberID(getDiskStoreID(), memberId.getIpAddress(),
+    PersistentMemberID id = new PersistentMemberID(getDiskStoreID(), memberId.getInetAddress(),
         firstDir.getAbsolutePath(), memberId.getName(),
         timestamp, (short) 0);
     return id;
@@ -3322,7 +3331,7 @@ public class DiskStoreImpl implements DiskStore {
 
   public PersistentID getPersistentID() {
     InetAddress host = cache.getDistributedSystem().getDistributedMember()
-        .getIpAddress();
+        .getInetAddress();
     String dir = getDiskDirs()[0].getAbsolutePath();
     return new PersistentMemberPattern(host, dir, this.diskStoreID.toUUID(), 0);
   }

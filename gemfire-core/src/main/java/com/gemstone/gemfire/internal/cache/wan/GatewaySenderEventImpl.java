@@ -1,10 +1,18 @@
 /*
- * ========================================================================= 
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved. 
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- * =========================================================================
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache.wan;
@@ -42,11 +50,11 @@ import com.gemstone.gemfire.internal.cache.WrappedCallbackArgument;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerHelper;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.offheap.Chunk;
+import com.gemstone.gemfire.internal.offheap.ChunkWithHeapForm;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
+import com.gemstone.gemfire.internal.offheap.ReferenceCountHelper;
 import com.gemstone.gemfire.internal.offheap.Releasable;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.ChunkWithHeapForm;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
@@ -927,9 +935,9 @@ public class GatewaySenderEventImpl implements
     if (event.hasDelta()) {
       this.valueIsObject = 0x02;
     } else {
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(this);
+      ReferenceCountHelper.setReferenceCountOwner(this);
       so = event.getOffHeapNewValue();
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);      
+      ReferenceCountHelper.setReferenceCountOwner(null);      
         // TODO OFFHEAP MERGE: check for a cached serialized value first
         // so we can use it instead of reading offheap
         // If we do read offheap then add the serialize new value to the event cache

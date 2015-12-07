@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.distributed.internal;
 
@@ -221,11 +230,11 @@ public abstract class DistributionMessage
     return this.multicast;
   }
   /**
-   * Return true of this message should be sent through JGroups instead of the
+   * Return true of this message should be sent via UDP instead of the
    * direct-channel.  This is typically only done for messages that are
    * broadcast to the full membership set.
    */
-  public boolean sendViaJGroups() {
+  public boolean sendViaUDP() {
     return false;
   }
   /**
@@ -280,15 +289,15 @@ public abstract class DistributionMessage
 
   public String getRecipientsDescription() {
     if (this.recipients == null) {
-      return "<recipients: ALL>";
+      return "recipients: ALL";
     }
     else if (this.multicast) {
-      return "<recipients: multcast>";
+      return "recipients: multicast";
     } else if (this.recipients.length > 0 && this.recipients[0] == ALL_RECIPIENTS) {
-      return "<recipients: ALL>";
+      return "recipients: ALL";
     } else {
       StringBuffer sb = new StringBuffer(100);
-      sb.append("<recipients: ");
+      sb.append("recipients: <");
       for (int i=0; i < this.recipients.length; i++) {
         if (i != 0) {
           sb.append(", ");
@@ -485,7 +494,8 @@ public abstract class DistributionMessage
    */
   public static boolean isPreciousThread() {
     String thrname = Thread.currentThread().getName();
-    return thrname.startsWith("UDP");
+    //return thrname.startsWith("Geode UDP");
+    return thrname.startsWith("unicast receiver") || thrname.startsWith("multicast receiver");
   }
 
 

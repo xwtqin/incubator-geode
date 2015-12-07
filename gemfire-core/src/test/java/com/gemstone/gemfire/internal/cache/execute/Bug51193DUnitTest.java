@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.cache.execute;
 
 import java.util.ArrayList;
@@ -20,7 +36,7 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.cache.BridgeServerImpl;
+import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.tier.ClientHandShake;
 import com.gemstone.gemfire.internal.cache.tier.sockets.AcceptorImpl;
@@ -99,11 +115,10 @@ public class Bug51193DUnitTest extends DistributedTestCase {
   }
 
   @SuppressWarnings("deprecation")
-  public static Integer createServerCache(Integer mcastPort, Boolean createPR)
+  public static Integer createServerCache(Boolean createPR)
       throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "");
-    props.setProperty("mcast-port", String.valueOf(mcastPort));
+    props.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
 
     Bug51193DUnitTest test = new Bug51193DUnitTest("Bug51193DUnitTest");
     DistributedSystem ds = test.getSystem(props);
@@ -156,9 +171,8 @@ public class Bug51193DUnitTest extends DistributedTestCase {
   public void doTest(boolean createPR, int timeout, String mode)
       throws Throwable {
     // start server
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     int port = (Integer) server0.invoke(Bug51193DUnitTest.class,
-        "createServerCache", new Object[] { mcastPort, createPR });
+        "createServerCache", new Object[] { createPR });
     // start client
     client0.invoke(Bug51193DUnitTest.class, "createClientCache", new Object[] {
         client0.getHost().getHostName(), port, timeout });
@@ -206,7 +220,7 @@ public class Bug51193DUnitTest extends DistributedTestCase {
     public void execute(FunctionContext context) {
       boolean timeoutMatches = false;
       int expected = (Integer)context.getArguments();
-      AcceptorImpl acceptor = ((BridgeServerImpl) cache.getCacheServers()
+      AcceptorImpl acceptor = ((CacheServerImpl) cache.getCacheServers()
           .get(0)).getAcceptor();
       ServerConnection[] scs = acceptor.getAllServerConnectionList();
       for (int i = 0; i < scs.length; ++i) {

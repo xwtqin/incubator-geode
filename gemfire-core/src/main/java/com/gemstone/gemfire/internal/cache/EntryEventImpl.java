@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache;
@@ -13,6 +22,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.IOException;
+
 import org.apache.logging.log4j.Logger;
 
 import com.gemstone.gemfire.CopyHelper;
@@ -63,12 +73,11 @@ import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.logging.log4j.LocalizedMessage;
 import com.gemstone.gemfire.internal.logging.log4j.LogMarker;
+import com.gemstone.gemfire.internal.offheap.Chunk;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
-import com.gemstone.gemfire.internal.offheap.OffHeapReference;
 import com.gemstone.gemfire.internal.offheap.OffHeapRegionEntryHelper;
+import com.gemstone.gemfire.internal.offheap.ReferenceCountHelper;
 import com.gemstone.gemfire.internal.offheap.Releasable;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
@@ -922,13 +931,13 @@ public class EntryEventImpl
       OffHeapHelper.releaseAndTrackOwner(this.newValue, this);
     }
     if (v instanceof Chunk) {
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(this);
+      ReferenceCountHelper.setReferenceCountOwner(this);
       if (!((Chunk) v).retain()) {
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+        ReferenceCountHelper.setReferenceCountOwner(null);
         this.newValue = null;
         return;
       }
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+      ReferenceCountHelper.setReferenceCountOwner(null);
     }
     this.newValue = v;
     this.cachedSerializedNewValue = null;
@@ -984,7 +993,7 @@ public class EntryEventImpl
     if (v == curOldValue) return;
     if (this.offHeapOk) {
       if (curOldValue instanceof Chunk) {
-        if (SimpleMemoryAllocatorImpl.trackReferenceCounts()) {
+        if (ReferenceCountHelper.trackReferenceCounts()) {
           OffHeapHelper.releaseAndTrackOwner(curOldValue, new OldValueOwner());
         } else {
           OffHeapHelper.release(curOldValue);
@@ -1000,10 +1009,10 @@ public class EntryEventImpl
     if (v == this.oldValue) return;
     
     if (v instanceof Chunk) {
-      if (SimpleMemoryAllocatorImpl.trackReferenceCounts()) {
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(new OldValueOwner());
+      if (ReferenceCountHelper.trackReferenceCounts()) {
+        ReferenceCountHelper.setReferenceCountOwner(new OldValueOwner());
         boolean couldNotRetain = (!((Chunk) v).retain());
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+        ReferenceCountHelper.setReferenceCountOwner(null);
         if (couldNotRetain) {
           this.oldValue = null;
           return;
@@ -1729,14 +1738,14 @@ public class EntryEventImpl
             || GemFireCacheImpl.sqlfSystem()
             ) {
           @Retained Object ov;
-          if (SimpleMemoryAllocatorImpl.trackReferenceCounts()) {
-            SimpleMemoryAllocatorImpl.setReferenceCountOwner(new OldValueOwner());
+          if (ReferenceCountHelper.trackReferenceCounts()) {
+            ReferenceCountHelper.setReferenceCountOwner(new OldValueOwner());
             if (GemFireCacheImpl.sqlfSystem()) {
               ov = reentry.getValueOffHeapOrDiskWithoutFaultIn(this.region);
             } else {
               ov = reentry._getValueRetain(owner, true);
             }
-            SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+            ReferenceCountHelper.setReferenceCountOwner(null);
           } else {
             if (GemFireCacheImpl.sqlfSystem()) {
               ov = reentry.getValueOffHeapOrDiskWithoutFaultIn(this.region);
@@ -2079,9 +2088,9 @@ public class EntryEventImpl
     try {
       RegionEntry re = this.region.getRegionEntry(getKey());
       if (re == null) return false;
-      SimpleMemoryAllocatorImpl.skipRefCountTracking();
+      ReferenceCountHelper.skipRefCountTracking();
       Object v = re._getValueRetain(this.region, true);
-      SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+      ReferenceCountHelper.unskipRefCountTracking();
       try {
         return setOldValue(v);
       } finally {
@@ -3046,10 +3055,10 @@ public class EntryEventImpl
     
     if (ov instanceof Chunk) {
       //this.region.getCache().getLogger().info("DEBUG freeing ref to old value on " + System.identityHashCode(ov));
-      if (SimpleMemoryAllocatorImpl.trackReferenceCounts()) {
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(new OldValueOwner());
+      if (ReferenceCountHelper.trackReferenceCounts()) {
+        ReferenceCountHelper.setReferenceCountOwner(new OldValueOwner());
         ((Chunk) ov).release();
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+        ReferenceCountHelper.setReferenceCountOwner(null);
       } else {
         ((Chunk) ov).release();
       }
@@ -3077,19 +3086,19 @@ public class EntryEventImpl
   public void copyOffHeapToHeap() {
     Object ov = basicGetOldValue();
     if (ov instanceof Chunk) {
-      if (SimpleMemoryAllocatorImpl.trackReferenceCounts()) {
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(new OldValueOwner());
+      if (ReferenceCountHelper.trackReferenceCounts()) {
+        ReferenceCountHelper.setReferenceCountOwner(new OldValueOwner());
         this.oldValue = OffHeapHelper.copyAndReleaseIfNeeded(ov);
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+        ReferenceCountHelper.setReferenceCountOwner(null);
       } else {
         this.oldValue = OffHeapHelper.copyAndReleaseIfNeeded(ov);
       }
     }
     Object nv = basicGetNewValue();
     if (nv instanceof Chunk) {
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(this);
+      ReferenceCountHelper.setReferenceCountOwner(this);
       this.newValue = OffHeapHelper.copyAndReleaseIfNeeded(nv);
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+      ReferenceCountHelper.setReferenceCountOwner(null);
     }
     if (this.newValue instanceof Chunk || this.oldValue instanceof Chunk) {
       throw new IllegalStateException("event's old/new value still off-heap after calling copyOffHeapToHeap");

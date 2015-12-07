@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.cache.partition;
 
@@ -431,79 +440,4 @@ public class PartitionManagerDUnitTest extends CacheTestCase {
     });
     
   }
-  
-public void testConcurrentWithPuts() throws Throwable {
-    
-    Host host = Host.getHost(0);
-    VM vm0 = host.getVM(0);
-    VM vm1 = host.getVM(1);
-
-    SerializableRunnable createPrRegion = new SerializableRunnable("createRegion") {
-      public void run()
-      {
-        Cache cache = getCache();
-        AttributesFactory attr = new AttributesFactory();
-        PartitionAttributesFactory paf = new PartitionAttributesFactory();
-        paf.setRedundantCopies(0);
-        paf.setRecoveryDelay(-1);
-        paf.setStartupRecoveryDelay(-1);
-        PartitionAttributes prAttr = paf.create();
-        attr.setPartitionAttributes(prAttr);
-        cache.createRegion("region1", attr.create());
-      }
-    };
-    
-    vm0.invoke(createPrRegion);
-    vm1.invoke(createPrRegion);
-    
-    SerializableRunnable lotsOfPuts= new SerializableRunnable("A bunch of puts") {
-      public void run()
-      {
-        Cache cache = getCache();
-        PartitionedRegion region = (PartitionedRegion) cache.getRegion("region1");
-        
-        long start = System.nanoTime();
-        
-        while(TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) < CONCURRENT_TIME) {
-          //Do a put which might trigger bucket creation
-          region.put(BUCKET_ID, "B");
-          try {
-            Thread.sleep(10);
-          } catch (InterruptedException e) {
-            fail("", e);
-          }
-        }
-      }
-    };
-    AsyncInvocation async0_2 = vm0.invokeAsync(lotsOfPuts);
-    AsyncInvocation async1_2 = vm1.invokeAsync(lotsOfPuts);
-    
-    
-    long start = System.nanoTime();
-    
-    while(TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) < CONCURRENT_TIME) {
-      createPrimaryBucket(vm0, true, false);
-      createPrimaryBucket(vm1, true, false);
-    }
-    
-    async0_2.getResult(MAX_WAIT);
-    async1_2.getResult(MAX_WAIT);
-
-    vm0.invoke(new SerializableRunnable("Check the number of owners") {
-      public void run()
-      {
-        Cache cache = getCache();
-        PartitionedRegion region = (PartitionedRegion) cache.getRegion("region1");
-        List owners;
-        try {
-          owners = region.getBucketOwnersForValidation(BUCKET_ID);
-          assertEquals(1, owners.size());
-        } catch (ForceReattemptException e) {
-          fail("shouldn't have seen force reattempt", e);
-        }
-      }
-    });
-    
-  }
-
 }

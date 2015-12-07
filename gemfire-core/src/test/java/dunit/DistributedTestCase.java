@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package dunit;
 
@@ -16,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -24,28 +34,33 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.gemfire.support.GemfireCache;
 
 import junit.framework.TestCase;
 
+import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.LogWriter;
+import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.admin.internal.AdminDistributedSystemImpl;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.DiskStoreFactory;
+import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.HoplogConfig;
 import com.gemstone.gemfire.cache.query.QueryTestUtils;
 import com.gemstone.gemfire.cache.query.internal.QueryObserverHolder;
+import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.cache30.GlobalLockingDUnitTest;
 import com.gemstone.gemfire.cache30.MultiVMRegionTestCase;
 import com.gemstone.gemfire.cache30.RegionTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.distributed.Locator;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem.CreationStackGenerator;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.JGroupMembershipManager;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.MembershipManagerHelper;
+import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.InternalInstantiator;
@@ -54,12 +69,15 @@ import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.admin.ClientStatsManager;
 import com.gemstone.gemfire.internal.cache.DiskStoreObserver;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.tier.InternalBridgeMembership;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.internal.cache.tier.InternalClientMembership;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.DataSerializerPropogationDUnitTest;
+import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LocalLogWriter;
 import com.gemstone.gemfire.internal.logging.LogService;
@@ -68,11 +86,6 @@ import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
-import com.gemstone.org.jgroups.Event;
-import com.gemstone.org.jgroups.JChannel;
-import com.gemstone.org.jgroups.stack.IpAddress;
-import com.gemstone.org.jgroups.stack.Protocol;
-import com.gemstone.org.jgroups.util.GemFireTracer;
 
 import dunit.standalone.DUnitLauncher;
 
@@ -92,6 +105,7 @@ import dunit.standalone.DUnitLauncher;
 public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
   private static final Logger logger = LogService.getLogger();
   private static final LogWriterLogger oldLogger = LogWriterLogger.create(logger);
+  private static final LinkedHashSet<String> testHistory = new LinkedHashSet<String>();
 
   private static void setUpCreationStackGenerator() {
     // the following is moved from InternalDistributedSystem to fix #51058
@@ -177,7 +191,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * DUnit knows about.
    *
    * @return a Map of results, where the key is the VM and the value is the result
-   * @see VM#invoke(Callable)
+   * @see VM#invoke(java.util.concurrent.Callable)
    */
   protected static Map invokeInEveryVM(SerializableCallable work) {
     HashMap ret = new HashMap();
@@ -432,7 +446,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     if (!p.contains(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME)) {
       p.put(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME, "true");
     }
-        
+
     for (Iterator iter = props.entrySet().iterator();
     iter.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -546,19 +560,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * test with disconnectFromDS() or disconnectAllFromDS().
    */
   public void crashDistributedSystem(final DistributedSystem msys) {
-    MembershipManagerHelper.inhibitForcedDisconnectLogging(true);
-    MembershipManagerHelper.playDead(msys);
-    JChannel c = MembershipManagerHelper.getJChannel(msys);
-    Protocol udp = c.getProtocolStack().findProtocol("UDP");
-    udp.stop();
-    udp.passUp(new Event(Event.EXIT, new RuntimeException("killing member's ds")));
-    try {
-      MembershipManagerHelper.getJChannel(msys).waitForClose();
-    }
-    catch (InterruptedException ie) {
-      Thread.currentThread().interrupt();
-      // attempt rest of work with interrupt bit set
-    }
+    MembershipManagerHelper.crashDistributedSystem(msys);
     MembershipManagerHelper.inhibitForcedDisconnectLogging(false);
     WaitCriterion wc = new WaitCriterion() {
       public boolean done() {
@@ -622,31 +624,6 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   /**
-   * Returns an mcast distributed system that is connected to other
-   * vms using a random mcast port.
-   */
-  public final InternalDistributedSystem getMcastSystem() {
-    Properties props = this.getDistributedSystemProperties();
-    int port = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-    props.put(DistributionConfig.MCAST_PORT_NAME, ""+port);
-    props.put(DistributionConfig.MCAST_TTL_NAME, "0");
-    props.put(DistributionConfig.LOCATORS_NAME, "");
-    return getSystem(props);
-  }
-
-  /**
-   * Returns an mcast distributed system that is connected to other
-   * vms using the given mcast port.
-   */
-  public final InternalDistributedSystem getMcastSystem(int jgroupsPort) {
-    Properties props = this.getDistributedSystemProperties();
-    props.put(DistributionConfig.MCAST_PORT_NAME, ""+jgroupsPort);
-    props.put(DistributionConfig.MCAST_TTL_NAME, "0");
-    props.put(DistributionConfig.LOCATORS_NAME, "");
-    return getSystem(props);
-  }
-
-  /**
    * Returns whether or this VM is connected to a {@link
    * DistributedSystem}.
    */
@@ -672,6 +649,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    */
   @Override
   public void setUp() throws Exception {
+    logTestHistory();
     setUpCreationStackGenerator();
     testName = getName();
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");
@@ -689,6 +667,16 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       }
     }
     System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
+  }
+
+  /**
+   * Write a message to the log about what tests have ran previously. This
+   * makes it easier to figure out if a previous test may have caused problems
+   */
+  private void logTestHistory() {
+    String classname = getClass().getSimpleName();
+    testHistory.add(classname);
+    System.out.println("Previously run tests: " + testHistory);
   }
 
   public static void perVMSetUp(String name, String defaultDiskStoreName) {
@@ -767,8 +755,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
 
 
   private static void cleanupThisVM() {
-    IpAddress.resolve_dns = true;
+    closeCache();
+    
     SocketCreator.resolve_dns = true;
+    CacheCreation.clearThreadLocals();
+    System.getProperties().remove("gemfire.log-level");
+    System.getProperties().remove("jgroups.resolve_dns");
     InitialImageOperation.slowImageProcessing = 0;
     DistributionMessageObserver.setInstance(null);
     QueryTestUtils.setCache(null);
@@ -778,14 +770,16 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     LogWrapper.close();
     ClientProxyMembershipID.system = null;
     MultiVMRegionTestCase.CCRegion = null;
-    InternalBridgeMembership.unregisterAllListeners();
+    InternalClientMembership.unregisterAllListeners();
     ClientStatsManager.cleanupForTests();
+    ClientServerTestCase.AUTO_LOAD_BALANCE = false;
     unregisterInstantiatorsInThisVM();
-    GemFireTracer.DEBUG = Boolean.getBoolean("DistributionManager.DEBUG_JAVAGROUPS");
-    Protocol.trace = GemFireTracer.DEBUG;
     DistributionMessageObserver.setInstance(null);
     QueryObserverHolder.reset();
     DiskStoreObserver.setInstance(null);
+    System.getProperties().remove("gemfire.log-level");
+    System.getProperties().remove("jgroups.resolve_dns");
+    
     if (InternalDistributedSystem.systemAttemptingReconnect != null) {
       InternalDistributedSystem.systemAttemptingReconnect.stopReconnecting();
     }
@@ -794,6 +788,41 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       ex.remove();
     }
   }
+
+  private static void closeCache() {
+    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+    if(cache != null && !cache.isClosed()) {
+      destroyRegions(cache);
+      cache.close();
+    }
+  }
+  
+  protected static final void destroyRegions(Cache cache)
+      throws InternalGemFireError, Error, VirtualMachineError {
+    if (cache != null && !cache.isClosed()) {
+      //try to destroy the root regions first so that
+      //we clean up any persistent files.
+      for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
+        Region root = (Region)itr.next();
+        //for colocated regions you can't locally destroy a partitioned
+        //region.
+        if(root.isDestroyed() || root instanceof HARegion || root instanceof PartitionedRegion) {
+          continue;
+        }
+        try {
+          root.localDestroyRegion("teardown");
+        }
+        catch (VirtualMachineError e) {
+          SystemFailure.initiateFailure(e);
+          throw e;
+        }
+        catch (Throwable t) {
+          getLogWriter().error(t);
+        }
+      }
+    }
+  }
+  
   
   public static void unregisterAllDataSerializersFromAllVms()
   {
@@ -1003,7 +1032,8 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * returning.
    */
   public static final void pause(int ms) {
-    if (ms > 50) {
+    LogWriter log = getLogWriter();
+    if (ms >= 1000 || log.fineEnabled()) { // check for fine but log at info
       getLogWriter().info("Pausing for " + ms + " ms..."/*, new Exception()*/);
     }
     final long target = System.currentTimeMillis() + ms;
@@ -1396,7 +1426,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    */
   public void deleteLocatorStateFile(int... ports) {
     for (int i=0; i<ports.length; i++) {
-      File stateFile = new File("locator"+ports[i]+"state.dat");
+      File stateFile = new File("locator"+ports[i]+"view.dat");
       if (stateFile.exists()) {
         stateFile.delete();
       }

@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.cache30;
 
@@ -78,6 +87,7 @@ import com.gemstone.gemfire.cache.partition.PartitionRegionHelper;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.internal.DMStats;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
@@ -3989,6 +3999,13 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       final boolean mirrored = getRegionAttributes().getDataPolicy().withReplication();
       final boolean partitioned = getRegionAttributes().getPartitionAttributes() != null ||
            getRegionAttributes().getDataPolicy().withPartitioning();
+      if (!mirrored) {
+        // This test fails intermittently because the DSClock we inherit from the existing
+        // distributed system is stuck in the "stopped" state.
+        // The DSClock is going away when java groups is merged and at that
+        // time this following can be removed.
+        disconnectAllFromDS();
+      }
 
       final String name = this.getUniqueName();
       final int timeout = 10; // ms
@@ -4059,16 +4076,18 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       
       vm0.invoke(new CacheSerializableRunnable("Check local destroy") {
           public void run2() throws CacheException {
-            Region region =
+            final Region region =
               getRootRegion().getSubregion(name);
             // make sure we created the entry
             {
               CountingDistCacheListener l = (CountingDistCacheListener)
                 region.getAttributes().getCacheListeners()[0];
-              int retry = 100;
+              int retry = 1000;
               while (retry-- > 0) {
                 try {
                   l.assertCount(1, 0, 0, 0);
+                  // TODO: a race exists in which assertCount may also see a destroyCount of 1
+                  logger.info("DEBUG: saw create");
                   break;
                 } catch (AssertionFailedError e) {
                   if (retry > 0) {
@@ -4081,11 +4100,38 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             }
 
             { // now make sure it expires
-              // this should happen really fast since timeout is 10 ms
-              int retry = 10;
-              while (retry-- > 0 && region.getEntry(key) != null) {
-                pause(timeout);
-              }
+              // this should happen really fast since timeout is 10 ms.
+              // But it may take longer in some cases because of thread
+              // scheduling delays and machine load (see GEODE-410).
+              // The previous code would fail after 100ms; now we wait 3000ms.
+              WaitCriterion waitForUpdate = new WaitCriterion() {
+                public boolean done() {
+                  Region.Entry re = region.getEntry(key);
+                  if (re != null) {
+                    EntryExpiryTask eet = getEntryExpiryTask(region, key);
+                    if (eet != null) {
+                      long stopTime = ((InternalDistributedSystem)(region.getCache().getDistributedSystem())).getClock().getStopTime();
+                      logger.info("DEBUG: waiting for expire destroy expirationTime= " + eet.getExpirationTime() + " now=" + eet.getNow() + " stopTime=" + stopTime + " currentTimeMillis=" + System.currentTimeMillis());
+                    } else {
+                      logger.info("DEBUG: waiting for expire destroy but expiry task is null");
+                    }
+                  }
+                  return re == null;
+                }
+                public String description() {
+                  String expiryInfo = "";
+                  try {
+                    EntryExpiryTask eet = getEntryExpiryTask(region, key);
+                    if (eet != null) {
+                      expiryInfo = "expirationTime= " + eet.getExpirationTime() + " now=" + eet.getNow() + " currentTimeMillis=" + System.currentTimeMillis();
+                    }
+                  } catch (EntryNotFoundException ex) {
+                    expiryInfo ="EntryNotFoundException when getting expiry task";
+                  }
+                  return "Entry for key " + key + " never expired (since it still exists) " + expiryInfo;
+                }
+              };
+              DistributedTestCase.waitForCriterion(waitForUpdate, 30000, 1, true);
             }
             assertNull(region.getEntry(key));
           }
@@ -4099,6 +4145,16 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(value, entry.getValue());
           }
         });
+    }
+    
+    private static EntryExpiryTask getEntryExpiryTask(Region r, Object key) {
+      EntryExpiryTask result = null;
+      try {
+        LocalRegion lr = (LocalRegion) r;
+        result = lr.getEntryExpiryTask(key);
+      } catch (EntryNotFoundException ignore) {
+      }
+      return result;
     }
 
     /**
@@ -5430,6 +5486,8 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           IntWrapper.IntWrapperSerializer serializer =
             (IntWrapper.IntWrapperSerializer)
             DataSerializer.register(c);
+          getLogWriter().info("Registered serializer id:" + serializer.getId()
+              + " class:" + c.getName());
 
           Region region = getRootRegion().getSubregion(name);
           region.put(key, new IntWrapper(intValue));
@@ -5443,21 +5501,31 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     SerializableRunnable get = new CacheSerializableRunnable("Get int") {
         public void run2() throws CacheException {
           Region region = getRootRegion().getSubregion(name);
-//          if (region.getAttributes().getScope().isDistributedNoAck()) {
-            // wait a while for the serializer to be registered
-            long end = System.currentTimeMillis() + 30000;
-            while (InternalDataSerializer.getSerializer((byte)120) == null) {
-              assertTrue("This test sometimes fails due to timing issues",
-                  System.currentTimeMillis() <= end);
-              try {
-                Thread.sleep(1000);
+          // wait a while for the serializer to be registered
+          // A race condition exists in the product in which
+          // this thread can be stuck waiting in getSerializer
+          // for 60 seconds. So it only calls getSerializer once
+          // causing it to fail intermittently (see GEODE-376).
+          // To workaround this the test wets WAIT_MS to 1 ms.
+          // So the getSerializer will only block for 1 ms.
+          // This allows the WaitCriterion to make multiple calls
+          // of getSerializer and the subsequent calls will find
+          // the DataSerializer.
+          final int savVal = InternalDataSerializer.GetMarker.WAIT_MS;
+          InternalDataSerializer.GetMarker.WAIT_MS = 1;
+          try {
+            WaitCriterion ev = new WaitCriterion() {
+              public boolean done() {
+                return InternalDataSerializer.getSerializer((byte)120) != null;
               }
-              catch (InterruptedException e) {
-                // no need to keep interrupt bit here
-                throw new CacheException("Test interrupted") { };
+              public String description() {
+                return "DataSerializer with id 120 was never registered";
               }
-            }
-//          }
+            };
+            DistributedTestCase.waitForCriterion(ev, 30 * 1000, 10, true);
+          } finally {
+            InternalDataSerializer.GetMarker.WAIT_MS = savVal;
+          }
           IntWrapper value = (IntWrapper) region.get(key);
           assertNotNull(InternalDataSerializer.getSerializer((byte)120));
           assertNotNull(value);
@@ -8161,12 +8229,12 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     return !o1.equals(o2);
   }
   
-  protected AsyncInvocation performOps4ClearWithConcurrentEvents(VM vm, final int opNum) {
+  protected AsyncInvocation performOps4ClearWithConcurrentEvents(VM vm, final int msToRun) {
     SerializableRunnable performOps = new SerializableRunnable("perform concurrent ops") {
       public void run() {
         try {
           boolean includeClear = true;
-          doOpsLoop(opNum, includeClear);
+          doOpsLoop(msToRun, includeClear);
         } catch (CacheException e) {
           fail("while performing concurrent operations", e);
         }
@@ -8968,222 +9036,6 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     });
   }
 
-  
-  public void versionTestRegionVersionVectors() throws Exception {
-    // this is just a quick set of unit tests for basic RVV functionality
-    
-    final String local = DistributedTestCase.getIPLiteral();
-    InternalDistributedMember server1 = new InternalDistributedMember(local, 101);
-    InternalDistributedMember server2 = new InternalDistributedMember(local, 102);
-    InternalDistributedMember server3 = new InternalDistributedMember(local, 103);
-    InternalDistributedMember server4 = new InternalDistributedMember(local, 104);
-
-    RegionVersionVector rv1 = null;
-    
-    // (a) Test that an exception is mended when the versions that are missing are
-    // added
-    rv1 = new VMRegionVersionVector(server1);
-    rv1.recordVersion(server2, 1);
-    rv1.recordVersion(server2, 5);
-    rv1.recordVersion(server2, 8);
-    getLogWriter().info("for test (a) formed this RVV: " + rv1.fullToString());
-    // there should now be two exceptions:  1-5 and 5-8
-    assertEquals(8, rv1.getVersionForMember(server2));
-    assertEquals(2, rv1.getExceptionCount(server2));
-    rv1.recordVersion(server2, 3);
-    getLogWriter().info("for test (a) RVV is now: " + rv1.fullToString());
-    assertEquals(8, rv1.getVersionForMember(server2));
-    assertEquals(2, rv1.getExceptionCount(server2));
-    rv1.recordVersion(server2, 4);
-    rv1.recordVersion(server2, 2);
-    getLogWriter().info("for test (a) RVV is now: " + rv1.fullToString());
-    assertEquals(1, rv1.getExceptionCount(server2));
-    rv1.recordVersion(server2, 6);
-    rv1.recordVersion(server2, 7);
-    getLogWriter().info("for test (a) RVV is now: " + rv1.fullToString());
-    assertEquals(0, rv1.getExceptionCount(server2));
-    
-    // (b) Test the contains() operation
-    rv1 = new VMRegionVersionVector(server1);
-    rv1.recordVersion(server2, 1);
-    rv1.recordVersion(server2, 5);
-    rv1.recordVersion(server2, 8);
-    rv1.recordVersion(server2, 10);
-    getLogWriter().info("for test (b) formed this RVV: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 1));
-    assertTrue(rv1.contains(server2, 5));
-    assertTrue(rv1.contains(server2, 8));
-    assertTrue(rv1.contains(server2, 10));
-    assertFalse(rv1.contains(server2, 2));
-    assertFalse(rv1.contains(server2, 3));
-    assertFalse(rv1.contains(server2, 4));
-    assertFalse(rv1.contains(server2, 9));
-    assertFalse(rv1.contains(server2, 11));
-    rv1.recordVersion(server2, 3);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 3));
-    rv1.recordVersion(server2, 2);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 2));
-    assertTrue(rv1.contains(server2, 3));
-    rv1.recordVersion(server2, 4);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 1));
-    assertTrue(rv1.contains(server2, 2));
-    assertTrue(rv1.contains(server2, 3));
-    assertTrue(rv1.contains(server2, 4));
-    assertTrue(rv1.contains(server2, 5));
-    rv1.recordVersion(server2, 11);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 11));
-    assertTrue(rv1.contains(server2, 10));
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    rv1.recordVersion(server2, 6);
-    assertTrue(rv1.contains(server2, 2));
-    assertTrue(rv1.contains(server2, 5));
-    assertTrue(rv1.contains(server2, 6));
-    assertFalse(rv1.contains(server2, 7));
-    assertTrue(rv1.contains(server2, 8));
-    rv1.recordVersion(server2, 7);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 7));
-    rv1.recordVersion(server2, 9);
-    getLogWriter().info("for test (b) RVV is now: " + rv1.fullToString());
-    assertTrue(rv1.contains(server2, 9));
-    assertTrue(rv1.getExceptionCount(server2) == 0);
-    assertTrue(rv1.contains(server2, 8));
-    
-    
-    // Test RVV comparisons for GII Delta
-    rv1 = new VMRegionVersionVector(server1);
-    rv1.recordVersion(server2, 1);
-    rv1.recordVersion(server2, 4);
-    rv1.recordVersion(server2, 8);
-    rv1.recordVersion(server2, 9);
-    rv1.recordVersion(server2, 10);
-    rv1.recordVersion(server2, 11);
-    rv1.recordVersion(server2, 12);
-    
-    rv1.recordVersion(server3, 2);
-    rv1.recordVersion(server3, 3);
-    rv1.recordVersion(server3, 4);
-    rv1.recordVersion(server3, 6);
-    rv1.recordVersion(server3, 7);
-    
-    RegionVersionVector rv2 = rv1.getCloneForTransmission();
-    getLogWriter().info("rv1 is " + rv1.fullToString());
-    getLogWriter().info("rv2 is " + rv2.fullToString());
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    assertFalse(rv2.isNewerThanOrCanFillExceptionsFor(rv1));
-
-    rv1.recordVersion(server2, 6);
-    assertTrue(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv2.recordVersion(server2, 6);
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-
-    // fill an exception gap
-    rv1.recordVersion(server2, 5);
-    assertTrue(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv2.recordVersion(server2, 5);
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv1.recordVersion(server2, 7);
-    assertTrue(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv2.recordVersion(server2, 7);
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-
-    // add a more recent revision
-    rv1.recordVersion(server3, 8);
-    assertTrue(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv2.recordVersion(server3, 8);
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-
-    // fill another exception gap
-    rv1.recordVersion(server3, 5);
-    assertTrue(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    rv2.recordVersion(server3, 5);
-    assertFalse(rv1.isNewerThanOrCanFillExceptionsFor(rv2));
-    
-    // test that old members are removed from the vector
-    InternalDistributedMember server5 = new InternalDistributedMember(local, 105);
-    rv1 = new VMRegionVersionVector(server1);
-    rv1.recordVersion(server2, 1);
-    rv1.recordVersion(server3, 1);
-    rv1.recordVersion(server4, 1);
-    rv1.recordVersion(server5, 1);
-    rv1.memberDeparted(server2, false);
-    rv1.memberDeparted(server4, true);
-    assertTrue(rv1.containsMember(server2));
-    assertTrue(rv1.containsMember(server3));
-    assertTrue(rv1.containsMember(server4));
-    Set retain = new HashSet();
-      retain.add(server2);  // still have data from server2
-      retain.add(server3);  // still have data from server3
-      // no data found from server4 in region
-      retain.add(server5);  // still have data from server5
-    rv1.removeOldMembers(retain);
-    assertFalse(rv1.containsMember(server4));
-
-    rv1.memberDeparted(server3, false); // {server2, server3(departed), server5}
-
-    // Now test that departed members are transferred with GII.  We simulate
-    // a new server, server6, doing a GII from server1
-
-    InternalDistributedMember server6 = new InternalDistributedMember(local, 106);
-    RegionVersionVector giiReceiverRVV = new VMRegionVersionVector(server6);
-    // the gii request will cause server1 to clone its RVV and send it to server6
-    rv2 = rv1.getCloneForTransmission();
-    // serialize/deserialize to mimic sending the rvv in a message
-    ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
-    DataOutputStream out = new DataOutputStream(baos);
-    DataSerializer.writeObject(rv2, out);
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    DataInputStream in = new DataInputStream(bais);
-    RegionVersionVector transmittedVector = (RegionVersionVector)DataSerializer.readObject(in);
-    // record the provider's rvv in the receiver of the image
-    giiReceiverRVV.recordVersions(transmittedVector);
-    // removedMembers in the receiver should hold {server4, server3}.  Simulate
-    // another member departure to kick out server4
-    assertTrue(giiReceiverRVV.containsMember(server2));
-    assertTrue(giiReceiverRVV.containsMember(server5));
-    assertTrue(giiReceiverRVV.containsMember(server3));
-    assertTrue(giiReceiverRVV.isDepartedMember(server3));
-
-    // unit test for bit-set boundary.  First boundary is 3/4 of bitset width,
-    // which is the amount dumped to the exceptions list when the bitset becomes full
-    rv1 = new VMRegionVersionVector(server1);
-    long bitSetRollPoint = RegionVersionHolder.BIT_SET_WIDTH + 1;
-    long boundary = RegionVersionHolder.BIT_SET_WIDTH * 3 / 4;
-    for (long i=1; i<boundary; i++) {
-      rv1.recordVersion(server2, i);
-      assertTrue(rv1.contains(server2, i));
-    }
-    assertFalse(rv1.contains(server2, boundary+1));
-    
-    RegionVersionVector.DEBUG = true;
-
-    rv1.recordVersion(server2, bitSetRollPoint);
-    rv1.recordVersion(server2, bitSetRollPoint+1); // bitSet should be rolled at this point
-    RegionVersionHolder h = (RegionVersionHolder)rv1.getMemberToVersion().get(server2);
-    long versionBoundary = h.getBitSetVersionForTesting();
-    assertEquals("expected holder bitset version to roll to this value", boundary-1, versionBoundary);
-    assertFalse(rv1.contains(server2, bitSetRollPoint-1));
-    assertTrue(rv1.contains(server2, bitSetRollPoint));
-    assertTrue(rv1.contains(server2, bitSetRollPoint+1));
-    assertFalse(rv1.contains(server2, bitSetRollPoint+2));
-    
-    assertTrue(rv1.contains(server2, boundary-1));
-    assertFalse(rv1.contains(server2, boundary));
-    assertFalse(rv1.contains(server2, boundary+1));
-
-    // now test the merge
-    getLogWriter().info("testing merge for " + rv1.fullToString());
-    assertEquals(1, rv1.getExceptionCount(server2)); // one exception from boundary-1 to bitSetRollPoint
-    assertFalse(rv1.contains(server2, bitSetRollPoint-1));
-    assertTrue(rv1.contains(server2, bitSetRollPoint));
-    assertTrue(rv1.contains(server2, bitSetRollPoint+1));
-    assertFalse(rv1.contains(server2, bitSetRollPoint+2));
-  
-  }
   
   
   protected boolean waitForAsyncProcessing(AsyncInvocation async, String expectedError) {

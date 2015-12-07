@@ -1,20 +1,49 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
+
+import org.jgroups.protocols.UDP;
 
 import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.JGroupMembershipManager;
+import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.distributed.Locator;
+import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
+import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messenger.JGroupsMessenger;
+import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershipManager;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 
 import dunit.AsyncInvocation;
+import dunit.DistributedTestCase;
 import dunit.Host;
 import dunit.SerializableRunnable;
 import dunit.VM;
+import dunit.DistributedTestCase.WaitCriterion;
 
 /** A test of 46438 - missing response to an update attributes message */
 public class ConnectDisconnectDUnitTest extends CacheTestCase {
@@ -31,30 +60,6 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
   }
   
   
-  
-//  @Override
-//  public void setUp() throws Exception {
-//    super.setUp();
-//    invokeInEveryVM(new SerializableRunnable() {
-//      
-//      @Override
-//      public void run() {
-//        JGroupMembershipManager.setDebugJGroups(true);
-//        System.setProperty("p2p.simulateDiscard", "true");
-//        System.setProperty("p2p.simulateDiscard.received", "0.10");
-//        System.setProperty("p2p.simulateDiscard.sent", "0.10");
-//        System.setProperty("gemfire.membership-port-range", "17000-17200");
-//      }
-//    });
-//  }
-  
-  
-//  @Override
-//  public void tearDown2() throws Exception {
-//    ex.remove();
-//  }
-
-
   // see bugs #50785 and #46438 
   public void testManyConnectsAndDisconnects() throws Throwable {
 //    invokeInEveryVM(new SerializableRunnable() {
@@ -69,7 +74,7 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
 //     int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(4);
 //     setLocatorPorts(ports);
 
-    for(int i = 0; i < 50; i++) {
+    for(int i = 0; i < 20; i++) {
       getLogWriter().info("Test run: " + i);
       runOnce();
       tearDown();

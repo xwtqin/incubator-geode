@@ -1,22 +1,32 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.distributed.internal.membership;
 
 import java.io.NotSerializableException;
-import java.net.DatagramSocket;
+import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
-import com.gemstone.gemfire.distributed.internal.DistributionStats;
+import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.tcp.Stub;
 
 /**
@@ -48,7 +58,7 @@ public interface MembershipManager {
    * While this lock is held the view can't change.
    * @since 5.7
    */
-  public Object getViewLock();
+  public ReadWriteLock getViewLock();
 
   /**
    * Return a {@link InternalDistributedMember} representing the current system
@@ -111,13 +121,6 @@ public interface MembershipManager {
    */
   public void startEventProcessing();
   
-  /**
-   * Return the underlying proxy object, if any, associated with this
-   * local side of this connection.
-   * 
-   * @return the Stub
-   */
-  public Stub getDirectChannel();
   
   /**
    * @param destinations list of members to send the message to.  A list of
@@ -136,14 +139,8 @@ public interface MembershipManager {
   public Set send(
       InternalDistributedMember[] destinations,
       DistributionMessage content,
-      DistributionStats stats)
+      DMStats stats)
   throws NotSerializableException;
-  
-  /**
-   * Force a reset of communication channels
-   *
-   */
-  public void reset();
   
   /**
    * Return a {@link Stub} referring to the given member.  A <em>null</em> may
@@ -190,7 +187,7 @@ public interface MembershipManager {
    *    process and the given distributed member
    * @since 5.1
    */
-  public HashMap getChannelStates(DistributedMember member, boolean includeMulticast);
+  public Map getChannelStates(DistributedMember member, boolean includeMulticast);
 
   /**
    * Waits for the given communication channels to reach the associated
@@ -203,7 +200,7 @@ public interface MembershipManager {
    *    Thrown if the thread is interrupted
    * @since 5.1
    */
-  public void waitForChannelState(DistributedMember member, HashMap channelState)
+  public void waitForChannelState(DistributedMember member, Map channelState)
     throws InterruptedException;
   
   /**
@@ -340,5 +337,5 @@ public interface MembershipManager {
    * @param checker the QuorumChecker instance
    */
   public void releaseQuorumChecker(QuorumChecker checker);
-
+  
 }

@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.execute;
 
@@ -16,12 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import com.gemstone.gemfire.cache.CacheClosedException;
+import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.cache.execute.Execution;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionAdapter;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.cache.execute.FunctionException;
+import com.gemstone.gemfire.cache.execute.FunctionInvocationTargetException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.cache30.CacheTestCase;
@@ -37,6 +50,8 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 
 import dunit.Host;
+import dunit.SerializableCallable;
+import dunit.SerializableRunnable;
 import dunit.VM;
 
 public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
@@ -289,6 +304,49 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
   public void testBug41118()
       throws Exception {
     member1.invoke(MemberFunctionExecutionDUnitTest.class, "bug41118");
+  }
+  
+  public void testOnMembersWithoutCache()
+      throws Exception {
+    DistributedMember member1Id = (DistributedMember) member1.invoke(new SerializableCallable() {
+      
+      @Override
+      public Object call() {
+        disconnectFromDS();
+        return getSystem().getDistributedMember();
+      }
+    });
+    
+    member2.invoke(new SerializableRunnable() {
+      
+      @Override
+      public void run() {
+        getSystem();
+        ResultCollector<?, ?> rc = FunctionService.onMember(member1Id).execute(new FunctionAdapter() {
+          
+          @Override
+          public String getId() {
+            return getClass().getName();
+          }
+          
+          @Override
+          public void execute(FunctionContext context) {
+            //This will throw an exception because the cache is not yet created.
+            CacheFactory.getAnyInstance();
+          }
+        });
+        
+        try {
+          rc.getResult(30, TimeUnit.SECONDS);
+          fail("Should have seen an exception");
+        } catch (Exception e) {
+          if(!(e.getCause() instanceof FunctionInvocationTargetException)) {
+            fail("failed", e);
+          }
+        }
+        
+      }
+    });
   }
   
   public static void bug41118(){

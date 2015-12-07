@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.distributed;
@@ -55,10 +64,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *
  * When a program connects to the distributed system, a "distribution
  * manager" is started in this VM and the other members of the
- * distributed system are located.  This discovery can be performed
- * using either IP multicast (default) or by contacting "locators"
- * running on a given host and port.  All connections that are
- * configured to use the same multicast address/port and the same
+ * distributed system are located.  This discovery is performed
+ * by contacting "locators"
+ * running on a given host and port.  All DistributedSystems that are
+ * configured to use the same same
  * locators are part of the same distributed system.
  *
  * <P>
@@ -133,13 +142,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * <dl>
  *   <a name="mcast-port"><dt>mcast-port</dt></a>
  *   <dd><U>Description</U>: The port used for multicast networking.
- *   If zero, then multicast will be disabled and locators must be used to find the other members
- *   of the distributed system.
- *   If "mcast-port" is zero and "locators" is ""
- *   then this distributed system will be isolated from all other GemFire
- *   processes.
+ *   If zero, then multicast will be disabled and unicast messaging will
+ *   be used.
  *   </dd>
- *   <dd><U>Default</U>: "0" if locators is not ""; otherwise "10334"</dd>
+ *   <dd><U>Default</U>: "0"</dd>
  * </dl>
  *
  * <dl>
@@ -302,7 +308,7 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *   instead of a colon to separate the host name and bind address.
  *   For example, "server1@fdf0:76cf:a0ed:9449::5[12233]" specifies a locator
  *   running on "server1" and bound to fdf0:76cf:a0ed:9449::5 on port 12233.<p>
- *   If "mcast-port" is zero and "locators" is ""
+ *   If "locators" is empty
  *   then this distributed system will be isolated from all other GemFire
  *   processes.<p>
  *   </dd>
@@ -627,6 +633,18 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *   <dd><U>Default</U>: "false"</dd>
  * </dl>
  * 
+ * <dl>
+ *   <a name="max-wait-time-reconnect"><dt>max-wait-time-reconnect</dt></a>
+ *   <dd><U>Description</U>: Specifies the time in milliseconds to wait before each reconnect attempt when
+ *   a member of the distributed system is forced out of the system and auto-reconnect
+ *   is enabled (see <a href="#disable-auto-reconnect"><code>disable-auto-reconnect</code></a>) or if the deprecated required-roles
+ *   feature is being used and a role-loss has triggered a shutdown and reconnect.
+ *   </dd>
+ *   <dd><U>Default</U>: "60000"</dd>
+ *   <dd><U>Since</U>: 5.0</dd>
+ * </dl>
+ *
+ *
  * <b>Redundancy Management</b>
  * 
  * <dl>
@@ -776,10 +794,10 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  *
  * <dl>
  *   <a name="max-wait-time-reconnect"><dt>max-wait-time-reconnect</dt></a>
- *   <dd><U>Description</U>: Specifies the maximum number of milliseconds
- *   to wait for the distributed system to reconnect in case of required role
- *   loss or forced disconnect. The system will attempt to <a href="#max-num-reconnect-tries">reconnect
- *   more than once</a>, and this timeout period applies to each reconnection attempt.
+ *   <dd><U>Description</U>: Specifies the time in milliseconds to wait before each reconnect attempt when
+ *   a member of the distributed system is forced out of the system and auto-reconnect
+ *   is enabled (see <a href="#disable-auto-reconnect"><code>disable-auto-reconnect</code></a>) or if the deprecated required-roles
+ *   feature is being used and a role-loss has triggered a shutdown and reconnect.
  *   </dd>
  *   <dd><U>Default</U>: "60000"</dd>
  *   <dd><U>Since</U>: 5.0</dd>
@@ -1594,32 +1612,34 @@ public abstract class DistributedSystem implements StatisticsFactory {
         }
 
       } else {
-        if (!existingSystems.isEmpty()) {
+        boolean existingSystemDisconnecting = true;
+        while (!existingSystems.isEmpty() && existingSystemDisconnecting) {
           Assert.assertTrue(existingSystems.size() == 1);
 
           InternalDistributedSystem existingSystem =
-            (InternalDistributedSystem) existingSystems.get(0);
-          if (existingSystem.isDisconnecting()) {
-            while (existingSystem.isConnected()) {
-              boolean interrupted = Thread.interrupted();
-              try {
-                existingSystemsLock.wait(500);
-              } 
-              catch (InterruptedException ex) {
-                interrupted = true;
-              }
-              finally {
-                if (interrupted) {
-                  Thread.currentThread().interrupt();
-                }
+              (InternalDistributedSystem) existingSystems.get(0);
+          existingSystemDisconnecting = existingSystem.isDisconnecting();
+          if (existingSystemDisconnecting) {
+            boolean interrupted = Thread.interrupted();
+            try {
+              // no notify for existingSystemsLock, just to release the sync
+              existingSystemsLock.wait(50);
+            } 
+            catch (InterruptedException ex) {
+              interrupted = true;
+            }
+            finally {
+              if (interrupted) {
+                Thread.currentThread().interrupt();
               }
             }
-          }
-
-          if (existingSystem.isConnected()) {
+          } else if (existingSystem.isConnected()) {
             existingSystem.validateSameProperties(config,
                 existingSystem.isConnected());
             return existingSystem;
+          } else {
+          // This should not happen: existingSystem.isConnected()==false && existingSystem.isDisconnecting()==false 
+            throw new AssertionError("system should not be disconnecting==false and isConnected==falsed");
           }
         }
       }

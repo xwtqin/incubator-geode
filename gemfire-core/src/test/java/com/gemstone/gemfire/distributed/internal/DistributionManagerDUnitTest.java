@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.distributed.internal;
 
@@ -33,12 +42,12 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.JGroupMembershipManager;
-import com.gemstone.gemfire.distributed.internal.membership.jgroup.MembershipManagerHelper;
+import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
+import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
+import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershipManager;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.tcp.Stub;
-import com.gemstone.org.jgroups.protocols.pbcast.GMS;
 
 import dunit.DistributedTestCase;
 import dunit.Host;
@@ -132,9 +141,10 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
    */
   public void testConnectAfterBeingShunned() {
     InternalDistributedSystem sys = getSystem();
-    JGroupMembershipManager mgr = MembershipManagerHelper.getMembershipManager(sys);
+    MembershipManager mgr = MembershipManagerHelper.getMembershipManager(sys);
     InternalDistributedMember idm = mgr.getLocalMember();
-    System.setProperty("gemfire.jg-bind-port", ""+idm.getPort());
+    // TODO GMS needs to have a system property allowing the bind-port to be set
+//    System.setProperty("gemfire.jg-bind-port", ""+idm.getPort());
     try {
       sys.disconnect();
       sys = getSystem();
@@ -162,7 +172,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
     VM vm0 = Host.getHost(0).getVM(0);
 
     InternalDistributedSystem sys = getSystem();
-    JGroupMembershipManager mgr = MembershipManagerHelper.getMembershipManager(sys);
+    MembershipManager mgr = MembershipManagerHelper.getMembershipManager(sys);
 
     try {
       InternalDistributedMember mbr = new InternalDistributedMember(
@@ -172,10 +182,10 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       
       // if the view number isn't being recorded correctly the test will pass but the
       // functionality is broken
-      Assert.assertTrue("expected view ID to be greater than zero", mgr.getView().getViewNumber() > 0);
+      Assert.assertTrue("expected view ID to be greater than zero", mgr.getView().getViewId() > 0);
 
       int oldViewId = mbr.getVmViewId();
-      mbr.setVmViewId((int)mgr.getView().getViewNumber()-1);
+      mbr.setVmViewId((int)mgr.getView().getViewId()-1);
       getLogWriter().info("current membership view is " + mgr.getView());
       getLogWriter().info("created ID " + mbr + " with view ID " + mbr.getVmViewId());
       sys.getLogWriter().info("<ExpectedException action=add>attempt to add old member</ExpectedException>");
@@ -192,7 +202,8 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       // now forcibly add it as a surprise member and show that it is reaped
       long gracePeriod = 5000;
       long startTime = System.currentTimeMillis();
-      long birthTime = startTime - mgr.getSurpriseMemberTimeout() + gracePeriod;
+      long timeout = ((GMSMembershipManager)mgr).getSurpriseMemberTimeout();
+      long birthTime = startTime - timeout + gracePeriod;
       MembershipManagerHelper.addSurpriseMember(sys, mbr, birthTime);
       assertTrue("Member was not a surprise member", mgr.isSurpriseMember(mbr));
       
@@ -204,7 +215,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       };
       vm0.invoke(connectDisconnect);
       
-      if (birthTime < (System.currentTimeMillis() - mgr.getSurpriseMemberTimeout())) {
+      if (birthTime < (System.currentTimeMillis() - timeout)) {
         return; // machine is too busy and we didn't get enough CPU to perform more assertions
       }
       assertTrue("Member was incorrectly removed from surprise member set",
@@ -228,79 +239,6 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
     finally {
       if (sys != null && sys.isConnected()) {
         sys.disconnect();
-      }
-    }
-  }
-
-  /**
-   * Test the verifyMember interface of the membership manager
-   **/ 
-  public void testVerifyMember() {
-    VM memberVM = Host.getHost(0).getVM(1);
-
-    int port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-
-    final String locators = getIPLiteral() + "[" + port1 + "]";
-    final Properties properties = new Properties();
-    properties.put(DistributionConfig.MCAST_PORT_NAME, "0");
-    properties.put(DistributionConfig.START_LOCATOR_NAME, locators);
-    properties.put(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME, "true");
-    properties.put(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
-
-    system = (InternalDistributedSystem)DistributedSystem.connect(properties);
-    JGroupMembershipManager mgr = MembershipManagerHelper.getMembershipManager(system);
-    
-    try {
-      properties.remove(DistributionConfig.START_LOCATOR_NAME);
-      properties.put(DistributionConfig.LOCATORS_NAME, locators);
-      properties.put(DistributionConfig.NAME_NAME, "John Doe");
-      DistributedMember id = (DistributedMember)memberVM.invoke(new SerializableCallable() {
-        public Object call() {
-          DistributedSystem system = DistributedSystem.connect(properties);
-          return system.getDistributedMember();
-        }
-      });
-      
-      assertTrue(id.getName().equals("John Doe"));
-      
-      getLogWriter().info("test is setting slow view casting hook");
-      // a new view won't be installed for 20 seconds
-      GMS.TEST_HOOK_SLOW_VIEW_CASTING=20;
-      
-      // show we can reconnect even though the old ID for this member is still
-      // in the membership view.  Disconnecting will shut down the old DistributedSystem
-      // in memberVM and while the old ID is still in the view
-      memberVM.invoke(new SerializableRunnable("disconnect and reconnect") {
-        public void run() {
-          DistributedSystem sys = InternalDistributedSystem.getAnyInstance();
-          DistributedMember oldID = sys.getDistributedMember();
-          crashDistributedSystem(sys);
-          sys = DistributedSystem.connect(properties);
-          getLogWriter().info("initial view in new system is " + 
-            MembershipManagerHelper.getMembershipManager(sys).getView());
-          // the old ID should be in the new view
-          if (MembershipManagerHelper.getMembershipManager(sys)
-              .memberExists((InternalDistributedMember)oldID)) {
-            // the old DistributedSystem should not be reachable
-            assertFalse(MembershipManagerHelper.getMembershipManager(sys)
-                .verifyMember(oldID, "old member has disconnected for this test"));
-          }
-        }
-      });
-    }
-    finally {
-      GMS.TEST_HOOK_SLOW_VIEW_CASTING = 0;
-      
-      memberVM.invoke(new SerializableRunnable("disconnect") {
-        public void run() {
-          DistributedSystem sys = InternalDistributedSystem.getAnyInstance();
-          if (sys != null) {
-            sys.disconnect();
-          }
-        }
-      });
-      if (system != null && system.isConnected()) {
-        system.disconnect();
       }
     }
   }

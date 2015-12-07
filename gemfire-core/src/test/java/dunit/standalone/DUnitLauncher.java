@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package dunit.standalone;
 
@@ -44,6 +53,7 @@ import batterytest.greplogs.ExpectedStrings;
 import batterytest.greplogs.LogConsumer;
 
 import com.gemstone.gemfire.distributed.Locator;
+import com.gemstone.gemfire.distributed.internal.membership.gms.membership.GMSJoinLeave;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.logging.LogService;
 
@@ -68,6 +78,9 @@ import dunit.VM;
  */
 public class DUnitLauncher {
 
+  /** change this to use a different log level in unit tests */
+  public static final String LOG_LEVEL = System.getProperty("logLevel", "info");
+  
   static int locatorPort;
 
   private static final int NUM_VMS = 4;
@@ -79,7 +92,6 @@ public class DUnitLauncher {
   private static File DUNIT_SUSPECT_FILE;
 
   public static final String DUNIT_DIR = "dunit";
-  public static final String LOG_LEVEL = System.getProperty("logLevel", "config");
   public static final String WORKSPACE_DIR_PARAM = "WORKSPACE_DIR";
   public static final boolean LOCATOR_LOG_TO_DISK = Boolean.getBoolean("locatorLogToDisk");
 
@@ -88,6 +100,8 @@ public class DUnitLauncher {
   static final String VM_NUM_PARAM = "gemfire.DUnitLauncher.VM_NUM";
 
   private static final String LAUNCHED_PROPERTY = "gemfire.DUnitLauncher.LAUNCHED";
+
+  private static Master master;
 
   private DUnitLauncher() {
   }
@@ -150,7 +164,7 @@ public class DUnitLauncher {
     Registry registry = LocateRegistry.createRegistry(namingPort);
 
     final ProcessManager processManager = new ProcessManager(namingPort, registry);
-    Master master = new Master(registry, processManager);
+    master = new Master(registry, processManager);
     registry.bind(MASTER_PARAM, master);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -228,7 +242,16 @@ public class DUnitLauncher {
         //Disable the shared configuration on this locator.
         //Shared configuration tests create their own locator
         p.setProperty("enable-cluster-configuration", "false");
-        Locator.startLocatorAndDS(locatorPort, locatorLogFile, p);
+        //Tell the locator it's the first in the system for
+        //faster boot-up
+        
+        System.setProperty(GMSJoinLeave.BYPASS_DISCOVERY_PROPERTY, "true");
+        try {
+          Locator.startLocatorAndDS(locatorPort, locatorLogFile, p);
+        } finally {
+          System.getProperties().remove(GMSJoinLeave.BYPASS_DISCOVERY_PROPERTY);
+        }
+        
         return null;
       }
     }, "call");

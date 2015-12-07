@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal;
 
 import java.io.File;
@@ -14,6 +30,7 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionFactory;
 import com.gemstone.gemfire.cache.RegionShortcut;
 import com.gemstone.gemfire.cache30.CacheTestCase;
+import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.pdx.PdxInstance;
 import com.gemstone.gemfire.pdx.PdxReader;
@@ -36,9 +53,13 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
   public void testPdxDeleteFieldVersioning() throws Exception {
     final String DS_NAME = "PdxDeleteFieldDUnitTestDiskStore";
     final String DS_NAME2 = "PdxDeleteFieldDUnitTestDiskStore2";
+    
     final Properties props = new Properties();
-    props.setProperty("mcast-port", Integer.toString(AvailablePortHelper.getRandomAvailablePortForDUnitSite()));
-    props.setProperty("locators", "");
+    final int[] locatorPorts = AvailablePortHelper.getRandomAvailableTCPPorts(2);
+    props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+locatorPorts[0]+"],localhost["+locatorPorts[1]+"]");
+    props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
+
     final File f = new File(DS_NAME);
     f.mkdir();
     final File f2 = new File(DS_NAME2);
@@ -53,6 +74,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
     vm1.invoke(new SerializableCallable() {
       public Object call() throws Exception {
         disconnectFromDS();
+        props.setProperty(DistributionConfig.START_LOCATOR_NAME, "localhost["+locatorPorts[0]+"]");
         final Cache cache = (new CacheFactory(props)).setPdxPersistent(true).setPdxDiskStore(DS_NAME).create();
         DiskStoreFactory dsf = cache.createDiskStoreFactory();
         dsf.setDiskDirs(new File[]{f});
@@ -68,6 +90,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
     vm2.invoke(new SerializableCallable() {
       public Object call() throws Exception {
         disconnectFromDS();
+        props.setProperty(DistributionConfig.START_LOCATOR_NAME, "localhost["+locatorPorts[1]+"]");
         final Cache cache = (new CacheFactory(props)).setPdxReadSerialized(true).setPdxPersistent(true).setPdxDiskStore(DS_NAME2).create();
         DiskStoreFactory dsf = cache.createDiskStoreFactory();
         dsf.setDiskDirs(new File[]{f2});
@@ -105,6 +128,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
     
     vm1.invoke(new SerializableCallable() {
       public Object call() throws Exception {
+        props.setProperty(DistributionConfig.START_LOCATOR_NAME, "localhost["+locatorPorts[0]+"]");
         final Cache cache = (new CacheFactory(props)).setPdxPersistent(true).setPdxDiskStore(DS_NAME).create();
         DiskStoreFactory dsf = cache.createDiskStoreFactory();
         dsf.setDiskDirs(new File[]{f});
@@ -118,6 +142,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
     
     vm2.invoke(new SerializableCallable() {
       public Object call() throws Exception {
+        props.setProperty(DistributionConfig.START_LOCATOR_NAME, "localhost["+locatorPorts[1]+"]");
         final Cache cache = (new CacheFactory(props)).setPdxReadSerialized(true).setPdxPersistent(true).setPdxDiskStore(DS_NAME2).create();
         
         DiskStoreFactory dsf = cache.createDiskStoreFactory();

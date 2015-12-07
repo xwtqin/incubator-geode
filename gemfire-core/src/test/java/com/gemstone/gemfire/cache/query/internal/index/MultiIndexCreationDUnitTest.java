@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.cache.query.internal.index;
 
 import java.util.Collection;
@@ -70,10 +86,12 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
     AsyncInvocation a2 = server1.invokeAsync(new SerializableCallable("Create Server1") {
       @Override
       public Object call() throws Exception {
-        while (!hooked){
+        long giveupTime = System.currentTimeMillis() + 60000;
+        while (!hooked && System.currentTimeMillis() < giveupTime) {
           getLogWriter().info("Query Waiting for index hook.");
           pause(100);
         }
+        assertTrue(hooked);
         
         QueryObserver old = QueryObserverHolder
             .setInstance(new QueryObserverAdapter() {
@@ -163,10 +181,11 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
 
     @Override
     public void hook(int spot) throws RuntimeException {
+      long giveupTime = System.currentTimeMillis() + 60000;
       if (spot == 13) {
         hooked = true;
         getLogWriter().info("MultiIndexCreationTestHook is hooked in create defined indexes.");
-        while (hooked) {
+        while (hooked && System.currentTimeMillis() < giveupTime) {
           getLogWriter().info("MultiIndexCreationTestHook waiting.");
           pause(100);
         }

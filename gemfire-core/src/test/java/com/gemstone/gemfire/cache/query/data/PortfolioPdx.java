@@ -1,10 +1,20 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 /******
  * THIS FILE IS ENCODED IN UTF-8 IN ORDER TO TEST UNICODE IN FIELD NAMES.
  * THE ENCODING MUST BE SPECIFIED AS UTF-8 WHEN COMPILED
@@ -32,6 +42,7 @@ import com.gemstone.gemfire.pdx.PdxWriter;
 
 
 public class PortfolioPdx implements Serializable, PdxSerializable  {
+  public static boolean DEBUG = false;
 
   public enum Day {
     Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
@@ -129,11 +140,13 @@ public class PortfolioPdx implements Serializable, PdxSerializable  {
   /* public no-arg constructor required for Deserializable */
   public PortfolioPdx() {
     this.numInstance++;
+    if (DEBUG) Thread.dumpStack();
 //    GemFireCacheImpl.getInstance().getLoggerI18n().fine(new Exception("DEBUG"));
   }
 
   public PortfolioPdx(int i) {
     aDay = (Day)(dayList.get((i % dayList.size())));
+    if (DEBUG) Thread.dumpStack();
     this.numInstance++;
     ID = i;
     if(i % 2 == 0) {
