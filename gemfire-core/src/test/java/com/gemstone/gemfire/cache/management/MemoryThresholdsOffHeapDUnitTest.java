@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2013 VMware, Inc. All rights reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. VMware products are covered by
- * one or more patents listed at http://www.vmware.com/go/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.cache.management;
 
@@ -35,7 +44,7 @@ import com.gemstone.gemfire.cache.client.ServerOperationException;
 import com.gemstone.gemfire.cache.control.ResourceManager;
 import com.gemstone.gemfire.cache.management.MemoryThresholdsDUnitTest.Range;
 import com.gemstone.gemfire.cache.server.CacheServer;
-import com.gemstone.gemfire.cache30.BridgeTestCase;
+import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
@@ -53,6 +62,7 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.Resou
 import com.gemstone.gemfire.internal.cache.control.MemoryEvent;
 import com.gemstone.gemfire.internal.cache.control.MemoryThresholds.MemoryState;
 import com.gemstone.gemfire.internal.cache.control.OffHeapMemoryMonitor;
+import com.gemstone.gemfire.internal.cache.control.OffHeapMemoryMonitor.OffHeapMemoryMonitorObserver;
 import com.gemstone.gemfire.internal.cache.control.ResourceAdvisor;
 import com.gemstone.gemfire.internal.cache.control.ResourceListener;
 import com.gemstone.gemfire.internal.cache.control.TestMemoryThresholdListener;
@@ -72,7 +82,7 @@ import dunit.VM;
  * @author David Hoots
  * @since 9.0
  */
-public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
+public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
   private static final long serialVersionUID = -684231183212051910L;
 
   final String expectedEx = LocalizedStrings.MemoryMonitor_MEMBER_ABOVE_CRITICAL_THRESHOLD.getRawText().replaceAll("\\{[0-9]+\\}",
@@ -100,8 +110,8 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
 
   @Override
   public void tearDown2() throws Exception {
-    super.tearDown2();
     invokeInEveryVM(this.resetResourceManager);
+    super.tearDown2();
   }
 
   private SerializableCallable resetResourceManager = new SerializableCallable() {
@@ -132,12 +142,11 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int port1 = ports[0];
     final int port2 = ports[1];
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     final String regionName = "offHeapEventDelivery";
 
-    startCacheServer(server1, port1, mcastPort, 0f, 0f,
+    startCacheServer(server1, port1, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
-    startCacheServer(server2, port2, mcastPort, 70f, 90f,
+    startCacheServer(server2, port2, 70f, 90f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
     registerTestMemoryThresholdListener(server1);
@@ -233,12 +242,11 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int port1 = ports[0];
     final int port2 = ports[1];
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     final String regionName = "offHeapDisabledThresholds";
 
-    startCacheServer(server1, port1, mcastPort, 0f, 0f,
+    startCacheServer(server1, port1, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
-    startCacheServer(server2, port2, mcastPort, 0f, 0f,
+    startCacheServer(server2, port2, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
     registerTestMemoryThresholdListener(server1);
@@ -351,12 +359,11 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int port1 = ports[0];
     final int port2 = ports[1];
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     final String regionName = "offHeapDRRemoteClientPutReject";
 
-    startCacheServer(server1, port1, mcastPort, 0f, 0f,
+    startCacheServer(server1, port1, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
-    startCacheServer(server2, port2, mcastPort, 0f, 90f,
+    startCacheServer(server2, port2, 0f, 90f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
     startClient(client, server1, port1, regionName);
@@ -397,7 +404,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
   }
   
   public void testGettersAndSetters() {
-    getSystem(getServerProperties(0));
+    getSystem(getOffHeapProperties());
     ResourceManager rm = getCache().getResourceManager();
     assertEquals(0.0f, rm.getCriticalOffHeapPercentage());
     assertEquals(0.0f, rm.getEvictionOffHeapPercentage());
@@ -428,12 +435,11 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int port1 = ports[0];
     final int port2 = ports[1];
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     final String regionName = "offHeapDRRemotePutRejection";
 
-    startCacheServer(server1, port1, mcastPort, 0f, 0f,
+    startCacheServer(server1, port1, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
-    startCacheServer(server2, port2, mcastPort, 0f, 90f,
+    startCacheServer(server2, port2, 0f, 90f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
     registerTestMemoryThresholdListener(server1);
@@ -514,7 +520,6 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final VM replicate1 = host.getVM(1);
     final VM replicate2 = host.getVM(2);
     final String rName = getUniqueName();
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     
     // Make sure the desired VMs will have a fresh DS.
     AsyncInvocation d1 = replicate1.invokeAsync(DistributedTestCase.class, "disconnectFromDS");
@@ -527,7 +532,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
       @SuppressWarnings("synthetic-access")
       @Override
       public void run2() throws CacheException {
-        getSystem(getServerProperties(mcastPort));
+        getSystem(getOffHeapProperties());
       }
     };
     replicate1.invoke(establishConnectivity);
@@ -537,7 +542,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
       @Override
       public void run2() throws CacheException {
         // Assert some level of connectivity
-        InternalDistributedSystem ds = getSystem(getServerProperties(mcastPort));
+        InternalDistributedSystem ds = getSystem(getOffHeapProperties());
         assertTrue(ds.getDistributionManager().getNormalDistributionManagerIds().size() >= 1);
 
         InternalResourceManager irm = (InternalResourceManager)getCache().getResourceManager();
@@ -586,13 +591,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         
         WaitCriterion wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to set memoryThreshold";
           }
           public boolean done() {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(2); 
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -601,13 +606,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         r.destroy("oh3");
         wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to unset memoryThreshold";
           }
           public boolean done() {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(3);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -650,13 +655,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         r.put("oh3", new byte[157287]);
         WaitCriterion wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to set memoryThreshold";
           }
           public boolean done() {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(5);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -665,13 +670,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         r.destroy("oh3");
         wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to unset memoryThreshold";
           }
           public boolean done() {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(6);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -752,19 +757,18 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     servers[2] = host.getVM(3);
 
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(3);
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
     final String regionName = "offHeapPRRemotePutRejection";
     final int redundancy = 1;
 
-    startCacheServer(servers[0], ports[0], mcastPort, 0f, 90f,
+    startCacheServer(servers[0], ports[0], 0f, 90f,
         regionName, true/*createPR*/, false/*notifyBySubscription*/, redundancy);
-    startCacheServer(servers[1], ports[1], mcastPort, 0f, 90f,
+    startCacheServer(servers[1], ports[1], 0f, 90f,
         regionName, true/*createPR*/, false/*notifyBySubscription*/, redundancy);
-    startCacheServer(servers[2], ports[2], mcastPort, 0f, 90f,
+    startCacheServer(servers[2], ports[2], 0f, 90f,
         regionName, true/*createPR*/, false/*notifyBySubscription*/, redundancy);
     accessor.invoke(new SerializableCallable() {
       public Object call() throws Exception {
-        getSystem(getServerProperties(mcastPort));
+        getSystem(getOffHeapProperties());
         getCache();
         AttributesFactory factory = new AttributesFactory();        
         PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -920,7 +924,6 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final VM accessor = host.getVM(1);
     final VM ds1 = host.getVM(2);
     final String rName = getUniqueName();
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
 
     // Make sure the desired VMs will have a fresh DS.
     AsyncInvocation d0 = accessor.invokeAsync(DistributedTestCase.class, "disconnectFromDS");
@@ -936,8 +939,8 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     ds1.invoke(establishConnectivity);
     accessor.invoke(establishConnectivity);
 
-    ds1.invoke(createPR(rName, false, mcastPort));
-    accessor.invoke(createPR(rName, true, mcastPort));
+    ds1.invoke(createPR(rName, false));
+    accessor.invoke(createPR(rName, true));
     
     final AtomicInteger expectedInvocations = new AtomicInteger(0);
 
@@ -999,7 +1002,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
             return false;
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         
         final Integer k = new Integer(2); // reload with same key again and again
         final Integer expectedInvocations3 = new Integer(expectedInvocations.getAndIncrement());
@@ -1044,7 +1047,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         
         Integer k = new Integer(3); // same key as previously used, this time is should stick
         Integer expectedInvocations8 = new Integer(expectedInvocations.incrementAndGet());
@@ -1102,12 +1105,12 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     ds1.invoke(removeExpectedException);
   }
   
-  private CacheSerializableRunnable createPR(final String rName, final boolean accessor, final int mcastPort) {
+  private CacheSerializableRunnable createPR(final String rName, final boolean accessor) {
     return new CacheSerializableRunnable("create PR accessor") {
     @Override
     public void run2() throws CacheException {
       // Assert some level of connectivity
-      getSystem(getServerProperties(mcastPort));      
+      getSystem(getOffHeapProperties());      
       InternalResourceManager irm = (InternalResourceManager)getCache().getResourceManager();
       irm.setCriticalOffHeapPercentage(90f);
       AttributesFactory<Integer, String> af = new AttributesFactory<Integer, String>();
@@ -1146,14 +1149,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final Host host = Host.getHost(0);
     final VM vm = host.getVM(2);
     final String rName = getUniqueName();
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
 
     vm.invoke(DistributedTestCase.class, "disconnectFromDS");
     
     vm.invoke(new CacheSerializableRunnable("test LocalRegion load passthrough when critical") {
       @Override
       public void run2() throws CacheException {
-        getSystem(getServerProperties(mcastPort));
+        getSystem(getOffHeapProperties());
         InternalResourceManager irm = (InternalResourceManager)getCache().getResourceManager();
         final OffHeapMemoryMonitor ohmm = irm.getOffHeapMonitor();
         irm.setCriticalOffHeapPercentage(90f);
@@ -1189,13 +1191,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         getCache().getLoggerI18n().fine(removeExpectedExString);
         WaitCriterion wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to set memoryThresholdReached";
           }
           public boolean done() {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         { 
           Integer k = new Integer(2);
           assertEquals(k.toString(), r.get(k));
@@ -1210,13 +1212,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         getCache().getLoggerI18n().fine(removeExpectedBelow);
         wc = new WaitCriterion() {
           public String description() {
-            return "verify critical state";
+            return "expected region " + r + " to unset memoryThresholdReached";
           }
           public boolean done() {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 3000, 100, true);
+        waitForCriterion(wc, 30*1000, 10, true);
         
         {
           Integer k = new Integer(3);
@@ -1270,16 +1272,15 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final int port1 = ports[0];
     final int port2 = ports[1];
     final int port3 = ports[2];
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
-    final String regionName = "testEventOrger";
+    final String regionName = "testEventOrder";
 
-    startCacheServer(server1, port1, mcastPort, 0f, 0f,
+    startCacheServer(server1, port1, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
-    startCacheServer(server2, port2, mcastPort, 0f, 0f,
+    startCacheServer(server2, port2, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
-    verifyProfiles(server1, 1);
-    verifyProfiles(server2, 1);
+    verifyProfiles(server1, 2);
+    verifyProfiles(server2, 2);
 
     server2.invoke(new SerializableCallable() {
       public Object call() throws Exception {
@@ -1288,13 +1289,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
       }
     });
 
-    verifyProfiles(server1, 0);
+    verifyProfiles(server1, 1);
 
-    startCacheServer(server3, port3, mcastPort, 0f, 0f,
+    startCacheServer(server3, port3, 0f, 0f,
         regionName, false/*createPR*/, false/*notifyBySubscription*/, 0);
 
-    verifyProfiles(server1, 1);
-    verifyProfiles(server3, 1);
+    verifyProfiles(server1, 2);
+    verifyProfiles(server3, 2);
   }
   
   public void testPRClientPutRejection() throws Exception {
@@ -1383,10 +1384,11 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     final Host host = Host.getHost(0);
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
+    final Object bigKey = -1;
+    final Object smallKey = -2;
 
     final int port = AvailablePortHelper.getRandomAvailableTCPPort();
-    final int mcastPort = AvailablePortHelper.getRandomAvailableUDPPort();
-    startCacheServer(server, port, mcastPort, 0f, 90f,
+    startCacheServer(server, port, 0f, 90f,
         regionName, createPR, false, 0);
     startClient(client, server, port, regionName);
     doPuts(client, regionName, false/*catchServerException*/,
@@ -1394,20 +1396,52 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     doPutAlls(client, regionName, false/*catchServerException*/,
         false/*catchLowMemoryException*/, Range.DEFAULT);
 
+    
     //make the region sick in the server
-    server.invoke(new SerializableRunnable() {
-      public void run() {
+    final long bytesUsedAfterSmallKey = (long)server.invoke(new SerializableCallable() {
+      @Override
+      public Object call() throws Exception {
         InternalResourceManager irm = ((GemFireCacheImpl)getCache()).getResourceManager();
         final OffHeapMemoryMonitor ohm = irm.getOffHeapMonitor();
         assertTrue(ohm.getState().isNormal());
         getCache().getLoggerI18n().fine(addExpectedExString);
         final LocalRegion r = (LocalRegion) getRootRegion().getSubregion(regionName);
-        final Object key = 1;
-        r.put(key, new byte[943720]);
+        final long bytesUsedAfterSmallKey;
+        {
+          OffHeapMemoryMonitorObserverImpl _testHook = new OffHeapMemoryMonitorObserverImpl();
+          ohm.testHook = _testHook;
+          try {
+            r.put(smallKey, "1234567890");
+            bytesUsedAfterSmallKey = _testHook.verifyBeginUpdateMemoryUsed(false);
+          } finally {
+            ohm.testHook = null;
+          }
+        }
+        {
+          final OffHeapMemoryMonitorObserverImpl th = new OffHeapMemoryMonitorObserverImpl();
+          ohm.testHook = th;
+          try {
+            r.put(bigKey, new byte[943720]);
+            th.verifyBeginUpdateMemoryUsed(bytesUsedAfterSmallKey + 943720 + 8, true);
+            WaitCriterion waitForCritical = new WaitCriterion() {
+              public boolean done() {
+                return th.checkUpdateStateAndSendEventBeforeProcess(bytesUsedAfterSmallKey + 943720 + 8, MemoryState.EVICTION_DISABLED_CRITICAL);
+              }
+              @Override
+              public String description() {
+                return null;
+              }
+            };
+            waitForCriterion(waitForCritical, 30*1000, 9, false);
+            th.validateUpdateStateAndSendEventBeforeProcess(bytesUsedAfterSmallKey + 943720 + 8, MemoryState.EVICTION_DISABLED_CRITICAL);
+          } finally {
+            ohm.testHook = null;
+          }
+        }
         WaitCriterion wc;
         if (r instanceof PartitionedRegion) {
           final PartitionedRegion pr = (PartitionedRegion) r;
-          final int bucketId = PartitionedRegionHelper.getHashKey(pr, null, key, null, null);
+          final int bucketId = PartitionedRegionHelper.getHashKey(pr, null, bigKey, null, null);
           wc = new WaitCriterion() {
             @Override
             public String description() {
@@ -1419,7 +1453,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
               if (!ohm.getState().isCritical()) return false;
               // Only done once the bucket has been marked sick
               try {
-                pr.getRegionAdvisor().checkIfBucketSick(bucketId, key);
+                pr.getRegionAdvisor().checkIfBucketSick(bucketId, bigKey);
                 return false;
               } catch (LowMemoryException ignore) {
                 return true;
@@ -1439,9 +1473,9 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
             }
           };
         }
-        waitForCriterion(wc, 5000, 100, true);
+        waitForCriterion(wc, 30000, 9, true);
         getCache().getLoggerI18n().fine(removeExpectedExString);
-        return;
+        return bytesUsedAfterSmallKey;
       }
     });
 
@@ -1458,7 +1492,14 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
         final OffHeapMemoryMonitor ohm = irm.getOffHeapMonitor();
         assertTrue(ohm.getState().isCritical());
         getCache().getLogger().fine(MemoryThresholdsOffHeapDUnitTest.this.addExpectedBelow);
-        getRootRegion().getSubregion(regionName).destroy(1);
+        OffHeapMemoryMonitorObserverImpl _testHook = new OffHeapMemoryMonitorObserverImpl();
+        ohm.testHook = _testHook;
+        try {
+          getRootRegion().getSubregion(regionName).destroy(bigKey);
+          _testHook.verifyBeginUpdateMemoryUsed(bytesUsedAfterSmallKey, true);
+        } finally {
+          ohm.testHook = null;
+        }
         WaitCriterion wc = new WaitCriterion() {
           @Override
           public String description() {
@@ -1470,13 +1511,83 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
             return ohm.getState().isNormal();
           }
         };
-        waitForCriterion(wc, 5000, 100, true);
+        waitForCriterion(wc, 30000, 9, true);
         getCache().getLogger().fine(MemoryThresholdsOffHeapDUnitTest.this.removeExpectedBelow);
         return;
       }
     });
   }
   
+  private static class OffHeapMemoryMonitorObserverImpl implements OffHeapMemoryMonitorObserver {
+    private boolean beginUpdateMemoryUsed;
+    private long beginUpdateMemoryUsed_bytesUsed;
+    private boolean beginUpdateMemoryUsed_willSendEvent;
+    @Override
+    public synchronized void beginUpdateMemoryUsed(long bytesUsed, boolean willSendEvent) {
+      beginUpdateMemoryUsed = true;
+      beginUpdateMemoryUsed_bytesUsed = bytesUsed;
+      beginUpdateMemoryUsed_willSendEvent = willSendEvent;
+    }
+    @Override
+    public synchronized void afterNotifyUpdateMemoryUsed(long bytesUsed) {
+    }
+    @Override
+    public synchronized void beginUpdateStateAndSendEvent(long bytesUsed, boolean willSendEvent) {
+    }
+    private boolean updateStateAndSendEventBeforeProcess;
+    private long updateStateAndSendEventBeforeProcess_bytesUsed;
+    private MemoryEvent updateStateAndSendEventBeforeProcess_event;
+    @Override
+    public synchronized void updateStateAndSendEventBeforeProcess(long bytesUsed, MemoryEvent event) {
+      updateStateAndSendEventBeforeProcess = true;
+      updateStateAndSendEventBeforeProcess_bytesUsed = bytesUsed;
+      updateStateAndSendEventBeforeProcess_event = event;
+    }
+    @Override
+    public synchronized void updateStateAndSendEventBeforeAbnormalProcess(long bytesUsed, MemoryEvent event) {
+    }
+    @Override
+    public synchronized void updateStateAndSendEventIgnore(long bytesUsed, MemoryState oldState, MemoryState newState, long mostRecentBytesUsed,
+        boolean deliverNextAbnormalEvent) {
+    }
+
+    public synchronized void verifyBeginUpdateMemoryUsed(long expected_bytesUsed, boolean expected_willSendEvent) {
+      if (!beginUpdateMemoryUsed) {
+        fail("beginUpdateMemoryUsed was not called");
+      }
+      assertEquals(expected_bytesUsed, beginUpdateMemoryUsed_bytesUsed);
+      assertEquals(expected_willSendEvent, beginUpdateMemoryUsed_willSendEvent);
+    }
+    /**
+     * Verify that beginUpdateMemoryUsed was called, event will be sent, and return the "bytesUsed" it recorded.
+     */
+    public synchronized long verifyBeginUpdateMemoryUsed(boolean expected_willSendEvent) {
+      if (!beginUpdateMemoryUsed) {
+        fail("beginUpdateMemoryUsed was not called");
+      }
+      assertEquals(expected_willSendEvent, beginUpdateMemoryUsed_willSendEvent);
+      return beginUpdateMemoryUsed_bytesUsed;
+    }
+    public synchronized boolean checkUpdateStateAndSendEventBeforeProcess(long expected_bytesUsed, MemoryState expected_memoryState) {
+      if (!updateStateAndSendEventBeforeProcess) {
+        return false;
+      }
+      if (expected_bytesUsed != updateStateAndSendEventBeforeProcess_bytesUsed) {
+        return false;
+      }
+      if (!expected_memoryState.equals(updateStateAndSendEventBeforeProcess_event.getState())) {
+        return false;
+      }
+      return true;
+    }
+    public synchronized void validateUpdateStateAndSendEventBeforeProcess(long expected_bytesUsed, MemoryState expected_memoryState) {
+      if (!updateStateAndSendEventBeforeProcess) {
+        fail("updateStateAndSendEventBeforeProcess was not called");
+      }
+      assertEquals(expected_bytesUsed, updateStateAndSendEventBeforeProcess_bytesUsed);
+      assertEquals(expected_memoryState, updateStateAndSendEventBeforeProcess_event.getState());
+    }
+   }
   private void registerTestMemoryThresholdListener(VM vm) {
     vm.invoke(new SerializableCallable() {
       public Object call() throws Exception {
@@ -1489,13 +1600,13 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     });
   }
 
-  private void startCacheServer(VM server, final int port, final int mcastPort,
+  private void startCacheServer(VM server, final int port,
       final float evictionThreshold, final float criticalThreshold, final String regionName,
       final boolean createPR, final boolean notifyBySubscription, final int prRedundancy) throws Exception {
 
     server.invoke(new SerializableCallable() {
       public Object call() throws Exception {
-        getSystem(getServerProperties(mcastPort));
+        getSystem(getOffHeapProperties());
         GemFireCacheImpl cache = (GemFireCacheImpl)getCache();
 
         InternalResourceManager irm = cache.getResourceManager();
@@ -1700,11 +1811,9 @@ public class MemoryThresholdsOffHeapDUnitTest extends BridgeTestCase {
     });
   }
   
-  private Properties getServerProperties(int mcastPort) {
+  private Properties getOffHeapProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.MCAST_PORT_NAME, mcastPort + "");
-    p.setProperty(DistributionConfig.MCAST_TTL_NAME, "0");
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+getDUnitLocatorPort()+"]");
     p.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1m");
     return p;
   }

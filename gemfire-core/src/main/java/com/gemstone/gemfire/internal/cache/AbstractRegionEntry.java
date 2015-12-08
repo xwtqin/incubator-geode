@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache;
@@ -12,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
+
 import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier.ABSTRACT_REGION_ENTRY_FILL_IN_VALUE;
 import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier.ABSTRACT_REGION_ENTRY_PREPARE_VALUE_FOR_CACHE;
 
@@ -51,14 +61,14 @@ import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.logging.log4j.LocalizedMessage;
 import com.gemstone.gemfire.internal.logging.log4j.LogMarker;
+import com.gemstone.gemfire.internal.offheap.Chunk;
+import com.gemstone.gemfire.internal.offheap.ChunkWithHeapForm;
+import com.gemstone.gemfire.internal.offheap.GemFireChunk;
 import com.gemstone.gemfire.internal.offheap.MemoryAllocator;
 import com.gemstone.gemfire.internal.offheap.OffHeapCachedDeserializable;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
+import com.gemstone.gemfire.internal.offheap.ReferenceCountHelper;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.ChunkType;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.GemFireChunk;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.GemFireChunkType;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
@@ -406,7 +416,7 @@ public abstract class AbstractRegionEntry implements RegionEntry,
 
   @Override
   public Object getValue(RegionEntryContext context) {
-    SimpleMemoryAllocatorImpl.createReferenceCountOwner();
+    ReferenceCountHelper.createReferenceCountOwner();
     @Retained Object result = _getValueRetain(context, true);
     //Asif: If the thread is an Index Creation Thread & the value obtained is 
     //Token.REMOVED , we can skip  synchronization block. This is required to prevent
@@ -422,11 +432,11 @@ public abstract class AbstractRegionEntry implements RegionEntry,
 //    }
     
     if (Token.isRemoved(result)) {
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+      ReferenceCountHelper.setReferenceCountOwner(null);
       return null;
     } else {
       result = OffHeapHelper.copyAndReleaseIfNeeded(result); // sqlf does not dec ref count in this call
-      SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+      ReferenceCountHelper.setReferenceCountOwner(null);
       setRecentlyUsed();
       return result;
     }
@@ -555,14 +565,14 @@ public abstract class AbstractRegionEntry implements RegionEntry,
   
   @Retained
   public final Object getValueInVM(RegionEntryContext context) {
-    SimpleMemoryAllocatorImpl.createReferenceCountOwner();
+    ReferenceCountHelper.createReferenceCountOwner();
     @Retained Object v = _getValueRetain(context, true);
     
     if (v == null) { // should only be possible if disk entry
       v = Token.NOT_AVAILABLE;
     }
     @Retained Object result = OffHeapHelper.copyAndReleaseIfNeeded(v); // TODO OFFHEAP keep it offheap?
-    SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+    ReferenceCountHelper.setReferenceCountOwner(null);
     return result;
   }
   
@@ -749,9 +759,9 @@ public abstract class AbstractRegionEntry implements RegionEntry,
     // :ezoerner:20080814 We also read old value from disk or buffer
     // in the case where there is a non-null expectedOldValue
     // see PartitionedRegion#remove(Object key, Object value)
-    SimpleMemoryAllocatorImpl.skipRefCountTracking();
+    ReferenceCountHelper.skipRefCountTracking();
     @Retained @Released Object curValue = _getValueRetain(region, true);
-    SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+    ReferenceCountHelper.unskipRefCountTracking();
     try {
     if (curValue == null) curValue = Token.NOT_AVAILABLE;
     
@@ -1334,12 +1344,12 @@ public abstract class AbstractRegionEntry implements RegionEntry,
         }
         byte[] compressedData = compressBytes(r, data);
         boolean isCompressed = compressedData != data;
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(this);
+        ReferenceCountHelper.setReferenceCountOwner(this);
         MemoryAllocator ma = SimpleMemoryAllocatorImpl.getAllocator(); // fix for bug 47875
         val = ma.allocateAndInitialize(compressedData, isSerialized, isCompressed, GemFireChunk.TYPE); // TODO:KIRK:48068 race happens right after this line
-        SimpleMemoryAllocatorImpl.setReferenceCountOwner(null);
+        ReferenceCountHelper.setReferenceCountOwner(null);
         if (val instanceof GemFireChunk) {
-          val = new com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.ChunkWithHeapForm((GemFireChunk)val, data);
+          val = new com.gemstone.gemfire.internal.offheap.ChunkWithHeapForm((GemFireChunk)val, data);
         }
 //        if (val instanceof Chunk && r instanceof LocalRegion) {
 //          Chunk c = (Chunk) val;

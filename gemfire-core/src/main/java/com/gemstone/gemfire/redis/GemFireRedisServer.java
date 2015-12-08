@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.redis;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -35,6 +51,7 @@ import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.cache.EntryEvent;
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache.RegionFactory;
 import com.gemstone.gemfire.cache.RegionShortcut;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
@@ -429,7 +446,7 @@ public class GemFireRedisServer {
       Region<?, ?> newRegion = cache.getRegion(regionName);
       if (newRegion == null && type != RedisDataType.REDIS_STRING && type != RedisDataType.REDIS_HLL && type != RedisDataType.REDIS_PROTECTED) {
         try {
-          this.regionCache.createRemoteRegionLocally(Coder.stringToByteArrayWrapper(regionName), type);
+          this.regionCache.createRemoteRegionReferenceLocally(Coder.stringToByteArrayWrapper(regionName), type);
         } catch (Exception e) {
           if (logger.errorEnabled())
             logger.error(e);
@@ -528,8 +545,12 @@ public class GemFireRedisServer {
     if (event.isOriginRemote()) {
       final String key = (String) event.getKey();
       final RedisDataType value = event.getNewValue();
-      if (value != RedisDataType.REDIS_STRING && value != RedisDataType.REDIS_HLL && value != RedisDataType.REDIS_PROTECTED)
-        this.regionCache.createRemoteRegionLocally(Coder.stringToByteArrayWrapper(key), value);
+      if (value != RedisDataType.REDIS_STRING && value != RedisDataType.REDIS_HLL && value != RedisDataType.REDIS_PROTECTED) {
+        try {
+          this.regionCache.createRemoteRegionReferenceLocally(Coder.stringToByteArrayWrapper(key), value);
+        } catch (RegionDestroyedException ignore) { // Region already destroyed, ignore
+        }
+      }
     }
   }
 

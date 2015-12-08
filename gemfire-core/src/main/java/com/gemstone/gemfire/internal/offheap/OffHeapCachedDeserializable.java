@@ -1,18 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.offheap;
 
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Arrays;
-
-import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.DSCODE;
 import com.gemstone.gemfire.internal.cache.BytesAndBitsForCompactor;
-import com.gemstone.gemfire.internal.cache.CachedDeserializableFactory;
 import com.gemstone.gemfire.internal.cache.EntryBits;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
-import com.gemstone.gemfire.internal.lang.StringUtils;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 
 /**
@@ -22,7 +30,7 @@ import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
  * @author darrel
  * @since 9.0
  */
-public abstract class OffHeapCachedDeserializable implements MemoryChunkWithRefCount {
+public abstract class OffHeapCachedDeserializable extends AbstractStoredObject implements MemoryChunkWithRefCount {
   public abstract void setSerializedValue(byte[] value);
   @Override
   public abstract byte[] getSerializedValue();
@@ -32,53 +40,6 @@ public abstract class OffHeapCachedDeserializable implements MemoryChunkWithRefC
   public abstract int getValueSizeInBytes();
   @Override
   public abstract Object getDeserializedValue(Region r, RegionEntry re);
-
-  @Override
-  public Object getValueAsDeserializedHeapObject() {
-    return getDeserializedValue(null, null);
-  }
-  
-  @Override
-  public byte[] getValueAsHeapByteArray() {
-    if (isSerialized()) {
-      return getSerializedValue();
-    } else {
-      return (byte[])getDeserializedForReading();
-    }
-  }
-  
-  @Override
-  public Object getDeserializedForReading() {
-    return getDeserializedValue(null, null);
-  }
-
-  @Override
-  public String getStringForm() {
-    try {
-      return StringUtils.forceToString(getDeserializedForReading());
-    } catch (RuntimeException ex) {
-      return "Could not convert object to string because " + ex;
-    }
-  }
-
-  @Override
-  public Object getDeserializedWritableCopy(Region r, RegionEntry re) {
-    return getDeserializedValue(null, null);
-  }
-
-  @Override
-  public Object getValue() {
-    if (isSerialized()) {
-      return getSerializedValue();
-    } else {
-      throw new IllegalStateException("Can not call getValue on StoredObject that is not serialized");
-    }
-  }
-
-  @Override
-  public void writeValueAsByteArray(DataOutput out) throws IOException {
-    DataSerializer.writeByteArray(getSerializedValue(), out);
-  }
 
   @Override
   public void fillSerializedValue(BytesAndBitsForCompactor wrapper, byte userBits) {
@@ -96,15 +57,6 @@ public abstract class OffHeapCachedDeserializable implements MemoryChunkWithRefC
   @Override
   public String toString() {
     return getShortClassName()+"@"+this.hashCode();
-  }
-  @Override
-  public void sendTo(DataOutput out) throws IOException {
-    if (isSerialized()) {
-      out.write(getSerializedValue());
-    } else {
-      Object objToSend = (byte[]) getDeserializedForReading(); // deserialized as a byte[]
-      DataSerializer.writeObject(objToSend, out);
-    }
   }
   public boolean checkDataEquals(@Unretained OffHeapCachedDeserializable other) {
     if (this == other) {

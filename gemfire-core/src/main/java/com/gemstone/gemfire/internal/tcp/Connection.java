@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.tcp;
 
@@ -58,10 +67,12 @@ import com.gemstone.gemfire.distributed.internal.ReplySender;
 import com.gemstone.gemfire.distributed.internal.direct.DirectChannel;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
+import com.gemstone.gemfire.i18n.StringId;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.DSFIDFactory;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
+import com.gemstone.gemfire.internal.SocketCloser;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.SocketUtils;
 import com.gemstone.gemfire.internal.SystemTimer;
@@ -74,7 +85,6 @@ import com.gemstone.gemfire.internal.logging.log4j.AlertAppender;
 import com.gemstone.gemfire.internal.logging.log4j.LocalizedMessage;
 import com.gemstone.gemfire.internal.tcp.MsgReader.Header;
 import com.gemstone.gemfire.internal.util.concurrent.ReentrantSemaphore;
-import com.gemstone.org.jgroups.util.StringId;
 
 /** <p>Connection is a socket holder that sends and receives serialized
     message objects.  A Connection may be closed to preserve system
@@ -115,6 +125,11 @@ public class Connection implements Runnable {
 
   /** the table holding this connection */
   final ConnectionTable owner;
+  
+  /** Set to false once run() is terminating. Using this instead of Thread.isAlive  
+    * as the reader thread may be a pooled thread.
+    */ 
+  private volatile boolean isRunning = false; 
 
   /** true if connection is a shared resource that can be used by more than one thread */
   private boolean sharedResource;
@@ -136,11 +151,14 @@ public class Connection implements Runnable {
   }
 
   private final static ThreadLocal isReaderThread = new ThreadLocal();
-  // return true if this thread is a reader thread
   public final static void makeReaderThread() {
     // mark this thread as a reader thread
-    isReaderThread.set(Boolean.TRUE);
+    makeReaderThread(true);
   }
+  private final static void makeReaderThread(boolean v) {
+    isReaderThread.set(v);
+  }
+  // return true if this thread is a reader thread
   public final static boolean isReaderThread() {
     Object o = isReaderThread.get();
     if (o == null) {
@@ -319,7 +337,7 @@ public class Connection implements Runnable {
   private final Object handshakeSync = new Object();
 
   /** message reader thread */
-  Thread readerThread;
+  private volatile Thread readerThread;
 
 //  /**
 //   * When a thread owns the outLock and is writing to the socket, it must
@@ -523,7 +541,7 @@ public class Connection implements Runnable {
     Connection c = new Connection(t, s);
     boolean readerStarted = false;
     try {
-      c.startReader();
+      c.startReader(t);
       readerStarted = true;
     } finally {
       if (!readerStarted) {
@@ -539,7 +557,7 @@ public class Connection implements Runnable {
   /** creates a connection that we accepted (it was initiated by
    * an explicit connect being done on the other side).
    */
-  private Connection(ConnectionTable t, Socket s)
+  protected Connection(ConnectionTable t, Socket s)
     throws IOException, ConnectionException
   {
     if (t == null) {
@@ -571,7 +589,7 @@ public class Connection implements Runnable {
       }
       catch (IOException io) {
         logger.fatal(LocalizedMessage.create(LocalizedStrings.Connection_UNABLE_TO_GET_P2P_CONNECTION_STREAMS), io);
-        SocketCreator.asyncClose(s, this.remoteAddr.toString(), null);
+        t.getSocketCloser().asyncClose(s, this.remoteAddr.toString(), null);
         throw io;
       }
     }
@@ -753,6 +771,13 @@ public class Connection implements Runnable {
             String peerName;
             if (this.remoteAddr != null) {
               peerName = this.remoteAddr.toString();
+              // late in the life of jdk 1.7 we started seeing connections accepted
+              // when accept() was not even being called.  This started causing timeouts
+              // to occur in the handshake threads instead of causing failures in
+              // connection-formation.  So, we need to initiate suspect processing here
+              owner.getDM().getMembershipManager().suspectMember(this.remoteAddr,
+                  LocalizedStrings.Connection_CONNECTION_HANDSHAKE_WITH_0_TIMED_OUT_AFTER_WAITING_1_MILLISECONDS.toLocalizedString(
+                      new Object[] {peerName, Integer.valueOf(HANDSHAKE_TIMEOUT_MS)}));
             }
             else {
               peerName = "socket " + this.socket.getRemoteSocketAddress().toString()
@@ -809,6 +834,8 @@ public class Connection implements Runnable {
     }
   }
   
+  private final AtomicBoolean asyncCloseCalled = new AtomicBoolean();
+  
   /**
    * asynchronously close this connection
    * 
@@ -819,49 +846,59 @@ public class Connection implements Runnable {
     
     // we do the close in a background thread because the operation may hang if 
     // there is a problem with the network.  See bug #46659
-    Runnable r = new Runnable() {
-      public void run() {
-        boolean rShuttingDown = readerShuttingDown;
-        synchronized(stateLock) {
-          if (readerThread != null && readerThread.isAlive() &&
-              !rShuttingDown && connectionState == STATE_READING
-              || connectionState == STATE_READING_ACK) {
-            readerThread.interrupt();
-          }
-        }
-      }
-    };
+
     // if simulating sickness, sockets must be closed in-line so that tests know
     // that the vm is sick when the beSick operation completes
     if (beingSick) {
-      r.run();
+      prepareForAsyncClose();
     }
     else {
-      SocketCreator.asyncClose(this.socket, String.valueOf(this.remoteAddr), r);
+      if (this.asyncCloseCalled.compareAndSet(false, true)) {
+        Socket s = this.socket;
+        if (s != null && !s.isClosed()) {
+          prepareForAsyncClose();
+          this.owner.getSocketCloser().asyncClose(s, String.valueOf(this.remoteAddr), null);
+        }
+      }
     }
   }
   
+  private void prepareForAsyncClose() {
+    synchronized(stateLock) {
+      if (readerThread != null && isRunning && !readerShuttingDown
+          && (connectionState == STATE_READING || connectionState == STATE_READING_ACK)) {
+        readerThread.interrupt();
+      }
+    }
+  }
 
   private static final int CONNECT_HANDSHAKE_SIZE = 4096;
 
-  private void handshakeNio() throws IOException {
-    // We jump through some extra hoops to use a MsgOutputStream
-    // This keeps us from allocating an extra DirectByteBuffer.
+  /**
+   * waits until we've joined the distributed system
+   * before returning
+   */
+  private void waitForAddressCompletion() {
     InternalDistributedMember myAddr = this.owner.getConduit().getLocalAddress();
     synchronized (myAddr) {
-      while (myAddr.getIpAddress() == null) {
+      while ((owner.getConduit().getCancelCriterion().cancelInProgress() == null)
+          && myAddr.getInetAddress() == null && myAddr.getVmViewId() < 0) {
         try {
-          myAddr.wait(); // spurious wakeup ok
+          myAddr.wait(100); // spurious wakeup ok
         }
         catch (InterruptedException ie) {
           Thread.currentThread().interrupt();
           this.owner.getConduit().getCancelCriterion().checkCancelInProgress(ie);
         }
       }
+      Assert.assertTrue(myAddr.getDirectChannelPort() == this.owner.getConduit().getPort());
     }
+  }
 
-    Assert.assertTrue(myAddr.getDirectChannelPort() == this.owner.getConduit().getPort());
-
+  private void handshakeNio() throws IOException {
+    waitForAddressCompletion();
+    
+    InternalDistributedMember myAddr = this.owner.getConduit().getLocalAddress();
     final MsgOutputStream connectHandshake
       = new MsgOutputStream(CONNECT_HANDSHAKE_SIZE);
     //connectHandshake.reset();
@@ -897,6 +934,8 @@ public class Connection implements Runnable {
   }
 
   private void handshakeStream() throws IOException {
+    waitForAddressCompletion();
+
     //this.output = new BufferedOutputStream(getSocket().getOutputStream(), owner.getConduit().bufferSize);
     this.output = getSocket().getOutputStream();
     ByteArrayOutputStream baos = new ByteArrayOutputStream(CONNECT_HANDSHAKE_SIZE);
@@ -951,7 +990,7 @@ public class Connection implements Runnable {
    *
    * @throws IOException if handshake fails
    */
-  private void attemptHandshake() throws IOException {
+  private void attemptHandshake(ConnectionTable connTable) throws IOException {
     // send HANDSHAKE
     // send this server's port.  It's expected on the other side
     if (useNIO()) {
@@ -961,7 +1000,7 @@ public class Connection implements Runnable {
       handshakeStream();
     }
 
-    startReader(); // this reader only reads the handshake and then exits
+    startReader(connTable); // this reader only reads the handshake and then exits
     waitForHandshake(); // waiting for reply
   }
 
@@ -1099,7 +1138,7 @@ public class Connection implements Runnable {
         if (conn != null) {
           // handshake
           try {
-            conn.attemptHandshake();
+            conn.attemptHandshake(t);
             if (conn.isSocketClosed()) {
               // something went wrong while reading the handshake
               // and the socket was closed or this guy sent us a
@@ -1601,26 +1640,35 @@ public class Connection implements Runnable {
         this.owner.owner.getLocalId().getVmKind() == DistributionManager.LOCATOR_DM_TYPE) {
       isIBM = "IBM Corporation".equals(System.getProperty("java.vm.vendor"));
     }
-    if (!beingSick && this.readerThread != null && !isIBM && this.readerThread.isAlive()
-        && this.readerThread != Thread.currentThread()) {
-      try {
-        this.readerThread.join(500);
-        if (this.readerThread.isAlive() && !this.readerShuttingDown
-            && owner.getDM().getRootCause() == null) { // don't wait twice if there's a system failure
-          this.readerThread.join(1500);
-          if (this.readerThread.isAlive()) {
-            logger.info(LocalizedMessage.create(LocalizedStrings.Connection_TIMED_OUT_WAITING_FOR_READERTHREAD_ON_0_TO_FINISH, this));
+    {
+      // Now that readerThread is returned to a pool after we close
+      // we need to be more careful not to join on a thread that belongs
+      // to someone else.
+      Thread readerThreadSnapshot = this.readerThread;
+      if (!beingSick && readerThreadSnapshot != null && !isIBM
+          && this.isRunning && !this.readerShuttingDown
+          && readerThreadSnapshot != Thread.currentThread()) {
+        try {
+          readerThreadSnapshot.join(500);
+          readerThreadSnapshot = this.readerThread;
+          if (this.isRunning && !this.readerShuttingDown
+              && readerThreadSnapshot != null
+              && owner.getDM().getRootCause() == null) { // don't wait twice if there's a system failure
+            readerThreadSnapshot.join(1500);
+            if (this.isRunning) {
+              logger.info(LocalizedMessage.create(LocalizedStrings.Connection_TIMED_OUT_WAITING_FOR_READERTHREAD_ON_0_TO_FINISH, this));
+            }
           }
         }
+        catch (IllegalThreadStateException ignore) {
+          // ignored - thread already stopped
+        }
+        catch (InterruptedException ignore) {
+          Thread.currentThread().interrupt();
+          // but keep going, we're trying to close.
+        }
       }
-      catch (IllegalThreadStateException ignore) {
-        // ignored - thread already stopped
-      }
-      catch (InterruptedException ignore) {
-        Thread.currentThread().interrupt();
-        // but keep going, we're trying to close.
-      }
-    } // !onlyCleanup
+    }
 
     closeBatchBuffer();
     closeAllMsgDestreamers();
@@ -1677,26 +1725,22 @@ public class Connection implements Runnable {
   }
 
   /** starts a reader thread */
-  private void startReader() {
-    ThreadGroup group =
-      LoggingThreadGroup.createThreadGroup("P2P Reader Threads", logger);
-    Assert.assertTrue(this.readerThread == null);
-    this.readerThread =
-      new Thread(group, this, p2pReaderName());
-    this.readerThread.setDaemon(true);
-    stopped = false;
-    this.readerThread.start();
-  }
+  private void startReader(ConnectionTable connTable) { 
+    Assert.assertTrue(!this.isRunning); 
+    stopped = false; 
+    this.isRunning = true; 
+    connTable.executeCommand(this);  
+  } 
 
 
   /** in order to read non-NIO socket-based messages we need to have a thread
       actively trying to grab bytes out of the sockets input queue.
       This is that thread. */
   public void run() {
+    this.readerThread = Thread.currentThread();
+    this.readerThread.setName(p2pReaderName());
     ConnectionTable.threadWantsSharedResources();
-    if (this.isReceiver) {
-      makeReaderThread();
-    }
+    makeReaderThread(this.isReceiver);
     try {
       if (useNIO()) {
         runNioReader();
@@ -1708,6 +1752,7 @@ public class Connection implements Runnable {
       if (logger.isDebugEnabled()) {
         logger.debug("Stopping {} for {}", p2pReaderName(), remoteId);
       }
+      initiateSuspicionIfSharedUnordered();
       if (this.isReceiver) {
         if (!this.sharedResource) {
           this.owner.owner.stats.incThreadOwnedReceivers(-1L, dominoCount.get());
@@ -1725,6 +1770,11 @@ public class Connection implements Runnable {
       // for the handshake.
       // see bug 37524 for an example of listeners hung in waitForHandshake
       notifyHandshakeWaiter(false);
+      this.readerThread.setName("unused p2p reader");
+      synchronized (this.stateLock) {
+        this.isRunning = false;
+        this.readerThread = null;
+      }
     } // finally
   }
 
@@ -1896,6 +1946,17 @@ public class Connection implements Runnable {
       }
       if (logger.isDebugEnabled()) {
         logger.debug("{} runNioReader terminated id={} from {}", p2pReaderName(), conduitIdStr, remoteAddr);
+      }
+    }
+  }
+
+  /** initiate suspect processing if a shared/ordered connection is lost and we're not shutting down */
+  private void initiateSuspicionIfSharedUnordered() {
+    if (this.isReceiver && this.handshakeRead && !this.preserveOrder && this.sharedResource) {
+      if (this.owner.getConduit().getCancelCriterion().cancelInProgress() == null) {
+        String reason = "member unexpectedly shut down shared, unordered connection";
+        this.owner.getDM().getMembershipManager().suspectMember(this.getRemoteAddress(),
+            reason);
       }
     }
   }
@@ -2275,7 +2336,7 @@ public class Connection implements Runnable {
                     .toLocalizedString(new Object[]{new Byte(HANDSHAKE_VERSION), new Byte(handShakeByte)}));
               }
               InternalDistributedMember remote = DSFIDFactory.readInternalDistributedMember(dis);
-              Stub stub = new Stub(remote.getIpAddress()/*fix for bug 33615*/, remote.getDirectChannelPort(), remote.getVmViewId());
+              Stub stub = new Stub(remote.getInetAddress()/*fix for bug 33615*/, remote.getDirectChannelPort(), remote.getVmViewId());
               setRemoteAddr(remote, stub);
               Thread.currentThread().setName(LocalizedStrings.Connection_P2P_MESSAGE_READER_FOR_0.toLocalizedString(this.remoteAddr, this.socket.getPort()));
               this.sharedResource = dis.readBoolean();
@@ -2572,6 +2633,16 @@ public class Connection implements Runnable {
       accessed();
     }
     return origSocketInUse;
+  }
+  
+  /**
+   * For testing we want to configure the connection without having
+   * to read a handshake
+   */
+  protected void setSharedUnorderedForTest() {
+    this.preserveOrder = false;
+    this.sharedResource = true;
+    this.handshakeRead = true;
   }
   
 
@@ -3307,7 +3378,7 @@ public class Connection implements Runnable {
   protected Object stateLock = new Object();
   
   /** for timeout processing, this is the current state of the connection */
-  protected byte connectionState;
+  protected byte connectionState = STATE_IDLE;
   
   /*~~~~~~~~~~~~~ connection states ~~~~~~~~~~~~~~~*/
   /** the connection is idle, but may be in use */
@@ -3764,7 +3835,7 @@ public class Connection implements Runnable {
                   throw new IllegalStateException(LocalizedStrings.Connection_DETECTED_WRONG_VERSION_OF_GEMFIRE_PRODUCT_DURING_HANDSHAKE_EXPECTED_0_BUT_FOUND_1.toLocalizedString(new Object[] {new Byte(HANDSHAKE_VERSION), new Byte(handShakeByte)}));
                 }
                 InternalDistributedMember remote = DSFIDFactory.readInternalDistributedMember(dis);
-                Stub stub = new Stub(remote.getIpAddress()/*fix for bug 33615*/, remote.getDirectChannelPort(), remote.getVmViewId());
+                Stub stub = new Stub(remote.getInetAddress()/*fix for bug 33615*/, remote.getDirectChannelPort(), remote.getVmViewId());
                 setRemoteAddr(remote, stub);
                 this.sharedResource = dis.readBoolean();
                 this.preserveOrder = dis.readBoolean();

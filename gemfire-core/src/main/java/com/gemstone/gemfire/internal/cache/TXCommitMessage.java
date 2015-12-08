@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache;
@@ -737,21 +746,43 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
   
   public void basicProcessOps() {
     {
+      List<EntryEventImpl> pendingCallbacks = new ArrayList<>(this.farSideEntryOps.size());
       Collections.sort(this.farSideEntryOps);
       Iterator it = this.farSideEntryOps.iterator();
       while (it.hasNext()) {
         try {
           RegionCommit.FarSideEntryOp entryOp = (RegionCommit.FarSideEntryOp)it.next();
-          entryOp.process();
+          entryOp.process(pendingCallbacks);
         } catch (CacheRuntimeException problem) {
           processCacheRuntimeException(problem);
         } catch (Exception e ) {
           addProcessingException(e);
         }
       }
+      firePendingCallbacks(pendingCallbacks);
     }
   }
-  
+
+  private void firePendingCallbacks(List<EntryEventImpl> callbacks) {
+    Iterator<EntryEventImpl> ci = callbacks.iterator();
+    while(ci.hasNext()) {
+      EntryEventImpl ee = ci.next();
+      try {
+        if (ee.getOperation().isDestroy()) {
+          ee.getRegion().invokeTXCallbacks(EnumListenerEvent.AFTER_DESTROY, ee, true);
+        } else if (ee.getOperation().isInvalidate()) {
+          ee.getRegion().invokeTXCallbacks(EnumListenerEvent.AFTER_INVALIDATE, ee, true);
+        } else if (ee.getOperation().isCreate()) {
+          ee.getRegion().invokeTXCallbacks(EnumListenerEvent.AFTER_CREATE, ee, true);
+        } else {
+          ee.getRegion().invokeTXCallbacks(EnumListenerEvent.AFTER_UPDATE, ee, true);
+        }
+      } finally {
+        ee.release();
+      }
+    }
+  }
+
   protected void processCacheRuntimeException(CacheRuntimeException problem) {
     if (problem instanceof RegionDestroyedException) { // catch RegionDestroyedException
       addProcessingException(problem);
@@ -1262,7 +1293,7 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
      * Apply a single tx entry op on the far side
      */
     @SuppressWarnings("synthetic-access")
-    protected void txApplyEntryOp(FarSideEntryOp entryOp)
+    protected void txApplyEntryOp(FarSideEntryOp entryOp, List<EntryEventImpl> pendingCallbacks)
     {
       if (this.r == null) {
         return;
@@ -1276,7 +1307,6 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
          * This happens when we don't have the bucket and are getting adjunct notification
          */
         EntryEventImpl eei = AbstractRegionMap.createCBEvent(this.r, entryOp.op, entryOp.key, entryOp.value, this.msg.txIdent, txEvent, getEventId(entryOp), entryOp.callbackArg,entryOp.filterRoutingInfo,this.msg.bridgeContext, null, entryOp.versionTag, entryOp.tailKey);
-        try {
         if(entryOp.filterRoutingInfo!=null) {
           eei.setLocalFilterInfo(entryOp.filterRoutingInfo.getFilterInfo(this.r.getCache().getMyId()));
         }
@@ -1291,10 +1321,8 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
         // the message was sent and already reflects the change caused by this event.
         // In the latter case we need to invoke listeners
         final boolean skipListeners = !isDuplicate;
-        eei.invokeCallbacks(this.r, skipListeners, true);
-        } finally {
-          eei.release();
-        }
+        eei.setInvokePRCallbacks(!skipListeners);
+        pendingCallbacks.add(eei);
         return;
       }
       if (logger.isDebugEnabled()) {
@@ -1312,7 +1340,7 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
                               entryOp.op,
                               getEventId(entryOp),
                               entryOp.callbackArg,
-                              null /* fire inline, no pending callbacks */,
+                              pendingCallbacks,
                               entryOp.filterRoutingInfo,
                               this.msg.bridgeContext,
                               false /* origin remote */,
@@ -1328,7 +1356,7 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
                                  false /*localOp*/,
                                  getEventId(entryOp),
                                  entryOp.callbackArg,
-                                 null /* fire inline, no pending callbacks */,
+                                 pendingCallbacks,
                                  entryOp.filterRoutingInfo,
                                  this.msg.bridgeContext,
                                  null/*txEntryState*/,
@@ -1343,7 +1371,7 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
                           this.txEvent,
                           getEventId(entryOp),
                           entryOp.callbackArg,
-                          null /* fire inline, no pending callbacks */,
+                          pendingCallbacks,
                           entryOp.filterRoutingInfo,
                           this.msg.bridgeContext,
                           null/*txEntryState*/,
@@ -1658,8 +1686,8 @@ public class TXCommitMessage extends PooledDistributionMessage implements Member
       /**
        * Performs this entryOp on the farside of a tx commit.
        */
-      public void process() {
-        txApplyEntryOp(this);
+      public void process(List<EntryEventImpl> pendingCallbacks) {
+        txApplyEntryOp(this, pendingCallbacks);
       }
       
       public void processAdjunctOnly() {

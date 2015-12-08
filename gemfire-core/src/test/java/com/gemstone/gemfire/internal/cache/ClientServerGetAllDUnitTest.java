@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache;
 
@@ -13,11 +22,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.tools.gfsh.app.commands.key;
-import com.gemstone.gemfire.cache30.BridgeTestCase;
+import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache.client.*;
-import com.gemstone.gemfire.cache.util.BridgeServer;
+import com.gemstone.gemfire.cache.server.CacheServer;
 
 import dunit.*;
 
@@ -29,7 +37,7 @@ import java.util.*;
  * @author Barry Oglesby
  * @since 5.7
  */
- public class ClientServerGetAllDUnitTest extends BridgeTestCase {
+ public class ClientServerGetAllDUnitTest extends ClientServerTestCase {
 
   public ClientServerGetAllDUnitTest(String name) {
     super(name);
@@ -50,7 +58,7 @@ import java.util.*;
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, false);
+    createBridgeServer(server, regionName, serverPort, false, false);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort});
 
@@ -64,7 +72,7 @@ import java.util.*;
           keys.add("key-"+i);
         }
         
-        keys.add(BridgeTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
+        keys.add(ClientServerTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
         
         // Invoke getAll
         Region region = getRootRegion(regionName);
@@ -80,13 +88,13 @@ import java.util.*;
           String key = (String) i.next();
           assertTrue(result.containsKey(key));
           Object value = result.get(key);
-          if(!key.equals(BridgeTestCase.NON_EXISTENT_KEY))
+          if(!key.equals(ClientServerTestCase.NON_EXISTENT_KEY))
             assertEquals(key, value);
           else
             assertEquals(null, value);
         }
         
-        assertEquals(null, region.get(BridgeTestCase.NON_EXISTENT_KEY));
+        assertEquals(null, region.get(ClientServerTestCase.NON_EXISTENT_KEY));
       }
     });
 
@@ -98,11 +106,10 @@ import java.util.*;
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
-    final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, false, true/*offheap*/);
+    createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort});
 
@@ -116,7 +123,7 @@ import java.util.*;
           keys.add("key-"+i);
         }
         
-        keys.add(BridgeTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
+        keys.add(ClientServerTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
         
         // Invoke getAll
         Region region = getRootRegion(regionName);
@@ -132,13 +139,13 @@ import java.util.*;
           String key = (String) i.next();
           assertTrue(result.containsKey(key));
           Object value = result.get(key);
-          if(!key.equals(BridgeTestCase.NON_EXISTENT_KEY))
+          if(!key.equals(ClientServerTestCase.NON_EXISTENT_KEY))
             assertEquals(key, value);
           else
             assertEquals(null, value);
         }
         
-        assertEquals(null, region.get(BridgeTestCase.NON_EXISTENT_KEY));
+        assertEquals(null, region.get(ClientServerTestCase.NON_EXISTENT_KEY));
       }
     });
     checkServerForOrphans(server, regionName);
@@ -151,11 +158,10 @@ import java.util.*;
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
-    final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, false, true/*offheap*/);
+    createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort}, true);
     
@@ -267,7 +273,7 @@ import java.util.*;
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, false);
+    createBridgeServer(server, regionName, serverPort, false, false);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort}, true);
     
@@ -375,11 +381,10 @@ import java.util.*;
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
-    final int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, true);
+    createBridgeServer(server, regionName, serverPort, false, true);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort});
 
@@ -393,7 +398,7 @@ import java.util.*;
           keys.add("key-"+i);
         }
         
-        keys.add(BridgeTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
+        keys.add(ClientServerTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
         
         // Invoke getAll
         Region region = getRootRegion(regionName);
@@ -409,13 +414,13 @@ import java.util.*;
           String key = (String) i.next();
           assertTrue(result.containsKey(key));
           Object value = result.get(key);
-          if(!key.equals(BridgeTestCase.NON_EXISTENT_KEY))
+          if(!key.equals(ClientServerTestCase.NON_EXISTENT_KEY))
             assertEquals(key, value);
           else
             assertEquals(null, value);
         }
         
-        assertEquals(null, region.get(BridgeTestCase.NON_EXISTENT_KEY));
+        assertEquals(null, region.get(ClientServerTestCase.NON_EXISTENT_KEY));
       }
     });
 
@@ -436,15 +441,14 @@ import java.util.*;
     final VM server2 = host.getVM(1);
     final VM client = host.getVM(2);
     final String regionName = getUniqueName();
-    final int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int server1Port = ports[0];
     final int server2Port = ports[1];
     final String serverHost = getServerHostName(server1.getHost());
 
-    createBridgeServer(server1, mcastPort, regionName, server1Port, true, false);
+    createBridgeServer(server1, regionName, server1Port, true, false);
 
-    createBridgeServer(server2, mcastPort, regionName, server2Port, true, false);
+    createBridgeServer(server2, regionName, server2Port, true, false);
 
     createBridgeClient(client, regionName, serverHost, new int[] {server1Port, server2Port});
 
@@ -468,7 +472,7 @@ import java.util.*;
         for (int i=0; i<5; i++) {
           keys.add("key-"+i);
         }
-        keys.add(BridgeTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
+        keys.add(ClientServerTestCase.NON_EXISTENT_KEY); // this will not be load CacheLoader
         
         // Invoke getAll
         
@@ -485,12 +489,12 @@ import java.util.*;
           String key = (String) i.next();
           assertTrue(result.containsKey(key));
           Object value = result.get(key);
-          if(!key.equals(BridgeTestCase.NON_EXISTENT_KEY))
+          if(!key.equals(ClientServerTestCase.NON_EXISTENT_KEY))
             assertEquals(key, value);
           else
             assertEquals(null, value);
         }
-        assertEquals(null, region.get(BridgeTestCase.NON_EXISTENT_KEY));
+        assertEquals(null, region.get(ClientServerTestCase.NON_EXISTENT_KEY));
       }
     });
 
@@ -504,11 +508,10 @@ import java.util.*;
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
-    final int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final String serverHost = getServerHostName(server.getHost());
 
-    createBridgeServer(server, mcastPort, regionName, serverPort, false, false);
+    createBridgeServer(server, regionName, serverPort, false, false);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort});
 
@@ -568,12 +571,11 @@ import java.util.*;
     final VM server = host.getVM(0);
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
-    final int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final String serverHost = getServerHostName(server.getHost());
     final int numLocalValues = 101;
     
-    createBridgeServerWithoutLoader(server, mcastPort, regionName, serverPort, false);
+    createBridgeServerWithoutLoader(server, regionName, serverPort, false);
 
     createBridgeClient(client, regionName, serverHost, new int[] {serverPort});
 
@@ -640,19 +642,18 @@ import java.util.*;
     stopBridgeServer(server);
   }
 
-  private void createBridgeServer(VM server, final int mcastPort, final String regionName, final int serverPort, final boolean createPR, final boolean expectCallback) {
-    createBridgeServer(server, mcastPort, regionName, serverPort, createPR, expectCallback, false);
+  private void createBridgeServer(VM server, final String regionName, final int serverPort, final boolean createPR, final boolean expectCallback) {
+    createBridgeServer(server, regionName, serverPort, createPR, expectCallback, false);
   }
   
 
-  private void createBridgeServer(VM server, final int mcastPort, final String regionName, final int serverPort, final boolean createPR, final boolean expectCallback, final boolean offheap) {
+  private void createBridgeServer(VM server, final String regionName, final int serverPort, final boolean createPR, final boolean expectCallback, final boolean offheap) {
     server.invoke(new CacheSerializableRunnable("Create server") {
       @Override
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty(DistributionConfig.MCAST_PORT_NAME, String.valueOf(mcastPort));
-        config.setProperty(DistributionConfig.LOCATORS_NAME, "");
+        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
         if (offheap) {
           config.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "350m");
         }
@@ -664,9 +665,9 @@ import java.util.*;
           factory.setOffHeap(true);
         }
         if (expectCallback) {
-          factory.setCacheLoader(new CallbackBridgeServerCacheLoader());
+          factory.setCacheLoader(new CallbackCacheServerCacheLoader());
         } else {
-          factory.setCacheLoader(new BridgeServerCacheLoader());
+          factory.setCacheLoader(new CacheServerCacheLoader());
         }
         if (createPR) {
           factory.setDataPolicy(DataPolicy.PARTITION);
@@ -681,7 +682,7 @@ import java.util.*;
         }
         try {
           Cache cache = getCache();
-          BridgeServer bridge = cache.addBridgeServer();
+          CacheServer bridge = cache.addCacheServer();
           bridge.setPort(serverPort);
           // for off-heap I want the server to use a selector
           bridge.setMaxThreads(offheap ? 16 : getMaxThreads());
@@ -695,7 +696,7 @@ import java.util.*;
   
   private static final String CALLBACK_ARG = "ClientServerGetAllDUnitTestCB";
 
-  private static class CallbackBridgeServerCacheLoader extends BridgeServerCacheLoader {
+  private static class CallbackCacheServerCacheLoader extends CacheServerCacheLoader {
     @Override
     public Object load2(LoaderHelper helper) {
       if (helper.getArgument() instanceof String) {
@@ -703,7 +704,7 @@ import java.util.*;
           fail("Expected " + helper.getArgument() + " to be " + CALLBACK_ARG);
         }
       } else {
-        if (!helper.getKey().equals(BridgeTestCase.NON_EXISTENT_KEY)) {
+        if (!helper.getKey().equals(ClientServerTestCase.NON_EXISTENT_KEY)) {
           fail("Expected callback arg to be " + CALLBACK_ARG + " but it was null");
         }
       }
@@ -711,13 +712,12 @@ import java.util.*;
     }
   }
 
-  private void createBridgeServerWithoutLoader(VM server, final int mcastPort, final String regionName, final int serverPort, final boolean createPR) {
+  private void createBridgeServerWithoutLoader(VM server, final String regionName, final int serverPort, final boolean createPR) {
     server.invoke(new CacheSerializableRunnable("Create server") {
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty(DistributionConfig.MCAST_PORT_NAME, String.valueOf(mcastPort));
-        config.setProperty(DistributionConfig.LOCATORS_NAME, "");
+        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
         getSystem(config);
 
         // Create Region

@@ -1,10 +1,18 @@
 /*
- * =========================================================================
- *  Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- *  This product is protected by U.S. and international copyright
- *  and intellectual property laws. Pivotal products are covered by
- *  more patents listed at http://www.pivotal.io/patents.
- * =========================================================================
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.lang;
@@ -36,6 +44,7 @@ public class SystemUtils {
   public static final String APPLE_JVM_VENDOR_NAME = "Apple";
   public static final String IBM_JVM_NAME = "IBM";
   public static final String ORACLE_JVM_VENDOR_NAME = "Oracle";
+  public static final String AZUL_JVM_VENDOR_NAME = "Azul";
 
   // Operating System Names
   public static final String LINUX_OS_NAME = "Linux";
@@ -45,13 +54,30 @@ public class SystemUtils {
   /**
    * Utility method to determine whether the installed Java Runtime Environment (JRE) is minimally at the specified,
    * expected version.  Typically, Java versions are of the form "1.6.0_31"...
+   * In the Azul JVM java.version does not have the "_NN" suffix. Instead it has the azul product version
+   * as the suffix like so "-zing_NN.NN.N.N". So on azul we instead use the "java.specification.version" sys prop
+   * and only compare the major and minor version numbers. All the stuff after the second "." in expectedVersion
+   * is ignored.
    * 
-   * @param expectedVersion an int value specifying the minimum expected version of the Java Runtime.
+   * @param expectedVersion an string value specifying the minimum expected version of the Java Runtime.
    * @return a boolean value indicating if the Java Runtime meets the expected version requirement.
    * @see java.lang.System#getProperty(String) with "java.version".
    */
-  public static boolean isJavaVersionAtLeast(final String expectedVersion) {
-    String actualVersionDigits = StringUtils.getDigitsOnly(System.getProperty("java.version"));
+  public static boolean isJavaVersionAtLeast(String expectedVersion) {
+    String actualVersionDigits;
+    if (isAzulJVM()) {
+      actualVersionDigits = StringUtils.getDigitsOnly(System.getProperty("java.specification.version"));
+      int dotIdx = expectedVersion.indexOf('.');
+      if (dotIdx != -1) {
+        dotIdx = expectedVersion.indexOf('.', dotIdx+1);
+        if (dotIdx != -1) {
+          // strip off everything after the second dot.
+          expectedVersion = expectedVersion.substring(0, dotIdx);
+        }
+      }
+    } else {
+      actualVersionDigits = StringUtils.getDigitsOnly(System.getProperty("java.version"));
+    }
 
     String expectedVersionDigits = StringUtils.padEnding(StringUtils.getDigitsOnly(expectedVersion), '0',
       actualVersionDigits.length());
@@ -86,6 +112,17 @@ public class SystemUtils {
     return isJvmVendor(ORACLE_JVM_VENDOR_NAME);
   }
 
+  /**
+   * Utility method to determine whether the Java application process is executing on the Azul JVM.
+   *
+   * @return a boolean value indicating whether the Java application process is executing and running 
+   * on the Azul JVM.
+   * @see #isJvmVendor(String)
+   */
+  public static boolean isAzulJVM() {
+    return isJvmVendor(AZUL_JVM_VENDOR_NAME);
+  }
+  
   // @see java.lang.System#getProperty(String) with 'java.vm.vendor'.
   private static boolean isJvmVendor(final String expectedJvmVendorName) {
     String jvmVendor = System.getProperty("java.vm.vendor");

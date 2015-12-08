@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.control;
 
@@ -17,8 +26,6 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -36,12 +43,14 @@ import com.gemstone.gemfire.cache.DiskStoreFactory;
 import com.gemstone.gemfire.cache.EntryEvent;
 import com.gemstone.gemfire.cache.EvictionAction;
 import com.gemstone.gemfire.cache.EvictionAttributes;
+import com.gemstone.gemfire.cache.GemFireCache;
 import com.gemstone.gemfire.cache.LoaderHelper;
 import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.asyncqueue.AsyncEvent;
 import com.gemstone.gemfire.cache.asyncqueue.AsyncEventListener;
+import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueue;
 import com.gemstone.gemfire.cache.control.RebalanceOperation;
 import com.gemstone.gemfire.cache.control.RebalanceResults;
 import com.gemstone.gemfire.cache.control.ResourceManager;
@@ -58,10 +67,12 @@ import com.gemstone.gemfire.internal.cache.BucketRegion;
 import com.gemstone.gemfire.internal.cache.ColocationHelper;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.InternalCache;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
-import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
+import com.gemstone.gemfire.internal.cache.partitioned.BucketCountLoadProbe;
+import com.gemstone.gemfire.internal.cache.partitioned.LoadProbe;
 
 import dunit.AsyncInvocation;
 import dunit.Host;
@@ -753,6 +764,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     checkBucketCount(vm1, "region2", 3);
     checkBucketCount(vm2, "region2", 6);
     } finally {
+      disconnectFromDS();
       invokeInEveryVM(new SerializableRunnable() {
         public void run() {
           //clear the redundancy zone setting
@@ -1086,8 +1098,19 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     }
   }
   
-  public void testRecoverRedundancyParallelAsyncEventQueueSimulation() {
-    recoverRedundancyParallelAsyncEventQueue(true);
+  public void testRecoverRedundancyParallelAsyncEventQueueSimulation() throws NoSuchFieldException, SecurityException {
+    invokeInEveryVM(new SerializableRunnable() {
+
+      @Override
+      public void run () {
+        System.setProperty("gemfire.LOG_REBALANCE", "true");
+      }
+    });
+    try {
+      recoverRedundancyParallelAsyncEventQueue(true);
+    } finally {
+      System.setProperty("gemfire.LOG_REBALANCE", "false");
+    }
   }
   
   public void testRecoverRedundancyParallelAsyncEventQueue() {
@@ -1112,9 +1135,12 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         for(int i =0; i< 12; i++) {
           region.put(Integer.valueOf(i), "A", new byte[1024 * 512]);
         }
+        
+        // GEODE-244 - the async event queue uses asnychronous writes. Flush 
+        // the default disk store to make sure all values have overflowed
+        cache.findDiskStore(null).flush();
       }
     });
-    
     
     //check to make sure our redundancy is impaired
     SerializableRunnable checkLowRedundancy = new SerializableRunnable("checkLowRedundancy") {
@@ -1132,6 +1158,8 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         assertEquals(12, details.getCreatedBucketCount());
         assertEquals(0,  details.getActualRedundantCopies());
         assertEquals(12,details.getLowRedundancyBucketCount());
+        AsyncEventQueue queue = cache.getAsyncEventQueue("parallelQueue");
+        assertEquals(12, queue.size());
       }
     };
     
@@ -1861,17 +1889,6 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
    * are correct and we still rebalance correctly
    */
   public void testMoveBucketsOverflowToDisk() throws Throwable {
-    
-    System.setProperty("gemfire.LOG_REBALANCE", "true");
-    invokeInEveryVM(new SerializableCallable() {
-      
-      @Override
-      public Object call() throws Exception {
-        System.setProperty("gemfire.LOG_REBALANCE", "true");
-        return null;
-      }
-    });
-
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -2782,8 +2799,11 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
       /*
        * No rebalancing above because the simulation flag is on.
        * Therefore, vm1 will have recovered its buckets.
+       * We need to wait for the buckets because they
+       * might still be in the middle of creation in the
+       * background
        */
-      assertEquals(vm1Buckets,getBucketList("region1",vm1));      
+      waitForBucketList("region1", vm1, vm1Buckets);      
     }
     
     // look at vm2 buckets
@@ -2794,12 +2814,143 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     moveBucketsWithUnrecoveredValuesRedundancy(false);
   }
   
+  public void testBalanceBucketsByCountSimulation() {
+    balanceBucketsByCount(true);
+  }
+  
+  public void testBalanceBucketsByCount() {
+    balanceBucketsByCount(false);
+  }
+  
   /**
    * Check to make sure that we balance
-   * buckets between two hosts with no redundancy,
-   * 
-   * even if the values have not yet been faulted in from disk.
+   * buckets between two hosts with no redundancy.
    * @param simulate
+   */
+  public void balanceBucketsByCount(final boolean simulate) {
+    Host host = Host.getHost(0);
+    VM vm0 = host.getVM(0);
+    VM vm1 = host.getVM(1);
+
+    LoadProbe oldProbe = setLoadProbe(vm0, new BucketCountLoadProbe());
+    try {
+      SerializableRunnable createPrRegion = new SerializableRunnable("createRegion") {
+        public void run()
+        {
+          Cache cache = getCache();
+          AttributesFactory attr = new AttributesFactory();
+          PartitionAttributesFactory paf = new PartitionAttributesFactory();
+          paf.setRedundantCopies(0);
+          paf.setRecoveryDelay(-1);
+          paf.setStartupRecoveryDelay(-1);
+          PartitionAttributes prAttr = paf.create();
+          attr.setPartitionAttributes(prAttr);
+          attr.setCacheLoader(new Bug40228Loader());
+          cache.createRegion("region1", attr.create());
+        }
+      };
+
+      //Create the region in only 1 VM
+      vm0.invoke(createPrRegion);
+
+      //Create some buckets with very uneven sizes
+      vm0.invoke(new SerializableRunnable("createSomeBuckets") {
+
+        public void run() {
+          Cache cache = getCache();
+          Region region = cache.getRegion("region1");
+          region.put(Integer.valueOf(1), new byte[1024 * 1024]);
+          region.put(Integer.valueOf(2), "A");
+          region.put(Integer.valueOf(3), "A");
+          region.put(Integer.valueOf(4), "A");
+          region.put(Integer.valueOf(5), "A");
+          region.put(Integer.valueOf(6), "A");
+        }
+      });
+
+      //Create the region in the other VM (should have no effect)
+      vm1.invoke(createPrRegion);
+
+      //Now simulate a rebalance
+      vm0.invoke(new SerializableRunnable("simulateRebalance") {
+
+        public void run() {
+          Cache cache = getCache();
+          ResourceManager manager = cache.getResourceManager();
+          RebalanceResults results = doRebalance(simulate, manager);
+          assertEquals(0, results.getTotalBucketCreatesCompleted());
+          assertEquals(0, results.getTotalPrimaryTransfersCompleted());
+          assertEquals(3, results.getTotalBucketTransfersCompleted());
+          assertTrue(0 < results.getTotalBucketTransferBytes());
+          Set<PartitionRebalanceInfo> detailSet = results.getPartitionRebalanceDetails();
+          assertEquals(1, detailSet.size());
+          PartitionRebalanceInfo details = detailSet.iterator().next();
+          assertEquals(0, details.getBucketCreatesCompleted());
+          assertEquals(0, details.getPrimaryTransfersCompleted());
+          assertTrue(0 < details.getBucketTransferBytes());
+          assertEquals(3, details.getBucketTransfersCompleted());
+
+          Set<PartitionMemberInfo> afterDetails = details.getPartitionMemberDetailsAfter();
+          assertEquals(2, afterDetails.size());
+          for(PartitionMemberInfo memberDetails: afterDetails) {
+            assertEquals(3, memberDetails.getBucketCount());
+            assertEquals(3, memberDetails.getPrimaryCount());
+          }
+          if(!simulate) {
+            verifyStats(manager, results);
+          }
+        }
+      });
+
+      if(!simulate) {
+        SerializableRunnable checkRedundancyFixed = new SerializableRunnable("checkRedundancyFixed") {
+
+          public void run() {
+            Cache cache = getCache();
+            Region region = cache.getRegion("region1");
+            PartitionRegionInfo details = PartitionRegionHelper.getPartitionRegionInfo(region);
+            assertEquals(6, details.getCreatedBucketCount());
+            assertEquals(0,details.getActualRedundantCopies());
+            assertEquals(0,details.getLowRedundancyBucketCount());
+            assertEquals(2, details.getPartitionMemberInfo().size());
+            for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
+              assertEquals(3, memberDetails.getBucketCount());
+              assertEquals(3, memberDetails.getPrimaryCount());
+            }
+
+            //check to make sure that moving buckets didn't close the cache loader
+            Bug40228Loader loader = (Bug40228Loader) cache.getRegion("region1").getAttributes().getCacheLoader();
+            assertFalse(loader.isClosed());
+          }
+        };
+
+        vm0.invoke(checkRedundancyFixed);
+        vm1.invoke(checkRedundancyFixed);
+      }
+    } finally {
+      setLoadProbe(vm0, oldProbe);
+    }
+  }
+  
+  private LoadProbe setLoadProbe(VM vm, final LoadProbe probe) {
+    LoadProbe oldProbe = (LoadProbe) vm.invoke(new SerializableCallable("set load probe") {
+      
+      public Object call() {
+        GemFireCacheImpl cache = (GemFireCacheImpl) getCache();
+        InternalResourceManager mgr = cache.getResourceManager();
+        return mgr.setLoadProbe(probe);
+      }
+    });
+    
+    return oldProbe;
+  }
+
+  /** 
+   * Test to ensure that we wait for
+   * in progress write operations before moving a primary.
+   * @throws InterruptedException 
+   * @throws CancellationException 
+   * @throws TimeoutException 
    */
   public void moveBucketsWithUnrecoveredValuesRedundancy(final boolean simulate) {
     Host host = Host.getHost(0);

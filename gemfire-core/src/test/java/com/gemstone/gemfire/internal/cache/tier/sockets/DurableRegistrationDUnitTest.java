@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
@@ -22,7 +31,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.cache.BridgeServerImpl;
+import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.FilterProfile;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
@@ -100,14 +109,12 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
   public void testSimpleDurableClient() {
 
     // Step 1: Starting the servers
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-
     PORT1 = ((Integer)this.server1VM.invoke(CacheServerTestUtil.class,
-        "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+        "createCacheServer", new Object[] { regionName, new Boolean(true)
+            })).intValue();
     PORT2 = ((Integer)this.server2VM.invoke(CacheServerTestUtil.class,
         "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+            })).intValue();
 
     // Step 2: Bring Up the Client
     // Start a durable client that is not kept alive on the server when it
@@ -255,14 +262,12 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
 
   public void testSimpleDurableClientWithRegistration() {
     // Step 1: Starting the servers
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-
     PORT1 = ((Integer)this.server1VM.invoke(CacheServerTestUtil.class,
-        "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+        "createCacheServer", new Object[] { regionName, new Boolean(true)
+            })).intValue();
     PORT2 = ((Integer)this.server2VM.invoke(CacheServerTestUtil.class,
-        "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+        "createCacheServer", new Object[] { regionName, new Boolean(true)
+            })).intValue();
 
     // Step 2: Bring Up the Client
     // Start a durable client that is not kept alive on the server when it
@@ -450,13 +455,11 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
   public void testDurableClientWithRegistrationHA() {
     
     // Step 1: Start server1
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-    
     PORT2 = new Integer(AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
     
     PORT1 = ((Integer)this.server1VM.invoke(CacheServerTestUtil.class,
-        "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+        "createCacheServer", new Object[] { regionName, new Boolean(true)
+             })).intValue();
     
 
     // Step 2: Bring Up the Client
@@ -492,7 +495,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
 
     this.server2VM.invoke(CacheServerTestUtil.class,
         "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort), PORT2 });
+             PORT2 });
 
     pause(3000);
 
@@ -552,13 +555,11 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
   public void testDurableClientDisConnectWithRegistrationHA() {
     
     // Step 1: Start server1
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-    
     PORT2 = new Integer(AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
     
     PORT1 = ((Integer)this.server1VM.invoke(CacheServerTestUtil.class,
-        "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort) })).intValue();
+        "createCacheServer", new Object[] { regionName, new Boolean(true)
+             })).intValue();
     
 
     // Step 2: Bring Up the Client
@@ -615,7 +616,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     // Step 4: Bring up the server2
     this.server2VM.invoke(CacheServerTestUtil.class,
         "createCacheServer", new Object[] { regionName, new Boolean(true),
-            new Integer(mcastPort), PORT2 });
+             PORT2 });
 
     pause(3000);
 
@@ -835,9 +836,9 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     return proxy;
   }
 
-  private static BridgeServerImpl getBridgeServer() {
-    BridgeServerImpl bridgeServer = (BridgeServerImpl)CacheServerTestUtil
-        .getCache().getBridgeServers().iterator().next();
+  private static CacheServerImpl getBridgeServer() {
+    CacheServerImpl bridgeServer = (CacheServerImpl)CacheServerTestUtil
+        .getCache().getCacheServers().iterator().next();
     assertNotNull(bridgeServer);
     return bridgeServer;
   }

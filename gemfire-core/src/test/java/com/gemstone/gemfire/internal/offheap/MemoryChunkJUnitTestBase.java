@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.offheap;
 
 import java.util.ArrayList;
@@ -32,6 +48,53 @@ public abstract class MemoryChunkJUnitTestBase {
       mc.release();
     }
   }
+  
+  @Test
+  public void testGetSize() {
+    MemoryChunk mc = createChunk(5);
+    try {
+      assertEquals(5, mc.getSize());
+    } finally {
+      mc.release();
+    }
+    mc = createChunk(0);
+    try {
+      assertEquals(0, mc.getSize());
+    } finally {
+      mc.release();
+    }
+    mc = createChunk(1024);
+    try {
+      assertEquals(1024, mc.getSize());
+    } finally {
+      mc.release();
+    }
+  }
+  
+  @Test
+  public void testCopyBytes() {
+    int CHUNK_SIZE = 1024;
+    MemoryChunk mc = createChunk(CHUNK_SIZE*2);
+    try {
+      for (int i=0; i<CHUNK_SIZE; i++) {
+        mc.writeByte(i, (byte)(i%128));
+      }
+      for (int i=0; i<CHUNK_SIZE; i++) {
+        assertEquals(i%128, mc.readByte(i));
+      }
+      mc.copyBytes(0, CHUNK_SIZE, CHUNK_SIZE);
+      for (int i=0; i<CHUNK_SIZE; i++) {
+        assertEquals(i%128, mc.readByte(CHUNK_SIZE+i));
+      }
+      mc.copyBytes(0, 1, CHUNK_SIZE);
+      for (int i=0; i<CHUNK_SIZE; i++) {
+        assertEquals(i%128, mc.readByte(1+i));
+      }
+    } finally {
+      mc.release();
+    }
+  }
+ 
   
   @Test
   public void testByteArrayReadWrite() {

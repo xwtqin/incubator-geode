@@ -1,5 +1,18 @@
-/**
- * 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
@@ -40,8 +53,6 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
 
   private static GemFireCacheImpl cache;
   
-  private static int mcastPort;
-
   private static int port0;
 
   private static int port1;
@@ -71,11 +82,10 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
     vm2 = Host.getHost(0).getVM(2);
     vm3 = Host.getHost(0).getVM(3);
 
-    mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     port0 = (Integer) vm0.invoke(DurableClientQueueSizeDUnitTest.class,
-        "createCacheServer", new Object[] { mcastPort });
+        "createCacheServer", new Object[] { });
     port1 = (Integer) vm1.invoke(DurableClientQueueSizeDUnitTest.class,
-        "createCacheServer", new Object[] { mcastPort });
+        "createCacheServer", new Object[] { });
     addExpectedException("java.net.SocketException");
     addExpectedException("Unexpected IOException");
   }
@@ -168,12 +178,12 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
     if (isVM0Primary) {
       vm0.invoke(DurableClientQueueSizeDUnitTest.class, "closeCache");
       vm0.invoke(DurableClientQueueSizeDUnitTest.class, "createCacheServer",
-          new Object[] { mcastPort, port0 });
+          new Object[] { port0 });
       port = port0;
     } else { // vm1 is primary
       vm1.invoke(DurableClientQueueSizeDUnitTest.class, "closeCache");
       vm1.invoke(DurableClientQueueSizeDUnitTest.class, "createCacheServer",
-          new Object[] { mcastPort, port1 });
+          new Object[] { port1 });
       port = port1;
     }
 
@@ -257,17 +267,16 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
     return CacheClientNotifier.getInstance().getClientProxies().iterator().next().isPrimary();
   }
 
-  public static Integer createCacheServer(Integer mcastPort) throws Exception {
-    return createCacheServer(mcastPort,
+  public static Integer createCacheServer() throws Exception {
+    return createCacheServer(
         AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
   }
 
   @SuppressWarnings("deprecation")
-  public static Integer createCacheServer(Integer mcastPort, Integer serverPort)
+  public static Integer createCacheServer(Integer serverPort)
       throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "");
-    props.setProperty("mcast-port", String.valueOf(mcastPort));
+    props.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
 //    props.setProperty("log-level", "fine");
 //    props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
 //    props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()

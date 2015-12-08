@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2010-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * one or more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.codeAnalysis.decode;
 import java.io.DataInputStream;
@@ -23,7 +32,6 @@ import com.gemstone.gemfire.codeAnalysis.decode.cp.CpDouble;
 import com.gemstone.gemfire.codeAnalysis.decode.cp.CpLong;
 import com.gemstone.gemfire.internal.DataSerializableFixedID;
 import com.gemstone.gemfire.internal.logging.PureLogWriter;
-import com.gemstone.org.jgroups.util.StreamableFixedID;
 
 
 /**
@@ -178,8 +186,7 @@ public class CompiledClass implements Comparable {
         Class realClass = Class.forName(name);
         return Serializable.class.isAssignableFrom(realClass)
           && !DataSerializable.class.isAssignableFrom(realClass)
-          && !DataSerializableFixedID.class.isAssignableFrom(realClass)
-          && !StreamableFixedID.class.isAssignableFrom(realClass);
+          && !DataSerializableFixedID.class.isAssignableFrom(realClass);
       } catch (UnsatisfiedLinkError e) {
         System.out.println("Unable to load actual class " + name + " external JNI dependencies");
       } catch (NoClassDefFoundError e) {

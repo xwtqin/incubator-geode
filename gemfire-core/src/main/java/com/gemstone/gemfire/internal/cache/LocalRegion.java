@@ -1,14 +1,23 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal.cache;
 
-import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier.ENTRY_EVENT_NEW_VALUE;
+import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier.*;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -100,7 +109,6 @@ import com.gemstone.gemfire.cache.TransactionId;
 import com.gemstone.gemfire.cache.client.PoolManager;
 import com.gemstone.gemfire.cache.client.ServerOperationException;
 import com.gemstone.gemfire.cache.client.SubscriptionNotEnabledException;
-import com.gemstone.gemfire.cache.client.internal.BridgePoolImpl;
 import com.gemstone.gemfire.cache.client.internal.Connection;
 import com.gemstone.gemfire.cache.client.internal.Endpoint;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
@@ -115,8 +123,8 @@ import com.gemstone.gemfire.cache.hdfs.internal.hoplog.HDFSRegionDirector;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.HDFSRegionDirector.HdfsRegionManager;
 import com.gemstone.gemfire.cache.partition.PartitionRegionHelper;
 import com.gemstone.gemfire.cache.query.FunctionDomainException;
-import com.gemstone.gemfire.cache.query.IndexMaintenanceException;
 import com.gemstone.gemfire.cache.query.Index;
+import com.gemstone.gemfire.cache.query.IndexMaintenanceException;
 import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.MultiIndexCreationException;
 import com.gemstone.gemfire.cache.query.NameResolutionException;
@@ -134,7 +142,6 @@ import com.gemstone.gemfire.cache.query.internal.index.IndexCreationData;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager;
 import com.gemstone.gemfire.cache.query.internal.index.IndexProtocol;
 import com.gemstone.gemfire.cache.query.internal.index.IndexUtils;
-import com.gemstone.gemfire.cache.util.BridgeWriterException;
 import com.gemstone.gemfire.cache.util.ObjectSizer;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -196,19 +203,17 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.logging.log4j.LocalizedMessage;
 import com.gemstone.gemfire.internal.logging.log4j.LogMarker;
+import com.gemstone.gemfire.internal.offheap.Chunk;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
+import com.gemstone.gemfire.internal.offheap.ReferenceCountHelper;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
-import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
 import com.gemstone.gemfire.internal.util.concurrent.FutureResult;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableCountDownLatch;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableReadWriteLock;
-import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantReadWriteLock.StoppableWriteLock;
-import com.gemstone.org.jgroups.util.StringId;
+import com.gemstone.gemfire.i18n.StringId;
 
 /**
  * Implementation of a local scoped-region. Note that this class has a different
@@ -674,9 +679,7 @@ public class LocalRegion extends AbstractRegion
     }
     
     // initialize client to server proxy
-    this.srp = ((this.getPoolName() != null)
-                || isBridgeLoader(this.getCacheLoader())
-                || isBridgeWriter(this.getCacheWriter()))
+    this.srp = (this.getPoolName() != null)
       ? new ServerRegionProxy(this)
       : null;
     this.imageState =
@@ -945,6 +948,7 @@ public class LocalRegion extends AbstractRegion
     checkReadiness();
     LocalRegion newRegion = null;
     RegionAttributes regionAttributes = attrs;
+    attrs = cache.invokeRegionBefore(this, subregionName, attrs, internalRegionArgs);
     final InputStream snapshotInputStream = internalRegionArgs
         .getSnapshotInputStream();
     final boolean getDestroyLock = internalRegionArgs.getDestroyLockFlag();
@@ -1081,11 +1085,8 @@ public class LocalRegion extends AbstractRegion
           }
         }
         success = true;
-      } catch (CancelException e) {
+      } catch (CancelException | RegionDestroyedException | RedundancyAlreadyMetException e) {
         // don't print a call stack
-        throw e;
-      } catch(RedundancyAlreadyMetException e) {
-        //don't log this
         throw e;
       } catch (final RuntimeException validationException) {
         logger.warn(LocalizedMessage.create(LocalizedStrings.LocalRegion_INITIALIZATION_FAILED_FOR_REGION_0,
@@ -1114,6 +1115,7 @@ public class LocalRegion extends AbstractRegion
       }
     }
 
+    cache.invokeRegionAfter(newRegion);
     return newRegion;
   }
 
@@ -2176,14 +2178,14 @@ public class LocalRegion extends AbstractRegion
       RegionEntry entry = this.entries.getEntry(keyInfo.getKey());
       boolean result = entry != null;
       if (result) {
-        SimpleMemoryAllocatorImpl.skipRefCountTracking();
+        ReferenceCountHelper.skipRefCountTracking();
         Object val = entry.getTransformedValue(); // no need to decompress since we only want to know if we have an existing value 
         if (val instanceof StoredObject) {
           OffHeapHelper.release(val);
-          SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+          ReferenceCountHelper.unskipRefCountTracking();
           return true;
         }
-        SimpleMemoryAllocatorImpl.unskipRefCountTracking();
+        ReferenceCountHelper.unskipRefCountTracking();
         // No need to to check CachedDeserializable because of Bruce's fix in r30960 for bug 42162. See bug 42732.
         // this works because INVALID and LOCAL_INVALID will never be faulted out of mem
         // If val is NOT_AVAILABLE that means we have a valid value on disk.
@@ -3986,22 +3988,6 @@ public class LocalRegion extends AbstractRegion
     reinitialize(inputStream, event);
   }
 
-//   public void createRegionOnServer() throws CacheWriterException
-//   {
-//     if (basicGetWriter() instanceof BridgeWriter) {
-//       if (getParentRegion() != null) {
-//         BridgeWriter bw = (BridgeWriter)basicGetWriter();
-//         bw.createRegionOnServer(getParentRegion().getFullPath(), getName());
-//       }
-//       else {
-//        throw new CacheWriterException(LocalizedStrings.LocalRegion_REGION_0_IS_A_ROOT_REGION_ONLY_NONROOT_REGIONS_CAN_BE_CREATED_ON_THE_SERVER.toLocalizedString(getFullPath()));
-//       }
-//     }
-//     else {
-//      throw new CacheWriterException(LocalizedStrings.LocalRegion_SERVER_REGION_CREATION_IS_ONLY_SUPPORTED_ON_CLIENT_SERVER_TOPOLOGIES_THE_CURRENT_CACHEWRITER_IS_0.toLocalizedString(this.cacheWriter));
-//     }
-//   }
-
   public void registerInterest(Object key)
   {
     registerInterest(key, false);
@@ -4068,13 +4054,8 @@ public class LocalRegion extends AbstractRegion
       throw new IllegalStateException(LocalizedStrings.LocalRegion_DURABLE_FLAG_ONLY_APPLICABLE_FOR_DURABLE_CLIENTS.toLocalizedString());
     }
     if (!proxy.getPool().getSubscriptionEnabled()) {
-      if (proxy.getPool() instanceof BridgePoolImpl) {
-        String msg = "Interest registration requires establishCallbackConnection to be set to true.";
-        throw new BridgeWriterException(msg);
-      } else {
-        String msg = "Interest registration requires a pool whose queue is enabled.";
-        throw new SubscriptionNotEnabledException(msg);
-      }
+      String msg = "Interest registration requires a pool whose queue is enabled.";
+      throw new SubscriptionNotEnabledException(msg);
     }
 
     if (getAttributes().getDataPolicy().withReplication() // fix for bug 36185
@@ -4101,7 +4082,7 @@ public class LocalRegion extends AbstractRegion
       this.clearKeysOfInterest(key, interestType, pol);
       // Checking for the Dunit test(testRegisterInterst_Destroy_Concurrent) flag
       if (PoolImpl.BEFORE_REGISTER_CALLBACK_FLAG) {
-        BridgeObserver bo = BridgeObserverHolder.getInstance();
+        ClientServerObserver bo = ClientServerObserverHolder.getInstance();
         bo.beforeInterestRegistration();
       }// Test Code Ends
       final byte regionDataPolicy = getAttributes().getDataPolicy().ordinal;
@@ -4683,7 +4664,7 @@ public class LocalRegion extends AbstractRegion
               continue;
             } else {
               if(logger.isDebugEnabled()) {
-                logger.debug("refreshEntries key={} value={}", currentKey, entry);
+                logger.debug("refreshEntries key={} value={} version={}", currentKey, entry, tag);
               }
               if (tag == null) { // no version checks
                 localDestroyNoCallbacks(currentKey);
@@ -8822,6 +8803,13 @@ public class LocalRegion extends AbstractRegion
   public RegionIdleExpiryTask getRegionIdleExpiryTask() {
     return this.regionIdleExpiryTask;
   }
+  /**
+   * Used by unit tests to get access to the RegionTTLExpiryTask
+   * of this region. Returns null if no task exists.
+   */
+  public RegionTTLExpiryTask getRegionTTLExpiryTask() {
+    return this.regionTTLExpiryTask;
+  }
   
   private void addExpiryTask(RegionEntry re, boolean ifAbsent)
   {
@@ -9222,6 +9210,11 @@ public class LocalRegion extends AbstractRegion
   {
     
     CacheListener[] listeners = region.fetchCacheListenersField();
+    if (event.getOperation().isCreate()) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("invoking listeners: " + Arrays.toString(listeners));
+      }
+    }
     if (listeners == null || listeners.length == 0) {
       return;
     }
@@ -9779,7 +9772,7 @@ public class LocalRegion extends AbstractRegion
       }
     }
 
-    RegionEventImpl event = new BridgeRegionEventImpl(this, Operation.REGION_DESTROY,
+    RegionEventImpl event = new ClientRegionEventImpl(this, Operation.REGION_DESTROY,
          callbackArg,false, client.getDistributedMember(), client/* context */, eventId);
 
     basicDestroyRegion(event, true);
@@ -9804,7 +9797,7 @@ public class LocalRegion extends AbstractRegion
       }
     }
 
-    RegionEventImpl event = new BridgeRegionEventImpl(this, Operation.REGION_CLEAR,
+    RegionEventImpl event = new ClientRegionEventImpl(this, Operation.REGION_CLEAR,
          callbackArg,false, client.getDistributedMember(), client/* context */, eventId);
 
     basicClear(event, true);
@@ -11303,7 +11296,7 @@ public class LocalRegion extends AbstractRegion
    */
   protected boolean shouldNotifyBridgeClients()
   {
-    return (this.cache.getBridgeServers().size() > 0)
+    return (this.cache.getCacheServers().size() > 0)
         && !this.isUsedForPartitionedRegionAdmin
         && !this.isUsedForPartitionedRegionBucket
         && !this.isUsedForMetaRegion;
@@ -11437,7 +11430,7 @@ public class LocalRegion extends AbstractRegion
       predicate = predicate.trim();
 
       // Compare the query patterns to the 'predicate'. If one matches,
-      // send it as is to the BridgeLoader
+      // send it as is to the server
       boolean matches = false;
       for (int i=0; i<QUERY_PATTERNS.length; i++) {
         if (QUERY_PATTERNS[i].matcher(predicate).matches()) {

@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.internal.cache.partitioned;
 
@@ -502,6 +511,16 @@ public class ShutdownAllDUnitTest extends CacheTestCase {
     checkData(vm0, numBuckets, 113, "b", "region");
   }
   
+  
+//  public void testRepeat() throws Throwable {
+//    for (int i=0; i<10; i++) {
+//      System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> run #"+i);
+//      testShutdownAllWithMembersWaiting();
+//      tearDown();
+//      setUp();
+//    }
+//  }
+  
   /**
    * Test for 43551. Do a shutdown all with some
    * members waiting on recovery.
@@ -532,7 +551,7 @@ public class ShutdownAllDUnitTest extends CacheTestCase {
     AsyncInvocation a0 = createRegionAsync(vm0, "region", "disk", true, 1);
     
     //Wait a bit for the initialization to get stuck
-    pause(5000);
+    pause(20000);
     assertTrue(a0.isAlive());
     
     //Do another shutdown all, with a member offline and another stuck

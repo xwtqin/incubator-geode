@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.offheap;
 
 import java.io.PrintWriter;
@@ -10,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.LifecycleListener;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
@@ -29,7 +44,7 @@ public class SimpleMemoryAllocatorLifecycleListenerJUnitTest {
   
   @After
   public void tearDown() throws Exception {
-    SimpleMemoryAllocatorImpl.removeLifecycleListener(this.listener);
+    LifecycleListener.removeLifecycleListener(this.listener);
     this.afterCreateCallbacks.clear();
     this.afterReuseCallbacks.clear();
     this.beforeCloseCallbacks.clear();
@@ -38,8 +53,8 @@ public class SimpleMemoryAllocatorLifecycleListenerJUnitTest {
 
   @Test
   public void testAddRemoveListener() {
-    SimpleMemoryAllocatorImpl.addLifecycleListener(this.listener);
-    SimpleMemoryAllocatorImpl.removeLifecycleListener(this.listener);
+    LifecycleListener.addLifecycleListener(this.listener);
+    LifecycleListener.removeLifecycleListener(this.listener);
 
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024); // 1k
     SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});
@@ -57,7 +72,7 @@ public class SimpleMemoryAllocatorLifecycleListenerJUnitTest {
   
   @Test
   public void testCallbacksAreCalledAfterCreate() {
-    SimpleMemoryAllocatorImpl.addLifecycleListener(this.listener);
+    LifecycleListener.addLifecycleListener(this.listener);
     
     UnsafeMemoryChunk slab = new UnsafeMemoryChunk(1024); // 1k
     SimpleMemoryAllocatorImpl ma = SimpleMemoryAllocatorImpl.create(new NullOutOfOffHeapMemoryListener(), new NullOffHeapMemoryStats(), new UnsafeMemoryChunk[]{slab});

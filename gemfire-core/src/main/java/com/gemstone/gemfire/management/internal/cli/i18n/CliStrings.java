@@ -1,20 +1,25 @@
 /*
- * =========================================================================
- *  Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- *  This product is protected by U.S. and international copyright
- *  and intellectual property laws. Pivotal products are covered by
- *  more patents listed at http://www.pivotal.io/patents.
- * ========================================================================
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.management.internal.cli.i18n;
 
 import java.text.MessageFormat;
 
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueueFactory;
 import com.gemstone.gemfire.cache.server.CacheServer;
-import com.gemstone.gemfire.cache.wan.GatewayEventFilter;
-import com.gemstone.gemfire.cache.wan.GatewayEventSubstitutionFilter;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.SharedConfiguration;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
@@ -78,7 +83,7 @@ public class CliStrings {
   public static final String TOPIC_GEMFIRE_DISKSTORE = "Disk Store";
   public static final String TOPIC_GEMFIRE_DISKSTORE__DESC = "Disk stores are used to persist data to disk as a backup to your in-memory copy or as overflow storage when memory use is too high.";
   public static final String TOPIC_GEMFIRE_LOCATOR = "Locator";
-  public static final String TOPIC_GEMFIRE_LOCATOR__DESC = "JVMs running GemFire discover each other through multicast messaging or through a TCP service named the locator.";
+  public static final String TOPIC_GEMFIRE_LOCATOR__DESC = "JVMs running GemFire discover each other through a TCP service named the locator.";
   public static final String TOPIC_GEMFIRE_SERVER = "Server";
   public static final String TOPIC_GEMFIRE_SERVER__DESC = "A server is GemFire cluster member which holds a GemFire cache. Depending on the topology used it can refer to either a system that responds to client requests or a system that is only a peer to other members.";
   public static final String TOPIC_GEMFIRE_MANAGER = "Manager";
@@ -104,8 +109,6 @@ public class CliStrings {
   public static final String TOPIC_SHARED_CONFIGURATION = "Cluster Configuration";
   public static final String TOPIC_SHARED_CONFIGURATION_HELP = "Configuration for cluster and various groups. It consists of cache.xml, gemfire properties and deployed jars.\nChanges due to gfshs command are persisted to the locator hosting the cluster configuration service.";
   public static final String TOPIC_CHANGELOGLEVEL = "User can change the log-level for a  memeber run time and generate log contents as per the need";
-  public static final String TOPIC_GEMFIRE_HDFSSTORE = "Hdfs Store";
-  public static final String TOPIC_GEMFIRE_HDFSSTORE__DESC = "Hdfs stores are used to persist data to hadoop distributed file system as a backup to your in-memory copy or as overflow storage when eviction criteria is specified.";
 
   /*-*************************************************************************
    * ********* String Constants other than command name, options & help ******
@@ -566,7 +569,7 @@ public class CliStrings {
   public static final String CREATE_REGION__ENTRYEXPIRATIONIDLETIMEACTION__HELP = "Action to be taken on an entry that has exceeded the idle expiration.";
   public static final String CREATE_REGION__ENTRYEXPIRATIONTIMETOLIVE = "entry-time-to-live-expiration";
   public static final String CREATE_REGION__ENTRYEXPIRATIONTIMETOLIVE__HELP = "How long the region's entries can remain in the cache without being accessed or updated. The default is no expiration of this type.";
-  public static final String CREATE_REGION__ENTRYEXPIRATIONTTLACTION = "entry-time-to-live-expiriation-action";
+  public static final String CREATE_REGION__ENTRYEXPIRATIONTTLACTION = "entry-time-to-live-expiration-action";
   public static final String CREATE_REGION__ENTRYEXPIRATIONTTLACTION__HELP = "Action to be taken on an entry that has exceeded the TTL expiration.";
   public static final String CREATE_REGION__REGIONEXPIRATIONIDLETIME = "region-idle-time-expiration";
   public static final String CREATE_REGION__REGIONEXPIRATIONIDLETIME__HELP = "How long the region can remain in the cache without being accessed. The default is no expiration of this type.";
@@ -604,6 +607,8 @@ public class CliStrings {
   public static final String CREATE_REGION__COLOCATEDWITH__HELP = "Central Region with which this region should be colocated.";
   public static final String CREATE_REGION__LOCALMAXMEMORY = "local-max-memory";
   public static final String CREATE_REGION__LOCALMAXMEMORY__HELP = "Sets the maximum amount of memory, in megabytes, to be used by the region in this process. (Default: 90% of available heap)";
+  public static final String CREATE_REGION__MULTICASTENABLED = "enable-multicast";
+  public static final String CREATE_REGION__MULTICASTENABLED__HELP = "Enables multicast messaging on the region.  Multicast must also be enabled in the cache distributed system properties.  This is primarily useful for replicated regions that are in all servers.";
   public static final String CREATE_REGION__RECOVERYDELAY = "recovery-delay";
   public static final String CREATE_REGION__RECOVERYDELAY__HELP = "Sets the delay in milliseconds that existing members will wait before satisfying redundancy after another member crashes. -1 (the default) indicates that redundancy will not be recovered after a failure.";
   public static final String CREATE_REGION__REDUNDANTCOPIES = "redundant-copies";
@@ -680,114 +685,7 @@ public class CliStrings {
 
   public static final String CREATE_REGION__OFF_HEAP = "off-heap";
   public static final String CREATE_REGION__OFF_HEAP__HELP = "Causes the values of the region to be stored in off-heap memory. The default is on heap.";
-  public static final String CREATE_REGION__HDFSSTORE_NAME = "hdfs-store";
-  public static final String CREATE_REGION__HDFSSTORE_NAME__HELP = "HDFS Store to be used by this region. \"list hdfs-store\" can be used to display existing HDFSStores.";
-  public static final String CREATE_REGION__HDFSSTORE_WRITEONLY = "hdfs-write-only";
-  public static final String CREATE_REGION__HDFSSTORE_WRITEONLY__HELP = "HDFS write-only mode will be used. All data will be persisted in the HDFS store, and user can access the stored data only through the MapReduce API";
-  /* hdfsstore commands  */  
-  public static final String CREATE_HDFS_STORE ="create hdfs-store";
-  public static final String CREATE_HDFS_STORE__HELP = "Create a hdfsstore and persist region data on the specified hadoop cluster.";
-  public static final String CREATE_HDFS_STORE__NAME = "name";
-  public static final String CREATE_HDFS_STORE__NAME__HELP = "Name of the store.";
-  public static final String CREATE_HDFS_STORE__NAMENODE = "namenode";
-  public static final String CREATE_HDFS_STORE__NAMENODE__HELP = "The URL of the Hadoop NameNode for your HD cluster.HDFSStore persists data on a HDFS cluster identified by cluster's NameNode URL or NameNode Service URL.NameNode URL can also be provided via hdfs-site.xml";
-  public static final String CREATE_HDFS_STORE__HOMEDIR = "home-dir";
-  public static final String CREATE_HDFS_STORE__HOMEDIR__HELP ="The HDFS directory path in which HDFSStore stores files. The value must not contain the NameNode URL";
-  public static final String CREATE_HDFS_STORE__READCACHESIZE= "read-cache-size";
-  public static final String CREATE_HDFS_STORE__READCACHESIZE__HELP ="The maximum amount of memory in megabytes used by HDFSStore read cache.";  
-  public static final String CREATE_HDFS_STORE__BATCHSIZE = "batch-size";
-  public static final String CREATE_HDFS_STORE__BATCHSIZE__HELP ="HDFSStore buffer data is persisted on HDFS in batches, and the BatchSize defines the maximum size (in megabytes) of each batch that is written to HDFS.";
-  public static final String CREATE_HDFS_STORE__BATCHINTERVAL = "batch-interval";
-  public static final String CREATE_HDFS_STORE__BATCHINTERVAL__HELP ="It defines the maximum time that can elapse between writing batches to HDFS. ";
-  public static final String CREATE_HDFS_STORE__MAXMEMORY = "max-memory";
-  public static final String CREATE_HDFS_STORE__MAXMEMORY__HELP ="The maximum amount of memory in megabytes used by HDFSStore";
-  public static final String CREATE_HDFS_STORE__DISPATCHERTHREADS = "dispatcher-threads";
-  public static final String CREATE_HDFS_STORE__DISPATCHERTHREADS__HELP ="The maximum number of threads (per region) used to write batches of HDFS.";
-  public static final String CREATE_HDFS_STORE__BUFFERPERSISTENT = "buffer-persistent";
-  public static final String CREATE_HDFS_STORE__BUFFERPERSISTENT__HELP ="Configure if HDFSStore in-memory buffer data, that has not been persisted on HDFS yet, should be persisted to a local disk to buffer prevent data loss";
-  public static final String CREATE_HDFS_STORE__SYNCDISKWRITE = "synchronous-disk-write";
-  public static final String CREATE_HDFS_STORE__SYNCDISKWRITE__HELP ="Enable or disable synchronous writes to the local DiskStore.";
-  public static final String CREATE_HDFS_STORE__DISKSTORENAME = "disk-store-name";
-  public static final String CREATE_HDFS_STORE__DISKSTORENAME__HELP ="The named DiskStore to use for any local disk persistence needs of HDFSStore.";
-  public static final String CREATE_HDFS_STORE__MINORCOMPACT= "minor-compact";
-  public static final String CREATE_HDFS_STORE__MINORCOMPACT__HELP ="Minor compaction reorganizes data in files to optimize read performance and reduce number of files created on HDFS.";
-  
-  public static final String CREATE_HDFS_STORE__MINORCOMPACTIONTHREADS = "minor-compaction-threads";
-  public static final String CREATE_HDFS_STORE__MINORCOMPACTIONTHREADS__HELP ="The maximum number of threads that GemFire uses to perform minor compaction in this HDFS store.";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACT= "major-compact";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACT__HELP ="Major compaction removes old values of a key and deleted records from the HDFS files.";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACTINTERVAL= "major-compaction-interval";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACTINTERVAL__HELP ="Interval Between two major compactions.";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACTIONTHREADS = "major-compaction-threads";
-  public static final String CREATE_HDFS_STORE__MAJORCOMPACTIONTHREADS__HELP ="The maximum number of threads that GemFire uses to perform major compaction in this HDFS store.";
-  public static final String CREATE_HDFS_STORE__PURGEINTERVAL = "purge-interval";
-  public static final String CREATE_HDFS_STORE__PURGEINTERVAL__HELP ="PurgeInterval defines the amount of time old files remain available for MapReduce jobs. After this interval has passed, old files are deleted.";
-  public static final String CREATE_HDFS_STORE__WRITEONLYFILESIZE = "max-write-only-file-size";
-  public static final String CREATE_HDFS_STORE__WRITEONLYFILESIZE__HELP ="For HDFS write-only regions, this defines the maximum size (in megabytes) that an HDFS log file can reach before HDFSStore closes the file and begins writing to a new file.";
-  public static final String CREATE_HDFS_STORE__FILEROLLOVERINTERVAL = "write-only-file-rollover-interval";
-  public static final String CREATE_HDFS_STORE__FILEROLLOVERINTERVAL__HELP ="For HDFS write-only regions, this defines the maximum time that can elapse before HDFSStore closes an HDFS file and begins writing to a new file.";  
-  public static final String CREATE_HDFS_STORE__CLIENTCONFIGFILE = "client-config-files";
-  public static final String CREATE_HDFS_STORE__CLIENTCONFIGFILE__HELP ="The full path to the HDFS client configuration file that the store uses.The full path to the HDFS client configuration files, for e.g. hdfs-site.xml and core-site.xml. These files must be accessible to any node where an instance of this HDFSStore will be created";
-  public static final String CREATE_HDFS_STORE__ERROR_WHILE_CREATING_REASON_0 = "An error occurred while creating the hdfs store: \"{0}\"";
-  public static final String CREATE_HDFS_STORE__GROUP = "group";
-  public static final String CREATE_HDFS_STORE__GROUP__HELP = "Group(s) of members on which the hdfs store will be created. If no group is specified the hdfs store will be created on all members.";
-    
-  /*HDFS describe command*/
-  public static final String DESCRIBE_HDFS_STORE = "describe hdfs-store";
-  public static final String DESCRIBE_HDFS_STORE__HELP = "Display information about a hdfs store.";
-  public static final String DESCRIBE_HDFS_STORE__NAME = "name";
-  public static final String DESCRIBE_HDFS_STORE__NAME__HELP = "name of the hdfs store";
-  public static final String DESCRIBE_HDFS_STORE__MEMBER = "member";
-  public static final String DESCRIBE_HDFS_STORE__MEMBER__HELP = "Name/Id of the member with the hdfs store to be described.";
-  public static final String DESCRIBE_HDFS_STORE__ERROR_MESSAGE = "An error occurred while getting information about the hdfs store: \"{0}\"";
-  
-  /*HDFS list command*/
-  public static final String LIST_HDFS_STORE = "list hdfs-stores";
-  public static final String LIST_HDFS_STORE__HELP = "Display hdfs stores for all members.";
-  public static final String LIST_HDFS_STORE__NAME__HELP = "name of the hdfs store";
-  public static final String LIST_HDFS_STORE__ERROR_MESSAGE = "An error occurred while collecting Hdfs Store information for all members across the GemFire cluster: %1$s";
-  public static final String LIST_HDFS_STORE__HDFS_STORES_NOT_FOUND_MESSAGE = "No Hdfs Stores Found";
-  
-  
-  /* 'destroy hdfs-store' command */
-  public static final String DESTROY_HDFS_STORE = "destroy hdfs-store";
-  public static final String DESTROY_HDFS_STORE__HELP = "Destroy a hdfs store";
-  public static final String DESTROY_HDFS_STORE__NAME = "name";
-  public static final String DESTROY_HDFS_STORE__NAME__HELP = "Name of the hdfs store that will be destroyed.";
-  public static final String DESTROY_HDFS_STORE__GROUP = "group";
-  public static final String DESTROY_HDFS_STORE__GROUP__HELP = "Group(s) of members on which the hdfs store will be destroyed. If no group is specified the hdfs store will be destroyed on all members.";
-  public static final String DESTROY_HDFS_STORE__ERROR_WHILE_DESTROYING_REASON_0 = "An error occurred while destroying the hdfs store: \"{0}\"";
 
-  
-  /* 'alter hdfs-store' command */
-  public static final String ALTER_HDFS_STORE = "alter hdfs-store";
-  public static final String ALTER_HDFS_STORE__HELP = "Alter a hdfs store";
-  public static final String ALTER_HDFS_STORE__NAME = "name";
-  public static final String ALTER_HDFS_STORE__NAME__HELP = "Name of the hdfs store that will be Altered.";
-  public static final String ALTER_HDFS_STORE__GROUP = "group";  
-  public static final String ALTER_HDFS_STORE__GROUP__HELP = "Group(s) of members on which the hdfs store will be altered. If no group is specified the hdfs store will be altered on all members.";
-  public static final String ALTER_HDFS_STORE__ERROR_WHILE_ALTERING_REASON_0 = "An error occurred while altering the hdfs store: \"{0}\"";
-  public static final String ALTER_HDFS_STORE__BATCHSIZE = "batch-size";
-  public static final String ALTER_HDFS_STORE__BATCHSIZE__HELP ="HDFSStore buffer data is persisted on HDFS in batches, and the BatchSize defines the maximum size (in megabytes) of each batch that is written to HDFS.";
-  public static final String ALTER_HDFS_STORE__BATCHINTERVAL = "batch-interval";
-  public static final String ALTER_HDFS_STORE__BATCHINTERVAL__HELP ="It defines the maximum time that can elapse between writing batches to HDFS. ";
-  public static final String ALTER_HDFS_STORE__MINORCOMPACT= "minor-compact";
-  public static final String ALTER_HDFS_STORE__MINORCOMPACT__HELP ="Minor compaction reorganizes data in files to optimize read performance and reduce number of files created on HDFS.";  
-  public static final String ALTER_HDFS_STORE__MINORCOMPACTIONTHREADS = "minor-compaction-threads";
-  public static final String ALTER_HDFS_STORE__MINORCOMPACTIONTHREADS__HELP ="The maximum number of threads that GemFire uses to perform minor compaction in this HDFS store.";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACT= "major-compact";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACT__HELP ="Major compaction removes old values of a key and deleted records from the HDFS files.";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACTINTERVAL= "major-compaction-interval";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACTINTERVAL__HELP ="Interval Between two major compactions.";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACTIONTHREADS = "major-compaction-threads";
-  public static final String ALTER_HDFS_STORE__MAJORCOMPACTIONTHREADS__HELP ="The maximum number of threads that GemFire uses to perform major compaction in this HDFS store.";
-  public static final String ALTER_HDFS_STORE__PURGEINTERVAL = "purge-interval";
-  public static final String ALTER_HDFS_STORE__PURGEINTERVAL__HELP ="PurgeInterval defines the amount of time old files remain available for MapReduce jobs. After this interval has passed, old files are deleted.";
-  public static final String ALTER_HDFS_STORE__FILEROLLOVERINTERVAL = "write-only-file-rollover-interval";
-  public static final String ALTER_HDFS_STORE__FILEROLLOVERINTERVAL__HELP = "For HDFS write-only regions, this defines the maximum time that can elapse before HDFSStore closes an HDFS file and begins writing to a new file.";  
-  public static final String ALTER_HDFS_STORE__WRITEONLYFILESIZE = "max-write-only-file-size";
-  public static final String ALTER_HDFS_STORE__WRITEONLYFILESIZE__HELP ="For HDFS write-only regions, this defines the maximum size (in megabytes) that an HDFS log file can reach before HDFSStore closes the file and begins writing to a new file.";
-  
   /* debug command */
   public static final String DEBUG = "debug";
   public static final String DEBUG__HELP = "Enable/Disable debugging output in GFSH.";
@@ -1185,27 +1083,27 @@ public class CliStrings {
   public static final String DESCRIBE_CLIENT__ID__HELP = "ID of a client for which details are needed";
   public static final String DESCRIBE_CLIENT_COULD_NOT_RETRIEVE_SERVER_LIST = "No cache-servers were observed.";
   public static final String DESCRIBE_CLIENT__CLIENT__ID__NOT__FOUND__0 = "Specified Client ID {0} not present";
-  public static final String DECRIBE_CLIENT_COULD_NOT_RETRIEVE_CLIENT_0 = "Could not retrieve client. Reason : {0}";
-  public static final String DECRIBE_CLIENT_COULD_NOT_RETRIEVE_STATS_FOR_CLIENT_0 = "Could not retrieve stats for client : {0}";
-  public static final String DECRIBE_CLIENT_COULD_NOT_RETRIEVE_STATS_FOR_CLIENT_0_REASON_1 = "Could not retrieve stats for client : {0}. Reason : {1}";
-  public static final String DECRIBE_CLIENT_ERROR_FETCHING_STATS_0 = "Error occured while fetching stats. Reason : {0}";
-  public static final String DECRIBE_CLIENT_NO_MEMBERS = "DS has no members";
-  public static final String DECRIBE_CLIENT_COLUMN_PRIMARY_SERVERS = "Primary Servers";
-  public static final String DECRIBE_CLIENT_COLUMN_SECONDARY_SERVERS = "Secondary Servers";
-  public static final String DECRIBE_CLIENT_COLUMN_CPU = "CPU";
-  public static final String DECRIBE_CLIENT_COLUMN_LISTNER_CALLS = "Number of Cache Listner Calls";
-  public static final String DECRIBE_CLIENT_COLUMN_GETS = "Number of Gets";
-  public static final String DECRIBE_CLIENT_COLUMN_MISSES = "Number of Misses";
-  public static final String DECRIBE_CLIENT_COLUMN_PUTS = "Number of Puts";
-  public static final String DECRIBE_CLIENT_COLUMN_THREADS = "Number of Threads";
-  public static final String DECRIBE_CLIENT_COLUMN_PROCESS_CPU_TIME = "Process CPU Time (nanoseconds)";
-  public static final String DECRIBE_CLIENT_COLUMN_QUEUE_SIZE = "Queue size";
-  public static final String DECRIBE_CLIENT_COLUMN_UP_TIME = "UP Time (seconds)";
-  public static final String DECRIBE_CLIENT_COLUMN_DURABLE = "Is Durable";
-  public static final String DECRIBE_CLIENT_MIN_CONN = "Minimum Connections";
-  public static final String DECRIBE_CLIENT_MAX_CONN = "Maximum Connections";
-  public static final String DECRIBE_CLIENT_REDUDANCY = "Redudancy";
-  public static final String DECRIBE_CLIENT_CQs = "Num of CQs";
+  public static final String DESCRIBE_CLIENT_COULD_NOT_RETRIEVE_CLIENT_0 = "Could not retrieve client. Reason : {0}";
+  public static final String DESCRIBE_CLIENT_COULD_NOT_RETRIEVE_STATS_FOR_CLIENT_0 = "Could not retrieve stats for client : {0}";
+  public static final String DESCRIBE_CLIENT_COULD_NOT_RETRIEVE_STATS_FOR_CLIENT_0_REASON_1 = "Could not retrieve stats for client : {0}. Reason : {1}";
+  public static final String DESCRIBE_CLIENT_ERROR_FETCHING_STATS_0 = "Error occured while fetching stats. Reason : {0}";
+  public static final String DESCRIBE_CLIENT_NO_MEMBERS = "DS has no members";
+  public static final String DESCRIBE_CLIENT_COLUMN_PRIMARY_SERVERS = "Primary Servers";
+  public static final String DESCRIBE_CLIENT_COLUMN_SECONDARY_SERVERS = "Secondary Servers";
+  public static final String DESCRIBE_CLIENT_COLUMN_CPU = "CPU";
+  public static final String DESCRIBE_CLIENT_COLUMN_LISTNER_CALLS = "Number of Cache Listner Calls";
+  public static final String DESCRIBE_CLIENT_COLUMN_GETS = "Number of Gets";
+  public static final String DESCRIBE_CLIENT_COLUMN_MISSES = "Number of Misses";
+  public static final String DESCRIBE_CLIENT_COLUMN_PUTS = "Number of Puts";
+  public static final String DESCRIBE_CLIENT_COLUMN_THREADS = "Number of Threads";
+  public static final String DESCRIBE_CLIENT_COLUMN_PROCESS_CPU_TIME = "Process CPU Time (nanoseconds)";
+  public static final String DESCRIBE_CLIENT_COLUMN_QUEUE_SIZE = "Queue size";
+  public static final String DESCRIBE_CLIENT_COLUMN_UP_TIME = "UP Time (seconds)";
+  public static final String DESCRIBE_CLIENT_COLUMN_DURABLE = "Is Durable";
+  public static final String DESCRIBE_CLIENT_MIN_CONN = "Minimum Connections";
+  public static final String DESCRIBE_CLIENT_MAX_CONN = "Maximum Connections";
+  public static final String DESCRIBE_CLIENT_REDUDANCY = "Redudancy";
+  public static final String DESCRIBE_CLIENT_CQs = "Num of CQs";
   
   
   
@@ -1487,8 +1385,9 @@ public class CliStrings {
   public static final String SHOW_DEADLOCK__HELP = "Display any deadlocks in the GemFire distributed system.";
   public static final String SHOW_DEADLOCK__DEPENDENCIES__FILE = "file";
   public static final String SHOW_DEADLOCK__DEPENDENCIES__FILE__HELP = "Name of the file to which dependencies between members will be written.";
-  public static final String SHOW_DEADLOCK__NO__DEADLOCK = "No dead lock detected.";
-  public static final String SHOW_DEADLOCK__DEADLOCK__DETECTED = "Dead lock detected.";
+  public static final String SHOW_DEADLOCK__NO__DEADLOCK = "No deadlock was detected.";
+  public static final String SHOW_DEADLOCK__DEADLOCK__DETECTED = "Deadlock detected.";
+  public static final String SHOW_DEADLOCK__DEEPEST_FOUND = "No deadlock was detected.  Here is the deepest call chain that could be found";
   public static final String SHOW_DEADLOCK__DEPENDENCIES__REVIEW = "Please view the dependencies between the members in file : {0}";
   public static final String SHOW_DEADLOCK__ERROR = "Error";
 
@@ -1725,9 +1624,9 @@ public class CliStrings {
   public static final String START_LOCATOR__LOG_LEVEL = "log-level";
   public static final String START_LOCATOR__LOG_LEVEL__HELP = "Sets the level of output logged to the Locator log file.  Possible values for log-level include: finest, finer, fine, config, info, warning, severe, none.";
   public static final String START_LOCATOR__MCAST_ADDRESS = "mcast-address";
-  public static final String START_LOCATOR__MCAST_ADDRESS__HELP = "The IP address or hostname used to bind the UPD socket for multi-cast networking so the Locator can locate other members in the GemFire cluster.  If mcast-port is zero, then mcast-address is ignored.";
+  public static final String START_LOCATOR__MCAST_ADDRESS__HELP = "The IP address or hostname used to bind the UPD socket for multi-cast networking so the Locator can communicate other members in the GemFire cluster using a common multicast address and port.  If mcast-port is zero, then mcast-address is ignored.";
   public static final String START_LOCATOR__MCAST_PORT = "mcast-port";
-  public static final String START_LOCATOR__MCAST_PORT__HELP = "Sets the port used for multi-cast networking so the Locator can locate other members of the GemFire cluster.  A zero value disables mcast.";
+  public static final String START_LOCATOR__MCAST_PORT__HELP = "Sets the port used for multi-cast networking so the Locator can communicate with other members of the GemFire cluster.  A zero value disables mcast.";
   public static final String START_LOCATOR__MEMBER_NAME = "name";
   public static final String START_LOCATOR__MEMBER_NAME__HELP = "The member name to give this Locator in the GemFire cluster.";
   public static final String START_LOCATOR__PORT = "port";
@@ -1820,9 +1719,9 @@ public class CliStrings {
   public static final String START_SERVER__MAXHEAP = "max-heap";
   public static final String START_SERVER__MAXHEAP__HELP = "Maximum size of the heap in the same format as the JVM -Xmx parameter.";
   public static final String START_SERVER__MCAST_ADDRESS = "mcast-address";
-  public static final String START_SERVER__MCAST_ADDRESS__HELP = "The IP address or hostname used to bind the UPD socket for multi-cast networking so the Cache Server can locate other members in the GemFire cluster.  If mcast-port is zero, then mcast-address is ignored.";
+  public static final String START_SERVER__MCAST_ADDRESS__HELP = "The IP address or hostname used to bind the UPD socket for multi-cast networking so the Cache Server can communicate with other members in the GemFire cluster.  If mcast-port is zero, then mcast-address is ignored.";
   public static final String START_SERVER__MCAST_PORT = "mcast-port";
-  public static final String START_SERVER__MCAST_PORT__HELP = "Sets the port used for multi-cast networking so the Cache Server can locate other members of the GemFire cluster.  A zero value disables mcast.";
+  public static final String START_SERVER__MCAST_PORT__HELP = "Sets the port used for multi-cast networking so the Cache Server can communicate with other members of the GemFire cluster.  A zero value disables mcast.";
   public static final String START_SERVER__NAME = "name";
   public static final String START_SERVER__NAME__HELP = "The member name to give this Cache Server in the GemFire cluster.";
   public static final String START_SERVER__MEMCACHED_PORT = "memcached-port";
@@ -2063,6 +1962,8 @@ public class CliStrings {
   public static final String VALIDATE_DISK_STORE__NAME__HELP = "Name of the disk store to be validated.";
   public static final String VALIDATE_DISK_STORE__DISKDIRS = "disk-dirs";
   public static final String VALIDATE_DISK_STORE__DISKDIRS__HELP = "Directories where data for the disk store was previously written.";
+  public static final String VALIDATE_DISK_STORE__J = "J";
+  public static final String VALIDATE_DISK_STORE__J__HELP = "Arguments passed to the Java Virtual Machine performing the compact operation on the disk store.";
   public static final String VALIDATE_DISK_STORE__MSG__NO_DIRS = VALIDATE_DISK_STORE__DISKDIRS + " is mandatory";
   public static final String VALIDATE_DISK_STORE__MSG__IO_ERROR = "Input/Output error in validating disk store {0} is : {1}";
   public static final String VALIDATE_DISK_STORE__MSG__ERROR = "Error in validating disk store {0} is : {1}";

@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.internal.redis;
 
 import io.netty.buffer.ByteBuf;
@@ -22,6 +38,7 @@ import com.gemstone.gemfire.cache.TransactionException;
 import com.gemstone.gemfire.cache.TransactionId;
 import com.gemstone.gemfire.cache.UnsupportedOperationInTransactionException;
 import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
+import com.gemstone.gemfire.cache.query.RegionNotFoundException;
 import com.gemstone.gemfire.internal.redis.executor.transactions.TransactionExecutor;
 import com.gemstone.gemfire.redis.GemFireRedisServer;
 
@@ -213,7 +230,7 @@ public class ExecutionHandlerContext extends ChannelInboundHandlerAdapter {
         return;
       } catch (Exception e) {
         cause = e;
-        if (e instanceof RegionDestroyedException || e.getCause() instanceof QueryInvocationTargetException)
+        if (e instanceof RegionDestroyedException || e instanceof RegionNotFoundException || e.getCause() instanceof QueryInvocationTargetException)
           Thread.sleep(WAIT_REGION_DSTRYD_MILLIS);
       }
     }

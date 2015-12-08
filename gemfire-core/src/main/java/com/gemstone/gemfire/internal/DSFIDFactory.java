@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.gemstone.gemfire.internal;
@@ -30,7 +39,7 @@ import com.gemstone.gemfire.admin.internal.PrepareBackupResponse;
 import com.gemstone.gemfire.admin.internal.SystemMemberCacheEventProcessor;
 import com.gemstone.gemfire.admin.jmx.internal.StatAlertNotification;
 import com.gemstone.gemfire.cache.InterestResultPolicy;
-import com.gemstone.gemfire.cache.client.internal.BridgeServerLoadMessage;
+import com.gemstone.gemfire.cache.client.internal.CacheServerLoadMessage;
 import com.gemstone.gemfire.cache.client.internal.locator.ClientConnectionRequest;
 import com.gemstone.gemfire.cache.client.internal.locator.ClientConnectionResponse;
 import com.gemstone.gemfire.cache.client.internal.locator.ClientReplacementRequest;
@@ -89,6 +98,22 @@ import com.gemstone.gemfire.distributed.internal.locks.GrantorRequestProcessor;
 import com.gemstone.gemfire.distributed.internal.locks.NonGrantorDestroyedProcessor;
 import com.gemstone.gemfire.distributed.internal.locks.NonGrantorDestroyedProcessor.NonGrantorDestroyedReplyMessage;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.membership.NetView;
+import com.gemstone.gemfire.distributed.internal.membership.gms.GMSMember;
+import com.gemstone.gemfire.distributed.internal.membership.gms.locator.FindCoordinatorRequest;
+import com.gemstone.gemfire.distributed.internal.membership.gms.locator.FindCoordinatorResponse;
+import com.gemstone.gemfire.distributed.internal.membership.gms.locator.GetViewRequest;
+import com.gemstone.gemfire.distributed.internal.membership.gms.locator.GetViewResponse;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.InstallViewMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.JoinRequestMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.JoinResponseMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.LeaveRequestMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.HeartbeatRequestMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.HeartbeatMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.NetworkPartitionMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.RemoveMemberMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.SuspectMembersMessage;
+import com.gemstone.gemfire.distributed.internal.membership.gms.messages.ViewAckMessage;
 import com.gemstone.gemfire.distributed.internal.streaming.StreamingOperation.StreamingReplyMessage;
 import com.gemstone.gemfire.internal.admin.ClientMembershipMessage;
 import com.gemstone.gemfire.internal.admin.remote.AddHealthListenerRequest;
@@ -180,8 +205,8 @@ import com.gemstone.gemfire.internal.admin.remote.VersionInfoResponse;
 import com.gemstone.gemfire.internal.admin.statalerts.GaugeThresholdDecoratorImpl;
 import com.gemstone.gemfire.internal.admin.statalerts.NumberThresholdDecoratorImpl;
 import com.gemstone.gemfire.internal.cache.AddCacheServerProfileMessage;
-import com.gemstone.gemfire.internal.cache.BridgeRegionEventImpl;
-import com.gemstone.gemfire.internal.cache.BridgeServerAdvisor.BridgeServerProfile;
+import com.gemstone.gemfire.internal.cache.ClientRegionEventImpl;
+import com.gemstone.gemfire.internal.cache.CacheServerAdvisor.CacheServerProfile;
 import com.gemstone.gemfire.internal.cache.BucketAdvisor;
 import com.gemstone.gemfire.internal.cache.CacheDistributionAdvisor;
 import com.gemstone.gemfire.internal.cache.CloseCacheMessage;
@@ -277,6 +302,7 @@ import com.gemstone.gemfire.internal.cache.partitioned.AllBucketProfilesUpdateMe
 import com.gemstone.gemfire.internal.cache.partitioned.BecomePrimaryBucketMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.BecomePrimaryBucketMessage.BecomePrimaryBucketReplyMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketBackupMessage;
+import com.gemstone.gemfire.internal.cache.partitioned.BucketCountLoadProbe;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketProfileUpdateMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketSizeMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketSizeMessage.BucketSizeReplyMessage;
@@ -395,9 +421,6 @@ import com.gemstone.gemfire.management.internal.configuration.messages.Configura
 import com.gemstone.gemfire.pdx.internal.CheckTypeRegistryState;
 import com.gemstone.gemfire.pdx.internal.EnumId;
 import com.gemstone.gemfire.pdx.internal.EnumInfo;
-import com.gemstone.org.jgroups.View;
-import com.gemstone.org.jgroups.protocols.pbcast.JoinRsp;
-import com.gemstone.org.jgroups.stack.IpAddress;
 
 /**
  * Factory for instances of DataSerializableFixedID instances.
@@ -461,13 +484,28 @@ public final class DSFIDFactory implements DataSerializableFixedID {
   }
 
   private static void registerDSFIDTypes() {
+    registerDSFID(NETWORK_PARTITION_MESSAGE, NetworkPartitionMessage.class);
+    registerDSFID(REMOVE_MEMBER_REQUEST, RemoveMemberMessage.class);
+    registerDSFID(HEARTBEAT_REQUEST, HeartbeatRequestMessage.class);
+    registerDSFID(HEARTBEAT_RESPONSE, HeartbeatMessage.class);
+    registerDSFID(SUSPECT_MEMBERS_MESSAGE, SuspectMembersMessage.class);
+    registerDSFID(LEAVE_REQUEST_MESSAGE, LeaveRequestMessage.class);
+    registerDSFID(VIEW_ACK_MESSAGE, ViewAckMessage.class);
+    registerDSFID(INSTALL_VIEW_MESSAGE, InstallViewMessage.class);
+    registerDSFID(GMSMEMBER, GMSMember.class);
+    registerDSFID(NETVIEW, NetView.class);
+    registerDSFID(GET_VIEW_REQ, GetViewRequest.class);
+    registerDSFID(GET_VIEW_RESP, GetViewResponse.class);
+    registerDSFID(FIND_COORDINATOR_REQ, FindCoordinatorRequest.class);
+    registerDSFID(FIND_COORDINATOR_RESP, FindCoordinatorResponse.class);
+    registerDSFID(JOIN_RESPONSE, JoinResponseMessage.class);
+    registerDSFID(JOIN_REQUEST, JoinRequestMessage.class);
     registerDSFID(CLIENT_TOMBSTONE_MESSAGE, ClientTombstoneMessage.class);
     registerDSFID(R_REGION_OP, RemoteRegionOperation.class);
     registerDSFID(R_REGION_OP_REPLY, RemoteRegionOperationReplyMessage.class);
     registerDSFID(WAIT_FOR_VIEW_INSTALLATION, WaitForViewInstallation.class);
     registerDSFID(DISPATCHED_AND_CURRENT_EVENTS,
         DispatchedAndCurrentEvents.class);
-    registerDSFID(IP_ADDRESS, IpAddress.class);
     registerDSFID(DISTRIBUTED_MEMBER, InternalDistributedMember.class);
     registerDSFID(UPDATE_MESSAGE, UpdateOperation.UpdateMessage.class);
     registerDSFID(REPLY_MESSAGE, ReplyMessage.class);
@@ -820,7 +858,7 @@ public final class DSFIDFactory implements DataSerializableFixedID {
     registerDSFID(GATEWAY_SENDER_PROFILE,
         GatewaySenderAdvisor.GatewaySenderProfile.class);
     registerDSFID(ROLE_EVENT, RoleEventImpl.class);
-    registerDSFID(BRIDGE_REGION_EVENT, BridgeRegionEventImpl.class);
+    registerDSFID(CLIENT_REGION_EVENT, ClientRegionEventImpl.class);
     registerDSFID(PR_INVALIDATE_MESSAGE, InvalidateMessage.class);
     registerDSFID(PR_INVALIDATE_REPLY_MESSAGE,
         InvalidateMessage.InvalidateReplyMessage.class);
@@ -860,8 +898,8 @@ public final class DSFIDFactory implements DataSerializableFixedID {
     registerDSFID(ALERTS_NOTIF_MESSAGE, AlertsNotificationMessage.class);
     registerDSFID(FIND_DURABLE_QUEUE, FindDurableQueueMessage.class);
     registerDSFID(FIND_DURABLE_QUEUE_REPLY, FindDurableQueueReply.class);
-    registerDSFID(BRIDGE_SERVER_LOAD_MESSAGE, BridgeServerLoadMessage.class);
-    registerDSFID(BRIDGE_SERVER_PROFILE, BridgeServerProfile.class);
+    registerDSFID(CACHE_SERVER_LOAD_MESSAGE, CacheServerLoadMessage.class);
+    registerDSFID(CACHE_SERVER_PROFILE, CacheServerProfile.class);
     registerDSFID(CONTROLLER_PROFILE, ControllerProfile.class);
     registerDSFID(DLOCK_QUERY_MESSAGE,
         DLockQueryProcessor.DLockQueryMessage.class);
@@ -877,8 +915,6 @@ public final class DSFIDFactory implements DataSerializableFixedID {
     registerDSFID(OBJECT_PART_LIST, ObjectPartList.class);
     registerDSFID(VERSIONED_OBJECT_LIST, VersionedObjectList.class);
     registerDSFID(OBJECT_PART_LIST66, ObjectPartList651.class);
-    registerDSFID(JGROUPS_VIEW, View.class);
-    registerDSFID(JGROUPS_JOIN_RESP, JoinRsp.class);
     registerDSFID(PUTALL_VERSIONS_LIST, EntryVersionsList.class);
     registerDSFID(INITIAL_IMAGE_VERSIONED_OBJECT_LIST,
         InitialImageVersionedEntryList.class);
@@ -1017,6 +1053,7 @@ public final class DSFIDFactory implements DataSerializableFixedID {
         DestroyRegionOnDataStoreMessage.class);
     registerDSFID(SHUTDOWN_ALL_GATEWAYHUBS_REQUEST,
         ShutdownAllGatewayHubsRequest.class);
+    registerDSFID(BUCKET_COUNT_LOAD_PROBE, BucketCountLoadProbe.class);
   }
 
   /**
