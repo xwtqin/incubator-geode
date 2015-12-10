@@ -1414,7 +1414,7 @@ public class ParallelGatewaySenderQueue implements RegionQueue {
   public int localSize() {
     int size = 0;
     for (PartitionedRegion prQ : this.userRegionNameToshadowPRMap.values()) {
-      if(((PartitionedRegion)prQ.getRegion()).getDataStore() != null) {
+      if(prQ != null && ((PartitionedRegion)prQ.getRegion()).getDataStore() != null) {
         size += ((PartitionedRegion)prQ.getRegion()).getDataStore()
             .getSizeOfLocalPrimaryBuckets();  
       }

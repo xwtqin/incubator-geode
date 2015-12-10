@@ -1249,6 +1249,11 @@ public abstract class AbstractGatewaySender implements GatewaySender,
     return 0;
   }
   
+  public int getEventQueueSize() { 
+    AbstractGatewaySenderEventProcessor localProcessor = this.eventProcessor;
+    return localProcessor == null ? 0 : localProcessor.eventQueueSize();
+  }
+
   public void setEnqueuedAllTempQueueEvents(boolean enqueuedAllTempQueueEvents) {
     this.enqueuedAllTempQueueEvents = enqueuedAllTempQueueEvents;
   }
