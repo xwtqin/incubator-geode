@@ -16,25 +16,26 @@
  */
 package com.gemstone.gemfire.distributed;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
-import static com.googlecode.catchexception.CatchException.*;
-import static com.jayway.awaitility.Awaitility.*;
-import static com.jayway.awaitility.Duration.*;
-import static java.util.concurrent.TimeUnit.*;
-import static org.assertj.core.api.StrictAssertions.*;
-import static org.hamcrest.Matchers.*;
+import static com.gemstone.gemfire.test.dunit.DUnitTestRule.disconnectAllFromDS;
+import static com.gemstone.gemfire.test.dunit.DUnitTestRule.getSystem;
+import static com.googlecode.catchexception.CatchException.catchException;
+import static com.googlecode.catchexception.CatchException.caughtException;
+import static com.jayway.awaitility.Awaitility.with;
+import static com.jayway.awaitility.Duration.TWO_HUNDRED_MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import com.gemstone.gemfire.IncompatibleSystemException;
-import com.gemstone.gemfire.distributed.internal.DM;
-import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -54,14 +55,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.test.junit.categories.DistributedTest;
-import com.gemstone.gemfire.test.junit.categories.MembershipTest;
+import com.gemstone.gemfire.IncompatibleSystemException;
+import com.gemstone.gemfire.distributed.internal.DM;
+import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.test.dunit.DUnitTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import com.gemstone.gemfire.test.junit.categories.MembershipTest;
 
 /**
  * Tests the functionality of the {@link DistributedMember} class.
@@ -109,9 +115,9 @@ public class DistributedMemberDUnitTest implements Serializable {
     final InternalDistributedMember member = system.getDistributedMember();
 
     // assert
-    assertThat(system.getConfig().getRoles(), is(DistributionConfig.DEFAULT_ROLES));
-    assertThat(system.getConfig().getGroups(), is(DistributionConfig.DEFAULT_ROLES));
-    assertThat(system.getConfig().getName(), is(DistributionConfig.DEFAULT_NAME));
+    assertThat(system.getConfig().getRoles(), equalTo(DistributionConfig.DEFAULT_ROLES));
+    assertThat(system.getConfig().getGroups(), equalTo(DistributionConfig.DEFAULT_ROLES));
+    assertThat(system.getConfig().getName(), equalTo(DistributionConfig.DEFAULT_NAME));
     
     assertThat(member.getRoles(), is(empty()));
     assertThat(member.getName(), isEmptyString());
@@ -129,8 +135,8 @@ public class DistributedMemberDUnitTest implements Serializable {
     final InternalDistributedMember member = system.getDistributedMember();
 
     // assert
-    assertThat(system.getConfig().getName(), is("nondefault"));
-    assertThat(member.getName(), is("nondefault"));
+    assertThat(system.getConfig().getName(), equalTo("nondefault"));
+    assertThat(member.getName(), equalTo("nondefault"));
   }
 
   /**
@@ -153,13 +159,13 @@ public class DistributedMemberDUnitTest implements Serializable {
     final InternalDistributedMember member = system.getDistributedMember();
 
     // assert
-    assertThat(system.getConfig().getRoles(), is(roles));
-    assertThat(system.getConfig().getGroups(), is(groups));
-    assertThat(member.getRoles().size(), is(rolesAndGroups.size()));
+    assertThat(system.getConfig().getRoles(), equalTo(roles));
+    assertThat(system.getConfig().getGroups(), equalTo(groups));
+    assertThat(member.getRoles().size(), equalTo(rolesAndGroups.size()));
     for (Role role : member.getRoles()) {
       assertThat(role.getName(), isIn(rolesAndGroups));
     }
-    assertThat(member.getGroups(), is(rolesAndGroups));
+    assertThat(member.getGroups(), equalTo(rolesAndGroups));
   }
 
   @Test
@@ -364,7 +370,7 @@ public class DistributedMemberDUnitTest implements Serializable {
     final DistributedMember member = system.getDistributedMember();
     
     // assert
-    assertThat(system.getMemberId(), is(member.getId()));
+    assertThat(system.getMemberId(), equalTo(member.getId()));
     assertThat(member.getId(), containsString("foobar"));
   }
   

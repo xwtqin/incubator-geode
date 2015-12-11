@@ -22,6 +22,7 @@ import com.gemstone.gemfire.admin.internal.AdminDistributedSystemImpl;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.HoplogConfig;
 import com.gemstone.gemfire.cache.query.QueryTestUtils;
 import com.gemstone.gemfire.cache.query.internal.QueryObserverHolder;
+import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.cache30.GlobalLockingDUnitTest;
 import com.gemstone.gemfire.cache30.MultiVMRegionTestCase;
 import com.gemstone.gemfire.cache30.RegionTestCase;
@@ -35,19 +36,18 @@ import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.InternalInstantiator;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.admin.ClientStatsManager;
+import com.gemstone.gemfire.internal.cache.DiskStoreObserver;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
-import com.gemstone.gemfire.internal.cache.tier.InternalBridgeMembership;
+import com.gemstone.gemfire.internal.cache.tier.InternalClientMembership;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.DataSerializerPropogationDUnitTest;
+import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 import com.gemstone.gemfire.test.junit.rules.SerializableTestRule;
-import com.gemstone.org.jgroups.stack.IpAddress;
-import com.gemstone.org.jgroups.stack.Protocol;
-import com.gemstone.org.jgroups.util.GemFireTracer;
 
 /**
  * TestRule for DistributedTest. Use this for DUnit tests using JUnit 4.x 
@@ -678,8 +678,10 @@ public class DUnitTestRule implements SerializableTestRule {
   }
   
   private static void cleanupThisVM() {
-    IpAddress.resolve_dns = true;
     SocketCreator.resolve_dns = true;
+    CacheCreation.clearThreadLocals();
+    System.clearProperty("gemfire.log-level");
+    System.clearProperty("jgroups.resolve_dns");
     InitialImageOperation.slowImageProcessing = 0;
     DistributionMessageObserver.setInstance(null);
     QueryTestUtils.setCache(null);
@@ -689,13 +691,16 @@ public class DUnitTestRule implements SerializableTestRule {
     LogWrapper.close();
     ClientProxyMembershipID.system = null;
     MultiVMRegionTestCase.CCRegion = null;
-    InternalBridgeMembership.unregisterAllListeners();
+    InternalClientMembership.unregisterAllListeners();
     ClientStatsManager.cleanupForTests();
+    ClientServerTestCase.AUTO_LOAD_BALANCE = false;
     unregisterInstantiatorsInThisVM();
-    GemFireTracer.DEBUG = Boolean.getBoolean("DistributionManager.DEBUG_JAVAGROUPS");
-    Protocol.trace = GemFireTracer.DEBUG;
     DistributionMessageObserver.setInstance(null);
     QueryObserverHolder.reset();
+    DiskStoreObserver.setInstance(null);
+    System.clearProperty("gemfire.log-level");
+    System.clearProperty("jgroups.resolve_dns");
+    
     if (InternalDistributedSystem.systemAttemptingReconnect != null) {
       InternalDistributedSystem.systemAttemptingReconnect.stopReconnecting();
     }
