@@ -72,6 +72,7 @@ import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
 import com.gemstone.gemfire.distributed.internal.membership.MembershipTestHook;
 import com.gemstone.gemfire.distributed.internal.membership.NetView;
 import com.gemstone.gemfire.distributed.internal.membership.QuorumChecker;
+import com.gemstone.gemfire.distributed.internal.membership.gms.GMSMember;
 import com.gemstone.gemfire.distributed.internal.membership.gms.GMSUtil;
 import com.gemstone.gemfire.distributed.internal.membership.gms.Services;
 import com.gemstone.gemfire.distributed.internal.membership.gms.SuspectMember;
@@ -1207,8 +1208,8 @@ public class GMSMembershipManager implements MembershipManager, Manager
   }
   
   @Override
-  public void memberSuspected(InternalDistributedMember initiator, InternalDistributedMember suspect) {
-    SuspectMember s = new SuspectMember(initiator, suspect);
+  public void memberSuspected(InternalDistributedMember initiator, InternalDistributedMember suspect, String reason) {
+    SuspectMember s = new SuspectMember(initiator, suspect, reason);
     handleOrDeferSuspect(s);
   }
 
@@ -1228,7 +1229,7 @@ public class GMSMembershipManager implements MembershipManager, Manager
       InternalDistributedMember who = suspectInfo.whoSuspected;
       this.suspectedMembers.put(suspect, Long.valueOf(System.currentTimeMillis()));
       try {
-        listener.memberSuspect(suspect, who);
+        listener.memberSuspect(suspect, who, suspectInfo.reason);
       }
       catch (DistributedSystemDisconnectedException se) {
         // let's not get huffy about it
@@ -1428,7 +1429,6 @@ public class GMSMembershipManager implements MembershipManager, Manager
       latestViewLock.readLock().unlock();
     }
   }
-  
   
   protected boolean isJoining() {
     return this.isJoining;
@@ -1971,6 +1971,7 @@ public class GMSMembershipManager implements MembershipManager, Manager
     boolean sendViaMessenger = isForceUDPCommunications(); // enable when bug #46438 is fixed: || msg.sendViaUDP();
 
     if (useMcast || tcpDisabled || sendViaMessenger) {
+      checkAddressesForUUIDs(destinations);
       result = services.getMessenger().send(msg);
     }
     else {
@@ -1989,6 +1990,23 @@ public class GMSMembershipManager implements MembershipManager, Manager
   @Override
   public void forceUDPMessagingForCurrentThread() {
     forceUseUDPMessaging.set(null);
+  }
+  
+  void checkAddressesForUUIDs(InternalDistributedMember[] addresses) {
+    for (int i=0; i<addresses.length; i++) {
+      InternalDistributedMember m = addresses[i];
+      if(m != null) {
+        GMSMember id = (GMSMember)m.getNetMember();
+        if (!id.hasUUID()) {
+          latestViewLock.readLock().lock();
+          try {
+            addresses[i] = latestView.getCanonicalID(addresses[i]);
+          } finally {
+            latestViewLock.readLock().unlock();
+          }
+        }
+      }
+    }
   }
   
   private boolean isForceUDPCommunications() {
@@ -2347,17 +2365,18 @@ public class GMSMembershipManager implements MembershipManager, Manager
   /* non-thread-owned serial channels and high priority channels are not
    * included
    */
-  public Map getChannelStates(DistributedMember member, boolean includeMulticast) {
-    HashMap result = new HashMap();
+  public Map getMessageState(DistributedMember member, boolean includeMulticast) {
+    Map result = new HashMap();
     Stub stub = (Stub)memberToStubMap.get(member);
     DirectChannel dc = directChannel;
     if (stub != null && dc != null) {
       dc.getChannelStates(stub, result);
     }
+    services.getMessenger().getMessageState((InternalDistributedMember)member, result, includeMulticast);
     return result;
   }
 
-  public void waitForChannelState(DistributedMember otherMember, Map channelState)
+  public void waitForMessageState(DistributedMember otherMember, Map state)
     throws InterruptedException
   {
     if (Thread.interrupted()) throw new InterruptedException();
@@ -2370,15 +2389,9 @@ public class GMSMembershipManager implements MembershipManager, Manager
       latestViewLock.writeLock().unlock();
     }
     if (dc != null && stub != null) {
-      dc.waitForChannelState(stub, channelState);
+      dc.waitForChannelState(stub, state);
     }
-//    Long mcastState = (Long)channelState.remove("JGroups.MCast");
-//    if (mcastState != null) {
-//      InternalDistributedMember idm = (InternalDistributedMember)otherMember;
-//      GMSMember jgm = (GMSMember)idm.getNetMember();
-//      Address other = jgm.getAddress();
-//      gms.waitForMulticastState(other, mcastState.longValue());
-//    }
+    services.getMessenger().waitForMessageState((InternalDistributedMember)otherMember, state);
   }
   
   /* 
