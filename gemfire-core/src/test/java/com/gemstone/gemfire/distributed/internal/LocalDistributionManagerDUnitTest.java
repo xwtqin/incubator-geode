@@ -10,7 +10,7 @@ package com.gemstone.gemfire.distributed.internal;
 import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Threads.*;
 import static com.gemstone.gemfire.test.dunit.Wait.*;
-import static org.assertj.core.api.StrictAssertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -409,12 +409,22 @@ public class LocalDistributionManagerDUnitTest implements Serializable {
     /** Has a member departed recently? */
     private boolean departed = false;
 
+    @Override
     public void memberJoined(InternalDistributedMember id) {
       this.joined = true;
     }
 
+    @Override
     public void memberDeparted(InternalDistributedMember id, boolean crashed) {
       this.departed = true;
+    }
+
+    @Override
+    public void memberSuspect(InternalDistributedMember id, InternalDistributedMember whoSuspected, String reason) {
+    }
+    
+    @Override
+    public void quorumLost(Set<InternalDistributedMember> failures, List<InternalDistributedMember> remaining) {
     }
 
     /**
@@ -427,13 +437,6 @@ public class LocalDistributionManagerDUnitTest implements Serializable {
       return b;
     }
 
-    public void quorumLost(Set<InternalDistributedMember> failures, List<InternalDistributedMember> remaining) {
-    }
-
-    public void memberSuspect(InternalDistributedMember id,
-        InternalDistributedMember whoSuspected) {
-    }
-    
     /**
      * Gets (and then forgets) whether or not a member has recently
      * departed the distributed system.

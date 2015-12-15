@@ -23,7 +23,7 @@ import static com.googlecode.catchexception.CatchException.caughtException;
 import static com.jayway.awaitility.Awaitility.with;
 import static com.jayway.awaitility.Duration.TWO_HUNDRED_MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -178,7 +178,7 @@ public class DistributedMemberDUnitTest implements Serializable {
     catchException(Host.getHost(0).getVM(2)).invoke(getSystemWithName("name0"));
     
     // assert
-    assertThat(caughtException())
+    assertThat((Exception)caughtException())
         .isInstanceOf(RMIException.class);
     
     assertThat(caughtException().getCause())

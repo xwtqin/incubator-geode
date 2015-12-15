@@ -1,7 +1,7 @@
 package com.gemstone.gemfire.test.examples;
 
 import static com.googlecode.catchexception.CatchException.*;
-import static org.assertj.core.api.StrictAssertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.Serializable;
 
@@ -36,7 +36,7 @@ public class CatchExceptionExampleDUnitTest implements Serializable {
 
     catchException(vm).invoke(new ThrowBasicTestException());
 
-    assertThat(caughtException())
+    assertThat((Exception)caughtException())
         .isInstanceOf(RMIException.class)
         .hasCause(new BasicTestException(REMOTE_THROW_EXCEPTION_MESSAGE));
   }
