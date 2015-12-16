@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 @Category(IntegrationTest.class)
-public class DLockReentrantLockIntegrationTest {
+public class DLockReentrantLockJUnitTest {
   final long id = 1213L;
 
   private Cache cache;
