@@ -7,7 +7,7 @@
  */
 package com.gemstone.gemfire.test.dunit.tests;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -39,7 +39,7 @@ public class BasicDUnitTest implements Serializable {
   private static Properties bindings = new Properties();
   
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
 
   /**
    * Tests how the DUnit framework handles an error

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.internal.lang.reflect.ReflectionUtils;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
@@ -23,7 +23,7 @@ import com.gemstone.gemfire.test.junit.rules.SerializableTemporaryFolder;
 public class SerializableTemporaryFolderDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
   
   @Rule 
   public final SerializableTemporaryFolder temporaryFolder = new SerializableTemporaryFolder();

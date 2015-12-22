@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.Result;
 
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.rules.SerializableExternalResource;
 
@@ -44,7 +44,7 @@ public class DUnitTestRuleChainDUnitTest implements Serializable {
   public static class DUnitTestWithChainedRules implements Serializable {
     
     @Rule
-    public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
+    public final DistributedTestRule dunitTestRule = DistributedTestRule.builder()
         .outerRule(new BeforeOne())
         .outerRule(new BeforeTwo())
         .innerRule(new AfterOne())

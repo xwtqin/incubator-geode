@@ -16,7 +16,7 @@
  */
 package com.gemstone.gemfire.distributed;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Invoke.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
@@ -48,7 +48,7 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.util.StopWatch;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -73,7 +73,7 @@ public class HostedLocatorsDUnitTest implements Serializable {
   protected transient volatile LocatorLauncher launcher;
   
   @Rule
-  public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
+  public final DistributedTestRule dunitTestRule = DistributedTestRule.builder()
       .disconnectBefore(true)
       .disconnectAfter(true)
       .innerRule(new DistributedRestoreSystemProperties())

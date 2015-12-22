@@ -1,6 +1,6 @@
 package com.gemstone.gemfire.test.dunit.rules;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 

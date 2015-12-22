@@ -56,7 +56,7 @@ import com.gemstone.gemfire.test.junit.rules.SerializableTestRule;
  * @author Kirk Lund
  */
 @SuppressWarnings("serial")
-public class DUnitTestRule implements SerializableTestRule {
+public class DistributedTestRule implements SerializableTestRule {
   private static final Logger logger = LogService.getLogger();
 
   private static final String LOG_PER_TEST_CLASS_PROPERTY = "dunitLogPerTest";
@@ -87,11 +87,11 @@ public class DUnitTestRule implements SerializableTestRule {
     return new Builder();
   }
   
-  public static DUnitTestRule build() {
+  public static DistributedTestRule build() {
     return new Builder().build();
   }
   
-  protected DUnitTestRule(final Builder builder) {
+  protected DistributedTestRule(final Builder builder) {
     StaticContext.logPerTestClass = builder.logPerTestClass;
     StaticContext.logPerTestMethod = builder.logPerTestMethod;
     this.disconnectBeforeClass = builder.disconnectBeforeClass;
@@ -120,7 +120,7 @@ public class DUnitTestRule implements SerializableTestRule {
     return ruleChain;
   }
   
-  public DUnitTestRule() {
+  public DistributedTestRule() {
     StaticContext.logPerTestClass = Boolean.getBoolean(LOG_PER_TEST_CLASS_PROPERTY);
     this.disconnectBeforeClass = false;
     this.disconnectAfterClass = false;
@@ -795,8 +795,8 @@ public class DUnitTestRule implements SerializableTestRule {
       return this;
     }
     
-    public DUnitTestRule build() {
-      return new DUnitTestRule(this);
+    public DistributedTestRule build() {
+      return new DistributedTestRule(this);
     }
   }
 }

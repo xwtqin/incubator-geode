@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.rules.DistributedRestoreSystemProperties;
@@ -32,7 +32,7 @@ public class DistributedRestoreSystemPropertiesDUnitTest implements Serializable
   private static final String NEW_VALUE = "NEW_VALUE"; 
 
   @Rule
-  public final DUnitTestRule dunitTestRule = DUnitTestRule.builder()
+  public final DistributedTestRule dunitTestRule = DistributedTestRule.builder()
       .innerRule(new SetUp())
       .innerRule(new Restore())
       .innerRule(new Verify())

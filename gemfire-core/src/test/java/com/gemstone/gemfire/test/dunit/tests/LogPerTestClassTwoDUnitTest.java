@@ -1,6 +1,6 @@
 package com.gemstone.gemfire.test.dunit.tests;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 @Category(DistributedTest.class)
@@ -19,7 +19,7 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 public class LogPerTestClassTwoDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = DUnitTestRule.builder().logPerTestClass(true).build();
+  public final DistributedTestRule dunitTestRule = DistributedTestRule.builder().logPerTestClass(true).build();
 
   @Test
   public void logFileNameShouldEqualThisClassName() {

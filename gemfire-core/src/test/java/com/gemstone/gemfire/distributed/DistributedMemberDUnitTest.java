@@ -16,8 +16,8 @@
  */
 package com.gemstone.gemfire.distributed;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.disconnectAllFromDS;
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.getSystem;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.disconnectAllFromDS;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.getSystem;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static com.jayway.awaitility.Awaitility.with;
@@ -60,7 +60,7 @@ import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -80,7 +80,7 @@ import com.gemstone.gemfire.test.junit.categories.MembershipTest;
 public class DistributedMemberDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = DUnitTestRule.build();
+  public final DistributedTestRule dunitTestRule = DistributedTestRule.build();
   
   private Properties config;
   

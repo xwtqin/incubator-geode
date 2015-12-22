@@ -7,7 +7,7 @@
  */
 package com.gemstone.gemfire.distributed.internal;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Threads.*;
 import static com.gemstone.gemfire.test.dunit.Wait.*;
 import static org.assertj.core.api.Assertions.*;
@@ -31,7 +31,7 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.categories.MembershipTest;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -50,7 +50,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
 public class LocalDistributionManagerDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = DUnitTestRule.build();
+  public final DistributedTestRule dunitTestRule = DistributedTestRule.build();
 
   @Before
   public void before() {

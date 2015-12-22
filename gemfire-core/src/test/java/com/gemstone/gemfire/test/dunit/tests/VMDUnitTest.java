@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -40,7 +40,7 @@ public class VMDUnitTest implements Serializable {
   private static final AtomicInteger COUNTER = new AtomicInteger();
   
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
 
   @Test
   public void testInvokeNonExistentMethod() {

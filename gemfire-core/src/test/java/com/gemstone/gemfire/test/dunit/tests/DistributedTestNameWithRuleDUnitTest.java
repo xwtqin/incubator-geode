@@ -1,6 +1,6 @@
 package com.gemstone.gemfire.test.dunit.tests;
 
-import static com.gemstone.gemfire.test.dunit.DUnitTestRule.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 import static com.gemstone.gemfire.test.dunit.Invoke.invokeInEveryVM;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
@@ -22,7 +22,7 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 public class DistributedTestNameWithRuleDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
   
   @Rule
   public transient TestWatcher watchman = new TestWatcher() {

@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -27,7 +27,7 @@ public class CatchExceptionExampleDUnitTest implements Serializable {
   private static final String REMOTE_THROW_EXCEPTION_MESSAGE = "Throwing remoteThrowException";
 
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
   
   @Test
   public void testRemoteInvocationWithException() {

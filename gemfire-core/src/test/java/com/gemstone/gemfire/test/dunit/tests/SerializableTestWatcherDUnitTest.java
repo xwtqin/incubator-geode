@@ -12,7 +12,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.Description;
 
 import com.gemstone.gemfire.internal.lang.reflect.ReflectionUtils;
-import com.gemstone.gemfire.test.dunit.DUnitTestRule;
+import com.gemstone.gemfire.test.dunit.DistributedTestRule;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
@@ -23,7 +23,7 @@ import com.gemstone.gemfire.test.junit.rules.SerializableTestWatcher;
 public class SerializableTestWatcherDUnitTest implements Serializable {
 
   @Rule
-  public final DUnitTestRule dunitTestRule = new DUnitTestRule();
+  public final DistributedTestRule dunitTestRule = new DistributedTestRule();
   
   @Rule
   public final SerializableTestWatcher watchman = new SerializableTestWatcher() {
