@@ -1,9 +1,18 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.test.dunit.standalone;
 
@@ -33,12 +42,13 @@ import com.gemstone.gemfire.internal.logging.LogService;
  *
  */
 public class ProcessManager {
-  
   private int namingPort;
   private Map<Integer, ProcessHolder> processes = new HashMap<Integer, ProcessHolder>();
   private File log4jConfig;
   private int pendingVMs;
   private Registry registry;
+  private int debugPort = Integer.getInteger("dunit.debug.basePort", 0);
+  private int suspendVM = Integer.getInteger("dunit.debug.suspendVM", -100);
 
   public ProcessManager(int namingPort, Registry registry) {
     this.namingPort = namingPort;
@@ -86,10 +96,18 @@ public class ProcessManager {
   public synchronized void killVMs() {
     for(ProcessHolder process : processes.values()) {
       if(process != null) {
-        //TODO - stop it gracefully? Why bother
         process.kill();
       }
     }
+  }
+  
+  public synchronized boolean hasLiveVMs() {
+    for(ProcessHolder process : processes.values()) {
+      if(process != null && process.isAlive()) {
+        return true;
+      }
+    }
+    return false;
   }
   
   public synchronized void bounce(int vmNum) {
@@ -114,8 +132,12 @@ public class ProcessManager {
         try {
           String line = reader.readLine();
           while(line != null) {
+            if (line.length() == 0) {
+              out.println();
+            } else {
             out.print(vmName);
             out.println(line);
+            }
             line = reader.readLine();
           }
         } catch(Exception e) {
@@ -136,6 +158,15 @@ public class ProcessManager {
     String classPath = System.getProperty("java.class.path");
     //String tmpDir = System.getProperty("java.io.tmpdir");
     String agent = getAgentString();
+
+    String jdkDebug = "";
+    if (debugPort > 0) {
+      jdkDebug += ",address=" + debugPort;
+      debugPort++;
+    }
+
+    String jdkSuspend = vmNum == suspendVM ? "y" : "n";
+
     return new String[] {
       cmd, "-classpath", classPath,
       "-D" + DUnitLauncher.RMI_PORT_PARAM + "=" + namingPort,
@@ -143,13 +174,11 @@ public class ProcessManager {
       "-D" + DUnitLauncher.WORKSPACE_DIR_PARAM + "=" + new File(".").getAbsolutePath(),
       "-DlogLevel=" + DUnitLauncher.LOG_LEVEL,
       "-Djava.library.path=" + System.getProperty("java.library.path"),
-      "-Xrunjdwp:transport=dt_socket,server=y,suspend=n",
+      "-Xrunjdwp:transport=dt_socket,server=y,suspend=" + jdkSuspend + jdkDebug,
       "-XX:+HeapDumpOnOutOfMemoryError",
       "-Xmx512m",
-      "-XX:MaxPermSize=256M",
       "-Dgemfire.DEFAULT_MAX_OPLOG_SIZE=10",
       "-Dgemfire.disallowMcastDefaults=true",
-      "-XX:MaxPermSize=256M",
       "-ea",
       agent,
       ChildVM.class.getName()
@@ -216,6 +245,10 @@ public class ProcessManager {
 
     public boolean isKilled() {
       return killed;
+    }
+    
+    public boolean isAlive() {
+      return !killed && process.isAlive();
     }
   }
 

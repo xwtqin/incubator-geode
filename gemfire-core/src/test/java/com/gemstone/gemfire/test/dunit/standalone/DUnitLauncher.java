@@ -1,11 +1,22 @@
-/*=========================================================================
- * Copyright (c) 2002-2014 Pivotal Software, Inc. All Rights Reserved.
- * This product is protected by U.S. and international copyright
- * and intellectual property laws. Pivotal products are covered by
- * more patents listed at http://www.pivotal.io/patents.
- *=========================================================================
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.gemstone.gemfire.test.dunit.standalone;
+
+import hydra.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,6 +73,9 @@ import com.gemstone.gemfire.test.dunit.VM;
  */
 public class DUnitLauncher {
 
+  /** change this to use a different log level in unit tests */
+  public static final String LOG_LEVEL = System.getProperty("logLevel", "info");
+  
   static int locatorPort;
 
   private static final int NUM_VMS = 4;
@@ -73,7 +87,6 @@ public class DUnitLauncher {
   private static File DUNIT_SUSPECT_FILE;
 
   public static final String DUNIT_DIR = "dunit";
-  public static final String LOG_LEVEL = System.getProperty("logLevel", "config");
   public static final String WORKSPACE_DIR_PARAM = "WORKSPACE_DIR";
   public static final boolean LOCATOR_LOG_TO_DISK = Boolean.getBoolean("locatorLogToDisk");
 
@@ -82,6 +95,8 @@ public class DUnitLauncher {
   static final String VM_NUM_PARAM = "gemfire.DUnitLauncher.VM_NUM";
 
   private static final String LAUNCHED_PROPERTY = "gemfire.DUnitLauncher.LAUNCHED";
+
+  private static Master master;
 
   private DUnitLauncher() {
   }
@@ -92,7 +107,7 @@ public class DUnitLauncher {
       //if there is registered test configuration object.
       Class<?> clazz = Class.forName("hydra.TestConfig");
       Method getInstance = clazz.getMethod("getInstance", new Class[0]);
-      getInstance.invoke(null, null);
+      getInstance.invoke(null);
       return true;
     } catch (Exception e) {
       return false;
@@ -131,7 +146,7 @@ public class DUnitLauncher {
   
   private static void launch() throws URISyntaxException, AlreadyBoundException, IOException, InterruptedException, NotBoundException  {
 //  initialize the log writer that hydra uses
-    //Log.createLogWriter( "dunit-master", LOG_LEVEL );
+    Log.createLogWriter( "dunit-master", LOG_LEVEL );
 
     DUNIT_SUSPECT_FILE = new File(SUSPECT_FILENAME);
     DUNIT_SUSPECT_FILE.delete();
@@ -144,11 +159,35 @@ public class DUnitLauncher {
     Registry registry = LocateRegistry.createRegistry(namingPort);
 
     final ProcessManager processManager = new ProcessManager(namingPort, registry);
-    Master master = new Master(registry, processManager);
+    master = new Master(registry, processManager);
     registry.bind(MASTER_PARAM, master);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
+//        System.out.println("shutting down DUnit JVMs");
+//        for (int i=0; i<NUM_VMS; i++) {
+//          try {
+//            processManager.getStub(i).shutDownVM();
+//          } catch (Exception e) {
+//            System.out.println("exception shutting down vm_"+i+": " + e);
+//          }
+//        }
+//        // TODO - hasLiveVMs always returns true
+//        System.out.print("waiting for JVMs to exit");
+//        long giveUp = System.currentTimeMillis() + 5000;
+//        while (giveUp > System.currentTimeMillis()) {
+//          if (!processManager.hasLiveVMs()) {
+//            return;
+//          }
+//          System.out.print(".");
+//          System.out.flush();
+//          try {
+//            Thread.sleep(1000);
+//          } catch (InterruptedException e) {
+//            break;
+//          }
+//        }
+//        System.out.println("\nkilling any remaining JVMs");
         processManager.killVMs();
       }
     });
@@ -222,7 +261,16 @@ public class DUnitLauncher {
         //Disable the shared configuration on this locator.
         //Shared configuration tests create their own locator
         p.setProperty("enable-cluster-configuration", "false");
+        //Tell the locator it's the first in the system for
+        //faster boot-up
+        
+        System.setProperty(GMSJoinLeave.BYPASS_DISCOVERY_PROPERTY, "true");
+        try {
         Locator.startLocatorAndDS(locatorPort, locatorLogFile, p);
+        } finally {
+          System.getProperties().remove(GMSJoinLeave.BYPASS_DISCOVERY_PROPERTY);
+        }
+        
         return null;
       }
     }, "call");
