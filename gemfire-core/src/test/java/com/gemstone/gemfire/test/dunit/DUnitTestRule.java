@@ -450,7 +450,7 @@ public class DUnitTestRule implements SerializableTestRule {
    */
   public static InternalDistributedSystem getMcastSystem() {
     Properties props = getDistributedSystemProperties();
-    int port = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
+    int port = AvailablePort.getRandomAvailablePort(AvailablePort.MULTICAST);
     props.put(DistributionConfig.MCAST_PORT_NAME, ""+port);
     props.put(DistributionConfig.MCAST_TTL_NAME, "0");
     props.put(DistributionConfig.LOCATORS_NAME, "");

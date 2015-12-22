@@ -402,7 +402,7 @@ public abstract class DistributedTestCase implements java.io.Serializable {
    */
   public final InternalDistributedSystem getMcastSystem() {
     Properties props = this.getDistributedSystemProperties();
-    int port = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
+    int port = AvailablePort.getRandomAvailablePort(AvailablePort.MULTICAST);
     props.put(DistributionConfig.MCAST_PORT_NAME, ""+port);
     props.put(DistributionConfig.MCAST_TTL_NAME, "0");
     props.put(DistributionConfig.LOCATORS_NAME, "");
