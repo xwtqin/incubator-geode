@@ -52,6 +52,7 @@ import batterytest.greplogs.ExpectedStrings;
 import batterytest.greplogs.LogConsumer;
 
 import com.gemstone.gemfire.distributed.Locator;
+import com.gemstone.gemfire.distributed.internal.membership.gms.membership.GMSJoinLeave;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
