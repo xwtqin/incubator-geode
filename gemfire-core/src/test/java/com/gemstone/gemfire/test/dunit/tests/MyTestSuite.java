@@ -15,7 +15,7 @@ import com.gemstone.gemfire.test.examples.CatchExceptionExampleDUnitTest;
   DistributedRestoreSystemPropertiesDUnitTest.class,
   DistributedTestNameDUnitTest.class,
   DistributedTestNameWithRuleDUnitTest.class,
-  DUnitTestRuleChainDUnitTest.class,
+  DistributedTestRuleChainDUnitTest.class,
   SerializableTemporaryFolderDUnitTest.class,
   SerializableTestNameDUnitTest.class,
   SerializableTestWatcherDUnitTest.class,

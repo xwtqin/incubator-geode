@@ -12,5 +12,5 @@ import org.junit.runners.Suite;
 /**
  * Suite of tests for the test.dunit DUnit Test framework.
  */
-public class DUnitTestSuite {
+public class DistributedTestSuite {
 }

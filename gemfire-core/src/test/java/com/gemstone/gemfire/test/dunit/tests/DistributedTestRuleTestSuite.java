@@ -24,5 +24,5 @@ import com.gemstone.gemfire.test.examples.CatchExceptionExampleDUnitTest;
 //  HostedLocatorsDUnitTest.class,
 //  OutOfOffHeapMemoryDUnitTest.class,
 })
-public class DUnitTestRuleTestSuite {
+public class DistributedTestRuleTestSuite {
 }

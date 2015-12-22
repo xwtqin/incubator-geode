@@ -18,13 +18,13 @@ import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import com.gemstone.gemfire.test.junit.rules.SerializableExternalResource;
 
 /**
- * Distributed tests for chaining of rules to DUnitTestRule
+ * Distributed tests for chaining of rules to DistributedTestRule
  * 
  * @author Kirk Lund
  */
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
-public class DUnitTestRuleChainDUnitTest implements Serializable {
+public class DistributedTestRuleChainDUnitTest implements Serializable {
 
   private static enum Expected { 
     BEFORE_ONE_BEFORE, BEFORE_TWO_BEFORE, AFTER_ONE_BEFORE, AFTER_TWO_BEFORE, 
