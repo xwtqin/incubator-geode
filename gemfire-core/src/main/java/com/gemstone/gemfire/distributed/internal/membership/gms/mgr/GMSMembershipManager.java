@@ -66,6 +66,7 @@ import com.gemstone.gemfire.distributed.internal.StartupMessage;
 import com.gemstone.gemfire.distributed.internal.ThrottlingMemLinkedQueueWithDMStats;
 import com.gemstone.gemfire.distributed.internal.direct.DirectChannel;
 import com.gemstone.gemfire.distributed.internal.direct.DirectChannelListener;
+import com.gemstone.gemfire.distributed.internal.direct.ShunnedMemberException;
 import com.gemstone.gemfire.distributed.internal.membership.DistributedMembershipListener;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
@@ -1765,7 +1766,7 @@ public class GMSMembershipManager implements MembershipManager, Manager
         InternalDistributedMember member = (InternalDistributedMember)it_mem.next();
         Throwable th = (Throwable)it_causes.next();
         
-        if (!view.contains(member)) {
+        if (!view.contains(member) || (th instanceof ShunnedMemberException)) {
           continue;
         }
         logger.fatal(LocalizedMessage.create(
@@ -2159,14 +2160,18 @@ public class GMSMembershipManager implements MembershipManager, Manager
     // the iterator.
     Set oldMembers = new HashSet(shunnedMembers.entrySet());
     
+    Set removedMembers = new HashSet();
+    
     Iterator it = oldMembers.iterator();
     while (it.hasNext()) {
       Map.Entry e = (Map.Entry)it.next();
       
       // Key is the member.  Value is the time to remove it.
       long ll = ((Long)e.getValue()).longValue(); 
-      if (ll >= deathTime)
+      if (ll >= deathTime) {
         continue; // too new.
+      }
+      
       InternalDistributedMember mm = (InternalDistributedMember)e.getKey();
 
       if (latestView.contains(mm)) {
@@ -2178,10 +2183,21 @@ public class GMSMembershipManager implements MembershipManager, Manager
         // will depart on its own accord, but we force the issue here.)
         destroyMember(mm, true, "shunned but never disconnected");
       }
-      if (logger.isDebugEnabled())
+      if (logger.isDebugEnabled()) {
         logger.debug("Membership: finally removed shunned member entry <{}>", mm);
-    } // while
+      }
+      
+      removedMembers.add(mm);
+    }
     
+    // removed timed-out entries from the shunned-members collections
+    if (removedMembers.size() > 0) {
+      it = removedMembers.iterator();
+      while (it.hasNext()) {
+        InternalDistributedMember idm = (InternalDistributedMember)it.next();
+        endShun(idm);
+      }
+    }
   }
   
   
