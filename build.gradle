@@ -153,10 +153,13 @@ subprojects {
   // Here we want to disable all transitive dependencies on external artifacts.  This
   // allows us to lock down library versions.  However, we want project dependencies to
   // be transitive such that the libraries of a dependent project are automatically included.
+  // This restriction is also relaxed for test dependencies.
   configurations.all {
-    dependencies.all { dep ->
-      if (dep instanceof ModuleDependency && !(dep instanceof ProjectDependency)) {
-        dep.transitive = false
+    if (it.name != 'testCompile' && it.name != 'testRuntime') {
+      dependencies.all { dep ->
+        if (dep instanceof ModuleDependency && !(dep instanceof ProjectDependency)) {
+          dep.transitive = false
+        }
       }
     }
   }
@@ -475,6 +478,21 @@ subprojects {
   task precheckin (dependsOn: [ build, integrationTest, distributedTest ]) {
     description 'Run this task before checking in code to validate changes. This task combines the following tasks: build, integrationTest, and distributedTest'
   }
+
+  task modulesDist(dependsOn: [ ':extensions/gemfire-modules-assembly:dist' ])
+
+  task modulesTest(dependsOn: [
+      ':extensions/gemfire-modules:test',
+      ':extensions/gemfire-modules:test',
+      ':extensions/gemfire-modules-tomcat7:test',
+      ':extensions/gemfire-modules-session:test',
+      ':extensions/gemfire-modules-hibernate:test',
+      ':extensions/gemfire-modules:integrationTest',
+      ':extensions/gemfire-modules:integrationTest',
+      ':extensions/gemfire-modules-tomcat7:integrationTest',
+      ':extensions/gemfire-modules-session:integrationTest',
+      ':extensions/gemfire-modules-hibernate:integrationTest',
+  ])
 
   check.dependsOn checkMissedTests, rat
   combineReports.mustRunAfter check, test, integrationTest, distributedTest, checkMissedTests
