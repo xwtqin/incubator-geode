@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.experimental.categories.Category;
 import org.springframework.data.gemfire.support.GemfireCache;
 
 import junit.framework.TestCase;
@@ -87,6 +88,7 @@ import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
  * This class is the superclass of all distributed unit tests.
@@ -100,6 +102,7 @@ import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
  *
  * @author David Whitlock
  */
+@Category(DistributedTest.class)
 @SuppressWarnings("serial")
 public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
   private static final Logger logger = LogService.getLogger();
