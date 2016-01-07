@@ -96,6 +96,7 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
    * @throws Exception
    */
   public void testCreateCacheWithBadCompressor() throws Exception {
+    addExpectedException("Unable to load class BAD_COMPRESSOR");
     File cacheXml = createCacheXml(BAD_COMPRESSOR);
     assertFalse(createCacheOnVM(getVM(0),cacheXml.getCanonicalPath()));
     cacheXml.delete();
