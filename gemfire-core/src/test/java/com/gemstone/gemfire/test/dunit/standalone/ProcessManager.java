@@ -181,7 +181,7 @@ public class ProcessManager {
       "-Dgemfire.disallowMcastDefaults=true",
       "-ea",
       agent,
-      "dunit.standalone.ChildVM"
+      ChildVM.class.getName()
     };
   }
   

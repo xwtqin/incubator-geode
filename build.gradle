@@ -350,6 +350,9 @@ subprojects {
       includeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.PerformanceTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.HydraTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.ContainerTest'
     }    
     
     // run each test in its own vm to avoid interference issues if a test doesn't clean up
@@ -370,6 +373,8 @@ subprojects {
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.PerformanceTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.HydraTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.ContainerTest'
     }    
 
     beforeTest { descriptor ->
@@ -384,6 +389,9 @@ subprojects {
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
       includeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.PerformanceTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.HydraTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.ContainerTest'
     }    
 
     forkEvery 1
@@ -403,10 +411,14 @@ subprojects {
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.UnitTest'
       excludeCategories 'com.gemstone.gemfire.test.junit.categories.IntegrationTest'
       includeCategories 'com.gemstone.gemfire.test.junit.categories.DistributedTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.PerformanceTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.HydraTest'
+      excludeCategories 'com.gemstone.gemfire.test.junit.categories.ContainerTest'
     }    
     
     //I'm hoping this might deal with SOME OOMEs I've seen
     forkEvery 30
+
   }
 
   // By proving a file with an arbitrary list of test classes, we can select only those
