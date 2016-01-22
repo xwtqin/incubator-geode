@@ -20,6 +20,9 @@ import com.gemstone.gemfire.distributed.internal.*;
 import dunit.*;
 import java.util.*;
 import com.gemstone.gemfire.distributed.internal.membership.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
  * Tests the functionality of the {@link DistributedMember} class.

@@ -24,11 +24,14 @@ import com.gemstone.gemfire.distributed.*;
 import com.gemstone.gemfire.distributed.internal.*;
 import com.gemstone.gemfire.distributed.internal.membership.*;
 import com.gemstone.gemfire.internal.cache.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
 
 import java.util.concurrent.locks.Lock;
 
 import dunit.*;
-import dunit.DistributedTestCase.WaitCriterion;
 
 import java.io.*;
 import java.util.*;

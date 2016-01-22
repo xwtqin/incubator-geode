@@ -34,6 +34,8 @@ import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.cache30.*;
 import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.internal.cache.Token;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 
 public class StreamingPartitionOperationOneDUnitTest extends CacheTestCase {

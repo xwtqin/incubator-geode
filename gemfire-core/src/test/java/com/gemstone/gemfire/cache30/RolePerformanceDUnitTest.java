@@ -18,6 +18,9 @@ package com.gemstone.gemfire.cache30;
 
 import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.distributed.internal.*;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+
 import dunit.*;
 import java.util.*;
 

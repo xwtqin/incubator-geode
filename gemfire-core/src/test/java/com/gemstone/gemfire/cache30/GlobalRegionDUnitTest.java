@@ -20,6 +20,12 @@ import java.util.*;
 
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import dunit.*;

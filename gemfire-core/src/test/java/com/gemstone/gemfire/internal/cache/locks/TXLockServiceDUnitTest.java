@@ -17,6 +17,9 @@
 package com.gemstone.gemfire.internal.cache.locks;
 
 import com.gemstone.gemfire.internal.cache.TXRegionLockRequestImpl;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.cache.CommitConflictException;
 import com.gemstone.gemfire.distributed.*;
 import com.gemstone.gemfire.distributed.internal.*;

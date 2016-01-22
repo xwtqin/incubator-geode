@@ -45,6 +45,10 @@ import com.gemstone.gemfire.internal.OSProcess;
 //import javax.naming.NoInitialContextException;
 //import javax.transaction.SystemException;
 import com.gemstone.gemfire.internal.jta.*;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
 import org.junit.FixMethodOrder;

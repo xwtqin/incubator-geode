@@ -20,6 +20,9 @@ import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.util.*;
 import com.gemstone.gemfire.distributed.*;
 import com.gemstone.gemfire.distributed.internal.*;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
+
 import java.util.*;
 import dunit.*;
 /**

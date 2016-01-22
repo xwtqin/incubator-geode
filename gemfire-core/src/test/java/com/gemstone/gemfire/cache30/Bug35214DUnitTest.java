@@ -20,6 +20,11 @@ import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.util.*;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
+
 import dunit.*;
 /**
  * Make sure entry expiration does not happen during gii for bug 35214

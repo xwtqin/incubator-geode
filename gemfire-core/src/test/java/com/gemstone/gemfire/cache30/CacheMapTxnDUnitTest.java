@@ -35,6 +35,10 @@ import com.gemstone.gemfire.cache.*;
 import java.util.*;
 
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class CacheMapTxnDUnitTest extends DistributedTestCase{
     

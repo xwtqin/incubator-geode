@@ -22,6 +22,8 @@ import java.util.*;
 
 import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gemfire.distributed.internal.membership.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 
 /**

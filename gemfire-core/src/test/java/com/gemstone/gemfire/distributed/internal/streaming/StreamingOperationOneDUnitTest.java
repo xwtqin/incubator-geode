@@ -30,6 +30,9 @@ import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.internal.*;
 import com.gemstone.gemfire.distributed.internal.membership.*;
 import com.gemstone.gemfire.internal.cache.Token;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 
 public class StreamingOperationOneDUnitTest extends DistributedTestCase {

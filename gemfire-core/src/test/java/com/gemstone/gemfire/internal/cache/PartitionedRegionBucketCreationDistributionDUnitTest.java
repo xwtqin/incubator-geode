@@ -30,6 +30,11 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache30.*;
 import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisitor;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 import dunit.*;
 

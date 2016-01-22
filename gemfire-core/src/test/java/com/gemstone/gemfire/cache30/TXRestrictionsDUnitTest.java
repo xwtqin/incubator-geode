@@ -34,6 +34,7 @@ import com.gemstone.gemfire.cache.*;
 import java.io.File;
 import dunit.*;
 import com.gemstone.gemfire.internal.OSProcess;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 public class TXRestrictionsDUnitTest extends CacheTestCase {
   public TXRestrictionsDUnitTest(String name) {

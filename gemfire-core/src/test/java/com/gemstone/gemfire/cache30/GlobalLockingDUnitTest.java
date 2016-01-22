@@ -17,6 +17,9 @@
 package com.gemstone.gemfire.cache30;
 
 import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
+
 import java.util.concurrent.locks.Lock;
 import dunit.*;
 

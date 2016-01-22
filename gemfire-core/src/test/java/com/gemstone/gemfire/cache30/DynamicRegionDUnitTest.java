@@ -18,6 +18,8 @@ package com.gemstone.gemfire.cache30;
 
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.*;
 
 import com.gemstone.gemfire.internal.OSProcess;

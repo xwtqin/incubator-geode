@@ -25,7 +25,7 @@ import com.gemstone.gemfire.cache.*;
 /**
  * Tests the functionality of a {@link Scope#LOCAL locally scoped}
  * cache {@link Region} including its callbacks.  Note that even
- * though this test is a {@link dunit.DistributedTestCase}, it does
+ * though this test is a {@link com.gemstone.gemfire.test.dunit.DistributedTestCase}, it does
  * not perform any distribution.
  *
  * @author David Whitlock

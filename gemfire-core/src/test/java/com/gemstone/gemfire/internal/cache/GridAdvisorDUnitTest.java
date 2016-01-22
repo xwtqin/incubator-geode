@@ -21,6 +21,10 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.*;
 import com.gemstone.gemfire.distributed.internal.*;
 import com.gemstone.gemfire.internal.AvailablePort.Keeper;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 
 import dunit.*;

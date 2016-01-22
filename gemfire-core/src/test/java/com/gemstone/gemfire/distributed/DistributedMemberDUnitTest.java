@@ -27,6 +27,11 @@ import java.util.*;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.distributed.internal.membership.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 import junit.framework.AssertionFailedError;

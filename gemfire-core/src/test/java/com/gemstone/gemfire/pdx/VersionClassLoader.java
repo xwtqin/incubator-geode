@@ -24,6 +24,7 @@ import com.gemstone.gemfire.InternalGemFireException;
 import com.gemstone.gemfire.SerializationException;
 import com.gemstone.gemfire.cache.client.ServerOperationException;
 import com.gemstone.gemfire.pdx.PdxInstance;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.util.test.TestUtil;
 
 import dunit.*;

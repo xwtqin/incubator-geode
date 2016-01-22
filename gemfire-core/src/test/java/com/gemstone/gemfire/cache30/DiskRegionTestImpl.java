@@ -21,6 +21,8 @@ import dunit.*;
 import java.util.*;
 import java.io.Serializable;
 import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * An instance of this class is delegated to by test classes that test

@@ -31,8 +31,7 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.ResourceManagerCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.SerializerCreation;
-
-import dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 import java.io.DataInput;
 import java.io.DataOutput;

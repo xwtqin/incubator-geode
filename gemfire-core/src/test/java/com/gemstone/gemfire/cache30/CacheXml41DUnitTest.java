@@ -19,10 +19,10 @@ package com.gemstone.gemfire.cache30;
 import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.internal.cache.xmlcache.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 import java.io.*;
 
-import dunit.DistributedTestCase;
 import org.xml.sax.SAXException;
 
 /**
