@@ -32,8 +32,6 @@ import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.*;
-
 /**
  * Tests configured and badly configured cache.xml files with regards to compression.
  * 

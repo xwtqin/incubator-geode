@@ -19,8 +19,11 @@
  *
  * Created on September 15, 2005, 5:51 PM
  */
-
 package com.gemstone.gemfire.internal.cache;
+
+import java.util.ArrayList;
+import java.util.Properties;
+
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
@@ -37,10 +40,6 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.*;
-
-import java.util.ArrayList;
-import java.util.Properties;
 /**
  * Adapted from RemoveAllDAckDUnitTest
  * @author darrel

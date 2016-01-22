@@ -16,10 +16,7 @@
  */
 package com.gemstone.gemfire.test.dunit.tests;
 
-import dunit.*;
-
 import java.io.Serializable;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
