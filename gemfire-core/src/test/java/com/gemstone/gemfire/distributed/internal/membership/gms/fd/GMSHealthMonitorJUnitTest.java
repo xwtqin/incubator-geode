@@ -16,15 +16,9 @@
  */
 package com.gemstone.gemfire.distributed.internal.membership.gms.fd;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -71,9 +65,9 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.messages.Suspect
 import com.gemstone.gemfire.distributed.internal.membership.gms.messages.SuspectRequest;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.Version;
-import com.gemstone.gemfire.test.junit.categories.UnitTest;
+import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
-@Category(UnitTest.class)
+@Category(IntegrationTest.class)
 public class GMSHealthMonitorJUnitTest {
 
   private Services services;
@@ -156,7 +150,7 @@ public class GMSHealthMonitorJUnitTest {
     when(messenger.getMemberID()).thenReturn(mbr);
     gmsHealthMonitor.started();
     
-    NetView v = new NetView(mbr, 1, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mbr, 1, mockMembers);
 
     gmsHealthMonitor.processMessage(new HeartbeatRequestMessage(mbr, 1));
     verify(messenger, atLeastOnce()).send(any(HeartbeatMessage.class));
@@ -170,7 +164,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testHMNextNeighborVerify() throws IOException {
 
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
     gmsHealthMonitor.started();
@@ -184,7 +178,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testHMNextNeighborAfterTimeout() throws Exception {
     System.out.println("testHMNextNeighborAfterTimeout starting");
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
 //    System.out.printf("memberID is %s view is %s\n", mockMembers.get(3), v);
     
@@ -216,7 +210,7 @@ public class GMSHealthMonitorJUnitTest {
 
   @Test
   public void testHMNextNeighborBeforeTimeout() throws IOException {
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -245,7 +239,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testSuspectMembersCalledThroughMemberCheckThread() throws Exception {
     System.out.println("testSuspectMembersCalledThroughMemberCheckThread starting");
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -268,7 +262,7 @@ public class GMSHealthMonitorJUnitTest {
    */
   @Test
   public void testSuspectMembersNotCalledThroughPingThreadBeforeTimeout() {
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -292,7 +286,7 @@ public class GMSHealthMonitorJUnitTest {
    */
   @Test
   public void testSuspectMembersCalledThroughSuspectThread() throws Exception {
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
     
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -314,7 +308,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testSuspectMembersNotCalledThroughSuspectThreadBeforeTimeout() {
 
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -340,7 +334,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testRemoveMemberCalled() throws Exception {
     System.out.println("testRemoveMemberCalled starting");
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(0)); // coordinator and local member
@@ -373,7 +367,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testRemoveMemberNotCalledBeforeTimeout() {
     System.out.println("testRemoveMemberNotCalledBeforeTimeout starting");
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(0)); // coordinator and local member
@@ -410,7 +404,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testRemoveMemberCalledAfterDoingFinalCheckOnCoordinator() throws Exception {
 
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // preferred coordinators are 0 and 1
     when(messenger.getMemberID()).thenReturn(mockMembers.get(1));// next preferred coordinator
@@ -472,7 +466,7 @@ public class GMSHealthMonitorJUnitTest {
   @Test
   public void testShutdown() {
 
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
 
     // 3rd is current member
     when(messenger.getMemberID()).thenReturn(mockMembers.get(3));
@@ -584,7 +578,7 @@ public class GMSHealthMonitorJUnitTest {
   
   @Test
   public void testBeSickAndPlayDead() throws Exception {
-    NetView v = new NetView(mockMembers.get(0), 2, mockMembers, new HashSet<InternalDistributedMember>(), new HashSet<InternalDistributedMember>());
+    NetView v = new NetView(mockMembers.get(0), 2, mockMembers);
     gmsHealthMonitor.installView(v);
     gmsHealthMonitor.beSick();
     
