@@ -42,9 +42,11 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
 import com.gemstone.gemfire.internal.jta.JTAUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -352,7 +354,7 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
     }
   }//end of delRows
 
-  public void tearDown2() throws java.lang.Exception {
+  public void tearDownBeforeDisconnect() throws java.lang.Exception {
     VM vm0 = Host.getHost(0).getVM(0);
     //get tableName to pass to destroyTable
     String tableName = CacheUtils.getTableName();
@@ -422,9 +424,9 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
     VM vm0 = Host.getHost(0).getVM(0);
     AsyncInvocation asyncObj1 = vm0.invokeAsync(
         TxnManagerMultiThreadDUnitTest.class, "callCommitThreads");
-    DistributedTestCase.join(asyncObj1, 30 * 1000, getLogWriter());
+    Threads.join(asyncObj1, 30 * 1000);
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     vm0.invoke(TxnManagerMultiThreadDUnitTest.class, "getNumberOfRows");
   }//end of testAllCommit
@@ -455,9 +457,9 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
     VM vm0 = Host.getHost(0).getVM(0);
     AsyncInvocation asyncObj1 = vm0.invokeAsync(
         TxnManagerMultiThreadDUnitTest.class, "callCommitandRollbackThreads");
-    DistributedTestCase.join(asyncObj1, 30 * 1000, getLogWriter());
+    Threads.join(asyncObj1, 30 * 1000);
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     vm0.invoke(TxnManagerMultiThreadDUnitTest.class, "getNumberOfRows");
   }//end of test3Commit2Rollback

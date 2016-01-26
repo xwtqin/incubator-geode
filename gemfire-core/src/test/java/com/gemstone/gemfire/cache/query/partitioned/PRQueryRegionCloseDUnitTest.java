@@ -32,10 +32,12 @@ import java.util.Random;
 
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 
 public class PRQueryRegionCloseDUnitTest extends PartitionedRegionDUnitTestCase
@@ -174,10 +176,10 @@ public class PRQueryRegionCloseDUnitTest extends PartitionedRegionDUnitTestCase
       if( 0 != k ) {
       ((VM)(vmList.get(k))).invoke(PRQHelp.getCacheSerializableRunnableForRegionClose(
           name, redundancy));
-      pause(threadSleepTime);
+      Wait.pause(threadSleepTime);
       }
     }
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000);
 
     if (async0.exceptionOccurred()) {
       // for now, certain exceptions when a region is closed are acceptable
@@ -193,7 +195,7 @@ public class PRQueryRegionCloseDUnitTest extends PartitionedRegionDUnitTestCase
       } while (t != null);
       
       if (!isForceReattempt) {
-        fail("Unexpected exception during query", async0.getException());
+        Assert.fail("Unexpected exception during query", async0.getException());
       }
     }
 

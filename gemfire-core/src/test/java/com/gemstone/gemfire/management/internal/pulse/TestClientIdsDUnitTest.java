@@ -37,12 +37,15 @@ import com.gemstone.gemfire.management.CacheServerMXBean;
 import com.gemstone.gemfire.management.MBeanUtil;
 import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.management.internal.cli.CliUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing client IDs
@@ -86,8 +89,8 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
     client2 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
 
     helper.closeCache(managingNode);
     helper.closeCache(server);
@@ -106,8 +109,8 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
     helper.startManagingNode(managingNode);
     int port = (Integer) createServerCache(server);
     DistributedMember serverMember = helper.getMember(server);
-    createClientCache(client, getServerHostName(server.getHost()), port);
-    createClientCache(client2, getServerHostName(server.getHost()), port);
+    createClientCache(client, NetworkSupport.getServerHostName(server.getHost()), port);
+    createClientCache(client2, NetworkSupport.getServerHostName(server.getHost()), port);
     put(client);
     put(client2);
     verifyClientIds(managingNode, serverMember, port);
@@ -240,7 +243,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
               return "wait for getNumOfClients bean to complete and get results";
             }
           };
-          waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);          
+          Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);          
           
           //Now it is sure that bean would be available
           CacheServerMXBean bean = MBeanUtil.getCacheServerMbeanProxy(
@@ -291,7 +294,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
           }
           r1.clear();
         } catch (Exception ex) {
-          fail("failed while put", ex);
+          Assert.fail("failed while put", ex);
         }
       }
 

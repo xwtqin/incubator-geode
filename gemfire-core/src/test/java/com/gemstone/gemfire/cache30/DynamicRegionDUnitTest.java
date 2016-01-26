@@ -71,7 +71,7 @@ public class DynamicRegionDUnitTest extends CacheTestCase {
    * in a test.
    * </p>
    */
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     getLogWriter().info("Running tearDown in " + this);
     try {
       //Asif destroy dynamic regions at the end of the test
@@ -90,7 +90,7 @@ public class DynamicRegionDUnitTest extends CacheTestCase {
           dr.localDestroyRegion();      
       }
 
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     } 
     catch (VirtualMachineError e) {
       SystemFailure.initiateFailure(e);

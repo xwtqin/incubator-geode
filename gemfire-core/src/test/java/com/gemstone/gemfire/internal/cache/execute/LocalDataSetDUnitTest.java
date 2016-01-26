@@ -44,6 +44,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.functions.LocalDataSetFunction;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -204,7 +205,7 @@ public class LocalDataSetDUnitTest extends CacheTestCase {
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to ", e);
+      Assert.fail("Test failed due to ", e);
     }
   }
   private void registerFunctions() {
@@ -249,7 +250,7 @@ public class LocalDataSetDUnitTest extends CacheTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 

@@ -109,11 +109,11 @@ public class SnapshotByteArrayDUnitTest extends CacheTestCase {
     loadCache();
   }
   
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     if (snap.exists()) {
       snap.delete();
     }
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
   
   public void loadCache() throws Exception {

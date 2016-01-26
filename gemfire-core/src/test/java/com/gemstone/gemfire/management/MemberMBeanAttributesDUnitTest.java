@@ -62,8 +62,8 @@ public class MemberMBeanAttributesDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   protected void sample(VM vm1) {

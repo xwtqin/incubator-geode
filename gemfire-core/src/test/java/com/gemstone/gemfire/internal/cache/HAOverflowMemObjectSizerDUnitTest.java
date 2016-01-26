@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessageImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -93,8 +94,8 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     serverVM = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     serverVM.invoke(ConflationDUnitTest.class, "unsetIsSlowStart");
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");
@@ -193,7 +194,7 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class,
                   "createCacheClient",
                   new Object[] { port1, 
-                  getServerHostName(client.getHost()) });
+                  NetworkSupport.getServerHostName(client.getHost()) });
 
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "performPut",
         new Object[] { new Long(0L), new Long(100L) });
@@ -219,7 +220,7 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class,
                   "createCacheClient", 
                   new Object[] { port2,
-                  getServerHostName(client.getHost()) });
+                  NetworkSupport.getServerHostName(client.getHost()) });
 
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "performPut",
         new Object[] { new Long(101L), new Long(200L) });

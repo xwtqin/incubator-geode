@@ -48,8 +48,12 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This class tests the functionality of the {@link
@@ -172,7 +176,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
 
     try {
       InternalDistributedMember mbr = new InternalDistributedMember(
-        DistributedTestCase.getIPLiteral(), 12345);
+        NetworkSupport.getIPLiteral(), 12345);
 
       // first make sure we can't add this as a surprise member (bug #44566)
       
@@ -283,7 +287,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
         public void run() {
           props.setProperty(DistributionConfig.NAME_NAME, "sleeper");
           getSystem(props);
-          addExpectedException("elapsed while waiting for replies");
+          IgnoredException.addIgnoredException("elapsed while waiting for replies");
           RegionFactory rf = new RegionFactory();
           Region r = rf.setScope(Scope.DISTRIBUTED_ACK)
             .setDataPolicy(DataPolicy.REPLICATE)
@@ -397,7 +401,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
    */
   public void testKickOutSickMember() throws Exception {
     disconnectAllFromDS();
-    addExpectedException("10 seconds have elapsed while waiting");
+    IgnoredException.addIgnoredException("10 seconds have elapsed while waiting");
     Host host = Host.getHost(0);
 //    VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -460,7 +464,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
             }
           };
           // if this fails it means the sick member wasn't kicked out and something is wrong
-          DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 60 * 1000, 200, true);
           
           ev = new WaitCriterion() {
             public boolean done() {
@@ -470,7 +474,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
               return null;
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, false);
+          Wait.waitForCriterion(ev, 20 * 1000, 200, false);
           
           if (!myCache.isClosed()) {
             if (system.isConnected()) {
@@ -492,7 +496,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
               return "vm1's listener should have received afterRegionDestroyed notification";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 30 * 1000, 1000, true);
+          Wait.waitForCriterion(wc, 30 * 1000, 1000, true);
           
         }
       });
@@ -561,12 +565,12 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
     t.setDaemon(true);
     t.start();
     
-    pause(2000);
+    Wait.pause(2000);
 
     NetView newView = new NetView(v, v.getViewId()+1);
     ((Manager)mgr).installView(newView);
 
-    pause(2000);
+    Wait.pause(2000);
     
     synchronized(passed) {
       Assert.assertTrue(passed[0]);

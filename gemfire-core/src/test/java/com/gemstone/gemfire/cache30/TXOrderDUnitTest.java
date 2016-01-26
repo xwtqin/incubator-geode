@@ -400,7 +400,7 @@ public class TXOrderDUnitTest extends CacheTestCase {
     
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
-        getCache().createRegionFactory(RegionShortcut.REPLICATE).create(testName);
+        getCache().createRegionFactory(RegionShortcut.REPLICATE).create(getTestName());
         return null;
       }
     };
@@ -410,7 +410,7 @@ public class TXOrderDUnitTest extends CacheTestCase {
     
     vm1.invoke(new SerializableCallable() {
       public Object call() throws Exception {
-        Region r = getCache().getRegion(testName);
+        Region r = getCache().getRegion(getTestName());
         r.put("ikey", "value");
         getCache().getCacheTransactionManager().begin();
         r.put("key1", new byte[20]);
@@ -422,7 +422,7 @@ public class TXOrderDUnitTest extends CacheTestCase {
     
     vm2.invoke(new SerializableCallable() {
       public Object call() throws Exception {
-        Region r = getCache().getRegion(testName);
+        Region r = getCache().getRegion(getTestName());
         Object v = r.get("key1");
         assertNotNull(v);
         assertTrue(v instanceof byte[]);

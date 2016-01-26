@@ -37,7 +37,8 @@ import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Utility test class to get various proxies
@@ -66,7 +67,7 @@ public class MBeanUtil {
     final SystemManagementService service = (SystemManagementService) ManagementTestBase
         .getManagementService();
     final ObjectName memberMBeanName = service.getMemberMBeanName(member);
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       MemberMXBean bean = null;
 
       public String description() {
@@ -110,7 +111,7 @@ public class MBeanUtil {
     final ObjectName cacheServerMBeanName = service
         .getCacheServerMBeanName(port,member);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       CacheServerMXBean bean = null;
 
       public String description() {
@@ -159,7 +160,7 @@ public class MBeanUtil {
     final ObjectName lockServiceMBeanName = service.getLockServiceMBeanName(
         member, lockServiceName);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       LockServiceMXBean bean = null;
 
       public String description() {
@@ -208,7 +209,7 @@ public class MBeanUtil {
     final ObjectName regionMBeanName = service.getRegionMBeanName(
         member, regionPath);
     
-    DistributedTestCase.waitForCriterion(new WaitCriterion(){ 
+    Wait.waitForCriterion(new WaitCriterion(){ 
       
       RegionMXBean bean = null;
       public String description() {
@@ -258,7 +259,7 @@ public class MBeanUtil {
 
     final ObjectName senderMBeanName = service.getGatewaySenderMBeanName(member, gatwaySenderId);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       GatewaySenderMXBean bean = null;
 
@@ -310,7 +311,7 @@ public class MBeanUtil {
     final ObjectName queueMBeanName = service.getAsyncEventQueueMBeanName(
         member, queueId);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       AsyncEventQueueMXBean bean = null;
 
@@ -358,7 +359,7 @@ public class MBeanUtil {
 
     final ObjectName receiverMBeanName = service.getGatewayReceiverMBeanName(member);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       GatewayReceiverMXBean bean = null;
 
@@ -406,7 +407,7 @@ public class MBeanUtil {
     final ManagementService service = ManagementTestBase
         .getManagementService();
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       DistributedRegionMXBean bean = null;
 
@@ -444,7 +445,7 @@ public class MBeanUtil {
 
     final ManagementService service = ManagementTestBase
         .getManagementService();
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       DistributedLockServiceMXBean bean = null;
 
@@ -483,7 +484,7 @@ public class MBeanUtil {
 
     final ObjectName locatorMBeanName = service.getLocatorMBeanName(member);
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
 
       LocatorMXBean bean = null;
 

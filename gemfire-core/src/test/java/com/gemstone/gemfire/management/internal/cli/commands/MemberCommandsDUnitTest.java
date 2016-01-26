@@ -39,6 +39,7 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -79,8 +80,8 @@ public class MemberCommandsDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     disconnectFromDS();
     CliUtil.isGfshVM = true;
   }
@@ -180,7 +181,7 @@ public class MemberCommandsDUnitTest extends CacheTestCase {
     Properties props = new Properties();
 
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, getServerHostName(host) + "[" + locatorPort + "]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, NetworkSupport.getServerHostName(host) + "[" + locatorPort + "]");
     props.setProperty(DistributionConfig.LOG_LEVEL_NAME, "info");
     props.setProperty(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
     props.setProperty(DistributionConfig.ENABLE_TIME_STATISTICS_NAME, "true");

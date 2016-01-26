@@ -49,9 +49,12 @@ import com.gemstone.gemfire.management.membership.ClientMembershipListener;
 import com.gemstone.gemfire.management.membership.MembershipEvent;
 import com.gemstone.gemfire.management.membership.MembershipListener;
 import com.gemstone.gemfire.management.membership.UniversalMembershipListenerAdapter;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Tests the UniversalMembershipListenerAdapter.
@@ -87,8 +90,8 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     InternalClientMembership.unregisterAllListeners();
   }
   
@@ -196,7 +199,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
 
     // duplicate join
     InternalClientMembership.notifyJoined(memberA, true);
-    pause(BRIEF_PAUSE_MILLIS);
+    Wait.pause(BRIEF_PAUSE_MILLIS);
     assertFalse(fired[JOINED]);
     assertNull(member[JOINED]);
     assertNull(memberId[JOINED]);
@@ -217,7 +220,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
 
     // duplicate left
     InternalClientMembership.notifyLeft(memberA, true);
-    pause(BRIEF_PAUSE_MILLIS);
+    Wait.pause(BRIEF_PAUSE_MILLIS);
     assertFalse(fired[LEFT]);
     assertNull(member[LEFT]);
     assertNull(memberId[LEFT]);
@@ -418,7 +421,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
         getSystem(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
-        ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, false, -1, -1, null);
+        ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, false, -1, -1, null);
         createRegion(name, factory.create());
         assertNotNull(getRootRegion().getSubregion(name));
       }
@@ -878,7 +881,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
         assertFalse(getCache().isClosed());
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
-        ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, false, -1, -1, null);
+        ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, false, -1, -1, null);
         createRegion(name, factory.create());
         assertNotNull(getRootRegion().getSubregion(name));
       }
@@ -1342,7 +1345,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
     final long failMillis = System.currentTimeMillis() + JOIN_FAIL_MILLIS;
     boolean fullyConnected = false;
     while (!fullyConnected) {
-      pause(100);
+      Wait.pause(100);
       fullyConnected = pool.getConnectionCount() >= pool.getMinConnections();
       assertTrue("Client failed to create "
                  + pool.getMinConnections()
@@ -1649,7 +1652,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
           new LocalLogWriter(InternalLogWriter.ALL_LEVEL, System.out);
     bgexecLogger.info("<ExpectedException action=add>" + 
         "java.io.IOException" + "</ExpectedException>");
-    final ExpectedException ex = addExpectedException(
+    final IgnoredException ex = IgnoredException.addIgnoredException(
         ServerConnectivityException.class.getName());
     try {
       vm0.invoke(new SerializableRunnable("Disconnect Peer server") {
@@ -1888,7 +1891,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
     // create region which connects to bridge server
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.LOCAL);
-    ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, false, -1, -1, null);
+    ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, false, -1, -1, null);
     createRegion(name, factory.create());
     assertNotNull(getRootRegion().getSubregion(name));
 

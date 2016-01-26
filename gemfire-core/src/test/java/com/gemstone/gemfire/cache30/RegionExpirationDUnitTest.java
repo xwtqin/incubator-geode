@@ -23,9 +23,10 @@ import com.gemstone.gemfire.cache.ExpirationAttributes;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test Region expiration - both time-to-live and idle timeout.
@@ -124,7 +125,7 @@ public class RegionExpirationDUnitTest extends CacheTestCase {
         return "region never destroyed";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 30 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 30 * 1000, 1000, true);
   }
 
   public void testWhenBothTtlAndIdleAreSet() 

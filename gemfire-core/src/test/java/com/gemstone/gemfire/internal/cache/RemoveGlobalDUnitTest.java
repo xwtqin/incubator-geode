@@ -40,6 +40,7 @@ import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -71,7 +72,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
       vm1.invoke(RemoveGlobalDUnitTest.class, "createCache");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         vm0.invoke(RemoveGlobalDUnitTest.class, "resetFlag");
         vm1.invoke(RemoveGlobalDUnitTest.class, "resetFlag");
         vm0.invoke(RemoveGlobalDUnitTest.class, "closeCache");
@@ -150,7 +151,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
             }
         });
         
-        DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+        Threads.join(async, 30 * 1000);
         if(async.exceptionOccurred())
           throw async.getException();
         
@@ -223,7 +224,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
             }
         });
         
-        DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+        Threads.join(async, 30 * 1000);
         if(async.exceptionOccurred())
           throw async.getException();
         

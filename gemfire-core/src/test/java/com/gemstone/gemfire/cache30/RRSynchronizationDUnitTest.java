@@ -45,8 +45,11 @@ import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * concurrency-control tests for client/server
@@ -85,7 +88,7 @@ public class RRSynchronizationDUnitTest extends CacheTestCase {
    * distributed in the 7.0 release.
    */
   public void doRegionsSyncOnPeerLoss(TestType typeOfTest) {
-    addExpectedException("killing member's ds");
+    IgnoredException.addIgnoredException("killing member's ds");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -189,7 +192,7 @@ public class RRSynchronizationDUnitTest extends CacheTestCase {
     vm.invoke(new SerializableCallable("check that synchronization happened") {
       public Object call() throws Exception {
         final DistributedRegion dr = (DistributedRegion)TestRegion;
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           String waitingFor = "crashed member is still in membership view: " + crashedMember;
           boolean dumped = false;
           public boolean done() {

@@ -32,7 +32,9 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 import security.DummyCredentialGenerator;
 
@@ -81,7 +83,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
     client1 = host.getVM(2);
     client2 = host.getVM(3);
     
-    addExpectedException("Connection refused: connect");
+    IgnoredException.addIgnoredException("Connection refused: connect");
 
     server1.invoke(SecurityTestUtil.class, "registerExpectedExceptions",
         new Object[] { serverExpectedExceptions });
@@ -768,7 +770,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       server1.invoke(SecurityTestUtil.class, "closeCache");
 
       // Wait for failover to complete
-      pause(500);
+      Wait.pause(500);
 
       // Perform some create/update operations from client1
       client1.invoke(SecurityTestUtil.class, "doNPuts",
@@ -953,9 +955,9 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
   //////////////////////////////////////////////////////////////////////////////
   
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

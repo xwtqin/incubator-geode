@@ -53,11 +53,14 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.management.membership.ClientMembership;
 import com.gemstone.gemfire.management.membership.ClientMembershipEvent;
 import com.gemstone.gemfire.management.membership.ClientMembershipListener;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the ClientMembership API including ClientMembershipListener.
@@ -83,8 +86,8 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
     getSystem();
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     InternalClientMembership.unregisterAllListeners();
   }
 
@@ -104,7 +107,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
   }
   
   protected int getAcceptsInProgress() {
@@ -119,9 +122,9 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
       never arrives. 
    */
   public void testConnectionTimeout() throws Exception {
-    addExpectedException("failed accepting client connection");
+    IgnoredException.addIgnoredException("failed accepting client connection");
     final Host host = Host.getHost(0);
-    final String hostName = getServerHostName(host);
+    final String hostName = NetworkSupport.getServerHostName(host);
     final VM vm0 = host.getVM(0);
     System.setProperty(AcceptorImpl.ACCEPT_TIMEOUT_PROPERTY_NAME, "1000");
     try {
@@ -727,7 +730,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
    * crashes or departs gracefully, the client will detect this as a crash.
    */
   public void testClientMembershipEventsInClient() throws Exception {
-    addExpectedException("IOException");
+    IgnoredException.addIgnoredException("IOException");
     final boolean[] fired = new boolean[3];
     final DistributedMember[] member = new DistributedMember[3];
     final String[] memberId = new String[3];
@@ -845,12 +848,12 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
       getCache();
       AttributesFactory factory = new AttributesFactory();
       factory.setScope(Scope.LOCAL);
-      ClientServerTestCase.configureConnectionPool(factory, getServerHostName(Host.getHost(0)), ports, true, -1, -1, null);
+      ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(Host.getHost(0)), ports, true, -1, -1, null);
       createRegion(name, factory.create());
       assertNotNull(getRootRegion().getSubregion(name));
     }
     catch (CacheException ex) {
-      fail("While creating Region on Edge", ex);
+      Assert.fail("While creating Region on Edge", ex);
     }
     synchronized(listener) {
       if (!fired[JOINED] && !fired[CRASHED]) {
@@ -1060,7 +1063,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
         getSystem(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
-        ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, true, -1, 2, null);
+        ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, true, -1, 2, null);
         createRegion(name, factory.create());
         assertNotNull(getRootRegion().getSubregion(name));
       }
@@ -1210,7 +1213,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
    * timeout.
    */
   private void pauseForClientToJoin() {
-    pause(2000);
+    Wait.pause(2000);
   }
   
   /** 
@@ -1301,7 +1304,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
     final String name = this.getUniqueName();
     final int[] ports = new int[1];
     
-    addExpectedException("ConnectException");
+    IgnoredException.addIgnoredException("ConnectException");
 
     // create BridgeServer in controller vm...
     getLogWriter().info("[testGetConnectedClients] Create BridgeServer");
@@ -1333,7 +1336,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
         getSystem(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
-        Pool p = ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, true, -1, -1, null);
+        Pool p = ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, true, -1, -1, null);
         createRegion(name, factory.create());
         assertNotNull(getRootRegion().getSubregion(name));
         assertTrue(p.getServers().size() > 0);
@@ -1369,7 +1372,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
           return true;
         }
       };
-      waitForCriterion(wc, 30000, 100, false);
+      Wait.waitForCriterion(wc, 30000, 100, false);
     }
     
     Map connectedClients = InternalClientMembership.getConnectedClients(false);
@@ -1443,9 +1446,9 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
 
     for (int i = 0; i < ports.length; i++) {
       getLogWriter().info("[testGetConnectedServers] creating connectionpool for " + 
-        getServerHostName(host) + " " + ports[i]);
+        NetworkSupport.getServerHostName(host) + " " + ports[i]);
       int[] thisServerPorts = new int[] { ports[i] };
-      ClientServerTestCase.configureConnectionPoolWithName(factory, getServerHostName(host), thisServerPorts, false, -1, -1, null,"pooly"+i);
+      ClientServerTestCase.configureConnectionPoolWithName(factory, NetworkSupport.getServerHostName(host), thisServerPorts, false, -1, -1, null,"pooly"+i);
       Region region = createRegion(name+"_"+i, factory.create());
       assertNotNull(getRootRegion().getSubregion(name+"_"+i));
       region.get("KEY-1");
@@ -1471,7 +1474,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
           return true;
         }
       };
-      waitForCriterion(wc, 60000, 100, false);
+      Wait.waitForCriterion(wc, 60000, 100, false);
     }
 
     {
@@ -1549,7 +1552,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
     factory.setScope(Scope.LOCAL);
 
     getLogWriter().info("[testGetNotifiedClients] creating connection pool");
-    ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, true, -1, -1, null);
+    ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, true, -1, -1, null);
     Region region = createRegion(name, factory.create());
     assertNotNull(getRootRegion().getSubregion(name));
     region.registerInterest("KEY-1");

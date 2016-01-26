@@ -25,9 +25,11 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.SubscriptionNotEnabledException;
 
 /**
@@ -42,8 +44,8 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     super(name);
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     disconnectAllFromDS(); // cleans up bridge server and client and lonerDS
   }
   
@@ -99,7 +101,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
 
     getLogWriter().info("[testBug35381] creating connection pool");
     boolean establishCallbackConnection = false; // SOURCE OF BUG 35381
-    ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
+    ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
     Region region = createRegion(name, factory.create());
     assertNotNull(getRootRegion().getSubregion(name));
     try {
@@ -233,7 +235,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
 
     getLogWriter().info("[testRegisterInterestFailover] creating connection pool");
     boolean establishCallbackConnection = true;
-    final PoolImpl p = (PoolImpl)ClientServerTestCase.configureConnectionPool(factory, getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
+    final PoolImpl p = (PoolImpl)ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
 
     final Region region1 = createRootRegion(regionName1, factory.create());
     final Region region2 = createRootRegion(regionName2, factory.create());
@@ -264,7 +266,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
         return "primary port remained invalid";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
     assertEquals(ports[firstServerIdx], p.getPrimaryPort()); 
     
     // assert intial values
@@ -296,7 +298,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
     assertEquals("VAL-1-1", region1.get(key1));
     assertEquals("VAL-1-1", region2.get(key2));
     assertEquals("VAL-1-1", region3.get(key3));
@@ -329,7 +331,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
         return "primary port never became " + ports[secondServerIdx];
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 100 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 100 * 1000, 200, true);
     
     try {
       assertEquals(null, region2.get(key2));
@@ -377,7 +379,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 100 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 100 * 1000, 200, true);
     assertEquals("VAL-2-2", region1.get(key1));
     assertEquals("VAL-0",   region2.get(key2));
     assertEquals("VAL-2-2", region3.get(key3));
@@ -413,7 +415,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 100 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 100 * 1000, 200, true);
     assertEquals("VAL-2-3", region1.get(key1));
     assertEquals("VAL-2-2", region2.get(key2));
     assertEquals("VAL-2-3", region3.get(key3));

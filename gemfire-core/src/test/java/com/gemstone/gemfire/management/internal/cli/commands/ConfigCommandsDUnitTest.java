@@ -35,11 +35,14 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import org.apache.commons.io.FileUtils;
 
@@ -79,20 +82,20 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     super(name);
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     deleteTestFiles();
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
 
       @Override
       public void run() {
         try {
           deleteTestFiles();
         } catch (IOException e) {
-          fail("error", e);
+          Assert.fail("error", e);
         }
       }
     });
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   public void testDescribeConfig() throws ClassNotFoundException, IOException {
@@ -250,7 +253,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
       FileReader reader = new FileReader(shellConfigFile);
       reader.read(fileContents);
     } catch (Exception ex) {
-      fail("Unable to read file contents for comparison", ex);
+      Assert.fail("Unable to read file contents for comparison", ex);
     }
 
     assertEquals(configToMatch, new String(fileContents));
@@ -415,7 +418,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -426,7 +429,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -477,7 +480,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
           gemfireProperties = sharedConfig.getConfiguration(groupName).getGemfireProperties();
           assertEquals("fine", gemfireProperties.get(DistributionConfig.LOG_LEVEL_NAME));
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });

@@ -39,9 +39,13 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 import com.gemstone.gemfire.cache.client.internal.RegisterInterestTracker;
@@ -87,7 +91,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
   @Override
   public void setUp() throws Exception {
     disconnectAllFromDS();
-    pause(2000);
+    Wait.pause(2000);
     super.setUp();
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
@@ -99,7 +103,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     getLogWriter().info("server1 port is " + String.valueOf(PORT1));
     getLogWriter().info("server2 port is " + String.valueOf(PORT2));
 
-    createClientCache(getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
+    createClientCache(NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
   }
 
   // this test fails because of bug# 35352 , hence commented the bug is Deferred to: Danube
@@ -109,12 +113,12 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     server1.invoke(InterestListRecoveryDUnitTest.class, "createEntries");
     registerK1toK5();
     setServerUnavailable("localhost"+PORT1);
-    pause(20000);
+    Wait.pause(20000);
     unregisterK1toK3();
     setServerAvailable("localhost"+PORT1);
-    pause(20000);
+    Wait.pause(20000);
     setServerUnavailable("localhost"+PORT2);
-    pause(20000);
+    Wait.pause(20000);
     server1.invoke(InterestListRecoveryDUnitTest.class, "verifyUnregisterK1toK3");
 
   }
@@ -177,7 +181,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       assertNotNull(pool);
       return (pool.getPrimaryPort() == PORT1);
     } catch (Exception ex) {
-      fail("while isInterestListRegisteredToServer1", ex);
+      Assert.fail("while isInterestListRegisteredToServer1", ex);
     }
     // never reached
     return false;
@@ -257,7 +261,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -270,7 +274,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while registering keys", ex);
+      Assert.fail("failed while registering keys", ex);
     }
   }
 
@@ -283,7 +287,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while un-registering keys", ex);
+      Assert.fail("failed while un-registering keys", ex);
     }
   }
 
@@ -295,7 +299,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       //ConnectionProxyImpl.markServerUnavailable(server);
     }
     catch (Exception ex) {
-      fail("while setting server unavailable  "+ server, ex);
+      Assert.fail("while setting server unavailable  "+ server, ex);
     }
   }
   public static void setServerAvailable(String server)
@@ -305,7 +309,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       //ConnectionProxyImpl.markServerAvailable(server);
     }
     catch (Exception ex) {
-      fail("while setting server available  "+ server, ex);
+      Assert.fail("while setting server available  "+ server, ex);
     }
   }
 
@@ -333,7 +337,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       r1.put(key, "server-"+key);
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -360,7 +364,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
   
    public static void verifyRegionToProxyMapForFullRegistration()
@@ -402,7 +406,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return "verifyRegisterK4toK5Retry";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
 
    public static void verifyRegisterK4toK5() {
@@ -441,7 +445,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
 
  public static void verifyRegionToProxyMapForNoRegistration()
@@ -478,7 +482,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
  }
 
   @Override
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     // close the clients first
     server2.invoke(InterestListRecoveryDUnitTest.class, "closeCache");
@@ -509,6 +513,6 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
   }
 }

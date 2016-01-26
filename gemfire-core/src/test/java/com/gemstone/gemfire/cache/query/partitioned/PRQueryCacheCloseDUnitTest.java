@@ -34,10 +34,12 @@ import java.util.Random;
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class PRQueryCacheCloseDUnitTest extends PartitionedRegionDUnitTestCase
 {
@@ -175,9 +177,9 @@ public class PRQueryCacheCloseDUnitTest extends PartitionedRegionDUnitTestCase
       int k = (random.nextInt(vmList.size()));
       ((VM)(vmList.get(k))).invoke(PRQHelp.getCacheSerializableRunnableForCacheClose(
           name, redundancy));
-      pause(threadSleepTime);
+      Wait.pause(threadSleepTime);
     }
-    DistributedTestCase.join(async0, 5 * 60 * 1000, getLogWriter());
+    Threads.join(async0, 5 * 60 * 1000);
 
     if (async0.exceptionOccurred()) {
       // for now, certain exceptions when a region is closed are acceptable
@@ -193,7 +195,7 @@ public class PRQueryCacheCloseDUnitTest extends PartitionedRegionDUnitTestCase
       } while (t != null);
       
       if (!isForceReattempt) {
-        fail("Unexpected exception during query", async0.getException());
+        Assert.fail("Unexpected exception during query", async0.getException());
       }
     }
 
@@ -309,7 +311,7 @@ public class PRQueryCacheCloseDUnitTest extends PartitionedRegionDUnitTestCase
           name, redundancy));
     }
 
-    DistributedTestCase.join(async0, 5 * 60 * 1000, getLogWriter());
+    Threads.join(async0, 5 * 60 * 1000);
 
     if (async0.exceptionOccurred()) {
       // for now, certain exceptions when a region is closed are acceptable
@@ -325,7 +327,7 @@ public class PRQueryCacheCloseDUnitTest extends PartitionedRegionDUnitTestCase
       } while (t != null);
       
       if (!isForceReattempt) {
-        fail("Unexpected exception during query", async0.getException());
+        Assert.fail("Unexpected exception during query", async0.getException());
       }
     }
 

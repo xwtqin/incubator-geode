@@ -32,10 +32,12 @@ import java.util.Random;
 
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 
 public class PRQueryRegionDestroyedDUnitTest extends PartitionedRegionDUnitTestCase
@@ -182,7 +184,7 @@ public class PRQueryRegionDestroyedDUnitTest extends PartitionedRegionDUnitTestC
         .invokeAsync(PRQHelp.getCacheSerializableRunnableForPRQueryAndCompareResults(
             name, localName));
     
-    pause(5);
+    Wait.pause(5);
     getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithRegionDestroyInOneDatastoreWithDelay: Calling for Region.destroyRegion() on either of the Datastores VM1 , VM2 at random and then recreating the cache, with a predefined Delay ");
@@ -193,7 +195,7 @@ public class PRQueryRegionDestroyedDUnitTest extends PartitionedRegionDUnitTestC
           name, redundancy));
     
     
-      DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+      Threads.join(async0, 30 * 1000);
 
     if (async0.exceptionOccurred()) {
       // for Elbe, certain exceptions when a region is destroyed are acceptable
@@ -209,7 +211,7 @@ public class PRQueryRegionDestroyedDUnitTest extends PartitionedRegionDUnitTestC
       } while (t != null);
       
       if (!isForceReattempt) {
-        fail("Unexpected exception during query", async0.getException());
+        Assert.fail("Unexpected exception during query", async0.getException());
       }
     }
     getLogWriter()

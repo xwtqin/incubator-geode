@@ -27,10 +27,13 @@ import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test to verify the meta-data cleanUp done at the time of cache close Op. This
@@ -125,11 +128,11 @@ public class PartitionedRegionCacheCloseDUnitTest extends
         }
       }
     });
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
-    DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000);
+    Threads.join(async1, 30 * 1000);
 
    if(async0.exceptionOccurred()) {
-     fail("Exception during async0", async0.getException());
+     Assert.fail("Exception during async0", async0.getException());
    }
    
     // Here we would close cache on one of the vms.
@@ -200,7 +203,7 @@ public class PartitionedRegionCacheCloseDUnitTest extends
         for (int j = 0; j < MAX_REGIONS; j++) {
           final String regionName = "#" + rName + j;
 
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             
             private Set<Node> nodes;
 

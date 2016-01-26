@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * This is the bugtest for bug no. 36738. When Object of class
@@ -85,9 +86,9 @@ public class HABug36738DUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     server1.invoke(HABug36738DUnitTest.class, "closeCache");
     server2.invoke(HABug36738DUnitTest.class, "closeCache");
 
@@ -96,7 +97,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
   public void testBug36768() throws Exception
   {
     createServer1();
-    pause(10000);
+    Wait.pause(10000);
     server1.invoke(HABug36738DUnitTest.class, "checkRegionQueueSize");
     createServer2();
     server1.invoke(HABug36738DUnitTest.class, "checkRegionQueueSize");

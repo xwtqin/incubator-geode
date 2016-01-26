@@ -43,6 +43,7 @@ import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -78,14 +79,14 @@ public class DistAckMapMethodsDUnitTest extends DistributedTestCase{
       vm1.invoke(DistAckMapMethodsDUnitTest.class, "createCache");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);
         vm0.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
         vm1.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCache(){

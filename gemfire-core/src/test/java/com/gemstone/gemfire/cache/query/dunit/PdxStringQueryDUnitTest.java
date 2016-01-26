@@ -61,8 +61,12 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.persistence.query.CloseableIterator;
 import com.gemstone.gemfire.pdx.internal.PdxString;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -129,7 +133,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         Index index = null;
         // create an index on statusIndexed is created
@@ -165,7 +169,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -200,7 +204,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -219,7 +223,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             getLogWriter().info("RR  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
           try{
             // to compare remote query results with and without index
@@ -236,7 +240,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             getLogWriter().info("RR  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexLocal[i].asList(), queryString2[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString2[i], e);
+            Assert.fail("Failed executing " + queryString2[i], e);
           }
 
             if(i < orderByQueryIndex){
@@ -306,7 +310,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             checkForPdxString(rs.asList(), queryString[i]);
 
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
           try{
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString2[i]).execute();
@@ -314,7 +318,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString2[i]);
           }catch (Exception e) {
-            fail("Failed executing " + queryString2[i], e);
+            Assert.fail("Failed executing " + queryString2[i], e);
           }
         }
        }
@@ -336,7 +340,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -358,7 +362,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -387,7 +391,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         // Verify the type of index created  
         Index index = null;
@@ -423,7 +427,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -472,7 +476,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -500,7 +504,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
               compareResultsOrder(rs, false);
             }
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
         
@@ -529,7 +533,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
        }
@@ -550,7 +554,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -572,7 +576,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -600,7 +604,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         // Verify the type of index created  
         Index index = null;
@@ -635,7 +639,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port0 = server0.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -680,7 +684,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -708,7 +712,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
               compareResultsOrder(rs, false);
             }
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
         }
@@ -736,7 +740,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
        }
@@ -756,7 +760,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -776,7 +780,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -805,7 +809,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
        
         Index index = null;
@@ -849,7 +853,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -884,7 +888,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -903,7 +907,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             getLogWriter().info("isPR: " + isPr+ "  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
           try{  
             // to compare remote query results with and without index
@@ -920,7 +924,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             getLogWriter().info("isPR: " + isPr+ "  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexLocal[i].asList(), queryString2[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString2[i], e);
+            Assert.fail("Failed executing " + queryString2[i], e);
           }
 
             if(i < orderByQueryIndex){
@@ -990,7 +994,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
           try{
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString2[i]).execute();
@@ -998,7 +1002,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString2[i]);
           }catch (Exception e) {
-            fail("Failed executing " + queryString2[i], e);
+            Assert.fail("Failed executing " + queryString2[i], e);
           }
 
         }
@@ -1020,7 +1024,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1041,7 +1045,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1070,7 +1074,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         // Verify the type of index created  
         Index index = null;
@@ -1113,7 +1117,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1169,7 +1173,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -1197,7 +1201,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
               compareResultsOrder(rs, isPr);
             }
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }       
@@ -1224,7 +1228,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
        }
@@ -1246,7 +1250,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1268,7 +1272,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1297,7 +1301,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         // Verify the type of index created  
         Index index = null;
@@ -1340,7 +1344,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1393,7 +1397,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         for (int i=0; i < queryString.length; i++){
@@ -1423,7 +1427,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
               compareResultsOrder(rs, isPr);
             }
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
        }
@@ -1451,7 +1455,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
        }
@@ -1473,7 +1477,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1495,7 +1499,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
         }
       }
@@ -1524,7 +1528,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         try {
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         } 
         // Verify the type of index created  
         Index index = null;
@@ -1567,7 +1571,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = getServerHostName(server0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1633,7 +1637,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           remoteQueryService = (PoolManager.find(poolName)).getQueryService();
           localQueryService = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
         
         // Querying the fields with null values
@@ -1655,7 +1659,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
               checkForPdxString(res.asList(), qs[i]);
             }
           } catch (Exception e) {
-            fail("Failed executing " + qs[i], e);
+            Assert.fail("Failed executing " + qs[i], e);
           }
         }
       }
@@ -1834,8 +1838,8 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm0.getHost()), port1);
-        cf.addPoolServer(getServerHostName(vm1.getHost()), port2);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm0.getHost()), port1);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm1.getHost()), port2);
         ClientCache cache = getClientCache(cf);
         Region region = cache.createClientRegionFactory(ClientRegionShortcut.PROXY)
            .create(regionName);
@@ -1873,7 +1877,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       }
     });
     
-    invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
+    Invoke.invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
   }
    
   protected void configAndStartBridgeServer(boolean isPr, boolean isAccessor, boolean asyncIndex) {
@@ -1897,7 +1901,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     try {
       startBridgeServer(0, false);
     } catch (Exception ex) {
-      fail("While starting CacheServer", ex);
+      Assert.fail("While starting CacheServer", ex);
     }
   }
   /**
@@ -1962,7 +1966,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         // Create Cache.
         getLonerSystem();
-        addExpectedException("Connection refused");
+        IgnoredException.addIgnoredException("Connection refused");
         getCache();        
         PoolFactory cpf = PoolManager.createFactory();
         cpf.setSubscriptionEnabled(subscriptionEnabled);

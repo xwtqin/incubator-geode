@@ -43,6 +43,7 @@ import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.internal.ServerRegionProxy;
 import com.gemstone.gemfire.cache.client.internal.Connection;
@@ -173,9 +174,9 @@ public class EventIdOptimizationDUnitTest extends DistributedTestCase
         "createServerCache")).intValue();
 
     client1.invoke(EventIdOptimizationDUnitTest.class, "createClientCache1",
-        new Object[] { getServerHostName(host), new Integer(PORT1) });
+        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT1) });
     client2.invoke(EventIdOptimizationDUnitTest.class, "createClientCache2",
-        new Object[] { getServerHostName(host), new Integer(PORT2) });
+        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT2) });
 
   }
 
@@ -508,7 +509,7 @@ public class EventIdOptimizationDUnitTest extends DistributedTestCase
   /**
    * Closes the caches on clients and servers
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     // close client
     client1.invoke(EventIdOptimizationDUnitTest.class, "closeCache");

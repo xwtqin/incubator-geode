@@ -80,9 +80,9 @@ public class CliCommandTestBase extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     destroyDefaultSetup();
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   /**

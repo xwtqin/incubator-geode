@@ -37,6 +37,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.RegionExistsException;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -754,7 +755,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
               cache.createRegion(innerPrPrefix + i, ra);
             }
             catch (RegionExistsException ex) {
-              fail(
+              Assert.fail(
                   "Got incorrect exception because the partition region being created prior to local region",
                   ex);
             }

@@ -33,8 +33,12 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,7 +63,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
   }
 
   
@@ -300,7 +304,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -317,7 +321,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_HA_SERVER);
     registerFunctionAtServer(function);
@@ -337,8 +341,8 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("Socket Closed");
-    addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("Socket Closed");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -355,7 +359,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_HA_SERVER);
     registerFunctionAtServer(function);
@@ -379,7 +383,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     server1.invoke(
         ClientServerFunctionExecutionDUnitTest.class,
@@ -395,7 +399,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_NONHA_SERVER);
     registerFunctionAtServer(function);
@@ -587,7 +591,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
   }
   
   public static Object serverExecutionHAOneServerDown(Boolean isByName, Function function,
@@ -678,7 +682,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       assertTrue(((Integer)list.get(1)) == 5);
     } catch (Exception ex) {
       ex.printStackTrace();
-      fail("This is not expected Exception", ex);
+      Assert.fail("This is not expected Exception", ex);
     }
   }
 
@@ -945,7 +949,7 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
     }
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 }

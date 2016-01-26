@@ -31,11 +31,12 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.json.GfJsonException;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.util.List;
 import java.util.Properties;
@@ -203,7 +204,7 @@ public class FunctionCommandsDUnitTest extends CliCommandTestBase {
           return "Probing for testExecuteFunctionOnRegionBug51480";
         }
       };
-      DistributedTestCase.waitForCriterion(waitForMaangerMBean, 2 * 60 * 1000, 2000, true);
+      Wait.waitForCriterion(waitForMaangerMBean, 2 * 60 * 1000, 2000, true);
       DistributedRegionMXBean bean = ManagementService.getManagementService(getCache()).getDistributedRegionMXBean(
           Region.SEPARATOR + REGION_ONE);
       assertNotNull(bean);

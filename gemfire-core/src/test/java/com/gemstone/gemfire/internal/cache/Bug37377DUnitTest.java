@@ -34,10 +34,11 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Bug37377 DUNIT Test: The Clear operation during a GII in progress can leave a
@@ -94,13 +95,13 @@ public class Bug37377DUnitTest extends CacheTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
 
     vm1.invoke(destroyRegion());
     vm0.invoke(destroyRegion());
 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   /**
@@ -313,8 +314,8 @@ public class Bug37377DUnitTest extends CacheTestCase
     vm0.invoke(createCacheForVM0());
     vm0.invoke(putSomeEntries());
     AsyncInvocation as1 = vm1.invokeAsync(createCacheForVM1());
-    pause(10000);
-    DistributedTestCase.join(as1, 30 * 1000, getLogWriter());
+    Wait.pause(10000);
+    Threads.join(as1, 30 * 1000);
     vm0.invoke(closeCacheForVM(0));
     vm1.invoke(closeCacheForVM(1));
     vm1.invoke(createCacheForVM1());

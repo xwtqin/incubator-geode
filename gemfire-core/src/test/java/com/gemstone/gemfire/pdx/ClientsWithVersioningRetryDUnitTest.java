@@ -56,10 +56,14 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.command.Put70;
 import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author dsmith
@@ -67,7 +71,7 @@ import com.gemstone.gemfire.test.dunit.VM;
  */
 public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
   // list of expected exceptions to remove in tearDown2()
-  static List<ExpectedException> expectedExceptions = new LinkedList<ExpectedException>();
+  static List<IgnoredException> expectedExceptions = new LinkedList<IgnoredException>();
 
   public ClientsWithVersioningRetryDUnitTest(String name) {
     super(name);
@@ -76,7 +80,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
         //Disable endpoint shuffling, so that the client will always connect
@@ -89,15 +93,15 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
   
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(new SerializableRunnable() {
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       @Override      public void run() {
         System.setProperty("gemfire.bridge.disableShufflingOfEndpoints", "false");
       }
       
     });
-    for (ExpectedException ex: expectedExceptions) {
+    for (IgnoredException ex: expectedExceptions) {
       ex.remove();
     }
   }
@@ -298,7 +302,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     getLogWriter().info("creating region in vm3");
     createRegionInPeer(vm3, RegionShortcut.PARTITION_PROXY);
     
-    expectedExceptions.add(addExpectedException("RuntimeException", vm2));
+    expectedExceptions.add(IgnoredException.addIgnoredException("RuntimeException", vm2));
     vm2.invoke(new SerializableRunnable("install message listener to ignore update") {
       public void run() {
         //Add a listener to close vm2 when we send a distributed put all operation
@@ -311,7 +315,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
               DistributionMessage msg) {
             if(msg instanceof DistributedPutAllOperation.PutAllMessage) {
               DistributionMessageObserver.setInstance(null);
-              pause(5000); // give vm1 time to process the message that we're ignoring
+              Wait.pause(5000); // give vm1 time to process the message that we're ignoring
               disconnectFromDS(vm0);
               // no reply will be sent to vm0 due to this exception, but that's okay
               // because vm0 has been shut down
@@ -494,8 +498,8 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable("create client region in " + vm) {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm.getHost()), port1);
-        cf.addPoolServer(getServerHostName(vm.getHost()), port2);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port1);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port2);
         cf.setPoolPRSingleHopEnabled(false);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         cf.setPoolReadTimeout(10 * 60 * 1000);

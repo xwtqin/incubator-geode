@@ -35,9 +35,12 @@ import com.gemstone.gemfire.distributed.internal.locks.DLockRecoverGrantorProces
 import com.gemstone.gemfire.distributed.internal.locks.DLockService;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.TXRegionLockRequestImpl;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 
 /**
  * This class tests distributed ownership via the DistributedLockService api.
@@ -85,11 +88,11 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     com.gemstone.gemfire.internal.OSProcess.printStacks(0);
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
 //    invokeInEveryVM(TXLockServiceDUnitTest.class,
 //                    "remoteDumpAllDLockServices");
                     
-    invokeInEveryVM(TXLockServiceDUnitTest.class,
+    Invoke.invokeInEveryVM(TXLockServiceDUnitTest.class,
                     "destroyServices"); 
     
     destroyServices();
@@ -104,7 +107,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     testTXRecoverGrantor_heldLocks_PASS = false;
   
     // Disconnects from GemFire if using shared memory
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
   
   // -------------------------------------------------------------------------
@@ -173,7 +176,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     dtls.release(txLockId);
     
     // check results to verify no locks were provided in reply
-    DistributedTestCase.join(thread, 30 * 1000, getLogWriter());
+    Threads.join(thread, 30 * 1000);
     assertEquals("testTXRecoverGrantor_replyCode_PASS is false", true, 
         testTXRecoverGrantor_replyCode_PASS);
     assertEquals("testTXRecoverGrantor_heldLocks_PASS is false", true, 
@@ -674,7 +677,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
   
   public Properties getDistributedSystemProperties() {
     Properties props = super.getDistributedSystemProperties();
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", DUnitEnv.getDUnitLogLevel());
     return props;
   }
 

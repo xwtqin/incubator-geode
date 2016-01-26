@@ -61,12 +61,17 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.util.test.TestUtil;
 
 public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
@@ -130,17 +135,17 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
   public void setUp() throws Exception {
     super.setUp();
     //Workaround for #52008
-    addExpectedException("Failed to create index");
+    IgnoredException.addIgnoredException("Failed to create index");
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     // Get the disk store name.
     GemFireCacheImpl cache = (GemFireCacheImpl)getCache();
     String diskStoreName = cache.getDefaultDiskStoreName();
     
     //reset TestHook
-    invokeInEveryVM(resetTestHook());
+    Invoke.invokeInEveryVM(resetTestHook());
     // close the cache.
     closeCache();
     disconnectFromDS();
@@ -168,13 +173,13 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     
     AsyncInvocation asyInvk1 = vm1.invokeAsync(createIndexThrougXML("vm1testCreateIndexThroughXML", name, fileName));
     
-    DistributedTestCase.join(asyInvk1, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 30 * 1000);
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
 
     // Check index for PR
@@ -438,9 +443,9 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     
     AsyncInvocation asyInvk0 = vm0.invokeAsync(createIndexThrougXML("vm0testAsyncIndexWhileDoingGII", name, fileName));
     
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
     // LoadRegion
@@ -451,16 +456,16 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     
     vm0.invoke(prIndexCreationCheck(name, statusIndex, 50));
 
-    DistributedTestCase.join(asyInvk1, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 30 * 1000);
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
     
     vm1.invoke(prIndexCreationCheck(name, statusIndex, 50));
 
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
     vm1.invoke(resetTestHook());
@@ -546,9 +551,9 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
         "Creating index using an xml file name : " + fileName);
     
     AsyncInvocation asyInvk0 = vm0.invokeAsync(createIndexThrougXML("vm0testCreateAsyncIndexGIIAndQuery", name, fileName));
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
     // LoadRegion
@@ -558,13 +563,13 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     AsyncInvocation asyInvk1 = vm1.invokeAsync(createIndexThrougXML("vm1testCreateAsyncIndexGIIAndQuery", name, fileName));
  
     
-    DistributedTestCase.join(asyInvk1, 30 * 1000, getLogWriter());  
+    Threads.join(asyInvk1, 30 * 1000);  
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
  
     vm0.invoke(prIndexCreationCheck(name, statusIndex, 50));
@@ -611,9 +616,9 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     vm1.invoke(setTestHook());    
     vm1.invoke(createIndexThrougXML("vm1testAsyncIndexAndCompareQResults", name, fileName));
     
-    DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
      
     vm1.invoke(prIndexCreationCheck(persistentRegName, "secIndex", 50));
@@ -781,7 +786,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
         return "Number of Indexed Bucket is less than the expected number. "+ bucketCount + ", " + index.getNumberOfIndexedBuckets();
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -942,7 +947,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     new Exception("TEST DEBUG###" + diskStoreId).printStackTrace();
     if (system == null || !system.isConnected()) {
       // Figure out our distributed system properties
-      Properties p = getAllDistributedSystemProperties(getDistributedSystemProperties());
+      Properties p = DUnitEnv.getAllDistributedSystemProperties(getDistributedSystemProperties());
       system = (InternalDistributedSystem)DistributedSystem.connect(p);
     } 
     return system;
@@ -956,13 +961,13 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
         cache = CacheFactory.create(system); 
       } catch (CacheExistsException e) {
-        fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e);
 
       } catch (RuntimeException ex) {
         throw ex;
 
       } catch (Exception ex) {
-        fail("Checked exception while initializing cache??", ex);
+        Assert.fail("Checked exception while initializing cache??", ex);
       } finally {
         System.clearProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE");
       }      

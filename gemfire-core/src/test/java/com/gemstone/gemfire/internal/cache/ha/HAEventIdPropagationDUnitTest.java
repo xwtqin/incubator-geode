@@ -46,9 +46,13 @@ import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.cache.RegionEventImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -92,9 +96,9 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
   }
 
   /** close the caches* */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     client1.invoke(HAEventIdPropagationDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HAEventIdPropagationDUnitTest.class, "closeCache");
@@ -123,7 +127,7 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
     int PORT1 = ((Integer)server1.invoke(HAEventIdPropagationDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(HAEventIdPropagationDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(server1.getHost()), new Integer(PORT1) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
   }
 
   /** create the server * */
@@ -212,7 +216,7 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
     synchronized(map) {
       getLogWriter().info("assertThreadIdToSequenceIdMapisNotNullButEmpty: map size is " + map.size());
       assertTrue(map.size() == 1);
@@ -415,7 +419,7 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("test failed due to " + e, e);
+      Assert.fail("test failed due to " + e, e);
     }
   }
 

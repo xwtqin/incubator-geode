@@ -39,8 +39,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is Targetted conflation Dunit test.
@@ -112,13 +114,13 @@ public class HAConflationDUnitTest extends CacheTestCase
     server1.invoke(ConflationDUnitTest.class, "setIsSlowStart");
     server1.invoke(HAConflationDUnitTest.class, "makeDispatcherSlow");
     client1.invoke(HAConflationDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(host), new Integer(PORT1), new Boolean(true) });
+        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT1), new Boolean(true) });
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-	super.tearDown2();
+	super.tearDownBeforeDisconnect();
     client1.invoke(HAConflationDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HAConflationDUnitTest.class, "closeCache");
@@ -287,7 +289,7 @@ public class HAConflationDUnitTest extends CacheTestCase
             }
           };
           
-          waitForCriterion(w, 3 * 60 * 1000, interval, true);
+          Wait.waitForCriterion(w, 3 * 60 * 1000, interval, true);
       }
     };
     return checkEvents;

@@ -39,10 +39,12 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.internal.tcp.Connection;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
@@ -71,9 +73,9 @@ public class SlowRecDUnitTest extends CacheTestCase {
       super.setUp();
     }
   }
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     try {
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     } finally {
       disconnectAllFromDS();
     }
@@ -164,7 +166,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
                 return "waiting for callback";
               }
             };
-            DistributedTestCase.waitForCriterion(ev, 50 * 1000, 200, true);
+            Wait.waitForCriterion(ev, 50 * 1000, 200, true);
             assertEquals(lcb, lastCallback);
           }
           if (lastValue == null) {
@@ -177,7 +179,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
                 return "waiting for key to become null";
               }
             };
-            DistributedTestCase.waitForCriterion(ev, 50 * 1000, 200, true);
+            Wait.waitForCriterion(ev, 50 * 1000, 200, true);
             assertEquals(null, r1.getEntry("key"));
           } else if (CHECK_INVALID.equals(lastValue)) {
             // should be invalid
@@ -195,7 +197,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
                   return "waiting for invalidate";
                 }
               };
-              DistributedTestCase.waitForCriterion(ev, 50 * 1000, 200, true);
+              Wait.waitForCriterion(ev, 50 * 1000, 200, true);
 //              assertNotNull(re);
 //              assertEquals(null, value);
             }
@@ -234,7 +236,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         return "Waiting for async threads to disappear";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
   }
   
   private void forceQueuing(final Region r) throws CacheException {
@@ -251,7 +253,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         return "waiting for flushes to start";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 2 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 2 * 1000, 200, true);
   }
   
   /**
@@ -307,7 +309,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         }
       };
       final long start = System.currentTimeMillis();
-      DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 30 * 1000, 200, true);
       final long finish = System.currentTimeMillis();
       getLogWriter().info("After " + (finish - start) + " ms async msgs where flushed. A total of " + stats.getAsyncDequeuedMsgs() + " were flushed. lastValue=" + lastValue);
     
@@ -436,8 +438,8 @@ public class SlowRecDUnitTest extends CacheTestCase {
       // give threads a chance to get queued
       try {Thread.sleep(100);} catch (InterruptedException ignore) {fail("interrupted");}
       forceQueueFlush();
-      DistributedTestCase.join(t, 2 * 1000, getLogWriter());
-      DistributedTestCase.join(t2, 2 * 1000, getLogWriter());
+      Threads.join(t, 2 * 1000);
+      Threads.join(t2, 2 * 1000);
       long endQueuedMsgs = stats.getAsyncQueuedMsgs();
       long endConflatedMsgs = stats.getAsyncConflatedMsgs();
       assertEquals(startConflatedMsgs, endConflatedMsgs);
@@ -698,7 +700,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
           return "waiting for connection loss";
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 30 * 1000, 200, true);
     }
     finally {
       forceQueueFlush();
@@ -772,7 +774,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
           return "waiting for departure";
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 2 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 2 * 1000, 200, true);
     }
     finally {
       getCache().getLogger().info(removeExpected);
@@ -1221,7 +1223,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     assertTrue(stats.getAsyncQueuedMsgs() >= 10);
 
     while (stats.getAsyncQueues() < 1) {
-      pause(100);
+      Wait.pause(100);
       assertFalse(System.currentTimeMillis() >= abortMillis);
     }
     
@@ -1256,7 +1258,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         return "waiting for disconnect";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 2 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 2 * 1000, 200, true);
     assertEquals(others, dm.getOtherDistributionManagerIds());
     
     // check free memory... perform wait loop with System.gc
@@ -1273,7 +1275,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         return "waiting for queue cleanup";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 2 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 2 * 1000, 200, true);
 //    getLogWriter().info("[testDisconnectCleanup] initialQueues=" + 
 //      initialQueues + " asyncQueues=" + stats.getAsyncQueues());
     assertEquals(initialQueues, stats.getAsyncQueues());
@@ -1368,7 +1370,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       count + " puts of size " + VALUE_SIZE + 
       " slowrec mode kicked in with queue size=" + stats.getAsyncQueueSize());
 
-    pause(2000);
+    Wait.pause(2000);
       
     // conflate 10 times
     while (stats.getAsyncConflatedMsgs() < 10) {

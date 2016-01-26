@@ -40,7 +40,9 @@ import com.gemstone.gemfire.cache.query.CqException;
 import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.util.Callable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -74,9 +76,9 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");
@@ -87,8 +89,8 @@ public class DeltaClientPostAuthorizationDUnitTest extends
   }
 
   public void testPutPostOpNotifications() throws Exception {
-    addExpectedException("Unexpected IOException");
-    addExpectedException("SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
+    IgnoredException.addIgnoredException("SocketException");
 
     OperationWithAction[] allOps = {
         // Test CREATE and verify with a GET
@@ -525,7 +527,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
           continue;
         }
         else {
-          fail("doOp: Got unexpected exception when doing operation. Policy = " 
+          Assert.fail("doOp: Got unexpected exception when doing operation. Policy = " 
               + policy + " flags = " + OpFlags.description(flags), ex);
         }
       }

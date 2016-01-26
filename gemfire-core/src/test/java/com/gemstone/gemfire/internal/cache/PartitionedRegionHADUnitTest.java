@@ -36,11 +36,12 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserver;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -102,7 +103,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
           }
           assertNotNull(partitionedregion);
         } catch (InterruptedException e) {
-          fail("interrupted",e);
+          Assert.fail("interrupted",e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
@@ -219,7 +220,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
             fail("recovery didn't happen in 60 seconds");
           }
         } catch (InterruptedException e) {
-          fail("recovery wait interrupted", e);
+          Assert.fail("recovery wait interrupted", e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
@@ -297,7 +298,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
     // dataStore1.invoke(addExpectedExceptions);
     AsyncInvocation async0 = dataStore0.invokeAsync(dataStore0Puts);
     // AsyncInvocation  async1 = dataStore1.invokeAsync(dataStore1Puts);
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000);
     // async1.join();
     dataStore0.invoke(removeExpectedExceptions);
     // dataStore1.invoke(removeExpectedExceptions);
@@ -317,11 +318,11 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
     
     async0 = dataStore0.invokeAsync(dataStore0Puts);
     // async1 = dataStore1.invokeAsync(dataStore1Puts);
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000);
     // async1.join();
     
     if (async0.exceptionOccurred()) {
-      fail("async0 failed", async0.getException());
+      Assert.fail("async0 failed", async0.getException());
     }
     // assertFalse(async1.exceptionOccurred());
     

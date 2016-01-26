@@ -42,9 +42,13 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 import cacheRunner.Portfolio;
 import cacheRunner.Position;
@@ -74,9 +78,9 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     try {
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     }
     finally {
       disconnectAllFromDS();
@@ -98,16 +102,16 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name, factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -124,7 +128,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -149,7 +153,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -159,7 +163,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -169,7 +173,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -179,7 +183,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -189,7 +193,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -241,16 +245,16 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name, factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -267,7 +271,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -293,7 +297,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -302,7 +306,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -311,7 +315,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -320,7 +324,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -329,7 +333,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -338,7 +342,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -369,16 +373,16 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name, factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -395,7 +399,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -420,7 +424,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -429,7 +433,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -438,7 +442,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -447,7 +451,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -456,7 +460,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -465,7 +469,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -495,16 +499,16 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name, factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -628,7 +632,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -657,7 +661,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           getLogWriter().fine("size: " + results.size());
           //assertEquals(numberOfEntries, results.size());
@@ -689,16 +693,16 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name, factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -715,7 +719,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -743,7 +747,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -754,7 +758,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -765,7 +769,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
         }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -788,7 +792,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -811,7 +815,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           Object result = results.iterator().next();
@@ -824,7 +828,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertEquals("key-1", results.asList().get(0));
@@ -854,17 +858,17 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
           createRegion(name+"1", factory.create());
           createRegion(name+"2", factory.create());
-          pause(1000);
+          Wait.pause(1000);
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -885,7 +889,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -913,7 +917,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region1.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -923,7 +927,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region1.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -955,7 +959,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -963,7 +967,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -979,7 +983,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
       });
 
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
 
     // Create client region in VM1
     vm1.invoke(new CacheSerializableRunnable("Create region") {
@@ -1022,7 +1026,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1032,7 +1036,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1051,7 +1055,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1061,7 +1065,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1114,7 +1118,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
      vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
          public void run2() throws CacheException {
            Properties config = new Properties();
-           config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+           config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
            system = (InternalDistributedSystem) DistributedSystem.connect(config);
            AttributesFactory factory = new AttributesFactory();
            factory.setScope(Scope.LOCAL);
@@ -1122,7 +1126,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
            try {
              startBridgeServer(0, false);
            } catch (Exception ex) {
-             fail("While starting CacheServer", ex);
+             Assert.fail("While starting CacheServer", ex);
            }
          }
        });
@@ -1138,7 +1142,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
        });
 
      final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-     final String host0 = getServerHostName(vm0.getHost());
+     final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
 
      // Create client region in VM1
      vm1.invoke(new CacheSerializableRunnable("Create region") {
@@ -1167,7 +1171,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
              try {
                results = region.query(queryStrings[i]);
              } catch (Exception e) {
-               fail("Failed executing " + queryStrings[i], e);
+               Assert.fail("Failed executing " + queryStrings[i], e);
              }
              assertEquals(9, results.size());
              String msg = "results expected to be instance of ResultsBag,"
@@ -1218,7 +1222,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
       vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
           public void run2() throws CacheException {
             Properties config = new Properties();
-            config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+            config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
             system = (InternalDistributedSystem) DistributedSystem.connect(config);
             AttributesFactory factory = new AttributesFactory();
             factory.setScope(Scope.LOCAL);
@@ -1233,7 +1237,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
             try {
               startBridgeServer(0, false);
             } catch (Exception ex) {
-              fail("While starting CacheServer", ex);
+              Assert.fail("While starting CacheServer", ex);
             }
           }
         });
@@ -1249,7 +1253,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
         });
 
       final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-      final String host0 = getServerHostName(vm0.getHost());
+      final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
 
       // Create client region in VM1
       vm1.invoke(new CacheSerializableRunnable("Create region") {
@@ -1279,7 +1283,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
               } catch (QueryInvocationTargetException qte) {
                 //Ok test passed
               } catch(Exception e) {
-                fail("Failed executing query " + queryStrings+ " due  to unexpected Excecption", e);
+                Assert.fail("Failed executing query " + queryStrings+ " due  to unexpected Excecption", e);
             }
           }
         });
@@ -1318,7 +1322,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
               } catch (QueryInvocationTargetException qte) {
                 //Ok test passed
               } catch(Exception e) {
-                fail("Failed executing query " + queryString+ " due  to unexpected Excecption", e);
+                Assert.fail("Failed executing query " + queryString+ " due  to unexpected Excecption", e);
             }
           }
         });

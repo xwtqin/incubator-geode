@@ -39,6 +39,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import javax.management.ObjectName;
 import java.io.File;
@@ -94,7 +96,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
       @Override
       public Object call() throws Exception {
         WaitCriterion wc = createMBeanWaitCriterion(1, "", null, 0);
-        waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
         CommandProcessor commandProcessor = new CommandProcessor();
         Result result = commandProcessor.createCommandStatement("show metrics", Collections.EMPTY_MAP).process();
         String resultStr = commandResultToString((CommandResult) result);
@@ -141,7 +143,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
       @Override
       public Object call() throws Exception {
         WaitCriterion wc = createMBeanWaitCriterion(2, regionName, null, 0);
-        waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
         CommandProcessor commandProcessor = new CommandProcessor();
         Result result = commandProcessor.createCommandStatement("show metrics --region=REGION1",
             Collections.EMPTY_MAP).process();
@@ -233,9 +235,9 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
       public Object call() throws Exception {
 
         WaitCriterion wc = createMBeanWaitCriterion(3, "", distributedMember, 0);
-        waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
         wc = createMBeanWaitCriterion(5, "", distributedMember, cacheServerPort);
-        waitForCriterion(wc, 10000, 500, true);
+        Wait.waitForCriterion(wc, 10000, 500, true);
 
         final String command = CliStrings.SHOW_METRICS + " --" + CliStrings.SHOW_METRICS__MEMBER + "=" + distributedMember.getId() + " --" + CliStrings.SHOW_METRICS__CACHESERVER__PORT + "=" + cacheServerPort + " --" + CliStrings.SHOW_METRICS__FILE + "=" + exportFileName;
 
@@ -278,7 +280,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
       public Object call() throws Exception {
 
         WaitCriterion wc = createMBeanWaitCriterion(4, regionName, distributedMember, 0);
-        waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
         CommandProcessor commandProcessor = new CommandProcessor();
         Result result = commandProcessor.createCommandStatement(
             "show metrics --region=" + regionName + " --member=" + distributedMember.getName() + " --file=" + exportFileName,
@@ -318,7 +320,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
       public Object call() throws Exception {
 
         WaitCriterion wc = createMBeanWaitCriterion(4, regionName, distributedMember, 0);
-        waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
         CommandProcessor commandProcessor = new CommandProcessor();
         Result result = commandProcessor.createCommandStatement(
             "show metrics --region=" + regionName + " --member=" + distributedMember.getName() + " --file=" + exportFileName + " --categories=region,eviction",

@@ -33,9 +33,13 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -114,16 +118,16 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(OperationsPropagationDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(OperationsPropagationDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(host), new Integer(PORT2) });
+        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT2) });
 
   }
 
   /**
    * close the caches of the client and the servers
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     client1.invoke(OperationsPropagationDUnitTest.class, "closeCache");
     server1.invoke(OperationsPropagationDUnitTest.class, "closeCache");
     server2.invoke(OperationsPropagationDUnitTest.class, "closeCache");
@@ -282,7 +286,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
       region.put(DESTROY_KEY, DESTROY_VALUE);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -304,7 +308,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
       region.putAll(map);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -326,7 +330,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*
        * if (!(region.get(UPDATE_KEY).equals(UPDATE_VALUE1))) { fail(" Expected
@@ -343,7 +347,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*
        * if (!(region.get(INVALIDATE_KEY).equals(INVALIDATE_VALUE))) { fail("
@@ -360,7 +364,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*
        * if (!(region.get(DESTROY_KEY).equals(DESTROY_VALUE))) { fail(" Expected
@@ -370,7 +374,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
 
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -394,7 +398,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*if (!(region.get(CREATE_KEY).equals(CREATE_VALUE))) {
        fail("CREATE operation did not propagate to client : Expected value to be "
@@ -410,7 +414,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*if (!(region.get(UPDATE_KEY).equals(UPDATE_VALUE2))) {
        fail(" UPDATE operation did not propagate to Client : Expected value to be "
@@ -425,7 +429,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
 
       /*if (region.containsKey(DESTROY_KEY)) {
@@ -442,7 +446,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*if (!(region.get(INVALIDATE_KEY) == null)) {
        fail(" INVALIDATE operation did not propagate to Client : Expected value to be null but it is "
@@ -458,7 +462,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       /*
        * if (!(region.get(PUTALL_KEY).equals(PUTALL_VALUE))) { fail("PUTALL
@@ -475,10 +479,10 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
   }
   
@@ -497,6 +501,6 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
   }
 }

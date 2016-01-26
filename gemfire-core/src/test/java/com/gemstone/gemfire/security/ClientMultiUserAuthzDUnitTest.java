@@ -521,9 +521,9 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
 
   // End Region: Tests
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

@@ -34,10 +34,12 @@ import com.gemstone.gemfire.cache.query.internal.Undefined;
 import com.gemstone.gemfire.cache.query.partitioned.PRQueryDUnitHelper;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Test creates a local region. Creates and removes index in a parallel running thread.
@@ -121,11 +123,11 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           }
           assertNotNull(index);
 
-          pause(100);
+          Wait.pause(100);
 
           PRQHelp.getCache().getQueryService().removeIndex(index);
 
-          pause(100);
+          Wait.pause(100);
         }
       }
     });
@@ -147,7 +149,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           PRQHelp.getCache().getLogger().fine("Going to destroy the value" + p);
           r.destroy(j);
 
-          pause(100);
+          Wait.pause(100);
 
           //Put the value back again.
           PRQHelp.getCache().getLogger().fine("Putting the value back" + p);
@@ -194,14 +196,14 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
       }
     });
     
-    DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 1000 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
-    DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 1000 * 1000);
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
   }
 
@@ -283,7 +285,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           PRQHelp.getCache().getLogger().fine("Going to destroy the value" + p);
           r.destroy(j);
 
-          pause(20);
+          Wait.pause(20);
 
           //Put the value back again.
           PRQHelp.getCache().getLogger().fine("Putting the value back" + p);
@@ -330,14 +332,14 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
       }
     });
 
-    DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 1000 * 1000);
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
-    DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 1000 * 1000);
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
   }
 
@@ -419,7 +421,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
             PRQHelp.getCache().getLogger().fine("Querying the region with " + query);
             results = (SelectResults)query.execute();
           } catch (Exception e) {
-            fail("Query: " + query + " execution failed with exception", e);
+            Assert.fail("Query: " + query + " execution failed with exception", e);
           }
 
           for (Object obj : results) {

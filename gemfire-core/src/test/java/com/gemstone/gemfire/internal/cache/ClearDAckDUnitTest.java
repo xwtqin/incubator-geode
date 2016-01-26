@@ -38,6 +38,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -74,7 +75,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
       getLogWriter().info("Cache created in successfully");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);
@@ -84,7 +85,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
         vm1.invoke(ClearDAckDUnitTest.class, "closeCache");
         vm2.invoke(ClearDAckDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static long getRegionVersion(DistributedMember memberID) {

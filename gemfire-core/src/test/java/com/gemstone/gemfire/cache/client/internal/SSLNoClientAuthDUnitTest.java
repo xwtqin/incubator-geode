@@ -266,14 +266,14 @@ public class SSLNoClientAuthDUnitTest extends DistributedTestCase {
     }
   }
   
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     final Host host = Host.getHost(0);
     VM serverVM = host.getVM(1);
     VM clientVM = host.getVM(2);
     clientVM.invoke(SSLNoClientAuthDUnitTest.class, "closeClientCacheTask");
     serverVM.invoke(SSLNoClientAuthDUnitTest.class, "closeCacheTask");
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
 }

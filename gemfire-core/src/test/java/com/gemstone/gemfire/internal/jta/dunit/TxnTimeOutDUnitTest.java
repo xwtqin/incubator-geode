@@ -35,9 +35,12 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -69,7 +72,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
     wr.close();
     props.setProperty("cache-xml-file", path);
 //    props.setProperty("mcast-port", "10321");
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", DUnitEnv.getDUnitLogLevel());
     try {
 //      ds = DistributedSystem.connect(props);
       ds = (new TxnTimeOutDUnitTest("temp")).getSystem(props);
@@ -119,7 +122,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(TxnTimeOutDUnitTest.class, "init");
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  public void tearDownBeforeDisconnect() throws NamingException, SQLException {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     vm0.invoke(TxnTimeOutDUnitTest.class, "closeCache");
@@ -154,29 +157,29 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
         AsyncInvocation asyncObj5 = vm0.invokeAsync(TxnTimeOutDUnitTest.class,
         "runTest3",o4);
 
-        DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());        
+        Threads.join(asyncObj1, 5 * 60 * 1000);        
         if(asyncObj1.exceptionOccurred()){
-          fail("asyncObj1 failed", asyncObj1.getException());
+          Assert.fail("asyncObj1 failed", asyncObj1.getException());
         }
         
-        DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());        
+        Threads.join(asyncObj2, 5 * 60 * 1000);        
         if(asyncObj2.exceptionOccurred()){
-          fail("asyncObj2 failed", asyncObj2.getException());
+          Assert.fail("asyncObj2 failed", asyncObj2.getException());
         }
         
-        DistributedTestCase.join(asyncObj3, 5 * 60 * 1000, getLogWriter());        
+        Threads.join(asyncObj3, 5 * 60 * 1000);        
         if(asyncObj3.exceptionOccurred()){
-          fail("asyncObj3 failed", asyncObj3.getException());
+          Assert.fail("asyncObj3 failed", asyncObj3.getException());
         }
         
-        DistributedTestCase.join(asyncObj4, 5 * 60 * 1000, getLogWriter());        
+        Threads.join(asyncObj4, 5 * 60 * 1000);        
         if(asyncObj4.exceptionOccurred()){
-          fail("asyncObj4 failed", asyncObj4.getException());
+          Assert.fail("asyncObj4 failed", asyncObj4.getException());
         }
         
-        DistributedTestCase.join(asyncObj5, 5 * 60 * 1000, getLogWriter());        
+        Threads.join(asyncObj5, 5 * 60 * 1000);        
         if(asyncObj5.exceptionOccurred()){
-          fail("asyncObj5 failed", asyncObj5.getException());
+          Assert.fail("asyncObj5 failed", asyncObj5.getException());
         }
         
   
@@ -193,14 +196,14 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
         "runTest2");
     AsyncInvocation asyncObj2 =    vm0.invokeAsync(TxnTimeOutDUnitTest.class, "runTest1");
 
-    DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());
+    Threads.join(asyncObj1, 5 * 60 * 1000);
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     
-    DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());
+    Threads.join(asyncObj2, 5 * 60 * 1000);
     if(asyncObj2.exceptionOccurred()){
-      fail("asyncObj2 failed", asyncObj2.getException());
+      Assert.fail("asyncObj2 failed", asyncObj2.getException());
     }
     
   }

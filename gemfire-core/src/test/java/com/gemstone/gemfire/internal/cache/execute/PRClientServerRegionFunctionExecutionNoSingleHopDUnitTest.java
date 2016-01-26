@@ -47,8 +47,12 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     PRClientServerTestBase {
@@ -329,7 +333,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
    */
   public void testServerFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -362,9 +366,9 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 6 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 6 * 60 * 1000);
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
 
@@ -377,7 +381,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
    */
   public void testServerCacheClosedFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -410,9 +414,9 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
         PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 5 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 5 * 60 * 1000);
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(2, l.size());
@@ -530,7 +534,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
   }
 
   public static void executeFunction() throws ServerException,
@@ -692,7 +696,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Test failed after the put operation", e);
+      Assert.fail("Test failed after the put operation", e);
 
     }
   }
@@ -716,13 +720,13 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       }
       Map resultMap = region.getAll(testKeysList);
       assertTrue(resultMap.equals(origVals));
-      pause(2000);
+      Wait.pause(2000);
       Map secondResultMap = region.getAll(testKeysList);
       assertTrue(secondResultMap.equals(origVals));
 
     }
     catch (Exception e) {
-      fail("Test failed after the put operation", e);
+      Assert.fail("Test failed after the put operation", e);
 
     }
   }
@@ -746,13 +750,13 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       }
       Map resultMap = region.getAll(testKeysList);
       assertTrue(resultMap.equals(origVals));
-      pause(2000);
+      Wait.pause(2000);
       Map secondResultMap = region.getAll(testKeysList);
       assertTrue(secondResultMap.equals(origVals));
 
     }
     catch (Exception e) {
-      fail("Test failed after the put operation", e);
+      Assert.fail("Test failed after the put operation", e);
 
     }
   }
@@ -847,7 +851,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Test failed after the put operation", e);
+      Assert.fail("Test failed after the put operation", e);
 
     }
   }
@@ -885,7 +889,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Test failed after the function execution", e);
+      Assert.fail("Test failed after the function execution", e);
 
     }
   }
@@ -917,7 +921,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     catch (Exception ex) {
       ex.printStackTrace();
       getLogWriter().info("Exception : ", ex);
-      fail("Test failed after the put operation", ex);
+      Assert.fail("Test failed after the put operation", ex);
     }
   }
 
@@ -1018,7 +1022,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (Throwable e) {
       e.printStackTrace();
-      fail("This is not expected Exception", e);
+      Assert.fail("This is not expected Exception", e);
     }
 
   }
@@ -1059,7 +1063,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
               .toLocalizedString("return any"))));
     }
     catch (Exception notexpected) {
-      fail("Test failed during execute or sleeping", notexpected);
+      Assert.fail("Test failed during execute or sleeping", notexpected);
     }
     finally {
       cache.getLogger().info(
@@ -1115,7 +1119,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     catch (Exception ex) {
       ex.printStackTrace();
       getLogWriter().info("Exception : ", ex);
-      fail("Test failed after the put operation", ex);
+      Assert.fail("Test failed after the put operation", ex);
     }
   }
 
@@ -1141,7 +1145,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("This is not expected Exception", ex);
+      Assert.fail("This is not expected Exception", ex);
     }
   }
 
@@ -1241,7 +1245,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     catch (Exception ex) {
       ex.printStackTrace();
       getLogWriter().info("Exception : ", ex);
-      fail("Test failed after the put operation", ex);
+      Assert.fail("Test failed after the put operation", ex);
     }
   }
 
@@ -1266,8 +1270,8 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
 }

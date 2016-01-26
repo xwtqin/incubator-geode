@@ -47,8 +47,12 @@ import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
   public class PRClientServerRegionFunctionExecutionSingleHopDUnitTest extends PRClientServerTestBase {
     private static final String TEST_FUNCTION7 = TestFunction.TEST_FUNCTION7;
 
@@ -64,8 +68,8 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
     @Override
     public void setUp() throws Exception {
       //Workaround for bug #52004
-      addExpectedException("InternalFunctionInvocationTargetException");
-      addExpectedException("Connection refused");
+      IgnoredException.addIgnoredException("InternalFunctionInvocationTargetException");
+      IgnoredException.addIgnoredException("Connection refused");
       super.setUp();
     }
 
@@ -132,7 +136,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       registerFunctionAtServer(function);
       isByName = Boolean.TRUE;
       // add expected exception for server going down after wait
-      final ExpectedException expectedEx = addExpectedException(
+      final IgnoredException expectedEx = IgnoredException.addIgnoredException(
           DistributedSystemDisconnectedException.class.getName(), server1);
       try {
         client.invoke(
@@ -252,8 +256,8 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
      * After 5th attempt function will send Boolean as last result.
      */
     public void testserverMultiKeyExecution_FunctionInvocationTargetException() {
-      addExpectedException("FunctionException: IOException while sending");
-      addExpectedException("java.net.SocketException: Software caused connection abort");
+      IgnoredException.addIgnoredException("FunctionException: IOException while sending");
+      IgnoredException.addIgnoredException("java.net.SocketException: Software caused connection abort");
       createScenario();
       client.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class,
           "serverMultiKeyExecution_FunctionInvocationTargetException");
@@ -264,7 +268,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
      * object and using the name of the function
      */
     public void testserverMultiKeyExecutionNoResult_byName(){
-      addExpectedException("Cannot send result");
+      IgnoredException.addIgnoredException("Cannot send result");
       createScenario();
       Function function = new TestFunction(false,TEST_FUNCTION7);
       registerFunctionAtServer(function);
@@ -348,9 +352,9 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
           "verifyDeadAndLiveServers", new Object[] { new Integer(1),
               new Integer(2) });
-      DistributedTestCase.join(async[0], 6 * 60 * 1000, getLogWriter());
+      Threads.join(async[0], 6 * 60 * 1000);
       if (async[0].getException() != null) {
-        fail("UnExpected Exception Occured : ", async[0].getException());
+        Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
       List l = (List)async[0].getReturnValue();
       
@@ -377,9 +381,9 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       server3.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "startServerHA");
       server1.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "closeCacheHA");
       client.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "verifyDeadAndLiveServers",new Object[]{new Integer(1),new Integer(2)});
-      DistributedTestCase.join(async[0],  5 * 60 * 1000, getLogWriter());
+      Threads.join(async[0],  5 * 60 * 1000);
       if(async[0].getException() != null){
-        fail("UnExpected Exception Occured : ", async[0].getException());
+        Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
       List l = (List)async[0].getReturnValue();
       assertEquals(2, l.size());
@@ -494,7 +498,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
     }
     
     public static void executeFunction() throws ServerException,
@@ -644,7 +648,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
         assertEquals(origVals, foundVals);
         
       }catch(Exception e){
-        fail("Test failed after the put operation", e);
+        Assert.fail("Test failed after the put operation", e);
         
       }
     }
@@ -669,12 +673,12 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
         }
         Map resultMap = region.getAll(testKeysList);
         assertTrue(resultMap.equals(origVals));
-        pause(2000);
+        Wait.pause(2000);
         Map secondResultMap = region.getAll(testKeysList);
         assertTrue(secondResultMap.equals(origVals));
         
       }catch(Exception e){
-        fail("Test failed after the put operation", e);
+        Assert.fail("Test failed after the put operation", e);
         
       }
     }
@@ -698,12 +702,12 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
         }
         Map resultMap = region.getAll(testKeysList);
         assertTrue(resultMap.equals(origVals));
-        pause(2000);
+        Wait.pause(2000);
         Map secondResultMap = region.getAll(testKeysList);
         assertTrue(secondResultMap.equals(origVals));
         
       }catch(Exception e){
-        fail("Test failed after the put operation", e);
+        Assert.fail("Test failed after the put operation", e);
         
       }
     }
@@ -797,7 +801,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
         assertEquals(origVals, foundVals);
         
       }catch(Exception e){
-        fail("Test failed after the put operation", e);
+        Assert.fail("Test failed after the put operation", e);
         
       }
     }
@@ -832,7 +836,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
         }
 
       }catch(Exception e){
-        fail("Test failed after the function execution", e);
+        Assert.fail("Test failed after the function execution", e);
         
       }
     }
@@ -862,7 +866,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       }catch (Exception ex) {
         ex.printStackTrace();
         getLogWriter().info("Exception : " , ex);
-        fail("Test failed after the put operation",ex);
+        Assert.fail("Test failed after the put operation",ex);
       }
     }
     
@@ -965,7 +969,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       }
       catch (Throwable e) {
         e.printStackTrace();
-        fail("This is not expected Exception", e);
+        Assert.fail("This is not expected Exception", e);
       }
 
     }
@@ -1003,7 +1007,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
             .toLocalizedString("return any"))));
       }
       catch (Exception notexpected) {
-        fail("Test failed during execute or sleeping", notexpected);
+        Assert.fail("Test failed during execute or sleeping", notexpected);
       } finally {
         cache.getLogger().info("<ExpectedException action=remove>" +
             "FunctionException" +
@@ -1057,7 +1061,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       }catch (Exception ex) {
         ex.printStackTrace();
         getLogWriter().info("Exception : " , ex);
-        fail("Test failed after the put operation",ex);
+        Assert.fail("Test failed after the put operation",ex);
       }
     }
     
@@ -1083,7 +1087,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       }
       catch (Exception ex) {
         ex.printStackTrace();
-        fail("This is not expected Exception", ex);
+        Assert.fail("This is not expected Exception", ex);
       }
     }
     
@@ -1186,7 +1190,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
       }catch (Exception ex) {
         ex.printStackTrace();
         getLogWriter().info("Exception : " , ex);
-        fail("Test failed after the put operation",ex);
+        Assert.fail("Test failed after the put operation",ex);
       }
     }
     
@@ -1212,8 +1216,8 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
     }
     
     @Override
-    public void tearDown2() throws Exception {
-      super.tearDown2();
+    public void tearDownBeforeDisconnect() throws Exception {
+      super.tearDownBeforeDisconnect();
     }
 
 

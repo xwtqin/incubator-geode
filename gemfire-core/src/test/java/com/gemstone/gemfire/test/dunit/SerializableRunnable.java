@@ -16,12 +16,10 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
-import java.io.Serializable;
-
 /**
- * This interface provides both {@link Serializable} and {@link
- * Runnable}.  It is often used in conjunction with {@link
- * VM#invoke(Runnable)}.
+ * This interface provides both {@link java.io.Serializable} and {@link
+ * java.lang.Runnable}.  It is often used in conjunction with {@link
+ * VM#invoke(java.lang.Runnable)}.
  *
  * <PRE>
  * public void testRegionPutGet() {
@@ -46,8 +44,7 @@ import java.io.Serializable;
  *  }
  * </PRE>
  */
-public abstract class SerializableRunnable
-  implements SerializableRunnableIF {
+public abstract class SerializableRunnable implements SerializableRunnableIF {
 
   private static final long serialVersionUID = 7584289978241650456L;
   

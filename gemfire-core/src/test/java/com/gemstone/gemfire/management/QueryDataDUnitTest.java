@@ -53,9 +53,9 @@ import com.gemstone.gemfire.management.internal.cli.json.TypedJson;
 import com.gemstone.gemfire.pdx.PdxInstance;
 import com.gemstone.gemfire.pdx.PdxInstanceFactory;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceFactoryImpl;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -148,8 +148,8 @@ public class QueryDataDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
 
   }
   
@@ -785,7 +785,7 @@ public class QueryDataDUnitTest extends ManagementTestBase {
             final DistributedRegionMXBean regionMBean = MBeanUtil.getDistributedRegionMbean("/"
                 + PartitionedRegionName6, 3);
 
-            DistributedTestCase.waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
 
               public String description() {
                 return "Waiting for all entries to get reflected at managing node";

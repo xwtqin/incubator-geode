@@ -42,12 +42,16 @@ import com.gemstone.gemfire.management.internal.LocalManager;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementStrings;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class ManagementTestBase extends DistributedTestCase {
 
@@ -120,8 +124,8 @@ public class ManagementTestBase extends DistributedTestCase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     closeAllCache();
     managementService = null;
 
@@ -145,7 +149,7 @@ public class ManagementTestBase extends DistributedTestCase {
    * @throws Exception
    */
   public void enableManagement() {
-    invokeInEveryVM(new SerializableRunnable("Enable Management") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Enable Management") {
       public void run() {
         System.setProperty(InternalDistributedSystem.DISABLE_MANAGEMENT_PROPERTY, "false");
       }
@@ -159,7 +163,7 @@ public class ManagementTestBase extends DistributedTestCase {
    * @throws Exception
    */
   public void disableManagement() {
-    invokeInEveryVM(new SerializableRunnable("Disable Management") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Disable Management") {
       public void run() {
         System.setProperty(InternalDistributedSystem.DISABLE_MANAGEMENT_PROPERTY, "true");
       }
@@ -217,7 +221,7 @@ public class ManagementTestBase extends DistributedTestCase {
 
   public Cache createCache(Properties props) {
     System.setProperty("dunitLogPerTest", "true");
-    props.setProperty(DistributionConfig.LOG_FILE_NAME,testName+"-.log");
+    props.setProperty(DistributionConfig.LOG_FILE_NAME,getTestName()+"-.log");
     ds = (new ManagementTestBase("temp")).getSystem(props);
     cache = CacheFactory.create(ds);
     managementService = ManagementService.getManagementService(cache);
@@ -242,7 +246,7 @@ public class ManagementTestBase extends DistributedTestCase {
     }
     props.setProperty(DistributionConfig.ENABLE_TIME_STATISTICS_NAME, "true");
     props.setProperty(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
-    props.setProperty(DistributionConfig.LOG_FILE_NAME,testName+"-.log");
+    props.setProperty(DistributionConfig.LOG_FILE_NAME,getTestName()+"-.log");
     ds = (new ManagementTestBase("temp")).getSystem(props);
     cache = CacheFactory.create(ds);
     managementService = ManagementService.getManagementService(cache);
@@ -294,7 +298,7 @@ public class ManagementTestBase extends DistributedTestCase {
   protected void waitForProxy(final ObjectName objectName,
       final Class interfaceClass) {
 
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public String description() {
         return "Waiting for the proxy of " + objectName.getCanonicalName()
             + " to get propagated to Manager";
@@ -462,7 +466,7 @@ public class ManagementTestBase extends DistributedTestCase {
 
 
         } catch (ManagementException e) {
-          fail("failed with ManagementException", e);
+          Assert.fail("failed with ManagementException", e);
         }
       }
     });
@@ -686,7 +690,7 @@ public class ManagementTestBase extends DistributedTestCase {
     assertNotNull(service.getDistributedSystemMXBean());
 
 
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public String description() {
         return "Waiting All members to intimate DistributedSystemMBean";
       }
@@ -718,7 +722,7 @@ public class ManagementTestBase extends DistributedTestCase {
 
     final long currentTime = System.currentTimeMillis();
 
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       int actualRefreshCount = 0;
       long lastRefreshTime = service.getLastUpdateTime(objectName);
 

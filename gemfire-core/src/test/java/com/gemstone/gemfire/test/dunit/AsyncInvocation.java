@@ -21,13 +21,10 @@ import java.util.concurrent.TimeoutException;
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.SystemFailure;
 
-// @todo davidw Add the ability to get a return value back from the
-// async method call.  (Use a static ThreadLocal field that is
-// accessible from the Runnable used in VM#invoke)
 /**
  * <P>An <code>AsyncInvocation</code> represents the invocation of a
  * remote invocation that executes asynchronously from its caller.  An
- * instanceof <code>AsyncInvocation</code> provides information about
+ * instance of <code>AsyncInvocation</code> provides information about
  * the invocation such as any exception that it may have thrown.</P>
  *
  * <P>Because it is a <code>Thread</code>, an
@@ -50,6 +47,9 @@ import com.gemstone.gemfire.SystemFailure;
  * @see VM#invokeAsync(Class, String)
  */
 public class AsyncInvocation<T> extends Thread {
+  //@todo davidw Add the ability to get a return value back from the
+  //async method call.  (Use a static ThreadLocal field that is
+  //accessible from the Runnable used in VM#invoke)
   
   private static final ThreadLocal returnValue = new ThreadLocal();
 

@@ -37,9 +37,10 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManage
 import com.gemstone.gemfire.internal.cache.CacheDistributionAdvisor.CacheProfile;
 import com.gemstone.gemfire.internal.cache.DistributedRegion;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test {@link RegionMembershipListener}
@@ -66,8 +67,8 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     DistributedRegion.TEST_HOOK_ADD_PROFILE = false;
   }
 
@@ -368,7 +369,7 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
       };
       getLogWriter().info(this.toString() + " waiting for Op " + getOpName(op)
           + " when lastOp was " + getOpName(this.lastOp));
-      DistributedTestCase.waitForCriterion(ev, this.timeOut, 200, true);
+      Wait.waitForCriterion(ev, this.timeOut, 200, true);
       assertEquals(op, this.lastOp);
       return true;
     }

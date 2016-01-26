@@ -105,8 +105,8 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
     createCache();
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
   
   private void createCache() throws Exception {

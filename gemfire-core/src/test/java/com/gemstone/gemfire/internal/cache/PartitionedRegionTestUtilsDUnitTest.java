@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -97,9 +98,9 @@ public class PartitionedRegionTestUtilsDUnitTest extends
             assertNotNull(s);
             assertTrue(s.isEmpty());
           } catch (ClassNotFoundException cnfe) {
-            fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
+            Assert.fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
           } catch (IOException ioe) {
-            fail("GetSomeKeys failed with IOException", ioe);
+            Assert.fail("GetSomeKeys failed with IOException", ioe);
           }
         }
         
@@ -127,9 +128,9 @@ public class PartitionedRegionTestUtilsDUnitTest extends
               assertTrue(val.intValue() < MAXKEYS); 
             }
           } catch (ClassNotFoundException cnfe) {
-            fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
+            Assert.fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
           } catch (IOException ioe) {
-            fail("GetSomeKeys failed with IOException", ioe);
+            Assert.fail("GetSomeKeys failed with IOException", ioe);
           }
         }
       }
@@ -513,7 +514,7 @@ public class PartitionedRegionTestUtilsDUnitTest extends
               assertEquals(0, p.getBucketOwnersForValidation(i).size());
             }
           } catch (ForceReattemptException noGood) {
-            fail("Unexpected force retry", noGood);
+            Assert.fail("Unexpected force retry", noGood);
           }
         }
       }
@@ -562,7 +563,7 @@ public class PartitionedRegionTestUtilsDUnitTest extends
               assertEquals(1, primCount);
             }
           } catch (ForceReattemptException noGood) {
-            fail("Unexpected force retry", noGood);
+            Assert.fail("Unexpected force retry", noGood);
           }
         }
       }

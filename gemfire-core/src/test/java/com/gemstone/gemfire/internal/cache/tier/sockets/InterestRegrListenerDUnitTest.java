@@ -41,6 +41,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Written to test fix for Bug #47132
@@ -447,7 +449,7 @@ public class InterestRegrListenerDUnitTest extends DistributedTestCase {
       }
     };
     
-    waitForCriterion(wc, 20000, 500, true);
+    Wait.waitForCriterion(wc, 20000, 500, true);
     
     getLogWriter().info("Sleeping till durable client queue are expired and unregister event is called on to listener");
     Thread.sleep((DURABLE_CLIENT_TIMEOUT+5)*1000);

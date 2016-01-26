@@ -49,10 +49,14 @@ import com.gemstone.gemfire.management.internal.NotificationHub.NotificationHubL
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.beans.MemberMBean;
 import com.gemstone.gemfire.management.internal.beans.SequenceNumber;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Distributed System tests
@@ -112,8 +116,8 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     
   }
 
@@ -205,7 +209,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
 
         public Object call() throws Exception {
           
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             public String description() {
               return "Waiting for all alert Listener to register with managed node";
             }
@@ -284,7 +288,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
             ManagementService service = getManagementService();
             final DistributedSystemMXBean bean = service.getDistributedSystemMXBean();
             
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
               public String description() {
                 return "Waiting for all members to send their initial Data";
               }
@@ -359,7 +363,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
 
       public void run() {
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           public String description() {
             return "Waiting for all Notifications to reach the Managing Node";
           }
@@ -430,7 +434,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
         ManagementService service = getManagementService();
         final DistributedSystemMXBean bean = service.getDistributedSystemMXBean();
         
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           public String description() {
             return "Waiting for all members to send their initial Data";
           }
@@ -562,7 +566,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
 
         public Object call() throws Exception {
           final AlertNotifListener nt = AlertNotifListener.getInstance();
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             public String description() {
               return "Waiting for all alerts to reach the Managing Node";
             }
@@ -613,7 +617,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
       vm1.invoke(new SerializableCallable("Warning level Alerts") {
 
         public Object call() throws Exception {
-          final ExpectedException warnEx = addExpectedException(WARNING_LEVEL_MESSAGE);
+          final IgnoredException warnEx = IgnoredException.addIgnoredException(WARNING_LEVEL_MESSAGE);
           logger.warn(WARNING_LEVEL_MESSAGE);
           warnEx.remove();
           return null;
@@ -647,7 +651,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
         public Object call() throws Exception {
           // add expected exception strings         
           
-          final ExpectedException severeEx = addExpectedException(SEVERE_LEVEL_MESSAGE);
+          final IgnoredException severeEx = IgnoredException.addIgnoredException(SEVERE_LEVEL_MESSAGE);
           logger.fatal(SEVERE_LEVEL_MESSAGE);
           severeEx.remove();
           return null;
@@ -705,7 +709,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           final DistributedSystemMXBean bean = service.getDistributedSystemMXBean();
           assertNotNull(service.getDistributedSystemMXBean());
           
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             public String description() {
               return "Waiting All members to intitialize DistributedSystemMBean expect 5 but found " + bean.getMemberCount();
             }
@@ -777,7 +781,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           DistributedSystemMXBean bean = service.getDistributedSystemMXBean();
           assertNotNull(service.getDistributedSystemMXBean());
           bean.shutDownAllMembers();
-          staticPause(2000);
+          Threads.staticPause(2000);
           assertEquals(
               cache.getDistributedSystem().getAllOtherMembers().size(), 1);
           return null;

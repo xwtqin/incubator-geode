@@ -44,11 +44,13 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.Resou
 import com.gemstone.gemfire.internal.cache.control.MemoryEvent;
 import com.gemstone.gemfire.internal.cache.control.MemoryThresholds.MemoryState;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class EvictionTestBase extends CacheTestCase {
 
@@ -85,8 +87,8 @@ public class EvictionTestBase extends CacheTestCase {
     dataStore4 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     /*
      * dataStore1.invoke(EvictionTestBase.class, "destroyObjects", new Object[] {
      * setEvictionOn, evictionAlgorithm, regionName, totalNoOfBuckets,
@@ -138,7 +140,7 @@ public class EvictionTestBase extends CacheTestCase {
             .getEvictions();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 60000, 1000, true);
+        Wait.waitForCriterion(wc, 60000, 1000, true);
       }
     });
   }
@@ -297,7 +299,7 @@ public class EvictionTestBase extends CacheTestCase {
       getLogWriter().info("critical= "+cache.getResourceManager().getCriticalHeapPercentage());
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 

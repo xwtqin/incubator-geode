@@ -29,6 +29,7 @@ import java.util.Properties;
 import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.SystemAdmin;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 public class SystemAdminDUnitTest extends DistributedTestCase {
@@ -44,8 +45,8 @@ public class SystemAdminDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     disconnect();
   }
   
@@ -62,7 +63,7 @@ public class SystemAdminDUnitTest extends DistributedTestCase {
   public void testPrintStacks() throws Exception {
 
     // create a gemfire.properties that lets SystemAdmin find the dunit locator
-    Properties p = getAllDistributedSystemProperties(getDistributedSystemProperties());
+    Properties p = DUnitEnv.getAllDistributedSystemProperties(getDistributedSystemProperties());
     try {
       
       SystemAdmin.setDistributedSystemProperties(p);

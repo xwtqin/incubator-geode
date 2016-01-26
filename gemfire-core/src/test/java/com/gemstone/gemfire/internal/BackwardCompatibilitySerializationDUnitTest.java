@@ -70,7 +70,7 @@ public class BackwardCompatibilitySerializationDUnitTest extends CacheTestCase {
   }
 
   @After
-  public void tearDown2() {
+  public void tearDownBeforeDisconnect() {
     resetFlags();
     // reset the class mapped to the dsfid
     DSFIDFactory.registerDSFID(DataSerializableFixedID.PUTALL_VERSIONS_LIST,

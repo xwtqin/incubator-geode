@@ -26,7 +26,9 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -44,9 +46,9 @@ public class PartitionedRegionDelayedRecoveryDUnitTest extends CacheTestCase {
   
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(new SerializableRunnable() {
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);
       }
@@ -156,7 +158,7 @@ public class PartitionedRegionDelayedRecoveryDUnitTest extends CacheTestCase {
             fail("Redundancy recovery did not happen within 60 seconds");
           }
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }

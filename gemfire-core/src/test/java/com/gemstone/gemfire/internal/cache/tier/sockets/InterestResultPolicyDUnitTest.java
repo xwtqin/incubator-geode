@@ -33,9 +33,13 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.cache.client.*;
 
 /**
@@ -59,7 +63,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
 
   private static final String REGION_NAME = "InterestResultPolicyDUnitTest_region" ;
 
-  private ExpectedException expectedEx;
+  private IgnoredException expectedEx;
 
   /**
    * Creates a test instance with the given name
@@ -78,7 +82,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
     final Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     vm1 = host.getVM(1);
@@ -90,10 +94,10 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
    * Closes the cache on server and client
    */
   @Override
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     // might get ServerConnectivityExceptions during shutdown
-    this.expectedEx = addExpectedException(ServerConnectivityException.class
+    this.expectedEx = IgnoredException.addIgnoredException(ServerConnectivityException.class
         .getName());
     // close server
     vm0.invoke(InterestResultPolicyDUnitTest.class, "closeCache");
@@ -125,7 +129,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
     objArr[0] = InterestResultPolicy.NONE;
     objArr[1] = new Integer(PREPOPULATED_ENTRIES);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "createClientCache", new Object[] {
-      getServerHostName(Host.getHost(0)), new Integer(PORT)});
+      NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
     vm1.invoke(InterestResultPolicyDUnitTest.class, "registerInterest", objArr);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "verifyResult", objArr);
     logger.fine("testPolicyNone END");
@@ -147,7 +151,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
     objArr[0] = InterestResultPolicy.KEYS;
     objArr[1] = new Integer(PREPOPULATED_ENTRIES);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "createClientCache", new Object[] {
-      getServerHostName(Host.getHost(0)), new Integer(PORT)});;
+      NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});;
     vm1.invoke(InterestResultPolicyDUnitTest.class, "registerInterest", objArr);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "verifyResult", objArr);
     logger.fine("testPolicyKeys END");
@@ -169,7 +173,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
     objArr[0] = InterestResultPolicy.KEYS_VALUES;
     objArr[1] = new Integer(PREPOPULATED_ENTRIES);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "createClientCache", new Object[] {
-      getServerHostName(Host.getHost(0)), new Integer(PORT)});
+      NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
     vm1.invoke(InterestResultPolicyDUnitTest.class, "registerInterest", objArr);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "verifyResult", objArr);
     logger.fine("testPolicyKeyValues END");
@@ -194,7 +198,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
     /* registering for 5 extra keys */
     objArr[1] = new Integer(PREPOPULATED_ENTRIES + 5);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "createClientCache", new Object[] {
-      getServerHostName(Host.getHost(0)), new Integer(PORT)});
+      NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
     vm1.invoke(InterestResultPolicyDUnitTest.class, "registerInterest", objArr);
     vm1.invoke(InterestResultPolicyDUnitTest.class, "verifyResult", objArr);
     Integer cnt = (Integer)vm0.invoke(InterestResultPolicyDUnitTest.class,
@@ -334,7 +338,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
       region1.registerInterest(keylist, policy);
     }
     catch (CacheWriterException e) {
-      fail("failed to register interestlist for the client", e);
+      Assert.fail("failed to register interestlist for the client", e);
     }
   }
 

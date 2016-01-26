@@ -20,6 +20,8 @@ import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing heap size from Mbean  
@@ -40,8 +42,8 @@ public class TestHeapDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   public static long getHeapSizeOfClient() {    
@@ -68,7 +70,7 @@ public class TestHeapDUnitTest extends ManagementTestBase {
       }
     };
 
-    waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
+    Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
     final DistributedSystemMXBean bean = getManagementService()
         .getDistributedSystemMXBean();
     assertNotNull(bean);

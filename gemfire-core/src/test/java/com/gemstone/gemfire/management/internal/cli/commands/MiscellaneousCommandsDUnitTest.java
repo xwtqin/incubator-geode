@@ -33,9 +33,13 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData.SectionResultData;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.management.internal.cli.result.ResultBuilder;
 import com.gemstone.gemfire.management.internal.cli.result.ResultData;
 import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
@@ -61,8 +65,8 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    invokeInEveryVM(new SerializableRunnable("reset log level") {
+  public void tearDownBeforeDisconnect() throws Exception {
+    Invoke.invokeInEveryVM(new SerializableRunnable("reset log level") {
       public void run() {
         if (cachedLogLevel != null) {
           System.setProperty("gemfire.log-level", cachedLogLevel);
@@ -222,7 +226,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
 
   public void testShutDownWithoutTimeout() {
 
-    addExpectedException("EntryDestroyedException");
+    IgnoredException.addIgnoredException("EntryDestroyedException");
 
     setupForShutDown();
     ThreadUtils.sleep(2500);
@@ -241,7 +245,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
 
     // Need for the Gfsh HTTP enablement during shutdown to properly assess the
     // state of the connection.
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public boolean done() {
         return !defaultShell.isConnectedAndReady();
       }
@@ -259,7 +263,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
     setupForShutDown();
     ThreadUtils.sleep(2500);
 
-    addExpectedException("EntryDestroyedException");
+    IgnoredException.addIgnoredException("EntryDestroyedException");
 
     String command = "shutdown --time-out=15";
     CommandResult cmdResult = executeCommand(command);
@@ -274,7 +278,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
     final HeadlessGfsh defaultShell = getDefaultShell();
 
     // Need for the Gfsh HTTP enablement during shutdown to properly assess the state of the connection.
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public boolean done() {
         return !defaultShell.isConnectedAndReady();
       }
@@ -383,7 +387,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
         return "Wait for gfsh to get disconnected from Manager.";
       }
     };
-    waitForCriterion(waitCriterion, 5000, 200, true);
+    Wait.waitForCriterion(waitCriterion, 5000, 200, true);
 
     assertTrue(Boolean.FALSE.equals(vm1.invoke(connectedChecker)));
     assertTrue(Boolean.FALSE.equals(vm0.invoke(connectedChecker)));

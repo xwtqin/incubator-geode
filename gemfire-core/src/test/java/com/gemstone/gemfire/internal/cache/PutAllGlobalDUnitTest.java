@@ -44,10 +44,13 @@ import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.locks.DLockGrantor;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -88,14 +91,14 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
       getLogWriter().fine("Cache created successfully");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);
         vm0.invoke(PutAllGlobalDUnitTest.class, "closeCache");
         vm1.invoke(PutAllGlobalDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCacheForVM0(){
@@ -196,21 +199,21 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
                     }
                 }
                 catch(Exception ex){
-                  fail("async2 threw unexpected exception", ex);
+                  Assert.fail("async2 threw unexpected exception", ex);
                     //ex.printStackTrace();
                 } 
             }
         });
         
-        DistributedTestCase.join(async2, 30 * 1000, getLogWriter());
+        Threads.join(async2, 30 * 1000);
         if (async2.exceptionOccurred()) {
-          DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
-          fail("async2 failed", async2.getException());
+          Threads.join(async1, 30 * 1000);
+          Assert.fail("async2 failed", async2.getException());
         }
         
-        DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+        Threads.join(async1, 30 * 1000);
         if (async1.exceptionOccurred()) {
-          fail("async1 failed", async1.getException());
+          Assert.fail("async1 failed", async1.getException());
         }
         
     }//end of test case1
@@ -231,7 +234,7 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
             
         }catch(Exception ex){
 //            ex.printStackTrace();
-            fail("Failed while region.putAll", ex);
+            Assert.fail("Failed while region.putAll", ex);
         }
     }//end of putAllMethod
     

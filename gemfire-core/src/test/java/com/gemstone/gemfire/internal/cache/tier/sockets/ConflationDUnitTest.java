@@ -40,9 +40,13 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.ha.HAHelper;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 
@@ -136,9 +140,9 @@ public class ConflationDUnitTest extends DistributedTestCase
   {
     try {
       vm0.invoke(ConflationDUnitTest.class, "setIsSlowStart");
-      createClientCache1UniqueWriter ( getServerHostName(Host.getHost(0)), new Integer(PORT));
+      createClientCache1UniqueWriter ( NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT));
       vm2.invoke(ConflationDUnitTest.class, "createClientCache2UniqueWriter",
-          new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT)});
+          new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
       vm2.invoke(ConflationDUnitTest.class, "setClientServerObserverForBeforeInterestRecovery");
       vm2.invoke(ConflationDUnitTest.class, "setAllCountersZero");
       vm2.invoke(ConflationDUnitTest.class, "assertAllCountersZero");
@@ -155,7 +159,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm2.invoke(ConflationDUnitTest.class, "assertCounterSizes");
     }
     catch( Exception e ) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
 
@@ -167,9 +171,9 @@ public class ConflationDUnitTest extends DistributedTestCase
   {
     try {
       vm0.invoke(ConflationDUnitTest.class, "setIsSlowStart");
-      createClientCache1CommonWriter( getServerHostName(Host.getHost(0)), new Integer(PORT));
+      createClientCache1CommonWriter( NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT));
       vm2.invoke(ConflationDUnitTest.class, "createClientCache2CommonWriter",
-          new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT)});
+          new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
       vm2.invoke(ConflationDUnitTest.class, "setClientServerObserverForBeforeInterestRecovery");
       vm2.invoke(ConflationDUnitTest.class, "setAllCountersZero");
       vm2.invoke(ConflationDUnitTest.class, "assertAllCountersZero");
@@ -186,7 +190,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm2.invoke(ConflationDUnitTest.class, "assertCounterSizes");
     }
     catch( Exception e ) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
 
@@ -199,10 +203,10 @@ public class ConflationDUnitTest extends DistributedTestCase
   {
     try {
       vm0.invoke(ConflationDUnitTest.class, "setIsSlowStart");
-      createClientCache1CommonWriterTest3(getServerHostName(Host.getHost(0)), new Integer(PORT));
+      createClientCache1CommonWriterTest3(NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT));
       vm2.invoke(ConflationDUnitTest.class,
           "createClientCache2CommonWriterTest3", new Object[] {
-        getServerHostName(Host.getHost(0)), new Integer(PORT) });
+        NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT) });
       vm2.invoke(ConflationDUnitTest.class, "setClientServerObserverForBeforeInterestRecovery");
       vm2.invoke(ConflationDUnitTest.class, "setAllCountersZero");
       vm2.invoke(ConflationDUnitTest.class, "assertAllCountersZero");
@@ -221,7 +225,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm0.invoke(ConflationDUnitTest.class, "assertConflationStatus");
     }
     catch (Exception e) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
   /**
@@ -518,7 +522,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
 
     ev = new WaitCriterion() {
       public boolean done() {
@@ -529,7 +533,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     ev = new WaitCriterion() {
       public boolean done() {
@@ -540,7 +544,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
   }
 
 
@@ -559,7 +563,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     // assertEquals("creates", 2, counterCreate);
     
     ev = new WaitCriterion() {
@@ -571,7 +575,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     // assertEquals("destroys", 2, counterDestroy);
     // assertTrue("updates", 20000 >= counterUpdate);
@@ -584,7 +588,7 @@ public class ConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
   }
 
   public static void waitForMarker()
@@ -729,7 +733,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.create()", ex);
+      Assert.fail("failed while region.create()", ex);
     }
   }
 
@@ -751,7 +755,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -765,7 +769,7 @@ public class ConflationDUnitTest extends DistributedTestCase
    }
    catch (Exception ex) {
      ex.printStackTrace();
-     fail("failed while region.create() marker", ex);
+     Assert.fail("failed while region.create() marker", ex);
    }
  }
 
@@ -788,7 +792,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -835,7 +839,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.get()", ex);
+      Assert.fail("failed while region.get()", ex);
     }
   }
 
@@ -903,7 +907,7 @@ public class ConflationDUnitTest extends DistributedTestCase
   /**
    * close the cache in tearDown
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     // close client
     closeCache();

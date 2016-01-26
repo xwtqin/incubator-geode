@@ -398,7 +398,7 @@ public class SystemFailureDUnitTest extends DistributedCacheTestCase {
   
   protected static Boolean verifyConnected() {
     if (SystemFailure.getFailure() != null) {
-      fail("System failure present!", SystemFailure.getFailure());
+      com.gemstone.gemfire.test.dunit.Assert.fail("System failure present!", SystemFailure.getFailure());
       return Boolean.FALSE;
     }
     GemFireCacheImpl gfc = (GemFireCacheImpl)cache;

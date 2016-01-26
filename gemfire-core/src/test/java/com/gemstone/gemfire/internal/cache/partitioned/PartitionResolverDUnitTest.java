@@ -78,8 +78,8 @@ public class PartitionResolverDUnitTest extends CacheTestCase {
     datastore2 = host.getVM(2);
   }
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     CountingResolver.resetResolverCount();
   }
   void createRegion(boolean isAccessor, int redundantCopies) {

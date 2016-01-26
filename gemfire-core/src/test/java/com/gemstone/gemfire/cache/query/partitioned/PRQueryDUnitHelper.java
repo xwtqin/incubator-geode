@@ -83,6 +83,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
 import com.gemstone.gemfire.util.test.TestUtil;
@@ -1832,7 +1833,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           //Wait for recovery to finish
           cdl.await();
         } catch (InterruptedException e) {
-          fail("interupted", e);
+          Assert.fail("interupted", e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
@@ -2124,7 +2125,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
            */
         }
         catch (Exception ex) {
-          fail("Creating Index in this vm failed : ", ex);
+          Assert.fail("Creating Index in this vm failed : ", ex);
         }
       }
     };
@@ -2171,7 +2172,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             }
             fail("Multi index creation failed, " + sb);
           } else {
-           fail("Creating Index in this vm failed : ", ex);
+           Assert.fail("Creating Index in this vm failed : ", ex);
           }
         }
         assertNotNull("Indexes should have been created.", indexes);
@@ -2215,7 +2216,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           
         }
         catch (Exception ex) {
-          fail("Creating Index in this vm failed : ", ex);
+          Assert.fail("Creating Index in this vm failed : ", ex);
         }
       }
     };
@@ -2290,7 +2291,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
       pw.close();
     }
     catch (IOException ex) {
-      fail("IOException during cache.xml generation to " + file, ex);
+      Assert.fail("IOException during cache.xml generation to " + file, ex);
     }
 
   }
@@ -2435,7 +2436,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
         catch (RegionNotFoundException exx) {
           // TODO Auto-generated catch block
-          fail("Region Not found in this vm ", exx);
+          Assert.fail("Region Not found in this vm ", exx);
         }
 
       }

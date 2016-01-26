@@ -171,7 +171,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         FileUtil.delete(new File(path));
@@ -180,7 +180,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
   
   public static class PdxValue implements PdxSerializable {

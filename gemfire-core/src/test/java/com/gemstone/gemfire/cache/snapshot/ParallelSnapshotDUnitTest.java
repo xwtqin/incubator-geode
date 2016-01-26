@@ -161,8 +161,8 @@ public class ParallelSnapshotDUnitTest extends CacheTestCase {
     loadCache();
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     
     File[] snaps = new File(".").listFiles(new FilenameFilter() {
       @Override

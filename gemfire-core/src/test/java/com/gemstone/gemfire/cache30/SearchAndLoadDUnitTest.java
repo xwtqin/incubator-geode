@@ -33,9 +33,12 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.RegionEvent;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.TimeoutException;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -72,7 +75,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
     super(name);
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     for (int h = 0; h < Host.getHostCount(); h++) {
       Host host = Host.getHost(h);
       for (int v = 0; v < host.getVMCount(); v++) {
@@ -86,7 +89,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
       }
     }
     cleanup();
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   /**
@@ -130,7 +133,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           region.create(objectName,null);
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -148,7 +151,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -166,7 +169,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -181,10 +184,10 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 //         System.err.println("Results is " + result.toString() + " Key is " + objectName.toString());
         }
         catch(CacheLoaderException cle) {
-          fail("While Get a value", cle);
+          Assert.fail("While Get a value", cle);
         }
         catch(TimeoutException te) {
-          fail("While Get a value", te);
+          Assert.fail("While Get a value", te);
         }
       }
 
@@ -259,7 +262,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         Region region = createRegion(name,factory.create());
         region.create(objectName, null);
-        addExpectedException(exceptionString);
+        IgnoredException.addIgnoredException(exceptionString);
       }
     });
 
@@ -378,10 +381,10 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           assertNull(result);
         }
         catch(CacheLoaderException cle) {
-          fail("While getting value for ACK region", cle);
+          Assert.fail("While getting value for ACK region", cle);
         }
         catch(TimeoutException te) {
-          fail("While getting value for ACK region", te);
+          Assert.fail("While getting value for ACK region", te);
         }
 
       }
@@ -392,7 +395,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
   public void testNetLoad()
   throws CacheException, InterruptedException {
-    invokeInEveryVM(DistributedTestCase.class,
+    Invoke.invokeInEveryVM(DistributedTestCase.class,
         "disconnectFromDS");
 
     Host host = Host.getHost(0);
@@ -426,7 +429,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -449,7 +452,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           createRegion(name,factory.create());
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -464,7 +467,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
           }
           catch(CacheLoaderException cle) {
-            fail("While getting value for ACK region", cle);
+            Assert.fail("While getting value for ACK region", cle);
 
           }
 /*        catch(EntryNotFoundException enfe) {
@@ -472,7 +475,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
           }*/
           catch(TimeoutException te) {
-            fail("While getting value for ACK region", te);
+            Assert.fail("While getting value for ACK region", te);
 
           }
         }
@@ -487,7 +490,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
    */
   public void testEmptyNetLoad()
   throws CacheException, InterruptedException {
-    invokeInEveryVM(DistributedTestCase.class,
+    Invoke.invokeInEveryVM(DistributedTestCase.class,
         "disconnectFromDS");
 
     Host host = Host.getHost(0);
@@ -522,7 +525,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           region.create(objectName,null);
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -549,7 +552,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
             createRegion(name,factory.create());
           }
           catch (CacheException ex) {
-            fail("While creating ACK region", ex);
+            Assert.fail("While creating ACK region", ex);
           }
         }
       };
@@ -566,7 +569,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
           }
           catch(CacheLoaderException cle) {
-            fail("While getting value for ACK region", cle);
+            Assert.fail("While getting value for ACK region", cle);
 
           }
 /*        catch(EntryNotFoundException enfe) {
@@ -574,7 +577,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
           }*/
           catch(TimeoutException te) {
-            fail("While getting value for ACK region", te);
+            Assert.fail("While getting value for ACK region", te);
 
           }
         }
@@ -640,7 +643,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -665,7 +668,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           createRegion(name,factory.create());
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -731,7 +734,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating ACK region", ex);
+          Assert.fail("While creating ACK region", ex);
         }
       }
     });
@@ -746,7 +749,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
             createRegion(name,factory.create());
           }
           catch (CacheException ex) {
-            fail("While creating ACK region", ex);
+            Assert.fail("While creating ACK region", ex);
           }
         }
     });
@@ -828,7 +831,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating replicated region", ex);
+          Assert.fail("While creating replicated region", ex);
         }
       }
     });
@@ -841,7 +844,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
             createRegion(name,factory.create());
           }
           catch (CacheException ex) {
-            fail("While creating empty region", ex);
+            Assert.fail("While creating empty region", ex);
           }
         }
     });
@@ -910,7 +913,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           createRegion(name,factory.create());
         }
         catch (CacheException ex) {
-          fail("While creating empty region", ex);
+          Assert.fail("While creating empty region", ex);
         }
       }
     });
@@ -923,7 +926,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
             createRegion(name,factory.create());
           }
           catch (CacheException ex) {
-            fail("While creating empty region", ex);
+            Assert.fail("While creating empty region", ex);
           }
         }
     });
@@ -964,7 +967,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
 
         }
         catch (CacheException ex) {
-          fail("While creating replicated region", ex);
+          Assert.fail("While creating replicated region", ex);
         }
       }
     });

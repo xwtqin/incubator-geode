@@ -32,11 +32,14 @@ import com.gemstone.gemfire.cache.RegionEvent;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author ashahid
@@ -166,7 +169,7 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
     region.clear();
     assertEquals(0, region.size());
   }
@@ -230,28 +233,28 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
                 return null;
               }
             };
-            DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+            Wait.waitForCriterion(ev, 30 * 1000, 200, true);
           }
         });
       // now that the gii has received some entries do the clear
       vm1.invoke(MapClearGIIDUnitTest.class, "clearRegionInVm1");
       // wait for GII to complete
-      DistributedTestCase.join(asyncGII, 30 * 1000, getLogWriter());
+      Threads.join(asyncGII, 30 * 1000);
       if (asyncGII.exceptionOccurred()) {
         Throwable t = asyncGII.getException();
-        fail("createRegionInVM0 failed", t);
+        Assert.fail("createRegionInVM0 failed", t);
       }
       assertTrue(vm0
           .invokeBoolean(MapClearGIIDUnitTest.class, "checkImageStateFlag"));
 
       if (asyncGII.exceptionOccurred()) {
-        fail("asyncGII failed", asyncGII.getException());
+        Assert.fail("asyncGII failed", asyncGII.getException());
       }
 				   
 	  
     }
     catch (Exception e) {
-      fail("Test failed", e);
+      Assert.fail("Test failed", e);
     }
     finally {
       vm0.invoke(new SerializableRunnable("Set fast image processing") {

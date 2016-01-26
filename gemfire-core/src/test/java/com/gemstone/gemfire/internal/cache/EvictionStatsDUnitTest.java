@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.lru.HeapLRUCapacityController;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -415,7 +416,7 @@ public class EvictionStatsDUnitTest extends CacheTestCase {
       cache.getResourceManager().setEvictionHeapPercentage(20);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 

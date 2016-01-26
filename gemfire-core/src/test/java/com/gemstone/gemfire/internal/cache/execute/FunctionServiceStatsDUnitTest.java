@@ -52,11 +52,12 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionTestHelper;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /*
  * This is DUnite Test to test the Function Execution stats under various
@@ -398,13 +399,13 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
             server.start();
           }
           catch (IOException e) {
-            fail("Failed to start the Server", e);
+            Assert.fail("Failed to start the Server", e);
           }
           assertTrue(server.isRunning());
           return new Integer(server.getPort());
         }
         catch (Exception e) {
-          fail(
+          Assert.fail(
               "FunctionServiceStatsDUnitTest#createCache() Failed while creating the cache",
               e);
           throw e;
@@ -460,7 +461,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           return Boolean.TRUE;
         }
         catch (Exception e) {
-          fail(
+          Assert.fail(
               "FunctionServiceStatsDUnitTest#createCache() Failed while creating the cache",
               e);
           throw e;
@@ -517,12 +518,12 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         }
         catch (FunctionException e) {
           e.printStackTrace();
-          fail("test failed due to", e);
+          Assert.fail("test failed due to", e);
           throw e;
         }
         catch (Exception e) {
           e.printStackTrace();
-          fail("test failed due to", e);
+          Assert.fail("test failed due to", e);
           throw e;
         }
       
@@ -1028,12 +1029,12 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         }
         catch (FunctionException e) {
           e.printStackTrace();
-          fail("test failed due to", e);
+          Assert.fail("test failed due to", e);
           return Boolean.FALSE;
         }
         catch (Exception e) {
           e.printStackTrace();
-          fail("test failed due to", e);
+          Assert.fail("test failed due to", e);
           return Boolean.FALSE;
         }
         
@@ -1090,7 +1091,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           assertNotNull(ds);
         }
         catch (Exception e) {
-          fail("Failed while creating the Distribued System", e);
+          Assert.fail("Failed while creating the Distribued System", e);
         }
         return Boolean.TRUE;
       }
@@ -1149,7 +1150,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         catch (Exception e) {
           getLogWriter().info("Exception Occured : " + e.getMessage());
           e.printStackTrace();
-          fail("Test failed", e);
+          Assert.fail("Test failed", e);
         }
         return Boolean.TRUE;
       }
@@ -1296,7 +1297,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
               return excuse;
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 20000, 1000, false);
+          Wait.waitForCriterion(wc, 20000, 1000, false);
           rc.getResult();
         }
         catch (Exception expected) {
@@ -1365,7 +1366,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
   // this tear down is geeting used in client server mode. this is making use of
   // cache object for client server
   //For P2P, i have added separate closeDistributedSystem method 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 }

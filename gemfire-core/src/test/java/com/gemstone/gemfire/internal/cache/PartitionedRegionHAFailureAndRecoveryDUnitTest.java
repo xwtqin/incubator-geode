@@ -32,11 +32,13 @@ import com.gemstone.gemfire.cache30.CertifiableTestCacheListener;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.NanoTimer;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -396,12 +398,12 @@ public class PartitionedRegionHAFailureAndRecoveryDUnitTest extends
           redundancy, localMaxMemory, recoveryDelay));
     }
     for (int count2 = 0; count2 < async.length; count2++) {
-        DistributedTestCase.join(async[count2], 30 * 1000, getLogWriter());
+        Threads.join(async[count2], 30 * 1000);
      }
     
     for (int count2 = 0; count2 < async.length; count2++) {
       if (async[count2].exceptionOccurred()) {
-        fail("exception during " + count2, async[count2].getException());
+        Assert.fail("exception during " + count2, async[count2].getException());
       }
     }  
   }
@@ -453,7 +455,7 @@ public class PartitionedRegionHAFailureAndRecoveryDUnitTest extends
     assertNotNull(bucketHost);
     
     // Disconnect the selected host 
-    Map stillHasDS = invokeInEveryVM(new SerializableCallable("Disconnect provided bucketHost") {
+    Map stillHasDS = Invoke.invokeInEveryVM(new SerializableCallable("Disconnect provided bucketHost") {
       public Object call() throws Exception {
         if (getSystem().getDistributedMember().equals(bucketHost)) {
           getLogWriter().info("Disconnecting distributed member " + getSystem().getDistributedMember());
@@ -491,7 +493,7 @@ public class PartitionedRegionHAFailureAndRecoveryDUnitTest extends
                   TimeUnit.MILLISECONDS.sleep(250);
                 }
                 catch (InterruptedException e) {
-                  fail("Interrupted, ah!", e);
+                  Assert.fail("Interrupted, ah!", e);
                 }
               }
             }

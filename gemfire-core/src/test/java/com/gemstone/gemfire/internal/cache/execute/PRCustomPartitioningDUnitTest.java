@@ -51,6 +51,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisitor;
 import com.gemstone.gemfire.internal.cache.xmlcache.Declarable2;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -204,7 +205,7 @@ public class PRCustomPartitioningDUnitTest extends
               ppr.dumpAllBuckets(false);
             }
             catch (ReplyException re) {
-              fail("dumpAllBuckets", re);
+              Assert.fail("dumpAllBuckets", re);
             }
           }
         });
@@ -240,7 +241,7 @@ public class PRCustomPartitioningDUnitTest extends
               ppr.dumpAllBuckets(false);
             }
             catch (ReplyException re) {
-              fail("dumpAllBuckets", re);
+              Assert.fail("dumpAllBuckets", re);
             }
           }
         });
@@ -275,7 +276,7 @@ public class PRCustomPartitioningDUnitTest extends
               ppr.dumpAllBuckets(false);
             }
             catch (ReplyException re) {
-              fail("dumpAllBuckets", re);
+              Assert.fail("dumpAllBuckets", re);
             }
           }
         });
@@ -310,7 +311,7 @@ public class PRCustomPartitioningDUnitTest extends
               ppr.dumpAllBuckets(false);
             }
             catch (ReplyException re) {
-              fail("dumpAllBuckets", re);
+              Assert.fail("dumpAllBuckets", re);
             }
           }
         });

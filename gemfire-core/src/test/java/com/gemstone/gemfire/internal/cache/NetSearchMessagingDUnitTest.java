@@ -39,6 +39,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author dsmith
@@ -353,7 +355,7 @@ public class NetSearchMessagingDUnitTest extends CacheTestCase {
   }
   
   private void waitForReceivedMessages(final VM vm, final long expected) {
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       
       @Override
       public boolean done() {

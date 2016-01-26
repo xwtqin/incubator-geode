@@ -41,8 +41,11 @@ import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * concurrency-control tests for client/server
@@ -80,8 +83,8 @@ public class PRBucketSynchronizationDUnitTest extends CacheTestCase {
    * did not see secondary buckets perform a delta-GII.
    */
   public void doBucketsSyncOnPrimaryLoss(TestType typeOfTest) {
-    addExpectedException("killing member's ds");
-    addExpectedException("killing member's ds");
+    IgnoredException.addIgnoredException("killing member's ds");
+    IgnoredException.addIgnoredException("killing member's ds");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -227,7 +230,7 @@ public class PRBucketSynchronizationDUnitTest extends CacheTestCase {
       public Object call() throws Exception {
         PartitionedRegion pr = (PartitionedRegion)TestRegion;
         final BucketRegion bucket = pr.getDataStore().getLocalBucketById(0);
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           String waitingFor = "primary is still in membership view: " + crashedMember;
           boolean dumped = false;
           public boolean done() {

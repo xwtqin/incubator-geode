@@ -43,6 +43,8 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -84,7 +86,7 @@ public class PutAllCallBkRemoteVMDUnitTest extends DistributedTestCase {
       getLogWriter().info("Cache created successfully");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);
@@ -184,7 +186,7 @@ public class PutAllCallBkRemoteVMDUnitTest extends DistributedTestCase {
                     return "Waiting for event";
                   }
                 };
-                DistributedTestCase.waitForCriterion(ev, 3000, 200, true);
+                Wait.waitForCriterion(ev, 3000, 200, true);
             }
         });
         

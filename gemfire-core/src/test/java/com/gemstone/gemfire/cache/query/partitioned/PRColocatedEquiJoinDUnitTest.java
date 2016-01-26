@@ -54,7 +54,9 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author shobhit
@@ -174,7 +176,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
 
   public void testNonColocatedPRLocalQuerying() throws Exception
   {
-    addExpectedException("UnsupportedOperationException");
+    IgnoredException.addIgnoredException("UnsupportedOperationException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
@@ -1550,7 +1552,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
 
     //Let async index updates be finished.
-    pause(5000);
+    Wait.pause(5000);
 
     // querying the VM for data and comparing the result with query result of
     // local region.

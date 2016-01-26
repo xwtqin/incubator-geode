@@ -19,6 +19,7 @@ package com.gemstone.gemfire.cache30;
 import com.gemstone.gemfire.cache.*;
 //import com.gemstone.gemfire.cache.util.*;
 //import java.util.*;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * An abstract class whose test methods test the functionality of
@@ -290,7 +291,7 @@ public abstract class CacheListenerTestCase
     assertTrue(region.getAttributes().getCacheListener() != null);
 //    com.gemstone.gemfire.internal.util.DebuggerSupport.waitForJavaDebugger(getLogWriter());
     region.destroyRegion();
-    pause(100); // extra pause
+    Wait.pause(100); // extra pause
     assertTrue(region.isDestroyed());
     assertTrue(listener.wasInvoked());
 
@@ -345,7 +346,7 @@ public abstract class CacheListenerTestCase
 
     region = createRegion(name, attrs);
     region.invalidateRegion();
-    pause(500);
+    Wait.pause(500);
     assertTrue(listener.wasInvoked());
     assertEquals(0, region.values().size());
   }

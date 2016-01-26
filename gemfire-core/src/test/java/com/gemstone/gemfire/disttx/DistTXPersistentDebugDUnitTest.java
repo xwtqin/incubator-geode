@@ -27,6 +27,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.Customer;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
@@ -38,7 +39,7 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    this.invokeInEveryVM(new SerializableCallable() {
+    Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
         //System.setProperty("gemfire.ALLOW_PERSISTENT_TRANSACTIONS", "true");
@@ -49,8 +50,8 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    this.invokeInEveryVM(new SerializableCallable() {
+  public void tearDownBeforeDisconnect() throws Exception {
+    Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
         //System.setProperty("gemfire.ALLOW_PERSISTENT_TRANSACTIONS", "false");
@@ -58,7 +59,7 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
         return null;
       }
     }); 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
   
   protected void createPesistentPR(Object[] attributes) {

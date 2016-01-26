@@ -35,6 +35,7 @@ import com.gemstone.gemfire.internal.cache.CacheObserverAdapter;
 import com.gemstone.gemfire.internal.cache.CacheObserverHolder;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 import java.util.Properties;
@@ -83,7 +84,7 @@ public class ClearGlobalDUnitTest extends DistributedTestCase
     getLogWriter().fine("Cache created in successfully");
   }
 
-  public void tearDown2()
+  public void tearDownBeforeDisconnect()
   {        
     server1.invoke(ClearGlobalDUnitTest.class, "closeCache");
     resetClearCallBack();
@@ -182,7 +183,7 @@ public class ClearGlobalDUnitTest extends DistributedTestCase
     {
       Thread th = new PutThread();
       th.start();
-      DistributedTestCase.join(th, 5 * 60 * 1000, getLogWriter());
+      Threads.join(th, 5 * 60 * 1000);
       synchronized (lock) {    
         testComplete = true;
         lock.notify();

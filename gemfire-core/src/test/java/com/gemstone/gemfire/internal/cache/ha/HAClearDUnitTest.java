@@ -39,6 +39,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.Region;
 
@@ -106,9 +107,9 @@ public class HAClearDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     client1.invoke(HAClearDUnitTest.class, "closeCache");
     client2.invoke(HAClearDUnitTest.class, "closeCache");
     server1.invoke(HAClearDUnitTest.class, "closeCache");
@@ -559,14 +560,14 @@ public class HAClearDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(HAClearDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(HAClearDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(Host.getHost(0)),
+        NetworkSupport.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2), new Boolean(true),
         new Boolean(true) });
     client2.invoke(HAClearDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(Host.getHost(0)),
+        NetworkSupport.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2), new Boolean(true),
         new Boolean(true) });
-    createClientCache(getServerHostName(Host.getHost(0)),
+    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2),
         new Boolean(true), new Boolean(true));
   }

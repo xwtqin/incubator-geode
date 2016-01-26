@@ -48,10 +48,12 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Client health stats check
@@ -101,11 +103,11 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     server = host.getVM(1);
     client = host.getVM(2);
     client2 = host.getVM(3);
-    addExpectedException("Connection reset");
+    IgnoredException.addIgnoredException("Connection reset");
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     reset();
     helper.closeCache(managingNode);
     helper.closeCache(client);
@@ -233,9 +235,9 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     props.setProperty(DistributionConfig.DURABLE_CLIENT_ID_NAME, "durable-"+clientNum);
     props.setProperty(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, "300000");
 
-    props.setProperty("log-file", testName+"_client_" + clientNum + ".log");
+    props.setProperty("log-file", getTestName()+"_client_" + clientNum + ".log");
     props.setProperty("log-level", "info");
-    props.setProperty("statistic-archive-file", testName+"_client_" + clientNum
+    props.setProperty("statistic-archive-file", getTestName()+"_client_" + clientNum
         + ".gfs");
     props.setProperty("statistic-sampling-enabled", "true");
 
@@ -340,7 +342,7 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
         return "Did not receive last key.";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60*1000, 500, true);
+    Wait.waitForCriterion(wc, 60*1000, 500, true);
   }
 
 

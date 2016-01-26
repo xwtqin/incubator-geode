@@ -43,7 +43,9 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.persistence.UninterruptibleFileChannel;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -179,8 +181,8 @@ public class Bug39079DUnitTest extends CacheTestCase {
   
 
  
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     disconnectAllFromDS();
 
     vm0.invoke(Bug39079DUnitTest.class, "ignorePreAllocate", new Object[] { Boolean.FALSE });
@@ -307,7 +309,7 @@ public class Bug39079DUnitTest extends CacheTestCase {
    Integer port = (Integer)vm0.invoke(Bug39079DUnitTest.class, "createServerCache");
    //create cache client
    vm1.invoke(Bug39079DUnitTest.class, "createClientCache",
-       new Object[] { getServerHostName(vm0.getHost()), port});
+       new Object[] { NetworkSupport.getServerHostName(vm0.getHost()), port});
    
    // validate 
    vm0.invoke(Bug39079DUnitTest.class, "validateRuningBridgeServerList");
@@ -370,7 +372,7 @@ public class Bug39079DUnitTest extends CacheTestCase {
       }catch(DiskAccessException dae) {
         //OK expected
       }catch (IOException e) {
-        fail("test failed due to ", e);
+        Assert.fail("test failed due to ", e);
       }
       
       ((LocalRegion) region).getDiskStore().waitForClose();

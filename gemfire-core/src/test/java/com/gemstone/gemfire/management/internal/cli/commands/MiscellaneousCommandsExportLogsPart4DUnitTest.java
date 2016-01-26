@@ -52,8 +52,8 @@ public class MiscellaneousCommandsExportLogsPart4DUnitTest extends CliCommandTes
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   void setupForExportLogs() {

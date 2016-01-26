@@ -50,9 +50,11 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.ReplyMessage;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.partitioned.PersistentPartitionedRegionTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -72,13 +74,13 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     StringBuilder failures = new StringBuilder();
     FileUtil.delete(getBackupDir(), failures);
     if (failures.length() > 0) {
       getLogWriter().error(failures.toString());
     }
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
   
   public void testBackupPR() throws Throwable {
@@ -119,7 +121,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
     closeCache(vm1);
     
     //Destroy the current data
-    invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
       public void run() {
         try {
           cleanDiskDirs();
@@ -176,7 +178,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
     closeCache(vm1);
     
     //Destroy the current data
-    invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
       public void run() {
         try {
           cleanDiskDirs();
@@ -266,7 +268,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
       closeCache(vm1);
 
       //Destroy the current data
-      invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
+      Invoke.invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
         public void run() {
           try {
             cleanDiskDirs();
@@ -402,7 +404,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
           results = op.getResults();
           assertEquals(1, results.getTotalBucketTransfersCompleted());
         } catch (Exception e) {
-          fail("interupted", e);
+          Assert.fail("interupted", e);
         }
       }
     });
@@ -416,7 +418,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
     closeCache(vm1);
 
     //Destroy the current data
-    invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Clean disk dirs") {
       public void run() {
         try {
           cleanDiskDirs();

@@ -51,11 +51,13 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class PRClientServerTestBase extends CacheTestCase {
 
@@ -151,7 +153,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -183,7 +185,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -216,7 +218,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -231,7 +233,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -254,7 +256,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }       
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -474,7 +476,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createCacheClient",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
@@ -489,7 +491,7 @@ public class PRClientServerTestBase extends CacheTestCase {
         new Object[] {commonAttributes ,new Integer(localMaxMemoryServer2) });
     serverPort1 = port1;
     client.invoke(PRClientServerTestBase.class, "createCacheClient_SingleConnection",
-        new Object[] { getServerHostName(server1.getHost()), port1});
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1});
   }
   
   
@@ -510,7 +512,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createCacheClientWith2Regions",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
@@ -559,7 +561,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createNoSingleHopCacheClient",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
   
@@ -579,7 +581,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createNoSingleHopCacheClient",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
@@ -598,7 +600,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort3 = port3;
     
     client.invoke(PRClientServerTestBase.class, "createCacheClientWithoutRegion",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });    
   }
   
@@ -617,7 +619,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     
     
     client.invoke(PRClientServerTestBase.class, "createCacheClientWithDistributedRegion",
-        new Object[] { getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
             port3 });    
   }
 
@@ -675,7 +677,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 
@@ -691,7 +693,7 @@ public class PRClientServerTestBase extends CacheTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 2000, 500, false);
+    Wait.waitForCriterion(wc, 2000, 500, false);
     Collection bridgeServers = cache.getCacheServers();
     getLogWriter().info(
         "Start Server Bridge Servers list : " + bridgeServers.size());
@@ -718,7 +720,7 @@ public class PRClientServerTestBase extends CacheTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 1000, 200, false);
+    Wait.waitForCriterion(wc, 1000, 200, false);
     try {
       Iterator iter = cache.getCacheServers().iterator();
       if (iter.hasNext()) {
@@ -731,8 +733,8 @@ public class PRClientServerTestBase extends CacheTestCase {
     }
   }  
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     closeCache();
     client.invoke(PRClientServerTestBase.class, "closeCache");
     server1.invoke(PRClientServerTestBase.class, "closeCache");
@@ -759,7 +761,7 @@ public class PRClientServerTestBase extends CacheTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 1000, 200, false);
+    Wait.waitForCriterion(wc, 1000, 200, false);
     if (cache != null && !cache.isClosed()) {
       cache.close();
     }
@@ -798,7 +800,7 @@ public class PRClientServerTestBase extends CacheTestCase {
      
       
     }catch(Exception e){
-      fail("Test failed ", e);
+      Assert.fail("Test failed ", e);
       
     }
   }
@@ -839,7 +841,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       }
       assertTrue(expectedBucketSet.isEmpty());
     }catch(Exception e){
-      fail("Test failed ", e);
+      Assert.fail("Test failed ", e);
       
     }
   

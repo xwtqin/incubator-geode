@@ -32,6 +32,7 @@ import com.gemstone.gemfire.cache.client.NoAvailableServersException;
 import com.gemstone.gemfire.cache.client.ServerConnectivityException;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 
 /**
@@ -113,8 +114,8 @@ public class DeltaClientAuthorizationDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");
@@ -199,7 +200,7 @@ public class DeltaClientAuthorizationDUnitTest extends
         getLogWriter().info("Got expected exception when doing puts: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing puts", ex);
+        Assert.fail("Got unexpected exception when doing puts", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -220,7 +221,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           continue;
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -249,7 +250,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (Exception ex) {
@@ -257,7 +258,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
     }
@@ -277,7 +278,7 @@ public class DeltaClientAuthorizationDUnitTest extends
         getLogWriter().info("Got expected exception when doing gets: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing gets", ex);
+        Assert.fail("Got unexpected exception when doing gets", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -301,7 +302,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           continue;
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -316,7 +317,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing gets", ex);
+          Assert.fail("Got unexpected exception when doing gets", ex);
         }
       }
       catch (Exception ex) {
@@ -324,7 +325,7 @@ public class DeltaClientAuthorizationDUnitTest extends
           getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing gets", ex);
+          Assert.fail("Got unexpected exception when doing gets", ex);
         }
       }
       assertNotNull(value);

@@ -44,10 +44,14 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
@@ -64,15 +68,15 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Connection reset");
-    addExpectedException("SocketTimeoutException");
-    addExpectedException("ServerConnectivityException");
-    addExpectedException("Socket Closed");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("SocketTimeoutException");
+    IgnoredException.addIgnoredException("ServerConnectivityException");
+    IgnoredException.addIgnoredException("Socket Closed");
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
   
   public void testserverMultiKeyExecution_SocektTimeOut() {
@@ -90,7 +94,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
    */
   public void testServerFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -116,9 +120,9 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 6 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 6 * 60 * 1000);
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(2, l.size());
@@ -130,7 +134,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
    */
   public void testServerCacheClosedFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -156,9 +160,9 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 5 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 5 * 60 * 1000);
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(2, l.size());
@@ -180,7 +184,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
   public void testOnRegionFailoverWithTwoServerDownHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     createScenario();
 
     server1.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
@@ -194,7 +198,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_HA_REGION);
@@ -211,7 +215,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
   // retry attempts is 2
   public void testOnRegionFailoverWithOneServerDownHA()
       throws InterruptedException {
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     createScenario();
 
     server1.invokeAsync(PRClientServerRegionFunctionExecutionDUnitTest.class,
@@ -225,7 +229,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_HA_REGION);
@@ -245,7 +249,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
    */
   public void testOnRegionFailoverNonHA() throws InterruptedException { // See #47489 before enabling it
     createScenario();
-    addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     server1.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createReplicatedRegion");
 
@@ -257,7 +261,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_NONHA_REGION);
@@ -290,7 +294,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
 
     //Make sure the buckets are created.
     client.invoke(new SerializableRunnable() {
@@ -341,7 +345,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
   public void testServerBucketMovedException() throws InterruptedException {
 
-    addExpectedException("BucketMovedException");
+    IgnoredException.addIgnoredException("BucketMovedException");
     final Host host = Host.getHost(0);
     VM server1 = host.getVM(0);
     VM server2 = host.getVM(1);
@@ -355,7 +359,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     final int portLocator = AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = getServerHostName(server1.getHost());
+    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
 
     startLocatorInVM(portLocator);
@@ -400,7 +404,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
   public void testServerBucketMovedException_LocalServer()
       throws InterruptedException {
-    addExpectedException("BucketMovedException");
+    IgnoredException.addIgnoredException("BucketMovedException");
 
     final Host host = Host.getHost(0);
     VM server1 = host.getVM(0);
@@ -413,7 +417,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     final int portLocator = AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = getServerHostName(server1.getHost());
+    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
 
     startLocatorInVM(portLocator);
@@ -460,14 +464,14 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     File logFile = new File("locator-" + locatorPort + ".log");
 
     Properties props = new Properties();
-    props = getAllDistributedSystemProperties(props);
+    props = DUnitEnv.getAllDistributedSystemProperties(props);
     props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     
     try {
       locator = Locator.startLocatorAndDS(locatorPort, logFile, null, props);
     }
     catch (IOException e) {
-      fail("Unable to start locator ", e);
+      Assert.fail("Unable to start locator ", e);
     }
   }
   
@@ -492,7 +496,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     if (isAccessor) {

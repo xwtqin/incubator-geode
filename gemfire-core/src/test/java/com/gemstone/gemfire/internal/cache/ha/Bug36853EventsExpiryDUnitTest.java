@@ -36,6 +36,8 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -111,7 +113,7 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
         "createServerCache")).intValue();
 
     client.invoke(Bug36853EventsExpiryDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(host), new Integer(PORT2) });
+        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT2) });
 
   }
 
@@ -242,8 +244,8 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    */
   public void testEventsExpiryBug() throws Exception
   {
-    addExpectedException("Unexpected IOException");
-    addExpectedException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Connection reset");
     server.invoke(Bug36853EventsExpiryDUnitTest.class, "generateEvents");
     client.invoke(Bug36853EventsExpiryDUnitTest.class,
         "validateEventCountAtClient");
@@ -294,7 +296,7 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    * @throws Exception -
    *           thrown if any problem occurs in closing client and server caches.
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     // close client
     client.invoke(Bug36853EventsExpiryDUnitTest.class, "closeCache");

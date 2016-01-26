@@ -31,6 +31,8 @@ import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class DLockManagementDUnitTest extends ManagementTestBase {
 
@@ -55,8 +57,8 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     
   }
 
@@ -145,7 +147,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
           RegionMXBean bean = null;
           try {
 
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
 
               LockServiceMXBean bean = null;
 
@@ -305,7 +307,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
         final String LOCK_OBJECT = "lockObject_" + vm.getPid();
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           DistributedLockService service = null;
 
           public String description() {
@@ -432,7 +434,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
         final ManagementService service = getManagementService();
         if (expectedMembers == 0) {
           try {
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
 
               DistributedLockServiceMXBean bean = null;
 

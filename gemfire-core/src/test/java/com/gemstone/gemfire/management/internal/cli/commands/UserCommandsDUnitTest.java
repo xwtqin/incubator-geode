@@ -58,8 +58,8 @@ public class UserCommandsDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     if (this.deleteJarDirectory) {
       FileUtil.delete(this.jarDirectory);
     } else {

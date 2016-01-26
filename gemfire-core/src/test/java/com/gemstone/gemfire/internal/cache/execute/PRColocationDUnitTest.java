@@ -60,11 +60,15 @@ import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.Shipment;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 /**
  * This is the test for the custom and colocated partitioning of
  * PartitionedRegion
@@ -719,7 +723,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     });
 
     // add expected exception string
-    final ExpectedException ex = addExpectedException(
+    final IgnoredException ex = IgnoredException.addIgnoredException(
         "Colocated regions should have accessors at the same node", dataStore1);
     dataStore1.invoke(new CacheSerializableRunnable(
         "Colocated PR with Accessor on different nodes") {
@@ -791,7 +795,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     });
 
     // add expected exception string
-    final ExpectedException ex = addExpectedException(
+    final IgnoredException ex = IgnoredException.addIgnoredException(
         "Colocated regions should have accessors at the same node", dataStore1);
     dataStore1.invoke(new CacheSerializableRunnable(
         "Colocated PR with accessor on different nodes") {
@@ -890,7 +894,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     });
 
     // add expected exception string
-    final ExpectedException ex = addExpectedException("Cannot create buckets",
+    final IgnoredException ex = IgnoredException.addIgnoredException("Cannot create buckets",
         dataStore2);
     dataStore2.invoke(new CacheSerializableRunnable(
         "Colocated PR with PR on different node") {
@@ -960,7 +964,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
           NotExpected.printStackTrace();
           getLogWriter().info(
               "Unexpected Exception Message : " + NotExpected.getMessage());
-          fail("Unpexpected Exception" , NotExpected);
+          Assert.fail("Unpexpected Exception" , NotExpected);
         }
       }
     });
@@ -999,7 +1003,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     // add expected exception string
     final String expectedExMessage =
       "Any Region in colocation chain cannot be destroyed locally.";
-    final ExpectedException ex = addExpectedException(expectedExMessage,
+    final IgnoredException ex = IgnoredException.addIgnoredException(expectedExMessage,
         dataStore1);
     dataStore1.invoke(new CacheSerializableRunnable(
         "PR with Local destroy") {
@@ -1077,7 +1081,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     // add expected exception string
     final String expectedExMessage = "colocation chain cannot be destroyed, "
         + "unless all its children";
-    final ExpectedException ex = addExpectedException(expectedExMessage,
+    final IgnoredException ex = IgnoredException.addIgnoredException(expectedExMessage,
         dataStore1);
     dataStore1.invoke(new CacheSerializableRunnable(
         "PR with destroy") {
@@ -1513,7 +1517,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
       @Override
       public void run2() throws CacheException {
         getCache();
-        addExpectedException("redundancy should be same as the redundancy");
+        IgnoredException.addIgnoredException("redundancy should be same as the redundancy");
         createPR(rName, red1, Integer.valueOf(100), Integer.valueOf(3), null, Boolean.FALSE, Boolean.FALSE);
         try {
           createPR(rName+"colo", red0, Integer.valueOf(100), Integer.valueOf(3), rName, Boolean.FALSE, Boolean.FALSE);
@@ -1753,7 +1757,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertEquals(2, region.getDataStore().getAllLocalPrimaryBucketIds().size());
       }
     };
-    pause(5000);
+    Wait.pause(5000);
     dataStore1.invoke(checkForBuckets_ForOrder);
     
     dataStore2.invoke(PRColocationDUnitTest.class, "createPR", attributeObjects1);
@@ -1883,7 +1887,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
       throw async2.getException();
     }
     
-    pause(5000);
+    Wait.pause(5000);
     SerializableRunnable checkForBuckets_ForOrder = new SerializableRunnable("check for buckets") {
       public void run() {
         PartitionedRegion region = (PartitionedRegion) basicGetCache().getRegion(OrderPartitionedRegionName);
@@ -2302,7 +2306,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
           + partitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      Assert.fail(
           "validateBeforePutCustomerPartitionedRegion : Failed while getting the region from cache",
           e);
     }
@@ -2328,7 +2332,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
           .getRegion(Region.SEPARATOR + shipmentPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -2401,7 +2405,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertEquals(customer, pr.get(custid));
       }
       catch (Exception e) {
-        fail("putInPartitionedRegion : failed while doing put operation in "
+        Assert.fail("putInPartitionedRegion : failed while doing put operation in "
             + pr.getFullPath(), e);
       }
     }
@@ -2415,7 +2419,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     try {
       partitionedregion.close();
     } catch (Exception e) {
-      fail(
+      Assert.fail(
           "closeRegion : failed to close region : " + partitionedregion,
           e);
     }
@@ -2451,7 +2455,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertEquals(customer,partitionedregion.get(custid));
       }
       catch (Exception e) {
-        fail(
+        Assert.fail(
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
@@ -2477,7 +2481,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
 
         }
         catch (Exception e) {
-          fail(
+          Assert.fail(
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
@@ -2504,7 +2508,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
 
         }
         catch (Exception e) {
-          fail(
+          Assert.fail(
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
@@ -2533,7 +2537,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
             assertEquals(shipment,partitionedregion.get(shipmentId));
           }
           catch (Exception e) {
-            fail(
+            Assert.fail(
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
@@ -2576,7 +2580,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
       fail("Did not get the expected ISE");
     } catch (Exception e) {
       if (!(e instanceof IllegalStateException)) {
-        fail("Expected IllegalStateException, but it's not.", e);
+        Assert.fail("Expected IllegalStateException, but it's not.", e);
       }
     }
   }
@@ -2636,9 +2640,9 @@ public class PRColocationDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(new SerializableRunnable() {
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);
       }

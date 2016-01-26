@@ -34,8 +34,10 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -85,11 +87,11 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
         "createCacheServer", new Object[] { });
     port1 = (Integer) vm1.invoke(DurableClientQueueSizeDUnitTest.class,
         "createCacheServer", new Object[] { });
-    addExpectedException("java.net.SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("java.net.SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     closeCache();
 
     vm2.invoke(DurableClientQueueSizeDUnitTest.class, "closeCache");
@@ -275,7 +277,7 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
   public static Integer createCacheServer(Integer serverPort)
       throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
 //    props.setProperty("log-level", "fine");
 //    props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
 //    props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()

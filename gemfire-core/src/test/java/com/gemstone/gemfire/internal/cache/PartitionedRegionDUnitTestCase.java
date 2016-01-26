@@ -31,6 +31,7 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 import com.gemstone.gemfire.internal.logging.PureLogWriter;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 
@@ -91,13 +92,13 @@ public class PartitionedRegionDUnitTestCase extends CacheTestCase
    * Tear down a PartitionedRegionTestCase by cleaning up the existing cache (mainly
    * because we want to destroy any existing PartitionedRegions)
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     try {
       closeCache();
-      invokeInEveryVM(CacheTestCase.class, "closeCache");
+      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
     } finally {
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     }
   }
   public static void caseSetUp() {

@@ -40,8 +40,12 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -57,8 +61,8 @@ import com.gemstone.gemfire.test.dunit.VM;
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     disconnectAllFromDS();
   }
 
@@ -69,7 +73,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final String regionName = getUniqueName();
     final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -120,7 +124,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
@@ -172,7 +176,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
@@ -284,7 +288,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final String regionName = getUniqueName();
     final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -395,7 +399,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, true);
 
@@ -457,7 +461,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int server1Port = ports[0];
     final int server2Port = ports[1];
-    final String serverHost = getServerHostName(server1.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
 
     createBridgeServer(server1, regionName, server1Port, true, false);
 
@@ -522,7 +526,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -575,7 +579,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     });
 
     // client may see "server unreachable" exceptions after this
-    addExpectedException("Server unreachable", client);
+    IgnoredException.addIgnoredException("Server unreachable", client);
     stopBridgeServer(server);
   }
   
@@ -585,7 +589,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
     final int numLocalValues = 101;
     
     createBridgeServerWithoutLoader(server, regionName, serverPort, false);
@@ -666,7 +670,7 @@ import com.gemstone.gemfire.test.dunit.VM;
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
         if (offheap) {
           config.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "350m");
         }
@@ -701,7 +705,7 @@ import com.gemstone.gemfire.test.dunit.VM;
           bridge.setMaxThreads(offheap ? 16 : getMaxThreads());
           bridge.start();
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });
@@ -730,7 +734,7 @@ import com.gemstone.gemfire.test.dunit.VM;
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DUnitEnv.getDUnitLocatorPort()+"]");
         getSystem(config);
 
         // Create Region
@@ -750,7 +754,7 @@ import com.gemstone.gemfire.test.dunit.VM;
           startBridgeServer(serverPort);
           System.out.println("Started bridger server ");
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });

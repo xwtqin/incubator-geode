@@ -37,10 +37,13 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -112,15 +115,15 @@ public class HAGIIBugDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     vm0.invoke(HAGIIBugDUnitTest.class, "closeCache");
     vm1.invoke(HAGIIBugDUnitTest.class, "closeCache");
     vm2.invoke(HAGIIBugDUnitTest.class, "closeCache");
     vm3.invoke(HAGIIBugDUnitTest.class, "closeCache");
     cache = null;
-    invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+    Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
   }
 
   protected void createCache(Properties props) throws Exception
@@ -183,14 +186,14 @@ public class HAGIIBugDUnitTest extends DistributedTestCase
     AsyncInvocation[] async = new AsyncInvocation[4];
     async[0] = vm0.invokeAsync(putFrmVm("vm0_2"));
     t1.start();
-    DistributedTestCase.join(t1, 30 * 1000, getLogWriter());
+    Threads.join(t1, 30 * 1000);
     if (isTestFailed)
       fail("HARegionQueue can not be created");
 
     for (int count = 0; count < 1; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
       if (async[count].exceptionOccurred()) {
-        fail("Got exception on " + count, async[count].getException());
+        Assert.fail("Got exception on " + count, async[count].getException());
       }
     }
 

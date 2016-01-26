@@ -23,9 +23,10 @@ import java.util.*;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.*;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -116,12 +117,12 @@ public class PartitionedRegionPRIDDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("VM " + count 
+        Assert.fail("VM " + count 
             + " encountered this exception during async invocation", 
             async[count].getException());
       }
@@ -233,12 +234,12 @@ public class PartitionedRegionPRIDDUnitTest extends
       numNodes++;
     }
     for (int i = 0; i < numNodes; i++) {
-      DistributedTestCase.join(async[i], 30 * 1000, getLogWriter());
+      Threads.join(async[i], 30 * 1000);
     }
     
     for (int i = 0; i < numNodes; i++) {
       if (async[i].exceptionOccurred()) {
-        fail("VM " + i 
+        Assert.fail("VM " + i 
             + " encountered this exception during async invocation", 
             async[i].getException());
       }

@@ -37,9 +37,11 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -250,7 +252,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(IdleTimeOutDUnitTest.class, "init", o);
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  public void tearDownBeforeDisconnect() throws NamingException, SQLException {
     VM vm0 = Host.getHost(0).getVM(0);
     // destroyTable call disabled due to high rate of failure - see internal ticket #52274
 //    vm0.invoke(IdleTimeOutDUnitTest.class, "destroyTable");
@@ -264,9 +266,9 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(IdleTimeOutDUnitTest.class, "runTest1");
     AsyncInvocation asyncObj = vm0.invokeAsync(IdleTimeOutDUnitTest.class,
         "runTest2");
-    DistributedTestCase.join(asyncObj, 30 * 1000, getLogWriter());
+    Threads.join(asyncObj, 30 * 1000);
     if(asyncObj.exceptionOccurred()){
-      fail("asyncObj failed", asyncObj.getException());
+      Assert.fail("asyncObj failed", asyncObj.getException());
     }				   
   }
 

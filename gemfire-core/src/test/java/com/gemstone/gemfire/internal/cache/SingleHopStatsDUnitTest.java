@@ -41,9 +41,13 @@ import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class SingleHopStatsDUnitTest extends CacheTestCase{
 
@@ -105,7 +109,7 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
     member3 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     try {
 
       // close the clients first
@@ -115,14 +119,14 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
       member3.invoke(SingleHopStatsDUnitTest.class, "closeCache");
       closeCache();
 
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
 
       member0 = null;
       member1 = null;
       member2 = null;
       member3 = null;
       cache = null;
-      invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+      Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
 
     }
     finally {
@@ -239,7 +243,7 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     if (colocation.equals("No_Colocation")) {
@@ -368,7 +372,7 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
         cms = ((GemFireCacheImpl)cache).getClientMetadataService();
         // since PR metadata is fetched in a background executor thread
         // we need to wait for it to arrive for a bit
-        waitForCriterion(new WaitCriterion(){
+        Wait.waitForCriterion(new WaitCriterion(){
           public boolean done() {
             return regionMetaData.size() == 1;
           }

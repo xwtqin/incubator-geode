@@ -1342,4 +1342,14 @@ public class VM implements java.io.Serializable {
     return DUnitEnv.get().getWorkingDirectory(this.getPid());
   }
 
+  /** Return the total number of VMs on all hosts */
+  public static int getVMCount() {
+    int count = 0;
+    for (int h = 0; h < Host.getHostCount(); h++) {
+      Host host = Host.getHost(h);
+      count += host.getVMCount();
+    }
+    return count;
+  }
+
 }

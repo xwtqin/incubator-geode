@@ -44,6 +44,7 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 
 /**
@@ -120,7 +121,7 @@ public class Bug39356DUnitTest extends CacheTestCase {
               owners = r.getBucketOwnersForValidation(i);
             } catch (ForceReattemptException e) {
               log.info(Bug39356DUnitTest.class + " verify buckets Caught a ForceReattemptException");
-              pause(1000);
+              Wait.pause(1000);
             }
           }
           if(owners.isEmpty()) {

@@ -21,6 +21,8 @@ import java.util.Properties;
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -36,7 +38,7 @@ public class OffHeapEvictionStatsDUnitTest extends EvictionStatsDUnitTest {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -46,11 +48,11 @@ public class OffHeapEvictionStatsDUnitTest extends EvictionStatsDUnitTest {
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     }
   }
 
@@ -78,7 +80,7 @@ public class OffHeapEvictionStatsDUnitTest extends EvictionStatsDUnitTest {
       getLogWriter().info("critical= "+cache.getResourceManager().getCriticalOffHeapPercentage());
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 

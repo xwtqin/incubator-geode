@@ -44,10 +44,15 @@ import com.gemstone.gemfire.internal.cache.TombstoneService;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * concurrency-control tests for client/server
@@ -63,7 +68,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
     HARegionQueue.setMessageSyncInterval(5);
   }
   
-  public void tearDown2() {
+  public void tearDownBeforeDisconnect() {
     disconnectAllFromDS();
     HARegionQueue.setMessageSyncInterval(HARegionQueue.DEFAULT_MESSAGE_SYNC_INTERVAL);
   }
@@ -383,7 +388,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
       //other bucket might be in vm1
       forceGC(vm1);
     }
-    pause(5000); // better chance that WaitCriteria will succeed 1st time if we pause a bit
+    Wait.pause(5000); // better chance that WaitCriteria will succeed 1st time if we pause a bit
     checkClientReceivedGC(vm2);
     checkClientReceivedGC(vm3);
     checkServerQueuesEmpty(vm0);
@@ -440,7 +445,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
             assertTrue("expected key object_"+i+" to be in the cache but it isn't", TestRegion.containsKey("object_"+i));
           }
         } catch (NullPointerException e) {
-          fail("caught NPE", e);
+          Assert.fail("caught NPE", e);
         }
       }
     });
@@ -486,7 +491,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
             return "waiting for garbage collection to occur";
           }
         };
-        waitForCriterion(wc, 60000, 2000, true);
+        Wait.waitForCriterion(wc, 60000, 2000, true);
         return null;
       }
     });
@@ -532,7 +537,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
             return "waiting for queue removal messages to clear client queues";
           }
         };
-        waitForCriterion(wc, 60000, 2000, true);
+        Wait.waitForCriterion(wc, 60000, 2000, true);
         return null;
       }
     });
@@ -584,9 +589,9 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port);
         cf.setPoolSubscriptionEnabled(true);
-        cf.set("log-level", getDUnitLogLevel());
+        cf.set("log-level", DUnitEnv.getDUnitLogLevel());
         ClientCache cache = getClientCache(cf);
         ClientRegionFactory crf = cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
         crf.setConcurrencyChecksEnabled(ccEnabled);
@@ -605,14 +610,14 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm.getHost()), port1);
-        cf.addPoolServer(getServerHostName(vm.getHost()), port2);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port1);
+        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port2);
         cf.setPoolSubscriptionEnabled(true);
         cf.setPoolSubscriptionRedundancy(1);
         // bug #50683 - secondary durable queue retains all GC messages
         cf.set("durable-client-id", ""+vm.getPid());
         cf.set("durable-client-timeout", "" + 200);
-        cf.set("log-level", getDUnitLogLevel());
+        cf.set("log-level", DUnitEnv.getDUnitLogLevel());
         ClientCache cache = getClientCache(cf);
         ClientRegionFactory crf = cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
         crf.setConcurrencyChecksEnabled(ccEnabled);

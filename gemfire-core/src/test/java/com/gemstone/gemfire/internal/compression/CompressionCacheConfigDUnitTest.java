@@ -26,7 +26,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -67,8 +67,8 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   /**
@@ -96,9 +96,9 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
    * @throws Exception
    */
   public void testCreateCacheWithBadCompressor() throws Exception {
-    addExpectedException("Unable to load class BAD_COMPRESSOR");
+    IgnoredException.addIgnoredException("Unable to load class BAD_COMPRESSOR");
     File cacheXml = createCacheXml(BAD_COMPRESSOR);
-    ExpectedException expectedException = DistributedTestCase.addExpectedException("While reading Cache XML file");
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       assertFalse(createCacheOnVM(getVM(0), cacheXml.getCanonicalPath()));
     } finally {

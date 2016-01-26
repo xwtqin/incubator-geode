@@ -45,6 +45,8 @@ import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test cases to cover all test cases which pertains to disk from Management
@@ -90,8 +92,8 @@ public class DiskManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();    
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();    
     com.gemstone.gemfire.internal.FileUtil.delete(diskDir);
   }
 
@@ -589,7 +591,7 @@ public class DiskManagementDUnitTest extends ManagementTestBase {
     vm.invoke(new SerializableRunnable() {
 
       public void run() {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public String description() {
             return "Waiting to blocked waiting for another persistent member to come online";

@@ -40,11 +40,13 @@ import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -221,7 +223,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
     Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
       @Override
       public void run() {
-        DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+        WaitCriterion wc = new WaitCriterion() {
           @Override
           public boolean done() {
             try {
@@ -243,7 +245,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           }
         };
 
-        DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
       }
     });
 
@@ -751,7 +753,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -762,7 +764,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -802,7 +804,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
     Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
       @Override
       public void run() {
-        DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+        WaitCriterion wc = new WaitCriterion() {
           @Override
           public boolean done() {
             try {
@@ -824,7 +826,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           }
         };
 
-        DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
       }
     });
 
@@ -836,7 +838,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
         try {
           assertTrue(sharedConfig.getConfiguration(groupName).getCacheXmlContent().contains(regionName));
         } catch (Exception e) {
-          fail("Error in cluster configuration service", e);
+          Assert.fail("Error in cluster configuration service", e);
         }
       }
     });
@@ -937,7 +939,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -948,7 +950,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -988,7 +990,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
     Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
       @Override
       public void run() {
-        DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+        WaitCriterion wc = new WaitCriterion() {
           @Override
           public boolean done() {
             try {
@@ -1010,7 +1012,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           }
         };
 
-        DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+        Wait.waitForCriterion(wc, 5000, 500, true);
       }
     });
 
@@ -1075,7 +1077,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         final File fileToDelete = new File(path);
@@ -1088,7 +1090,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   /**

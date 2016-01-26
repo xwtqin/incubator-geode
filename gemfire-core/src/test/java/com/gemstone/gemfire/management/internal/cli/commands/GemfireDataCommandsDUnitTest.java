@@ -55,11 +55,14 @@ import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData.S
 import com.gemstone.gemfire.management.internal.cli.result.ResultData;
 import com.gemstone.gemfire.management.internal.cli.result.TabularResultData;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import hydra.GsRandom;
 
@@ -234,7 +237,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
           }
         };
 
-        DistributedTestCase.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
+        Wait.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
 
         assertNotNull(service.getMemberMXBean());
         assertNotNull(service.getManagerMXBean());
@@ -294,7 +297,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
           }
         };
 
-        DistributedTestCase.waitForCriterion(waitForRegionMBeans, 30000, 2000, true);
+        Wait.waitForCriterion(waitForRegionMBeans, 30000, 2000, true);
 
         String regions[] = {DATA_REGION_NAME_PATH, DATA_REGION_NAME_VM1_PATH, DATA_REGION_NAME_VM2_PATH, DATA_PAR_REGION_NAME_PATH, DATA_PAR_REGION_NAME_VM1_PATH, DATA_PAR_REGION_NAME_VM2_PATH, /*DATA_REGION_NAME_CHILD_1_PATH, DATA_REGION_NAME_CHILD_1_2_PATH*/};
 
@@ -388,7 +391,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
         assertEquals(-1, expectedMembers);//Regions do not exist at all
       }
     } catch (QueryInvalidException qe) {
-      fail("Invalid Query", qe);
+      Assert.fail("Invalid Query", qe);
     }
   }
 
@@ -503,7 +506,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
     CommandResult cmdResult = executeCommand(query);
     printCommandOutput(cmdResult);
     validateSelectResult(cmdResult, true, -1, null);
-    ExpectedException ex = addExpectedException(QueryInvalidException.class.getSimpleName(), Host.getHost(0).getVM(0));
+    IgnoredException ex = IgnoredException.addIgnoredException(QueryInvalidException.class.getSimpleName(), Host.getHost(0).getVM(0));
     try {
       query = "query --query=\"select ID , status , createTime , pk, floatMinValue from ${DATA_REGION2} where ID <= ${PORTFOLIO_ID2}" + " and status='${STATUS2}'" + "\" --interactive=false";
       cmdResult = executeCommand(query);
@@ -766,7 +769,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
         assertEquals(true, found);
       }
     } catch (GfJsonException e) {
-      fail("Error accessing table data", e);
+      Assert.fail("Error accessing table data", e);
     }
   }
 
@@ -793,7 +796,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
 
       }
     } catch (GfJsonException e) {
-      fail("Error accessing table data", e);
+      Assert.fail("Error accessing table data", e);
     }
   }
 
@@ -821,7 +824,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
               assertEquals(true, found);
             }
           } catch (GfJsonException e) {
-            fail("Error accessing table data", e);
+            Assert.fail("Error accessing table data", e);
           }
         }
       }
@@ -1702,7 +1705,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
           return "Probing for testRebalanceCommandForSimulateWithNoMember ManagerMBean";
         }
       };
-      DistributedTestCase.waitForCriterion(waitForMaangerMBean, 2 * 60 * 1000, 2000, true);
+      Wait.waitForCriterion(waitForMaangerMBean, 2 * 60 * 1000, 2000, true);
       DistributedRegionMXBean bean = ManagementService.getManagementService(getCache()).getDistributedRegionMXBean(
           "/" + REBALANCE_REGION_NAME);
       assertNotNull(bean);
@@ -1993,7 +1996,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
           }
         };
 
-        DistributedTestCase.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
+        Wait.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
         DistributedRegionMXBean bean = service.getDistributedRegionMXBean(regionName);
         if (bean == null) {
           bean = service.getDistributedRegionMXBean(Region.SEPARATOR + regionName);
@@ -2082,7 +2085,7 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
     assertTrue(memSizeFromFunctionCall.equals(memSizeFromMbean));
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 }

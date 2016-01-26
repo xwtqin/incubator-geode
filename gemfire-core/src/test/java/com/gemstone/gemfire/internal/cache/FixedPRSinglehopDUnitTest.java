@@ -40,10 +40,12 @@ import com.gemstone.gemfire.internal.cache.partitioned.fixed.QuarterPartitionRes
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.SingleHopQuarterPartitionResolver;
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTestBase.Q1_Months;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -281,7 +283,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
     VM server4 = host.getVM(3);
     Boolean simpleFPR = false;
     final int portLocator = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = getServerHostName(server1.getHost());
+    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
     server3.invoke(FixedPRSinglehopDUnitTest.class,
         "startLocatorInVM", new Object[] { portLocator });
@@ -308,7 +310,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
     putIntoPartitionedRegionsThreeQs();
 
     getFromPartitionedRegionsFor3Qs();
-    pause(2000);
+    Wait.pause(2000);
     // TODO: Verify that all the fpa's are in the map
     server1.invoke(FixedPRSinglehopDUnitTest.class, "printView");
     server2.invoke(FixedPRSinglehopDUnitTest.class, "printView");
@@ -331,13 +333,13 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
         FixedPRSinglehopDUnitTest.class, "createServerWithLocator", new Object[] { locator, false,
             fpaList, simpleFPR });    
     
-    pause(2000);
+    Wait.pause(2000);
     putIntoPartitionedRegions();
     // Client should get the new partition
     // TODO: Verify that
 
     getFromPartitionedRegions();
-    pause(2000);
+    Wait.pause(2000);
     server1.invoke(FixedPRSinglehopDUnitTest.class, "printView");
     server2.invoke(FixedPRSinglehopDUnitTest.class, "printView");
     server4.invoke(FixedPRSinglehopDUnitTest.class, "printView");
@@ -367,7 +369,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     
     if (!fpaList.isEmpty() || isAccessor) {
@@ -412,7 +414,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     
     if (!fpaList.isEmpty() || isAccessor) {
@@ -859,7 +861,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
         return "expected no metadata to be refreshed";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 1000, true);
+    Wait.waitForCriterion(wc, 60000, 1000, true);
     
     assertTrue(regionMetaData.containsKey(region.getFullPath()));
     final ClientPartitionAdvisor prMetaData = regionMetaData
@@ -873,7 +875,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
         return "expected no metadata to be refreshed";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 1000, true);
+    Wait.waitForCriterion(wc, 60000, 1000, true);
     for (Entry entry : prMetaData.getBucketServerLocationsMap_TEST_ONLY()
         .entrySet()) {
       assertEquals(currentRedundancy, ((List)entry.getValue()).size());

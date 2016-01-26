@@ -28,11 +28,14 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.DistributedRegion;
 import com.gemstone.gemfire.internal.cache.StateFlushOperation;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This class tests the functionality of a cache {@link Region region}
@@ -104,7 +107,7 @@ public class DistributedNoAckRegionDUnitTest
             assertTrue(getRootRegion("INCOMPATIBLE_ROOT").getAttributes().getScope().isDistributedNoAck());
             assertTrue(region.getAttributes().getScope().isDistributedNoAck());
           } catch (CacheException ex) {
-            fail("While creating NO ACK region", ex);
+            Assert.fail("While creating NO ACK region", ex);
           }
         }
       });
@@ -126,7 +129,7 @@ public class DistributedNoAckRegionDUnitTest
 //            assertNull(getRootRegion());
 
           } catch (CacheException ex) {
-            fail("While creating GLOBAL Region", ex);
+            Assert.fail("While creating GLOBAL Region", ex);
           }
         }
       });
@@ -147,7 +150,7 @@ public class DistributedNoAckRegionDUnitTest
 //            assertNull(getRootRegion());
 
           } catch (CacheException ex) {
-            fail("While creating ACK Region", ex);
+            Assert.fail("While creating ACK Region", ex);
           }
         }
       });
@@ -248,7 +251,7 @@ public class DistributedNoAckRegionDUnitTest
           stopPutting = true;
         }
       });
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000);
       // wait for overflow queue to quiesce before continuing
       vm2.invoke(new SerializableRunnable("Wait for Overflow Queue") {
         public void run() {
@@ -260,7 +263,7 @@ public class DistributedNoAckRegionDUnitTest
               return "overflow queue remains nonempty";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 30 * 1000, 200, true);
 //          pause(100);
 //           try {
 //             getRootRegion().getSubregion(name).destroyRegion();
@@ -272,18 +275,18 @@ public class DistributedNoAckRegionDUnitTest
     } // finally
    getLogWriter().info("testBug30705: at end of test");
    if (async.exceptionOccurred()) {
-     fail("Got exception", async.getException());
+     Assert.fail("Got exception", async.getException());
    }
   }
 
   @Override
   protected void pauseIfNecessary(int ms) {
-    pause(ms);
+    Wait.pause(ms);
   }
   
   @Override
   protected void pauseIfNecessary() {
-    pause();
+    Wait.pause();
   }
 
   @Override

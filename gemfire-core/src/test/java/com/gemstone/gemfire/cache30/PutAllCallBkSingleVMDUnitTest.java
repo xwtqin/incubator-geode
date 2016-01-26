@@ -39,6 +39,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -75,7 +76,7 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
       getLogWriter().fine("Cache created in successfully");
     }
     
-    public void tearDown2(){
+    public void tearDownBeforeDisconnect(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);
@@ -186,7 +187,7 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
                 obj = region.put(ob, str);
             }
         }catch(Exception ex){
-            fail("Failed while region.put", ex);
+            Assert.fail("Failed while region.put", ex);
         }
         return obj;
     }//end of putMethod

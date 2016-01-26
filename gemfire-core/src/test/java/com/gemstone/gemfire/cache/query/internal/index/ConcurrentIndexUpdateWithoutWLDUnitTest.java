@@ -42,11 +42,14 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.cache.Token;
 import com.gemstone.gemfire.internal.cache.persistence.query.CloseableIterator;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
+import com.gemstone.gemfire.test.dunit.Threads;
 
 /**
  * 
@@ -88,12 +91,12 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
    * Tear down a PartitionedRegionTestCase by cleaning up the existing cache
    * (mainly because we want to destroy any existing PartitionedRegions)
    */
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     try {
-      invokeInEveryVM(ConcurrentIndexUpdateWithoutWLDUnitTest.class, "destroyRegions");
-      invokeInEveryVM(CacheTestCase.class, "closeCache");
+      Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithoutWLDUnitTest.class, "destroyRegions");
+      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
     } finally {
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
     }
   }
 
@@ -121,12 +124,12 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[1] = vm0.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, 0, stepSize));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 30*000, helper.getCache().getLogger());
+      Threads.join(inv, 30*000);
     }
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     
@@ -162,12 +165,12 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[1] = vm0.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, 0, stepSize));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 30*000, helper.getCache().getLogger());
+      Threads.join(inv, 30*000);
     }
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     
@@ -206,11 +209,11 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[1] = vm0.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, 0, totalDataSize));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 30*000, helper.getCache().getLogger());
+      Threads.join(inv, 30*000);
     }
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     
@@ -264,12 +267,12 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[11] = vm3.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, (3 * (stepSize)), totalDataSize ));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 60*000, helper.getCache().getLogger());
+      Threads.join(inv, 60*000);
     }
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     vm0.invoke(getCacheSerializableRunnableForIndexValidation(regionName, indexName));
@@ -326,11 +329,11 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[11] = vm3.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, (3 * (stepSize)), totalDataSize ));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 60*000, helper.getCache().getLogger());
+      Threads.join(inv, 60*000);
     }
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     vm0.invoke(getCacheSerializableRunnableForIndexValidation(regionName, rindexName));
@@ -398,12 +401,12 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
     asyncInvs[11] = vm3.invokeAsync(helper.getCacheSerializableRunnableForPRRandomOps(regionName, (3 * (stepSize)), totalDataSize ));
     
     for (AsyncInvocation inv : asyncInvs) {
-      DistributedTestCase.join(inv, 60*000, helper.getCache().getLogger());
+      Threads.join(inv, 60*000);
     }
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     vm0.invoke(getCacheSerializableRunnableForIndexValidation(regionName, indexName));

@@ -37,9 +37,11 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -252,7 +254,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     vm0.invoke(MaxPoolSizeDUnitTest.class, "init", o);
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  public void tearDownBeforeDisconnect() throws NamingException, SQLException {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     try {
@@ -267,9 +269,9 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     VM vm0 = host.getVM(0);
     AsyncInvocation asyncObj = vm0.invokeAsync(MaxPoolSizeDUnitTest.class,
         "runTest1");
-    DistributedTestCase.join(asyncObj, 30 * 1000, getLogWriter());
+    Threads.join(asyncObj, 30 * 1000);
     if(asyncObj.exceptionOccurred()){
-      fail("asyncObj failed", asyncObj.getException());
+      Assert.fail("asyncObj failed", asyncObj.getException());
     }
   }
 
@@ -300,7 +302,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     }
     catch (SQLException e) {
       if (count < (MAX_CONNECTIONS-1)) {
-        fail("runTest1 SQL Exception", e);
+        Assert.fail("runTest1 SQL Exception", e);
       }
       else {
         getLogWriter().fine("Success SQLException caught at connection #"

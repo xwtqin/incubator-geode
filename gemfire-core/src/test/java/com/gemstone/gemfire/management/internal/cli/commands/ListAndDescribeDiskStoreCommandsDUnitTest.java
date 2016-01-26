@@ -28,6 +28,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.management.cli.Result;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
@@ -69,8 +70,8 @@ public class ListAndDescribeDiskStoreCommandsDUnitTest extends CliCommandTestBas
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   protected Peer createPeer(final Properties distributedSystemConfiguration, final VM vm) {
@@ -95,7 +96,7 @@ public class ListAndDescribeDiskStoreCommandsDUnitTest extends CliCommandTestBas
   protected Properties createDistributedSystemProperties(final String gemfireName) {
     final Properties distributedSystemProperties = new Properties();
 
-    distributedSystemProperties.setProperty(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    distributedSystemProperties.setProperty(DistributionConfig.LOG_LEVEL_NAME, DUnitEnv.getDUnitLogLevel());
     distributedSystemProperties.setProperty(DistributionConfig.NAME_NAME, gemfireName);
 
     return distributedSystemProperties;

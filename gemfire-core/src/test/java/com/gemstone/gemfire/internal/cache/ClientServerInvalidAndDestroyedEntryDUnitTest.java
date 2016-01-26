@@ -39,6 +39,8 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.tier.InterestType;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableCallableIF;
@@ -141,7 +143,7 @@ public class ClientServerInvalidAndDestroyedEntryDUnitTest extends CacheTestCase
             server.start();
           }
           catch (IOException e) {
-            fail("Failed to start server ", e);
+            Assert.fail("Failed to start server ", e);
           }
         }
         if (usePR) {
@@ -193,7 +195,7 @@ public class ClientServerInvalidAndDestroyedEntryDUnitTest extends CacheTestCase
     getLogWriter().info("creating client cache");
     ClientCache c = new ClientCacheFactory()
                     .addPoolServer("localhost", serverPort)
-                    .set(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel())
+                    .set(DistributionConfig.LOG_LEVEL_NAME, DUnitEnv.getDUnitLogLevel())
                     .create();
     Region myRegion = c.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).create(regionName);;
     if (useTX) {
@@ -311,7 +313,7 @@ public class ClientServerInvalidAndDestroyedEntryDUnitTest extends CacheTestCase
     getLogWriter().info("creating client cache");
     ClientCache c = new ClientCacheFactory()
                     .addPoolServer("localhost", serverPort)
-                    .set(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel())
+                    .set(DistributionConfig.LOG_LEVEL_NAME, DUnitEnv.getDUnitLogLevel())
                     .create();
     Region myRegion = c.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).create(regionName);;
     if (useTX) {
@@ -433,7 +435,7 @@ public class ClientServerInvalidAndDestroyedEntryDUnitTest extends CacheTestCase
     getLogWriter().info("creating client cache");
     ClientCache c = new ClientCacheFactory()
                     .addPoolServer("localhost", serverPort)
-                    .set(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel())
+                    .set(DistributionConfig.LOG_LEVEL_NAME, DUnitEnv.getDUnitLogLevel())
                     .setPoolSubscriptionEnabled(true)
                     .create();
     

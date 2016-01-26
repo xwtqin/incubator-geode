@@ -42,10 +42,12 @@ import com.gemstone.gemfire.internal.admin.GfManagerAgentConfig;
 import com.gemstone.gemfire.internal.admin.GfManagerAgentFactory;
 import com.gemstone.gemfire.internal.admin.StatResource;
 import com.gemstone.gemfire.internal.admin.remote.RemoteTransportConfig;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This class tests the functionality of the {@linkplain internal
@@ -70,7 +72,7 @@ public class ConsoleDistributionManagerDUnitTest
 
   public void setUp() throws Exception {
     boolean finishedSetup = false;
-    addExpectedException("Error occurred while reading system log");
+    IgnoredException.addIgnoredException("Error occurred while reading system log");
     try {
       if (firstTime) {
         disconnectFromDS(); //make sure there's no ldm lying around
@@ -104,7 +106,7 @@ public class ConsoleDistributionManagerDUnitTest
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 200, true);
       }
       finishedSetup = true;
     } finally {
@@ -119,7 +121,7 @@ public class ConsoleDistributionManagerDUnitTest
         catch (Throwable ignore) {
         }
         try {
-          super.tearDown2();
+          super.tearDownBeforeDisconnect();
         } 
         catch (VirtualMachineError e) {
           SystemFailure.initiateFailure(e);
@@ -141,12 +143,12 @@ public class ConsoleDistributionManagerDUnitTest
     }
   }
   
-  public void tearDown2() throws Exception {    
+  public void tearDownBeforeDisconnect() throws Exception {    
 
     try {
 
       this.agent.disconnect();
-      super.tearDown2();
+      super.tearDownBeforeDisconnect();
 
       // Clean up "admin-only" distribution manager
       disconnectFromDS(); //make sure there's no ldm lying around
@@ -189,7 +191,7 @@ public class ConsoleDistributionManagerDUnitTest
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     }
 
     //final Serializable controllerId = getSystem().getDistributionManager().getId(); //can't do this...
@@ -314,7 +316,7 @@ public class ConsoleDistributionManagerDUnitTest
               return "Waited 20 seconds for region " + r.getFullPath() + "to be destroyed.";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 20 * 1000, 200, true);
         }
       }
     }

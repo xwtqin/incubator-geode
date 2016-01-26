@@ -75,9 +75,14 @@ import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class AsyncEventQueueTestBase extends DistributedTestCase {
 
@@ -132,7 +137,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     // this is done to vary the number of dispatchers for sender
     // during every test method run
     shuffleNumDispatcherThreads();
-    invokeInEveryVM(AsyncEventQueueTestBase.class,
+    Invoke.invokeInEveryVM(AsyncEventQueueTestBase.class,
         "setNumDispatcherThreadsForTheRun",
         new Object[] { dispatcherThreads.get(0) });
   }
@@ -149,7 +154,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     if (Locator.hasLocator()) {
       Locator.getLocator().stop();
     }
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
@@ -163,7 +168,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static Integer createFirstRemoteLocator(int dsId, int remoteLocPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
@@ -180,7 +185,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createReplicatedRegionWithAsyncEventQueue(
       String regionName, String asyncQueueIds, Boolean offHeap) {
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -223,7 +228,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createReplicatedRegionWithSenderAndAsyncEventQueue(
       String regionName, String senderIds, String asyncChannelId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
 
@@ -367,7 +372,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       Integer batchSize, boolean isConflation, boolean isPersistent,
       String diskStoreName, boolean isDiskSynchronous, int nDispatchers) {
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
 
     try {
@@ -566,7 +571,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       final Set<RegionQueue> queues = ((AbstractGatewaySender)sender)
           .getQueues();
 
-      waitForCriterion(new WaitCriterion() {
+      Wait.waitForCriterion(new WaitCriterion() {
 
         public String description() {
           return "Waiting for EventQueue size to be " + numQueueEntries;
@@ -590,9 +595,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createPartitionedRegion(String regionName,
       String senderIds, Integer redundantCopies, Integer totalNumBuckets) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -621,9 +626,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createPartitionedRegionWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -646,9 +651,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       String regionName, String asyncEventQueueId, Integer totalNumBuckets,
       String colocatedWith) {
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -687,7 +692,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
    */
   public static void createPRWithRedundantCopyWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
 
     try {
@@ -721,7 +726,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   protected static void createCache(Integer locPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -731,7 +736,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void createCacheWithoutLocator(Integer mCastPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "" + mCastPort);
     InternalDistributedSystem ds = test.getSystem(props);
@@ -873,7 +878,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
         return "Expected sender primary state to be true but is false";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10000, 1000, true);
+    Wait.waitForCriterion(wc, 10000, 1000, true);
   }
 
   private static GatewaySender getGatewaySenderById(Set<GatewaySender> senders,
@@ -891,7 +896,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       boolean isParallel, Integer maxMemory, Integer batchSize,
       boolean isConflation, boolean isPersistent, GatewayEventFilter filter,
       boolean isManulaStart) {
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       File persistentDirectory = new File(dsName + "_disk_"
           + System.currentTimeMillis() + "_" + VM.getCurrentVMNum());
@@ -966,11 +971,11 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
         return "Expected to wait for " + millisec + " millisec.";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, millisec, 500, false);
+    Wait.waitForCriterion(wc, millisec, 500, false);
   }
 
   public static int createReceiver(int locPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -1027,14 +1032,14 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
     }
     catch (InterruptedException e) {
-      fail("Interrupted", e);
+      Assert.fail("Interrupted", e);
     }
   }
 
   public static void doPuts(String regionName, int numPuts) {
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addIgnoredException(GatewaySenderException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -1094,7 +1099,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void doNextPuts(String regionName, int start, int numPuts) {
     // waitForSitesToUpdate();
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -1109,9 +1114,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void validateRegionSize(String regionName, final int regionSize) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
 
@@ -1131,7 +1136,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
               + " present region keyset " + r.keySet();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 240000, 500, true);
+      Wait.waitForCriterion(wc, 240000, 500, true);
     }
     finally {
       exp.remove();
@@ -1232,7 +1237,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
             + " but actual entries: " + eventsMap.size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
+    Wait.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
   }
 
   public static void validateAsyncEventForOperationDetail(String asyncQueueId,
@@ -1263,7 +1268,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
             + " but actual entries: " + eventsMap.size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
+    Wait.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
     Collection values = eventsMap.values();
     Iterator itr = values.iterator();
     while (itr.hasNext()) {
@@ -1302,7 +1307,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
             + " but actual entries: " + eventsMap.size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
+    Wait.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
 
     Iterator<AsyncEvent> itr = eventsMap.values().iterator();
     while (itr.hasNext()) {
@@ -1350,7 +1355,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
               + size;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+      Wait.waitForCriterion(wc, 60000, 500, true);
 
     }
     else {
@@ -1377,7 +1382,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
               + size;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+      Wait.waitForCriterion(wc, 60000, 500, true);
     }
   }
 
@@ -1467,10 +1472,10 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static Boolean killSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -1565,8 +1570,8 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     }
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     cleanupVM();
     vm0.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
     vm1.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
@@ -1589,7 +1594,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       cache = null;
     }
     else {
-      AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+      AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
       if (test.isConnectedToDS()) {
         test.getSystem().disconnect();
       }
@@ -1597,7 +1602,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void shutdownLocator() {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestName());
     test.getSystem().disconnect();
   }
 

@@ -36,7 +36,9 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
@@ -150,9 +152,9 @@ public class StatsBugDUnitTest extends DistributedTestCase
    * @throws Exception
    *           thrown if any problem occurs in closing cache
    */
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close client
     client1.invoke(StatsBugDUnitTest.class, "closeCache");
 
@@ -178,11 +180,11 @@ public class StatsBugDUnitTest extends DistributedTestCase
   {
     getLogWriter().info("testBug36109 : BEGIN");
     client1.invoke(StatsBugDUnitTest.class, "createClientCacheForInvalidates", new Object[] {
-        getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2) });
+        NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2) });
     client1.invoke(StatsBugDUnitTest.class, "prepopulateClient");
     primary.invoke(StatsBugDUnitTest.class, "doEntryOperations",
         new Object[] { primaryPrefix });
-    pause(3000);
+    Wait.pause(3000);
     primary.invoke(StatsBugDUnitTest.class, "stopServer");
     try {
       Thread.sleep(5000);

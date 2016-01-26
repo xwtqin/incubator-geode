@@ -36,8 +36,8 @@ import com.gemstone.gemfire.test.dunit.VM;
 public class PartitionedRegionRedundancyZoneDUnitTest extends CacheTestCase {
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     // this makes sure we don't leave anything for the next tests
     // Tests that set redundancy zones causes other jvms connected
     // to the ds to have "enforce-unique-hosts" set to true.

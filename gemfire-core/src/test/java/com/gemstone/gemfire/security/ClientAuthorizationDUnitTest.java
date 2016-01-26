@@ -34,6 +34,7 @@ import security.XmlAuthzCredentialGenerator;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 import templates.security.UserPasswordAuthInit;
@@ -679,7 +680,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
   
   public void testAllOpsWithFailover() {
-    addExpectedException("Read timed out");
+    IgnoredException.addIgnoredException("Read timed out");
 
     OperationWithAction[] allOps = {
         // Test CREATE and verify with a GET
@@ -783,9 +784,9 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
   // End Region: Tests
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
 
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

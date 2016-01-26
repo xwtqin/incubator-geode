@@ -222,7 +222,7 @@ public class Bug37241DUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
     server1.invoke(Bug37241DUnitTest.class, "closeCache");
     server2.invoke(Bug37241DUnitTest.class, "closeCache");

@@ -37,9 +37,14 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class HASlowReceiverDUnitTest extends DistributedTestCase {
   protected static Cache cache = null;
@@ -86,8 +91,8 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
     clientVM.invoke(HASlowReceiverDUnitTest.class, "closeCache");
 
     // then close the servers
@@ -196,7 +201,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       r.registerInterest("ALL_KEYS");
     }
     catch (Exception ex) {
-      fail("failed in registerInterestListAll", ex);
+      Assert.fail("failed in registerInterestListAll", ex);
     }
   }
 
@@ -211,7 +216,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in putEntries()", ex);
+      Assert.fail("failed in putEntries()", ex);
     }
   }
 
@@ -224,7 +229,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in createEntries(Long)", ex);
+      Assert.fail("failed in createEntries(Long)", ex);
     }
   }
 
@@ -239,20 +244,20 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
             + ") to become " + redundantServers.intValue();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 200 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 200 * 1000, 1000, true);
   }
 
   // Test slow client
   public void testSlowClient() throws Exception {
     setBridgeObeserverForAfterQueueDestroyMessage();
     clientVM.invoke(HASlowReceiverDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT0),
+        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT0),
             new Integer(PORT1), new Integer(PORT2), new Integer(2) });
     clientVM.invoke(HASlowReceiverDUnitTest.class, "registerInterest");
     // add expected socket exception string
-    final ExpectedException ex1 = addExpectedException(SocketException.class
+    final IgnoredException ex1 = IgnoredException.addIgnoredException(SocketException.class
         .getName());
-    final ExpectedException ex2 = addExpectedException(InterruptedException.class
+    final IgnoredException ex2 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
     putEntries();
     Thread.sleep(20000);// wait for put to block and allow server to remove

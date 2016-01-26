@@ -47,11 +47,12 @@ import com.gemstone.gemfire.internal.cache.DiskRegionStats;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.lru.LRUCapacityController;
 import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the functionality of cache regions whose contents may be
@@ -249,7 +250,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "waiting for evictions to exceed 6";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 5 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 5 * 1000, 200, true);
           //DiskRegionStats diskStats = dr.getStats();
           //assertTrue(diskStats.getWrites() > 6);
         }
@@ -997,7 +998,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "value for key remains: " + key;
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 500, 200, true);
+          Wait.waitForCriterion(ev, 500, 200, true);
         }
       });
 
@@ -1021,7 +1022,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "verify update";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 500, 200, true);
+          Wait.waitForCriterion(ev, 500, 200, true);
         }
       });
   }

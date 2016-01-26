@@ -29,10 +29,12 @@ import com.gemstone.gemfire.management.cli.Result;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -256,7 +258,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -267,7 +269,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -334,7 +336,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
           xmlFromConfig = sharedConfig.getConfiguration(groupName).getCacheXmlContent();
           assertTrue(xmlFromConfig.contains(queueName));
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });
@@ -366,7 +368,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void tearDownBeforeDisconnect() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         final File fileToDelete = new File(path);
@@ -379,7 +381,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
   }
 
   private void writeJarBytesToFile(File jarFile, byte[] jarBytes) throws IOException {

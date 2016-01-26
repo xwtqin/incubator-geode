@@ -39,8 +39,8 @@ import com.gemstone.gemfire.cache.client.internal.Connection;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
 /**
@@ -180,7 +180,7 @@ public class CacheServerMaxConnectionsJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 1000, 200, true);
+    Wait.waitForCriterion(ev, 1000, 200, true);
     assertEquals(MAX_CNXS, s.getInt("currentClientConnections"));
     assertEquals(1, s.getInt("currentClients"));
     this.system.getLogWriter().info("<ExpectedException action=add>" 
@@ -217,7 +217,7 @@ public class CacheServerMaxConnectionsJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 3 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 3 * 1000, 200, true);
     this.system.getLogWriter().info("currentClients="
         + s.getInt("currentClients")
         + " currentClientConnections="

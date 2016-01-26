@@ -70,11 +70,15 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionHolder;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is a test of how persistent distributed
@@ -248,7 +252,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     //Now, we should not be able to create a region
     //in vm1, because the this member was revoked
     getLogWriter().info("Creating region in VM1");
-    ExpectedException e = addExpectedException(RevokedPersistentDataException.class.getSimpleName(), vm1);
+    IgnoredException e = IgnoredException.addIgnoredException(RevokedPersistentDataException.class.getSimpleName(), vm1);
     try {
       createPersistentRegion(vm1);
       fail("We should have received a split distributed system exception");
@@ -332,7 +336,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
         adminDS.connect();
         adminDS.revokePersistentMember(InetAddress.getLocalHost(), dirToRevoke.getCanonicalPath());
         } catch(Exception e) {
-          fail("Unexpected exception", e);
+          Assert.fail("Unexpected exception", e);
         } finally {
           if(adminDS != null) {
             adminDS.disconnect();
@@ -362,7 +366,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     //Now, we should not be able to create a region
     //in vm1, because the this member was revoked
     getLogWriter().info("Creating region in VM1");
-    ExpectedException e = addExpectedException(RevokedPersistentDataException.class.getSimpleName(), vm1);
+    IgnoredException e = IgnoredException.addIgnoredException(RevokedPersistentDataException.class.getSimpleName(), vm1);
     try {
       createPersistentRegion(vm1);
       fail("We should have received a split distributed system exception");
@@ -461,7 +465,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
       }
     });
     
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       
       public boolean done() {
         return !future1.isAlive();
@@ -484,7 +488,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
           adminDS = AdminDistributedSystemFactory.getDistributedSystem(config);
           adminDS.connect();
           final AdminDistributedSystem connectedDS = adminDS;
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
 
             public String description() {
               return "Waiting for waiting members to have 2 members";
@@ -1045,7 +1049,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     //so it will start up.
     createPersistentRegion(vm0);
 
-    ExpectedException e = addExpectedException(ConflictingPersistentDataException.class.getSimpleName(), vm1);
+    IgnoredException e = IgnoredException.addIgnoredException(ConflictingPersistentDataException.class.getSimpleName(), vm1);
     try {
       //VM1 should not start up, because we should detect that vm1
       //was never in the same distributed system as vm0
@@ -1240,7 +1244,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
       
       public void run() {
        final  Cache cache = getCache();
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public String description() {
             return "Waiting for creation of region " + REGION_NAME;
@@ -1341,7 +1345,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     
     createNonPersistentRegion(vm0);
     
-    ExpectedException e = addExpectedException(IllegalStateException.class.getSimpleName(), vm1);
+    IgnoredException e = IgnoredException.addIgnoredException(IllegalStateException.class.getSimpleName(), vm1);
     try {
       createPersistentRegion(vm1);
       fail("Should have received an IllegalState exception");
@@ -1679,7 +1683,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     putAnEntry(vm1);
     
     getLogWriter().info("Creating region in VM0");
-    ExpectedException ex = addExpectedException("ConflictingPersistentDataException", vm0);
+    IgnoredException ex = IgnoredException.addIgnoredException("ConflictingPersistentDataException", vm0);
     try {
       //this should cause a conflict
       createPersistentRegion(vm0);
@@ -1700,7 +1704,7 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
     
     updateTheEntry(vm0);
     
-    ex = addExpectedException("ConflictingPersistentDataException", vm1);
+    ex = IgnoredException.addIgnoredException("ConflictingPersistentDataException", vm1);
     //Now make sure vm1 gets a conflict
     getLogWriter().info("Creating region in VM1");
     try {
@@ -1827,9 +1831,9 @@ public class PersistentRecoveryOrderDUnitTest extends PersistentReplicatedTestBa
         try {
           ((GemFireCacheImpl)cache).createVMRegion(REGION_NAME, rf.create(), internalArgs);
         } catch (ClassNotFoundException e) {
-          fail("error", e);
+          Assert.fail("error", e);
         } catch (IOException e) {
-          fail("error", e);
+          Assert.fail("error", e);
         }
       }
     };

@@ -41,11 +41,15 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.util.Iterator;
 import java.util.Properties;
@@ -142,7 +146,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testConcurrentOperationsWithDRandPR() throws Exception {
     int port1 = initServerCache(true); // vm0
     int port2 = initServerCache2(true); // vm1
-    String serverName = getServerHostName(Host.getHost(0));
+    String serverName = NetworkSupport.getServerHostName(Host.getHost(0));
     host.getVM(2).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port1});
     host.getVM(3).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port2});
     getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
@@ -156,7 +160,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testConcurrentOperationsWithDRandPRandEmptyClient() throws Exception {
     int port1 = initServerCache(true); // vm0
     int port2 = initServerCache2(true); // vm1
-    String serverName = getServerHostName(Host.getHost(0));
+    String serverName = NetworkSupport.getServerHostName(Host.getHost(0));
     host.getVM(2).invoke(this.getClass(), "createEmptyClientCache", new Object[]{serverName, port1});
     host.getVM(3).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port2});
     getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
@@ -374,7 +378,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    createClientCache(getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
     populateCache();
     registerInterest();
     server1.invoke(ClientServerMiscDUnitTest.class, "put");
@@ -407,11 +411,11 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    createClientCache(getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
     populateCache();
     registerInterestInBothTheRegions();
     closeRegion1();
-    pause(6000);
+    Wait.pause(6000);
     server1.invoke(ClientServerMiscDUnitTest.class,
         "verifyInterestListOnServer");
     server1.invoke(ClientServerMiscDUnitTest.class, "put");
@@ -430,7 +434,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    pool = (PoolImpl)createClientCache(getServerHostName(Host.getHost(0)),PORT1);
+    pool = (PoolImpl)createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)),PORT1);
     populateCache();
     registerInterestInBothTheRegions();
     closeBothRegions();
@@ -457,7 +461,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testCCPDestroyOnLastDestroyRegion() throws Exception
   {
     PORT1 = initServerCache(true);
-    PoolImpl pool = (PoolImpl)createClientCache(getServerHostName(Host.getHost(0)),PORT1);
+    PoolImpl pool = (PoolImpl)createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)),PORT1);
     destroyRegion1();
     // pause(5000);
     server1.invoke(ClientServerMiscDUnitTest.class,
@@ -494,7 +498,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(false);
-    createClientCache(getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
     registerInterestForInvalidatesInBothTheRegions();
     populateCache();
     server1.invoke(ClientServerMiscDUnitTest.class, "put");
@@ -515,7 +519,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(false);
-    createClientCache(getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
     registerInterestForInvalidatesInBothTheRegions();
     Region region = static_cache.getRegion(REGION_NAME1);
     populateCache();
@@ -561,7 +565,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "");
     new ClientServerMiscDUnitTest("temp").createCache(props);
-    String host = getServerHostName(server1.getHost());
+    String host = NetworkSupport.getServerHostName(server1.getHost());
     PoolImpl p = (PoolImpl)PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)
@@ -601,7 +605,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     
     // assertEquals(region1.getEntry(k1).getValue(), k1);
     wc = new WaitCriterion() {
@@ -614,7 +618,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     
     wc = new WaitCriterion() {
       String excuse;
@@ -626,7 +630,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     
     // assertEquals(region1.getEntry(k2).getValue(), k2);
     // assertEquals(region2.getEntry(k1).getValue(), k1);
@@ -640,7 +644,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     
     // assertEquals(region2.getEntry(k2).getValue(), k2);
   }
@@ -664,7 +668,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     ds.disconnect();
     ds = getSystem(props);
     PORT1 = initServerCache(true);
-    String host = getServerHostName(server1.getHost());
+    String host = NetworkSupport.getServerHostName(server1.getHost());
     Pool p = PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)
@@ -686,7 +690,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     assertNotNull(region2);
     //region1.registerInterest(CacheClientProxy.ALL_KEYS);
     region2.registerInterest("ALL_KEYS");
-    pause(6000);
+    Wait.pause(6000);
     server1.invoke(ClientServerMiscDUnitTest.class,
         "verifyInterestListOnServer");
 
@@ -707,7 +711,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testBug35380() throws Exception
   {
     //work around GEODE-477
-    addExpectedException("Connection reset");
+    IgnoredException.addIgnoredException("Connection reset");
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
     props.setProperty("locators", "");
@@ -715,7 +719,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     assertNotNull(ds);
     
     PORT1 = initServerCache(true);
-    String host = getServerHostName(server1.getHost());
+    String host = NetworkSupport.getServerHostName(server1.getHost());
     Pool p = PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)
@@ -849,7 +853,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
     
     return p;
   }
@@ -900,7 +904,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail("Test failed due to CacheWriterException during registerInterest", e);
+      Assert.fail("Test failed due to CacheWriterException during registerInterest", e);
     }
   }
 
@@ -917,7 +921,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail(
+      Assert.fail(
           "Test failed due to CacheWriterException during registerInterestnBothRegions",
           e);
     }
@@ -936,7 +940,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail(
+      Assert.fail(
           "Test failed due to CacheWriterException during registerInterestnBothRegions",
           e);
     }
@@ -952,7 +956,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeRegion1", e);
+      Assert.fail("Test failed due to Exception during closeRegion1", e);
     }
   }
 
@@ -972,7 +976,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -986,7 +990,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1000,7 +1004,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1012,7 +1016,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       r2.destroyRegion();
     } catch (Exception e) {
      // e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1068,7 +1072,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 40 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 40 * 1000, 1000, true);
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -1113,7 +1117,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 40 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 40 * 1000, 1000, true);
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -1145,7 +1149,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       assertEquals(r2.getEntry(k2).getValue(), k2);
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -1170,7 +1174,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       assertEquals(r2.getEntry(k2).getValue(), server_k2);
     }
     catch (Exception ex) {
-      fail("failed while put()", ex);
+      Assert.fail("failed while put()", ex);
     }
   }
 
@@ -1193,7 +1197,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(k1, r1.getEntry(k1).getValue());
       wc = new WaitCriterion() {
@@ -1206,7 +1210,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(k2, r1.getEntry(k2).getValue());
       wc = new WaitCriterion() {
@@ -1219,7 +1223,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(server_k1, r2.getEntry(k1).getValue());
       wc = new WaitCriterion() {
@@ -1232,12 +1236,12 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(server_k2, r2.getEntry(k2).getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyUpdates()", ex);
+      Assert.fail("failed while verifyUpdates()", ex);
     }
   }
 
@@ -1260,7 +1264,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 90 * 1000, 1000, true);
       
       // assertNull(r1.getEntry(k1).getValue());
       wc = new WaitCriterion() {
@@ -1273,7 +1277,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 90 * 1000, 1000, true);
       
       // assertNull(r1.getEntry(k2).getValue());
       wc = new WaitCriterion() {
@@ -1286,7 +1290,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 90 * 1000, 1000, true);
       
 
       // assertNull(r2.getEntry(k1).getValue());
@@ -1300,7 +1304,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 90 * 1000, 1000, true);
       
       // assertNull(r2.getEntry(k2).getValue());
       wc = new WaitCriterion() {
@@ -1313,10 +1317,10 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 90 * 1000, 1000, true);
     }
     catch (Exception ex) {
-      fail("failed while verifyInvalidatesOnBothRegions()", ex);
+      Assert.fail("failed while verifyInvalidatesOnBothRegions()", ex);
     }
   }
 
@@ -1336,7 +1340,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(server_k1, r2.getEntry(k1).getValue());
       wc = new WaitCriterion() {
@@ -1349,18 +1353,18 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
       
       // assertEquals(server_k2, r2.getEntry(k2).getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyUpdatesOnRegion2()", ex);
+      Assert.fail("failed while verifyUpdatesOnRegion2()", ex);
     }
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-    super.tearDown2();
+    super.tearDownBeforeDisconnect();
     // close the clients first
     closeCache();
     // then close the servers

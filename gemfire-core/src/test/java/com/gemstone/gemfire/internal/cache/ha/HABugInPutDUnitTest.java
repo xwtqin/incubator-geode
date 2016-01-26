@@ -36,6 +36,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -96,16 +97,16 @@ public class HABugInPutDUnitTest extends DistributedTestCase
         .intValue();
 
     client1.invoke(HABugInPutDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(host), new Integer(PORT1), new Integer(PORT2) });
+        NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2) });
     client2.invoke(HABugInPutDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(host), new Integer(PORT1), new Integer(PORT2) });
+        NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2) });
     //Boolean.getBoolean("")
 
   }
 
-  public void tearDown2() throws Exception
+  public void tearDownBeforeDisconnect() throws Exception
   {
-	super.tearDown2();
+	super.tearDownBeforeDisconnect();
     client1.invoke(HABugInPutDUnitTest.class, "closeCache");
     client2.invoke(HABugInPutDUnitTest.class, "closeCache");
     // close server

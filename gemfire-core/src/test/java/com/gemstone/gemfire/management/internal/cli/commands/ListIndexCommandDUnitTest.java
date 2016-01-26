@@ -44,6 +44,7 @@ import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.management.cli.Result;
 import com.gemstone.gemfire.management.internal.cli.domain.IndexDetails;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
@@ -91,8 +92,8 @@ public class ListIndexCommandDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   protected Index createIndex(final String name, final String indexedExpression, final String fromClause) {
@@ -142,7 +143,7 @@ public class ListIndexCommandDUnitTest extends CliCommandTestBase {
   protected Properties createDistributedSystemProperties(final String gemfireName) {
     final Properties distributedSystemProperties = new Properties();
 
-    distributedSystemProperties.setProperty(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    distributedSystemProperties.setProperty(DistributionConfig.LOG_LEVEL_NAME, DUnitEnv.getDUnitLogLevel());
     distributedSystemProperties.setProperty(DistributionConfig.NAME_NAME, gemfireName);
 
     return distributedSystemProperties;

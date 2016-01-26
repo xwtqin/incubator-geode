@@ -35,10 +35,12 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisitor;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -421,7 +423,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     Host host = Host.getHost(0);
     createVMs(host);
-    invokeInEveryVM(new SerializableRunnable("Create PR") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Create PR") {
       public void run() {
         getCache().createRegion(regionName, createRegionAttrs(0, 10, maxBuckets));
         
@@ -512,12 +514,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -554,11 +556,11 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
       }
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -587,12 +589,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
  
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during" + count, async[count].getException());
+        Assert.fail("exception during" + count, async[count].getException());
       }
     }
   }
@@ -625,12 +627,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
      }
     }
   }
@@ -697,12 +699,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -742,12 +744,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -778,7 +780,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
         startIndexForRegion, endIndexForRegion));
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
@@ -821,12 +823,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < 4; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < 4; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("got exception on " + count, async[count].getException());
+        Assert.fail("got exception on " + count, async[count].getException());
       }
     }
 
@@ -842,7 +844,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 4; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 4; count < AsyncInvocationArrSize; count++) {
@@ -883,12 +885,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Validation of bucket distribution failed on " + count,
+        Assert.fail("Validation of bucket distribution failed on " + count,
             async[count].getException());
       }
     }
@@ -1533,7 +1535,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      Threads.join(async[count], 30 * 1000);
     }
     /** testing whether exception occurred */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {

@@ -27,11 +27,13 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 
 /**
@@ -74,8 +76,8 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void tearDownBeforeDisconnect() throws Exception {
+    super.tearDownBeforeDisconnect();
   }
 
   /**
@@ -236,7 +238,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
    * @param key the key to wait on.
    */
   private void waitOnPut(final VM vm, final String key) {
-    DistributedTestCase.waitForCriterion(new DistributedTestCase.WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       @Override
       public boolean done() {
         return (getUsingVM(vm, key) != null);
@@ -523,7 +525,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
     } 
     // Running in hydra
     else {
-      return getDUnitLocatorPort();
+      return DUnitEnv.getDUnitLocatorPort();
     }
   }
 }

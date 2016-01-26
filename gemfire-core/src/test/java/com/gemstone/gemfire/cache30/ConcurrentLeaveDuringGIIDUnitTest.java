@@ -29,6 +29,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.RegionMap;
 
@@ -101,7 +103,7 @@ public class ConcurrentLeaveDuringGIIDUnitTest extends CacheTestCase {
             return "waiting for GII test hook to be invoked";
           }
         };
-        waitForCriterion(wc, 20000, 500, true);
+        Wait.waitForCriterion(wc, 20000, 500, true);
         return getCache().getDistributedSystem().getDistributedMember();
       }
     };
@@ -128,7 +130,7 @@ public class ConcurrentLeaveDuringGIIDUnitTest extends CacheTestCase {
             return "waiting for region " + regionName + " to contain keyFromX";
           }
         };
-        waitForCriterion(wc, 20000, 1000, true);
+        Wait.waitForCriterion(wc, 20000, 1000, true);
       }
     });
     
@@ -150,7 +152,7 @@ public class ConcurrentLeaveDuringGIIDUnitTest extends CacheTestCase {
             return "waiting for region " + regionName + " to initialize";
           }
         };
-        waitForCriterion(wc, 20000, 1000, true);
+        Wait.waitForCriterion(wc, 20000, 1000, true);
         // ensure that the RVV has recorded the event
         DistributedRegion r = (DistributedRegion)getCache().getRegion(regionName);
         if (!r.getVersionVector().contains(Xid, 1)) {
@@ -177,7 +179,7 @@ public class ConcurrentLeaveDuringGIIDUnitTest extends CacheTestCase {
           }
         };
         // if the test fails here then a sync from B to A was not performed
-        waitForCriterion(wc, 20000, 500, true);
+        Wait.waitForCriterion(wc, 20000, 500, true);
         // if the test fails here something is odd because the sync was done
         // but the RVV doesn't know about it
         assertTrue(((LocalRegion)r).getVersionVector().contains(Xid, 1));
