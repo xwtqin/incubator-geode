@@ -1200,7 +1200,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Wait for a thread to join
    * @param t thread to wait on
    * @param ms maximum time to wait
-   * @throws AssertionFailure if the thread does not terminate
+   * @throws AssertionError if the thread does not terminate
    */
   static public void join(Thread t, long ms, LogWriter logger) {
     final long tilt = System.currentTimeMillis() + ms;
