@@ -126,7 +126,6 @@ import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantLock;
  * @author David Whitlock
  * @since 2.0
  *
- * @see com.gemstone.gemfire.distributed.internal
  * @see DistributionMessage#process
  * @see IgnoredByManager
  */
