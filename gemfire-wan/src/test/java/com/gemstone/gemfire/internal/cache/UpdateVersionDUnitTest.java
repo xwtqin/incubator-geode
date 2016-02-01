@@ -656,17 +656,17 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
     InternalDistributedSystem ds = test.getSystem(props);
     cache = CacheFactory.create(ds); 
     ExpectedException ex = new ExpectedException("could not get remote locator information for remote site");
-    cache.getLogger().info(ex.getAddString());
+    cache.getLogger().info(ex.getAddMessage());
     expectedExceptions.add(ex);
     ex = new ExpectedException("Pool ln1 is not available");
-    cache.getLogger().info(ex.getAddString());
+    cache.getLogger().info(ex.getAddMessage());
     expectedExceptions.add(ex);
   }
   
   private static void closeCache() {
     if (cache != null && !cache.isClosed()) {
       for (ExpectedException expectedException: expectedExceptions) {
-        cache.getLogger().info(expectedException.getRemoveString());
+        cache.getLogger().info(expectedException.getRemoveMessage());
       }
       expectedExceptions.clear();
       cache.getDistributedSystem().disconnect();
