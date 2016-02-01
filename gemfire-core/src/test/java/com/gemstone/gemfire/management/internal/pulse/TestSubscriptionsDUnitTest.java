@@ -196,8 +196,6 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
 
   /**
    * get member id
-   * 
-   * @param vm
    */
   @SuppressWarnings("serial")
   protected static DistributedMember getMember() throws Exception {

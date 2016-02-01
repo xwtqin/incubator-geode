@@ -2841,8 +2841,6 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
   }
 
   /**
-   * @param ds1
-   * @param pr
    * @return first key found on the given member
    */
   CustId getKeyOnMember(final DistributedMember owner,
@@ -2858,10 +2856,7 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
     }
     return retVal;
   }
-  /**
-   * @param i
-   * @return
-   */
+
   protected Set<Customer> getCustomerSet(int size) {
     Set<Customer> expectedSet = new HashSet<Customer>();
     for (int i=0; i<size; i++) {

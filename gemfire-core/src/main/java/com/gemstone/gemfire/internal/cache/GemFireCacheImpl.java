@@ -707,6 +707,13 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   public static GemFireCacheImpl getInstance() {
     return instance;
   }
+  
+  /* Used for testing, retain the old instance in the test and re-set the value when test completes*/
+  public static GemFireCacheImpl setInstanceForTests(GemFireCacheImpl cache) {
+    GemFireCacheImpl oldInstance = instance;
+	  instance = cache;
+	  return oldInstance;
+  }
 
   /**
    * Returns an existing instance. If a cache does not exist
@@ -1120,8 +1127,6 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   /**
    * Perform initialization, solve the early escaped reference problem by putting publishing references to this instance
    * in this method (vs. the constructor).
-   *
-   * @return the initialized instance of the cache
    */
   private void initialize() {
     if (GemFireCacheImpl.instance != null) {

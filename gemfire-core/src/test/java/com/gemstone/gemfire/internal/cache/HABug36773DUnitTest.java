@@ -305,10 +305,6 @@ public class HABug36773DUnitTest extends DistributedTestCase
     return new Integer(server.getPort());
   }
 
-  /**
-   *
-   * @param key Key in which client is interested
-   */
   public static void registerKeysK1andK2()
   {
     try {

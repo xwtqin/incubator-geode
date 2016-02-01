@@ -159,7 +159,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Invokes a <code>SerializableRunnable</code> in every VM that
    * DUnit knows about.
    *
-   * @see VM#invoke(Runnable)
+   * @see VM#invoke(SerializableRunnableIF)
    */
   public static void invokeInEveryVM(SerializableRunnable work) {
     for (int h = 0; h < Host.getHostCount(); h++) {
@@ -181,7 +181,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * DUnit knows about.
    *
    * @return a Map of results, where the key is the VM and the value is the result
-   * @see VM#invoke(Callable)
+   * @see VM#invoke(SerializableCallableIF)
    */
   protected static Map invokeInEveryVM(SerializableCallable work) {
     HashMap ret = new HashMap();
@@ -246,7 +246,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * its execution is repeated, until no assertion failure occurs or
    * repeatTimeout milliseconds have passed.
    *
-   * @see VM#invoke(Runnable)
+   * @see VM#invoke(SerializableRunnableIF)
    */
   protected void invokeInEveryVMRepeatingIfNecessary(RepeatableRunnable work) {
     for (int h = 0; h < Host.getHostCount(); h++) {
@@ -460,7 +460,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Note: "final" was removed so that WANTestBase can override this method.
    * This was part of the xd offheap merge.
    *
-   * @see hydra.DistributedConnectionMgr#connect
+   * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
   public /*final*/ InternalDistributedSystem getSystem(Properties props) {
@@ -1143,7 +1143,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Wait for a thread to join
    * @param t thread to wait on
    * @param ms maximum time to wait
-   * @throws AssertionFailure if the thread does not terminate
+   * @throws AssertionError if the thread does not terminate
    */
   static public void join(Thread t, long ms, LogWriter logger) {
     final long tilt = System.currentTimeMillis() + ms;

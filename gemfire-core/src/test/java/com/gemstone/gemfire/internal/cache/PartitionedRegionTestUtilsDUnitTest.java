@@ -55,8 +55,8 @@ public class PartitionedRegionTestUtilsDUnitTest extends
   }
 
   /**
-   * Test the {@link PartitionedRegion#getSomeKeys(Random)} method, making sure it 
-   * returns keys when there are keys and {@link Collections#EMPTY_SET} when there are none.
+   * Test the {@link PartitionedRegion#getSomeKeys(java.util.Random)} method, making sure it 
+   * returns keys when there are keys and {@link java.util.Collections#EMPTY_SET} when there are none.
    * @throws Exception
    */
   public void testGetKeys() throws Exception {
@@ -141,8 +141,6 @@ public class PartitionedRegionTestUtilsDUnitTest extends
    * Test the test method PartitionedRegion.getAllNodes
    * Verify that it returns nodes after a value has been placed into the PartitionedRegion.
    * @see PartitionedRegion#getAllNodes()
-   * 
-   * @throws Exception
    */
   
   public static class TestGetNodesKey implements DataSerializable {

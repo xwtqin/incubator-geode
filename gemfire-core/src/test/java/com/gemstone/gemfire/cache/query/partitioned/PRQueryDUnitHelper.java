@@ -115,11 +115,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
   /**
    * This function creates a appropriate region (Local or PR ) given the scope &
    * the isPR parameters *
-   * 
-   * @param regionName
-   * @param isPR
-   * 
-   * @return cacheSerializable object
    */
   public CacheSerializableRunnable getCacheSerializableRunnableForLocalRegionCreation(
       final String regionName) {
@@ -632,11 +627,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
    * 1. Creates & executes a query with Logical Operators on the given PR Region
    * 2. Executes the same query on the local region <br>
    * 3. Compares the appropriate resultSet <br>
-   * 
-   * @param regionName
-   * @param localRegionNeme
-   * 
-   * @return cacheSerializable object
    */
 
   public CacheSerializableRunnable getCacheSerializableRunnableForPRQueryAndCompareResults(
@@ -1400,11 +1390,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
    * 1. Creates & executes a query with Constants on the given PR Region <br>
    * 2. Executes the same query on the local region <br>
    * 3. Compares the appropriate resultSet <br>
-   * 
-   * @param regionName
-   * @param localRegionNeme
-   * 
-   * @return cacheSerializable object
    */
 
   public CacheSerializableRunnable getCacheSerializableRunnableForPRQueryWithConstantsAndComparingResults(
@@ -1856,10 +1841,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
    * This function <br>
    * 1. The Creates an array of PortfolioData objects
    * 
-   * @param count ,
-   *          CountDestisnation
-   * 
-   * 
    * @return PortFolioData Objects
    */
 
@@ -1936,11 +1917,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
    * 2. Executes the same query on the local region <br>
    * 3. Compares the appropriate resultSet <br>
    * 4. Compares and Print's the time taken for each <br>
-   * 
-   * @param regionName
-   * @param localRegionNeme
-   * 
-   * @return cacheSerializable object
    */
 
   public CacheSerializableRunnable PRQueryingVsLocalQuerying(
@@ -2066,11 +2042,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
     /**
    * This function creates a appropriate index on a  PR given the name and 
    * other parameters.
-   * 
-   * @param regionName
-   * @param indexName
-   * 
-   * @return cacheSerializable object
    */
   public CacheSerializableRunnable getCacheSerializableRunnableForPRIndexCreate(
       final String prRegionName, final String indexName,
@@ -2135,11 +2106,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
  /**
   * This function defines a appropriate index on a  PR given the name and 
   * other parameters.
-  * 
-  * @param regionName
-  * @param indexName
-  * 
-  * @return cacheSerializable object
   */
   public CacheSerializableRunnable getCacheSerializableRunnableForDefineIndex(
       final String prRegionName, final ArrayList<String> indexName,
@@ -2396,10 +2362,6 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
   /**
    * This function creates a duplicate index should throw an IndexNameConflictException
    * and if not the test should fail.
-   * 
-   * @param regionName
-   * @param IndexName
-   * 
    */
   public CacheSerializableRunnable getCacheSerializableRunnableForDuplicatePRIndexCreate(
       final String prRegionName, final String indexName,

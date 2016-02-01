@@ -142,8 +142,6 @@ public class ManagementTestBase extends DistributedTestCase {
 
   /**
    * Enable system property gemfire.disableManagement false in each VM.
-   *
-   * @throws Exception
    */
   public void enableManagement() {
     invokeInEveryVM(new SerializableRunnable("Enable Management") {
@@ -156,8 +154,6 @@ public class ManagementTestBase extends DistributedTestCase {
 
   /**
    * Disable system property gemfire.disableManagement true in each VM.
-   *
-   * @throws Exception
    */
   public void disableManagement() {
     invokeInEveryVM(new SerializableRunnable("Disable Management") {
@@ -528,7 +524,6 @@ public class ManagementTestBase extends DistributedTestCase {
    *          reference to VM
    * @param regionName
    *          name of the distributed region
-   * @throws Throwable
    */
   protected void createDistributedRegion(VM vm, final String regionName)
       throws Exception {
@@ -549,7 +544,6 @@ public class ManagementTestBase extends DistributedTestCase {
    *          reference to VM
    * @param localRegionName
    *          name of the local region
-   * @throws Throwable
    */
   protected void createLocalRegion(VM vm, final String localRegionName)
       throws Exception {
@@ -574,9 +568,6 @@ public class ManagementTestBase extends DistributedTestCase {
    *
    * @param vm
    *          reference to VM
-   * @param localRegionName
-   *          name of the local region
-   * @throws Throwable
    */
   protected void createSubRegion(VM vm, final String parentRegionPath, final String subregionName)
       throws Exception {
