@@ -35,6 +35,7 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -156,27 +157,27 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
 
         DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());        
         if(asyncObj1.exceptionOccurred()){
-          fail("asyncObj1 failed", asyncObj1.getException());
+          Assert.fail("asyncObj1 failed", asyncObj1.getException());
         }
         
         DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());        
         if(asyncObj2.exceptionOccurred()){
-          fail("asyncObj2 failed", asyncObj2.getException());
+          Assert.fail("asyncObj2 failed", asyncObj2.getException());
         }
         
         DistributedTestCase.join(asyncObj3, 5 * 60 * 1000, getLogWriter());        
         if(asyncObj3.exceptionOccurred()){
-          fail("asyncObj3 failed", asyncObj3.getException());
+          Assert.fail("asyncObj3 failed", asyncObj3.getException());
         }
         
         DistributedTestCase.join(asyncObj4, 5 * 60 * 1000, getLogWriter());        
         if(asyncObj4.exceptionOccurred()){
-          fail("asyncObj4 failed", asyncObj4.getException());
+          Assert.fail("asyncObj4 failed", asyncObj4.getException());
         }
         
         DistributedTestCase.join(asyncObj5, 5 * 60 * 1000, getLogWriter());        
         if(asyncObj5.exceptionOccurred()){
-          fail("asyncObj5 failed", asyncObj5.getException());
+          Assert.fail("asyncObj5 failed", asyncObj5.getException());
         }
         
   
@@ -195,12 +196,12 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
 
     DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     
     DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());
     if(asyncObj2.exceptionOccurred()){
-      fail("asyncObj2 failed", asyncObj2.getException());
+      Assert.fail("asyncObj2 failed", asyncObj2.getException());
     }
     
   }

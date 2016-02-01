@@ -41,6 +41,7 @@ import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.datasource.GemFireTransactionDataSource;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
 import com.gemstone.gemfire.internal.jta.UserTransactionImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -138,10 +139,10 @@ public class TransactionTimeOutDUnitTest extends DistributedTestCase {
     DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
     DistributedTestCase.join(async2, 30 * 1000, getLogWriter());
     if(async1.exceptionOccurred()){
-      fail("async1 failed", async1.getException());
+      Assert.fail("async1 failed", async1.getException());
     }
     if(async2.exceptionOccurred()){
-      fail("async2 failed", async2.getException());
+      Assert.fail("async2 failed", async2.getException());
     }
   }
 

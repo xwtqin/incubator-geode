@@ -33,7 +33,9 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.*;
@@ -59,7 +61,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
 
   private static final String REGION_NAME = "InterestResultPolicyDUnitTest_region" ;
 
-  private ExpectedException expectedEx;
+  private IgnoredException expectedEx;
 
   /**
    * Creates a test instance with the given name
@@ -93,7 +95,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
   public void tearDown2() throws Exception
   {
     // might get ServerConnectivityExceptions during shutdown
-    this.expectedEx = addExpectedException(ServerConnectivityException.class
+    this.expectedEx = IgnoredException.addExpectedException(ServerConnectivityException.class
         .getName());
     // close server
     vm0.invoke(InterestResultPolicyDUnitTest.class, "closeCache");
@@ -334,7 +336,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
       region1.registerInterest(keylist, policy);
     }
     catch (CacheWriterException e) {
-      fail("failed to register interestlist for the client", e);
+      Assert.fail("failed to register interestlist for the client", e);
     }
   }
 

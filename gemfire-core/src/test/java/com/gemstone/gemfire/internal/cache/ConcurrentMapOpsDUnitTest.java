@@ -50,6 +50,7 @@ import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -1046,7 +1047,7 @@ public class ConcurrentMapOpsDUnitTest extends CacheTestCase {
     final int port2 = createRegionsAndStartServer(server2, true);
     final String regionName = usePR? PR_REG_NAME : REP_REG_NAME;
 
-    addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("java.net.SocketException");
     
     createClientRegion(client, port1, false, port2);
     
@@ -1059,11 +1060,11 @@ public class ConcurrentMapOpsDUnitTest extends CacheTestCase {
     final DistributedMember server1ID = (DistributedMember)server1.invoke(getID);
     final DistributedMember server2ID = (DistributedMember)server2.invoke(getID);
     
-    Set<ExpectedException> exceptions = new HashSet<ExpectedException>();
-    exceptions.add(addExpectedException("Membership: requesting removal", server1));
-    exceptions.add(addExpectedException("Membership: requesting removal", server2));
-    exceptions.add(addExpectedException("ForcedDisconnect", server1));
-    exceptions.add(addExpectedException("ForcedDisconnect", server2));
+    Set<IgnoredException> exceptions = new HashSet<IgnoredException>();
+    exceptions.add(IgnoredException.addExpectedException("Membership: requesting removal", server1));
+    exceptions.add(IgnoredException.addExpectedException("Membership: requesting removal", server2));
+    exceptions.add(IgnoredException.addExpectedException("ForcedDisconnect", server1));
+    exceptions.add(IgnoredException.addExpectedException("ForcedDisconnect", server2));
     
     try {
 
@@ -1164,7 +1165,7 @@ public class ConcurrentMapOpsDUnitTest extends CacheTestCase {
       });
     } finally {
       disconnectAllFromDS();
-      for (ExpectedException ex: exceptions) {
+      for (IgnoredException ex: exceptions) {
         ex.remove();
       }
     }

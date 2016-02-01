@@ -37,6 +37,7 @@ import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -76,7 +77,7 @@ public class Bug43684DUnitTest extends DistributedTestCase {
     server2 = host.getVM(1);
     server3 = host.getVM(2);
     client1 = host.getVM(3);
-    addExpectedException("Connection refused: connect");
+    IgnoredException.addExpectedException("Connection refused: connect");
   }
 
   public void tearDown2() throws Exception {

@@ -21,6 +21,8 @@ import com.gemstone.gemfire.cache.RegionFactory;
 import com.gemstone.gemfire.cache.RegionShortcut;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -43,7 +45,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    ExpectedException ex = addExpectedException( "IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addExpectedException( "IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -63,7 +65,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    ExpectedException ex = addExpectedException( "IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addExpectedException( "IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -83,7 +85,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    ExpectedException ex = addExpectedException("IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addExpectedException("IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -93,7 +95,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
       ex.remove();
     }
     
-    ex = addExpectedException("DistributedSystemDisconnectedException", vm0);
+    ex = IgnoredException.addExpectedException("DistributedSystemDisconnectedException", vm0);
     try {
       fakeCrash(vm0);
     } finally {
@@ -161,7 +163,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
           .setEntryTimeToLive(new ExpirationAttributes(expirationTime));
 
         //We may log an exception if the create fails. Ignore thse.
-          ExpectedException ex = addExpectedException("IllegalStateException");
+          IgnoredException ex = IgnoredException.addExpectedException("IllegalStateException");
           try {
             int i= 0;
             //Loop until a successful create
@@ -174,7 +176,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
               } catch(IllegalStateException expected) {
                 //give up if we can't create the region in 20 tries
                 if(i == 20) {
-                  fail("Metadata was never cleaned up in 20 tries", expected);
+                  Assert.fail("Metadata was never cleaned up in 20 tries", expected);
                 }
                 
                 //wait a bit before the next attempt.

@@ -46,6 +46,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionQueryEvaluator;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -399,7 +400,7 @@ public class PRQueryDUnitTest extends PartitionedRegionDUnitTestCase
     final MyTestHook th = new MyTestHook();
 
     // add expected exception strings
-    final ExpectedException ex = addExpectedException("Data loss detected");
+    final IgnoredException ex = IgnoredException.addExpectedException("Data loss detected");
     try {
       Object[] params = new Object[0];
       final DefaultQuery query = (DefaultQuery)getCache().getQueryService()
@@ -682,7 +683,7 @@ public class PRQueryDUnitTest extends PartitionedRegionDUnitTestCase
     });
 
     // add expected exception strings
-    final ExpectedException ex = addExpectedException("Data loss detected",
+    final IgnoredException ex = IgnoredException.addExpectedException("Data loss detected",
         accessor);
     accessor.invoke(new SerializableCallable(
         "Create bucket and test dataloss query") {

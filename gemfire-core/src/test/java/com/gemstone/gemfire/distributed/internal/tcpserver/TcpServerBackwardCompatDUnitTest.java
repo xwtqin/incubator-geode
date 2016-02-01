@@ -128,7 +128,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
           
           Locator.startLocatorAndDS(port0, logFile0, props);
         } catch (IOException e) {
-          fail("Locator1 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("Locator1 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
         }
       }
     });
@@ -194,7 +194,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
 //          Assert.assertTrue(members.contains(new IpAddress(InetAddress.getLocalHost(), port1)));
 
         } catch (IOException e) {
-          fail("Locator1 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("Locator1 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
         }
       }
     });
@@ -247,7 +247,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
 //          }
 
         } catch (IOException e) {
-          fail("Locator0 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("Locator0 start failed with Gossip Version: " + TcpServer.GOSSIPVERSION + "!", e);
         }
       }
     });

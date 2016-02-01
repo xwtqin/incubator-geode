@@ -39,6 +39,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -105,7 +106,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
       performSteps(DistributionConfig.CLIENT_CONFLATION_PROP_VALUE_DEFAULT);
     }
     catch( Exception e ) {
-      fail("testConflationDefault failed due to exception", e);
+      Assert.fail("testConflationDefault failed due to exception", e);
     }
   }
   
@@ -114,7 +115,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
       performSteps(DistributionConfig.CLIENT_CONFLATION_PROP_VALUE_ON);
     }
     catch( Exception e ) {
-      fail("testConflationOn failed due to exception", e);
+      Assert.fail("testConflationOn failed due to exception", e);
     }
   }
   
@@ -123,7 +124,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
       performSteps(DistributionConfig.CLIENT_CONFLATION_PROP_VALUE_OFF);
     }
     catch( Exception e ) {
-      fail("testConflationOff failed due to exception", e);
+      Assert.fail("testConflationOff failed due to exception", e);
     }
   }
   
@@ -516,7 +517,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      Assert.fail("failed while region.put()", ex);
     }
   }
 

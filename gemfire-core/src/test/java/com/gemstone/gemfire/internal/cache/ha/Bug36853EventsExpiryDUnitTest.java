@@ -36,6 +36,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -242,8 +243,8 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    */
   public void testEventsExpiryBug() throws Exception
   {
-    addExpectedException("Unexpected IOException");
-    addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("Connection reset");
     server.invoke(Bug36853EventsExpiryDUnitTest.class, "generateEvents");
     client.invoke(Bug36853EventsExpiryDUnitTest.class,
         "validateEventCountAtClient");

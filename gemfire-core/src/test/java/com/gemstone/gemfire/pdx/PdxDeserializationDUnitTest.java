@@ -38,6 +38,7 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.pdx.PdxReader;
 import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -310,7 +311,7 @@ public class PdxDeserializationDUnitTest extends CacheTestCase {
       }
       
     } catch (Exception e) {
-      fail("got exception from query", e);
+      Assert.fail("got exception from query", e);
     }
     
 
@@ -352,7 +353,7 @@ public class PdxDeserializationDUnitTest extends CacheTestCase {
     try {
       server.start();
     } catch (IOException e) {
-      fail("got exception", e);
+      Assert.fail("got exception", e);
     }
     return server;
   }

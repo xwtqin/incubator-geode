@@ -44,6 +44,7 @@ import com.gemstone.gemfire.internal.cache.TombstoneService;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -440,7 +441,7 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
             assertTrue("expected key object_"+i+" to be in the cache but it isn't", TestRegion.containsKey("object_"+i));
           }
         } catch (NullPointerException e) {
-          fail("caught NPE", e);
+          Assert.fail("caught NPE", e);
         }
       }
     });

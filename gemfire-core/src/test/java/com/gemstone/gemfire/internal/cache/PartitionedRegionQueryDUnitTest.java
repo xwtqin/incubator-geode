@@ -58,6 +58,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.partitioned.QueryMessage;
 import com.gemstone.gemfire.pdx.JSONFormatter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -295,7 +296,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -367,7 +368,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -438,7 +439,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -510,7 +511,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -582,7 +583,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -655,7 +656,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -727,7 +728,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -798,7 +799,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
                     9 })), results.asSet());
   
           } catch (Exception e) {
-            fail("Bad query", e);
+            Assert.fail("Bad query", e);
           }
         }
       });
@@ -953,7 +954,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
 
         for (int i = 0; i < queries.length; i++) {
@@ -962,7 +963,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
             assertTrue("Size of resultset should be greater than 0 for query: "
              + queries[i], sr.size() > 0);
           } catch (Exception e) {
-            fail("Failed executing query ", e);
+            Assert.fail("Failed executing query ", e);
           }
         }
         return null;
@@ -1004,7 +1005,7 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
           SelectResults results = (SelectResults) query.execute();
           assertEquals(new HashSet(Arrays.asList(new Integer[] { 1, 2, 3 ,4, 5, 6, 7, 8, 9 })), results.asSet());
         } catch (Exception e) {
-          fail("Bad query", e);
+          Assert.fail("Bad query", e);
         }
       }
     });

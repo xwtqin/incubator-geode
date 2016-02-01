@@ -20,6 +20,7 @@ import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -243,7 +244,7 @@ public class PartitionedRegionMultipleDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
    }
 
@@ -303,7 +304,7 @@ public class PartitionedRegionMultipleDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -339,7 +340,7 @@ public class PartitionedRegionMultipleDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -372,7 +373,7 @@ public class PartitionedRegionMultipleDUnitTest extends
      
     for (int count = 0; count < AsyncInvocationArrSize; count++) { 
       if (async[count].exceptionOccurred()) {
-        fail("Failed due to exception: "+ async[count].getException(),
+        Assert.fail("Failed due to exception: "+ async[count].getException(),
             async[count].getException());
       }
     }  
@@ -411,7 +412,7 @@ public class PartitionedRegionMultipleDUnitTest extends
 
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
    }   
   }
@@ -545,7 +546,7 @@ public class PartitionedRegionMultipleDUnitTest extends
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
         DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
         if (async[count].exceptionOccurred()) {
-          fail("exception during " + count, async[count].getException());
+          Assert.fail("exception during " + count, async[count].getException());
         }
     }
     
@@ -591,7 +592,7 @@ public class PartitionedRegionMultipleDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }

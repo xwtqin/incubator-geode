@@ -40,6 +40,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.EventTracker.BulkOpHolder;
 import com.gemstone.gemfire.internal.cache.ha.ThreadIdentifier;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -146,7 +147,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
         try {
           startCacheServer();
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -219,7 +220,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
         try {
           startCacheServer();
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -303,7 +304,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
         try {
           startCacheServer();
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     };

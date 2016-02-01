@@ -44,6 +44,7 @@ import com.gemstone.gemfire.internal.admin.StatResource;
 import com.gemstone.gemfire.internal.admin.remote.RemoteTransportConfig;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -70,7 +71,7 @@ public class ConsoleDistributionManagerDUnitTest
 
   public void setUp() throws Exception {
     boolean finishedSetup = false;
-    addExpectedException("Error occurred while reading system log");
+    IgnoredException.addExpectedException("Error occurred while reading system log");
     try {
       if (firstTime) {
         disconnectFromDS(); //make sure there's no ldm lying around

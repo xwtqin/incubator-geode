@@ -42,6 +42,7 @@ import com.gemstone.gemfire.distributed.Locator;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -117,12 +118,12 @@ public abstract class LocatorTestBase  extends DistributedTestCase {
           try {
             bindAddr = InetAddress.getByName(getServerHostName(vm.getHost()));
           } catch (UnknownHostException uhe) {
-            fail("While resolving bind address ", uhe);
+            Assert.fail("While resolving bind address ", uhe);
           }
           Locator locator = Locator.startLocatorAndDS(locatorPort, logFile, bindAddr, props);
           remoteObjects.put(LOCATOR_KEY, locator);
         } catch (IOException ex) {
-          fail("While starting locator on port " + locatorPort, ex);
+          Assert.fail("While starting locator on port " + locatorPort, ex);
         }
       }
     });

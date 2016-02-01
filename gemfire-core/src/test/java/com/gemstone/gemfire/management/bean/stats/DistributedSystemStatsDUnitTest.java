@@ -29,6 +29,7 @@ import com.gemstone.gemfire.management.MemberMXBean;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.beans.MemberMBean;
 import com.gemstone.gemfire.management.internal.beans.MemberMBeanBridge;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -99,9 +100,9 @@ public class DistributedSystemStatsDUnitTest extends ManagementTestBase{
             MemberMXBean memberBean = service.getMBeanProxy(memberMBeanName, MemberMXBean.class);
             waitForRefresh(2, memberMBeanName);
           } catch (NullPointerException e) {
-            fail("FAILED WITH EXCEPION", e);
+            Assert.fail("FAILED WITH EXCEPION", e);
           } catch (Exception e) {
-            fail("FAILED WITH EXCEPION", e);
+            Assert.fail("FAILED WITH EXCEPION", e);
           }
         }
 

@@ -33,6 +33,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -282,7 +283,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
       region.put(DESTROY_KEY, DESTROY_VALUE);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -304,7 +305,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
       region.putAll(map);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -370,7 +371,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
 
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
 
   }
@@ -478,7 +479,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
       DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
     }
     catch (Exception e) {
-      fail(" Test failed due to " + e, e);
+      Assert.fail(" Test failed due to " + e, e);
     }
   }
   

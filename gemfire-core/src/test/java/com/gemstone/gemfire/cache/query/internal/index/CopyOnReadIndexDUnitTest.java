@@ -42,6 +42,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -401,7 +402,7 @@ public class CopyOnReadIndexDUnitTest extends CacheTestCase {
         txManager.commit();
         }
         catch (CommitConflictException conflict) {
-          fail("commit conflict exception", conflict);
+          Assert.fail("commit conflict exception", conflict);
         }
         
         //We have created puts from our previous callable

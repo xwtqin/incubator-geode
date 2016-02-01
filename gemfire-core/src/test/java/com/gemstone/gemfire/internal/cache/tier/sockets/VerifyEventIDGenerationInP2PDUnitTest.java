@@ -30,6 +30,7 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -148,7 +149,7 @@ public class VerifyEventIDGenerationInP2PDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry("key-1").getValue(), "key-1");
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -160,7 +161,7 @@ public class VerifyEventIDGenerationInP2PDUnitTest extends DistributedTestCase
       r.get("key-1");
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 

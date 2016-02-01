@@ -67,6 +67,7 @@ import com.gemstone.gemfire.internal.cache.execute.util.RollbackFunction;
 import com.gemstone.gemfire.internal.cache.tx.ClientTXStateStub;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -88,7 +89,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
   
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("java.net.SocketException");
   }
 
   private Integer createRegionsAndStartServer(VM vm, boolean accessor) {
@@ -1405,7 +1406,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
     VM server2 = host.getVM(1);
     VM client = host.getVM(2);
     
-    addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("java.net.SocketException");
     
     final int port1 = createRegionsAndStartServer(server1, true);
     final int port2 = createRegionsAndStartServer(server2, false);
@@ -2665,7 +2666,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
     final int port2 = createRegionsAndStartServer(server2, false);
     final int port = createRegionsAndStartServer(server1, true);
     
-    addExpectedException("ClassCastException");
+    IgnoredException.addExpectedException("ClassCastException");
     SerializableRunnable suspectStrings = new SerializableRunnable("suspect string") {
       public void run() {
         InternalDistributedSystem.getLoggerI18n().convertToLogWriter().info(
@@ -2762,8 +2763,8 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
     doFunctionWithFailureWork(false);
   }
   private void doFunctionWithFailureWork(final boolean commit) {
-    addExpectedException("TransactionDataNodeHasDepartedException");
-    addExpectedException("ClassCastException");
+    IgnoredException.addExpectedException("TransactionDataNodeHasDepartedException");
+    IgnoredException.addExpectedException("ClassCastException");
     Host host = Host.getHost(0);
     VM server1 = host.getVM(0);
     VM server2 = host.getVM(1);

@@ -34,6 +34,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -124,7 +125,7 @@ public class Bug36269DUnitTest extends DistributedTestCase
       srp.destroyRegionOnForTestsOnly(desCon, new EventID(new byte[] {1}, 1, 1), null);
     }
     catch (Exception ex) {
-      fail("while setting acquireConnections", ex);
+      Assert.fail("while setting acquireConnections", ex);
     }
   }
 
@@ -184,7 +185,7 @@ public class Bug36269DUnitTest extends DistributedTestCase
       assertNotNull(r);
     }
     catch (Exception ex) {
-      fail("failed while verifyNoRegionDestroyOnOriginator()", ex);
+      Assert.fail("failed while verifyNoRegionDestroyOnOriginator()", ex);
     }
   }
 
@@ -202,7 +203,7 @@ public class Bug36269DUnitTest extends DistributedTestCase
       DistributedTestCase.waitForCriterion(ev, 40 * 1000, 200, true);
     }
     catch (Exception ex) {
-      fail("failed while verifyRegionDestroy", ex);
+      Assert.fail("failed while verifyRegionDestroy", ex);
     }
   }
 

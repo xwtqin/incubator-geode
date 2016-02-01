@@ -43,6 +43,7 @@ import com.gemstone.gemfire.internal.cache.execute.data.Order;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.Shipment;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 /**
@@ -389,7 +390,7 @@ public class PRTransactionDUnitTest extends PRColocationDUnitTest {
           .getRegion(Region.SEPARATOR + OrderPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -715,7 +716,7 @@ public class PRTransactionDUnitTest extends PRColocationDUnitTest {
         }
         catch (Exception e) {
           // mgr.rollback();
-          fail(" failed while doing put operation in CacheListener ", e);
+          Assert.fail(" failed while doing put operation in CacheListener ", e);
         }
       }
       mgr.commit();

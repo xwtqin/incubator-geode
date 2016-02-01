@@ -39,6 +39,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.tier.InterestType;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableCallableIF;
@@ -141,7 +142,7 @@ public class ClientServerInvalidAndDestroyedEntryDUnitTest extends CacheTestCase
             server.start();
           }
           catch (IOException e) {
-            fail("Failed to start server ", e);
+            Assert.fail("Failed to start server ", e);
           }
         }
         if (usePR) {

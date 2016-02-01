@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -160,8 +161,8 @@ public class HADuplicateDUnitTest extends DistributedTestCase
   public void testSample() throws Exception
   {
 
-    addExpectedException("IOException");
-    addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("IOException");
+    IgnoredException.addExpectedException("Connection reset");
     createClientServerConfiguration();
     server1.invoke(new CacheSerializableRunnable("putKey") {
 

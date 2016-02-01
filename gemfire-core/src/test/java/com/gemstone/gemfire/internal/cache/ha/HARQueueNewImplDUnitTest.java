@@ -52,6 +52,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HAEventWrapper;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -258,7 +259,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.registerInterest("ALL_KEYS");
     }
     catch (Exception ex) {
-      fail("failed in registerInterestListAll", ex);
+      Assert.fail("failed in registerInterestListAll", ex);
     }
   }
 
@@ -271,7 +272,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.registerInterest("k5");
     }
     catch (Exception ex) {
-      fail("failed while registering keys", ex);
+      Assert.fail("failed while registering keys", ex);
     }
   }
 
@@ -288,7 +289,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.put("k5", "pv5");
     }
     catch (Exception ex) {
-      fail("failed in putEntries()", ex);
+      Assert.fail("failed in putEntries()", ex);
     }
   }
 
@@ -304,7 +305,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.create("k5", "v5");
     }
     catch (Exception ex) {
-      fail("failed in createEntries()", ex);
+      Assert.fail("failed in createEntries()", ex);
     }
   }
 
@@ -317,7 +318,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in createEntries(Long)", ex);
+      Assert.fail("failed in createEntries(Long)", ex);
     }
   }
 
@@ -332,7 +333,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in putHeavyEntries(Long)", ex);
+      Assert.fail("failed in putHeavyEntries(Long)", ex);
     }
   }
 

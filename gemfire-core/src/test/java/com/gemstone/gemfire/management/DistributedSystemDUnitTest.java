@@ -49,6 +49,7 @@ import com.gemstone.gemfire.management.internal.NotificationHub.NotificationHubL
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.beans.MemberMBean;
 import com.gemstone.gemfire.management.internal.beans.SequenceNumber;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -613,7 +614,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
       vm1.invoke(new SerializableCallable("Warning level Alerts") {
 
         public Object call() throws Exception {
-          final ExpectedException warnEx = addExpectedException(WARNING_LEVEL_MESSAGE);
+          final IgnoredException warnEx = IgnoredException.addExpectedException(WARNING_LEVEL_MESSAGE);
           logger.warn(WARNING_LEVEL_MESSAGE);
           warnEx.remove();
           return null;
@@ -647,7 +648,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
         public Object call() throws Exception {
           // add expected exception strings         
           
-          final ExpectedException severeEx = addExpectedException(SEVERE_LEVEL_MESSAGE);
+          final IgnoredException severeEx = IgnoredException.addExpectedException(SEVERE_LEVEL_MESSAGE);
           logger.fatal(SEVERE_LEVEL_MESSAGE);
           severeEx.remove();
           return null;

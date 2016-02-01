@@ -29,6 +29,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.DSClock;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -65,7 +66,7 @@ public class ClientServerTimeSyncDUnitTest extends CacheTestCase {
             server.setPort(AvailablePortHelper.getRandomAvailableTCPPort());
             server.start();
           } catch (IOException e) {
-            fail("Starting cache server failed.", e);
+            Assert.fail("Starting cache server failed.", e);
           }
   
           // now set an artificial time offset for the test
@@ -142,7 +143,7 @@ public class ClientServerTimeSyncDUnitTest extends CacheTestCase {
             server.setPort(AvailablePortHelper.getRandomAvailableTCPPort());
             server.start();
           } catch (IOException e) {
-            fail("Starting cache server failed.", e);
+            Assert.fail("Starting cache server failed.", e);
           }
   
           // now set an artificial time offset for the test

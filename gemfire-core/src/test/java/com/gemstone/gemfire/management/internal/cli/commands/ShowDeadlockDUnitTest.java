@@ -32,6 +32,7 @@ import com.gemstone.gemfire.management.internal.cli.CliUtil;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -183,7 +184,7 @@ public class ShowDeadlockDUnitTest extends CacheTestCase {
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
         ResultCollector collector = FunctionService.onMember(system, member).execute(new TestFunction());
         //wait the function to lock the lock on member.

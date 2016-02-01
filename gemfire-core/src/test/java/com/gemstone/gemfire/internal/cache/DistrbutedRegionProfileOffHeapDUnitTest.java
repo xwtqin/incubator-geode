@@ -28,6 +28,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
@@ -96,7 +97,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
         Region region = null;
 
         try {
-          addExpectedException("IllegalStateException");
+          IgnoredException.addExpectedException("IllegalStateException");
           region = regionFactory.create(regionName);
           fail("Expected exception upon creation with invalid off-heap state");
         } catch (IllegalStateException expected) {

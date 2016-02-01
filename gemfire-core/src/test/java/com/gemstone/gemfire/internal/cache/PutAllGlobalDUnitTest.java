@@ -44,6 +44,7 @@ import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.locks.DLockGrantor;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -196,7 +197,7 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
                     }
                 }
                 catch(Exception ex){
-                  fail("async2 threw unexpected exception", ex);
+                  Assert.fail("async2 threw unexpected exception", ex);
                     //ex.printStackTrace();
                 } 
             }
@@ -205,12 +206,12 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
         DistributedTestCase.join(async2, 30 * 1000, getLogWriter());
         if (async2.exceptionOccurred()) {
           DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
-          fail("async2 failed", async2.getException());
+          Assert.fail("async2 failed", async2.getException());
         }
         
         DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
         if (async1.exceptionOccurred()) {
-          fail("async1 failed", async1.getException());
+          Assert.fail("async1 failed", async1.getException());
         }
         
     }//end of test case1
@@ -231,7 +232,7 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
             
         }catch(Exception ex){
 //            ex.printStackTrace();
-            fail("Failed while region.putAll", ex);
+            Assert.fail("Failed while region.putAll", ex);
         }
     }//end of putAllMethod
     

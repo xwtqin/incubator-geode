@@ -40,8 +40,10 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -575,7 +577,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     });
 
     // client may see "server unreachable" exceptions after this
-    addExpectedException("Server unreachable", client);
+    IgnoredException.addExpectedException("Server unreachable", client);
     stopBridgeServer(server);
   }
   
@@ -701,7 +703,7 @@ import com.gemstone.gemfire.test.dunit.VM;
           bridge.setMaxThreads(offheap ? 16 : getMaxThreads());
           bridge.start();
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });
@@ -750,7 +752,7 @@ import com.gemstone.gemfire.test.dunit.VM;
           startBridgeServer(serverPort);
           System.out.println("Started bridger server ");
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });

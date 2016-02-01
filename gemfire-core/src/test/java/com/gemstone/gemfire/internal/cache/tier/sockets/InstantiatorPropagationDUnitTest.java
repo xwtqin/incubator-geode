@@ -45,6 +45,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -192,7 +193,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject1", e);
+      Assert.fail("Test failed due to exception in TestObject1", e);
     }
   }
 
@@ -204,7 +205,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject2", e);
+      Assert.fail("Test failed due to exception in TestObject2", e);
     }
   }
 
@@ -216,7 +217,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject3", e);
+      Assert.fail("Test failed due to exception in TestObject3", e);
     }
   }
 
@@ -228,7 +229,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject4", e);
+      Assert.fail("Test failed due to exception in TestObject4", e);
     }
   }
 
@@ -240,7 +241,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject5", e);
+      Assert.fail("Test failed due to exception in TestObject5", e);
     }
   }
 
@@ -252,7 +253,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject6", e);
+      Assert.fail("Test failed due to exception in TestObject6", e);
     }
   }
 
@@ -264,7 +265,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject7", e);
+      Assert.fail("Test failed due to exception in TestObject7", e);
     }
   }
 
@@ -276,7 +277,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject8", e);
+      Assert.fail("Test failed due to exception in TestObject8", e);
     }
   }
 
@@ -288,7 +289,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject9", e);
+      Assert.fail("Test failed due to exception in TestObject9", e);
     }
   }
 
@@ -300,7 +301,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject10", e);
+      Assert.fail("Test failed due to exception in TestObject10", e);
     }
   }
 
@@ -312,7 +313,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject11", e);
+      Assert.fail("Test failed due to exception in TestObject11", e);
     }
   }
 
@@ -324,7 +325,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject11", e);
+      Assert.fail("Test failed due to exception in TestObject11", e);
     }
   }
 
@@ -336,7 +337,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject13", e);
+      Assert.fail("Test failed due to exception in TestObject13", e);
     }
   }
 
@@ -348,7 +349,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject14", e);
+      Assert.fail("Test failed due to exception in TestObject14", e);
     }
   }
 
@@ -360,7 +361,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject15", e);
+      Assert.fail("Test failed due to exception in TestObject15", e);
     }
   }
 
@@ -372,7 +373,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject16", e);
+      Assert.fail("Test failed due to exception in TestObject16", e);
     }
   }
 
@@ -384,7 +385,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject17", e);
+      Assert.fail("Test failed due to exception in TestObject17", e);
     }
   }
 
@@ -396,7 +397,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject18", e);
+      Assert.fail("Test failed due to exception in TestObject18", e);
     }
   }
   
@@ -408,7 +409,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject19", e);
+      Assert.fail("Test failed due to exception in TestObject19", e);
     }
   }
 
@@ -420,7 +421,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
       obj.init(0);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in TestObject20", e);
+      Assert.fail("Test failed due to exception in TestObject20", e);
     }
   }
 

@@ -30,7 +30,9 @@ import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation.ImageReplyMessage;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -134,7 +136,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         try {
           Thread.sleep(500);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
         assertEquals(2, observer.messageCount.get());
         observer.allowMessages.countDown();
@@ -201,7 +203,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         try {
           Thread.sleep(500);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
         assertEquals(2, observer.messageCount.get());
       }
@@ -257,7 +259,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         
       }
     });
-    ExpectedException expectedEx = null;
+    IgnoredException expectedEx = null;
     try {
       createRegion(vm0);
 
@@ -284,7 +286,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
           try {
             Thread.sleep(500);
           } catch (InterruptedException e) {
-            fail("interrupted", e);
+            Assert.fail("interrupted", e);
           }
           assertEquals(2, observer.messageCount.get());
         }
@@ -306,7 +308,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         throw e;
       }
 
-      expectedEx = addExpectedException(InterruptedException.class.getName(),
+      expectedEx = IgnoredException.addExpectedException(InterruptedException.class.getName(),
           vm1);
       if(disconnect) {
         disconnect(vm1);
@@ -437,7 +439,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         try {
           allowMessages.await();
         } catch (InterruptedException e) {
-          fail("Interrupted", e);
+          Assert.fail("Interrupted", e);
         }
       }
     }

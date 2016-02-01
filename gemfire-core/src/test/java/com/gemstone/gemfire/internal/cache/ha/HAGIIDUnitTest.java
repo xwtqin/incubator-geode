@@ -47,6 +47,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientTombstoneMessage;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -231,7 +232,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
       r.registerInterest("key-3",InterestResultPolicy.KEYS_VALUES);
     }
     catch (Exception ex) {
-      fail("failed while registering keys ", ex);
+      Assert.fail("failed while registering keys ", ex);
     }
   }
   public static void createEntries()
@@ -245,7 +246,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -275,7 +276,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
   
@@ -344,7 +345,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
       // assertEquals( "key-3",r.getEntry("key-3").getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyEntries()", ex);
+      Assert.fail("failed while verifyEntries()", ex);
     }
   }
 
@@ -438,7 +439,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while verifyEntriesAfterGII()", ex);
+      Assert.fail("failed while verifyEntriesAfterGII()", ex);
     }
   }
 

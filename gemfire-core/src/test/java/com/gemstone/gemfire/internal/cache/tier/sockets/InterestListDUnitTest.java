@@ -47,6 +47,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -413,7 +414,7 @@ public class InterestListDUnitTest extends DistributedTestCase
         server = addCacheServer();
         port2 = server.getPort();
       } catch (Exception ex) {
-        fail("Cache creation threw an exception", ex);
+        Assert.fail("Cache creation threw an exception", ex);
       }
 
       addRegisterInterestListener();
@@ -742,7 +743,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry(key2).getValue(), key2_originalValue);
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -759,7 +760,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       registerKeyOnly(key);
     }
     catch (Exception ex) {
-      fail("failed while registering key(" + key + ")", ex);
+      Assert.fail("failed while registering key(" + key + ")", ex);
     }
   }
 
@@ -777,7 +778,7 @@ public class InterestListDUnitTest extends DistributedTestCase
           InterestResultPolicy.KEYS_VALUES, false);
       }
     } catch (Exception ex) {
-      fail("failed while registering key(" + key + ")", ex);
+      Assert.fail("failed while registering key(" + key + ")", ex);
     }
   }
 
@@ -801,7 +802,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       r.registerInterest("ALL_KEYS");
     }
     catch (Exception ex) {
-      fail("failed while registering ALL_KEYS", ex);
+      Assert.fail("failed while registering ALL_KEYS", ex);
     }
   }
 
@@ -817,7 +818,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry(key2).getValue(), "vm1-key-2");
     }
     catch (Exception ex) {
-      fail("failed while put_ALL_KEY()", ex);
+      Assert.fail("failed while put_ALL_KEY()", ex);
     }
   }
 
@@ -830,7 +831,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry(key2).getValue(), "vm1-key-2");
     }
     catch (Exception ex) {
-      fail("failed while validate_ALL_KEY", ex);
+      Assert.fail("failed while validate_ALL_KEY", ex);
     }
   }
 
@@ -845,7 +846,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       r.registerInterest(list);
     }
     catch (Exception ex) {
-      fail("failed while registering keys" + list + "", ex);
+      Assert.fail("failed while registering keys" + list + "", ex);
     }
   }
 
@@ -860,7 +861,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       r.registerInterest(list);
     }
     catch (Exception ex) {
-      fail("failed while registering keys" + list + "", ex);
+      Assert.fail("failed while registering keys" + list + "", ex);
     }
   }
 
@@ -877,7 +878,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       unregisterKeyOnly(key);
     }
     catch (Exception ex) {
-      fail("failed while un-registering key(" + key + ")", ex);
+      Assert.fail("failed while un-registering key(" + key + ")", ex);
     }
   }
 
@@ -895,7 +896,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while un-registering key(" + key + ") for client " + clientId, ex);
+      Assert.fail("failed while un-registering key(" + key + ") for client " + clientId, ex);
     }
   }
 
@@ -934,7 +935,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry(key).getValue(), value);
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -960,7 +961,7 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -977,7 +978,7 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -1003,7 +1004,7 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.putAgain()", ex);
+      Assert.fail("failed while r.putAgain()", ex);
     }
   }
 
@@ -1045,7 +1046,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       assertEquals(value, r.getEntry(key).getValue());
     }
     catch (Exception ex) {
-      fail("failed while validateSingleEntry()", ex);
+      Assert.fail("failed while validateSingleEntry()", ex);
     }
   }
 
@@ -1067,7 +1068,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 

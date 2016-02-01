@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 
@@ -77,7 +78,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       DistributedTestCase.waitForCriterion(wc, 30 * 1000, 1000, true);
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test RedundancyNotSpecifiedNonPrimaryServerFail ",
           ex);
     }
@@ -128,7 +129,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       assertEquals(SERVER2, pool.getPrimaryName());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test RedundancyNotSpecifiedPrimaryServerFails ",
           ex);
     }/*finally {
@@ -166,7 +167,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFails ",
           ex);
     }
@@ -206,7 +207,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFailsDetectionByCCU ",
           ex);
     }
@@ -245,7 +246,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFailsDetectionByRegisterInterest ",
           ex);
     }
@@ -284,7 +285,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFailsDetectionByUnregisterInterest ",
           ex);
     }    
@@ -322,7 +323,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
      // assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFailsDetectionByPut ",
           ex);
     }
@@ -361,7 +362,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonFailoverEPFails ",
           ex);
     }
@@ -402,7 +403,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonPrimaryEPFailsDetectionByCCU ",
           ex);
     }
@@ -443,7 +444,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonPrimaryEPFailsDetectionByRegisterInterest ",
           ex);
     }
@@ -483,7 +484,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonPrimaryEPFailsDetectionByUnregisterInterest ",
           ex);
     }
@@ -527,7 +528,7 @@ public class RedundancyLevelPart1DUnitTest extends RedundancyLevelTestBase
       //assertEquals(1, proxy.getDeadServers().size());
     }
     catch (Exception ex) {
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedNonPrimaryEPFailsDetectionByPut ",
           ex);
     }

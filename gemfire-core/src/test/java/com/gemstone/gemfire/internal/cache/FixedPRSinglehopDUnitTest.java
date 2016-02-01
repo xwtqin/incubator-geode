@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.partitioned.fixed.QuarterPartitionRes
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.SingleHopQuarterPartitionResolver;
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTestBase.Q1_Months;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -367,7 +368,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     
     if (!fpaList.isEmpty() || isAccessor) {
@@ -412,7 +413,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     
     if (!fpaList.isEmpty() || isAccessor) {

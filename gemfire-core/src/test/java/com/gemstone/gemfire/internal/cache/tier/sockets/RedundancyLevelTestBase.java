@@ -40,8 +40,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserver;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 
@@ -107,7 +109,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
     server2 = host.getVM(2);
     server3 = host.getVM(3);
 
-    addExpectedException("java.net.SocketException||java.net.ConnectException");
+    IgnoredException.addExpectedException("java.net.SocketException||java.net.ConnectException");
 
     // start servers first
     PORT1 = ((Integer)server0.invoke(RedundancyLevelTestBase.class,
@@ -210,7 +212,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("while setting verifyDispatcherIsAlive  ", ex);
+      Assert.fail("while setting verifyDispatcherIsAlive  ", ex);
     }
   }
 
@@ -256,7 +258,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("while setting verifyDispatcherIsNotAlive  ", ex);
+      Assert.fail("while setting verifyDispatcherIsNotAlive  ", ex);
     }
   }
   
@@ -326,7 +328,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
       assertEquals(r1.getEntry(k2).getValue(), k2);
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -342,7 +344,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.registerK1AndK2()", ex);
+      Assert.fail("failed while region.registerK1AndK2()", ex);
     }
   }
   public static void unregisterInterest()
@@ -352,7 +354,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
       r.unregisterInterest("k1");      
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
   
@@ -404,7 +406,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
       DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
     }
     catch (Exception ex) {
-      fail("exception in verifyCCP()", ex);
+      Assert.fail("exception in verifyCCP()", ex);
     }
   }  
 
@@ -489,7 +491,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
       }
     }
     catch (Exception e) {
-      fail("failed while stopServer()", e);
+      Assert.fail("failed while stopServer()", e);
     }
   }
 
@@ -503,7 +505,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
       bs.start();
     }
     catch (Exception ex) {
-      fail("while startServer()  ", ex);
+      Assert.fail("while startServer()  ", ex);
     }
   }
 

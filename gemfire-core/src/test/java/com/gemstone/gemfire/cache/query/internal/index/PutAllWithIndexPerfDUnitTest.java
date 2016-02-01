@@ -39,6 +39,7 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
@@ -93,13 +94,13 @@ public class PutAllWithIndexPerfDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
           //Create Index on empty region
           try {
             cache.getQueryService().createIndex("idIndex", "ID", "/"+name);
           } catch (Exception e) {
-            fail("index creation failed", e);
+            Assert.fail("index creation failed", e);
           }
         }
       });
@@ -157,7 +158,7 @@ public class PutAllWithIndexPerfDUnitTest extends CacheTestCase {
           cache.getRegion(name).clear();
           cache.getQueryService().createIndex("idIndex", "p.ID", "/"+name+" p");
         } catch (Exception e) {
-          fail("index creation failed", e);
+          Assert.fail("index creation failed", e);
         }
       }
     });

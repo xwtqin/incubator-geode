@@ -34,6 +34,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.management.internal.configuration.SharedConfigurationDUnitTest;
 import com.gemstone.gemfire.management.internal.configuration.domain.Configuration;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -318,7 +319,7 @@ public class SharedConfigurationCommandsDUnitTest extends CliCommandTestBase {
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });

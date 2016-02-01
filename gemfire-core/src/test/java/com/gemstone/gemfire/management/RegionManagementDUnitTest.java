@@ -49,6 +49,7 @@ import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.SingleHopQuarterPartitionResolver;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -779,11 +780,11 @@ public class RegionManagementDUnitTest extends ManagementTestBase {
             mbeanServer.addNotificationListener(memberMBeanName, regionCreate,
                 null, null);
           } catch (NullPointerException e) {
-            fail("FAILED WITH EXCEPION", e);
+            Assert.fail("FAILED WITH EXCEPION", e);
           } catch (InstanceNotFoundException e) {
-            fail("FAILED WITH EXCEPION", e);
+            Assert.fail("FAILED WITH EXCEPION", e);
           } catch (Exception e) {
-            fail("FAILED WITH EXCEPION", e);
+            Assert.fail("FAILED WITH EXCEPION", e);
           }
 
         }
@@ -817,9 +818,9 @@ public class RegionManagementDUnitTest extends ManagementTestBase {
               null, null);
 
         } catch (NullPointerException e) {
-          fail("FAILED WITH EXCEPION", e);
+          Assert.fail("FAILED WITH EXCEPION", e);
         } catch (InstanceNotFoundException e) {
-          fail("FAILED WITH EXCEPION", e);
+          Assert.fail("FAILED WITH EXCEPION", e);
 
         }
 
@@ -1068,12 +1069,12 @@ public class RegionManagementDUnitTest extends ManagementTestBase {
               .addNotificationListener(memberMBeanName, test, null, null);
         } catch (MalformedObjectNameException e) {
 
-          fail("FAILED WITH EXCEPION", e);
+          Assert.fail("FAILED WITH EXCEPION", e);
         } catch (NullPointerException e) {
-          fail("FAILED WITH EXCEPION", e);
+          Assert.fail("FAILED WITH EXCEPION", e);
 
         } catch (InstanceNotFoundException e) {
-          fail("FAILED WITH EXCEPION", e);
+          Assert.fail("FAILED WITH EXCEPION", e);
 
         }
 

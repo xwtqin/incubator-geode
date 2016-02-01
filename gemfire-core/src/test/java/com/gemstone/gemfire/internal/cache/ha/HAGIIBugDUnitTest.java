@@ -37,6 +37,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -190,7 +191,7 @@ public class HAGIIBugDUnitTest extends DistributedTestCase
     for (int count = 0; count < 1; count++) {
       DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
       if (async[count].exceptionOccurred()) {
-        fail("Got exception on " + count, async[count].getException());
+        Assert.fail("Got exception on " + count, async[count].getException());
       }
     }
 

@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class Bug48571DUnitTest extends DistributedTestCase {
@@ -83,7 +84,7 @@ public class Bug48571DUnitTest extends DistributedTestCase {
   }
 
   public void testStatsMatchWithSize() throws Exception {
-    addExpectedException("Unexpected IOException||Connection reset");
+    IgnoredException.addExpectedException("Unexpected IOException||Connection reset");
     // start a server
     int port = (Integer) server.invoke(Bug48571DUnitTest.class, "createServerCache");
     // create durable client, with durable RI

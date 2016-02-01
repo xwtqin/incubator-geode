@@ -55,6 +55,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PutAllPartialResultException;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserver;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -722,7 +723,7 @@ public class ShutdownAllDUnitTest extends CacheTestCase {
           try {
             recoveryDone.await();
           } catch (InterruptedException e) {
-            fail("Interrupted", e);
+            Assert.fail("Interrupted", e);
           }
         }
       }

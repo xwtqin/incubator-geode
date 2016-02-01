@@ -153,7 +153,7 @@ public class MultiRegionFunctionExecutionDUnitTest extends CacheTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed while creating the cache", e);
     }
   }
   @SuppressWarnings("unchecked")

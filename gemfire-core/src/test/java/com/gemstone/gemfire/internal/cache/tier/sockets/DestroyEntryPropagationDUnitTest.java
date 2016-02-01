@@ -38,6 +38,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -342,7 +343,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
       assertEquals(r1.getEntry("key2").getValue(), "key-2");
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -359,7 +360,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
       r.destroy("key2");
     }
     catch (Exception ex) {
-      fail("failed while destroyEntry()", ex);
+      Assert.fail("failed while destroyEntry()", ex);
     }
   }
 
@@ -372,7 +373,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
       assertNotNull(r.getEntry("key2"));
     }
     catch (Exception ex) {
-      fail("failed while verifyDestroyEntry in C1", ex);
+      Assert.fail("failed while verifyDestroyEntry in C1", ex);
     }
   }
 
@@ -386,7 +387,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
       assertNull(r.getEntry("key2"));
     }
     catch (Exception ex) {
-      fail("failed while verifyDestroyEntry in C1", ex);
+      Assert.fail("failed while verifyDestroyEntry in C1", ex);
     }
   }
 
@@ -400,7 +401,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
       assertNotNull(r.getEntry("key2"));
     }
     catch (Exception ex) {
-      fail("failed while verifyDestroyEntry for key1", ex);
+      Assert.fail("failed while verifyDestroyEntry for key1", ex);
     }
   }
 
@@ -487,7 +488,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest", ex);
+      Assert.fail("failed while registering interest", ex);
     }
   }
 

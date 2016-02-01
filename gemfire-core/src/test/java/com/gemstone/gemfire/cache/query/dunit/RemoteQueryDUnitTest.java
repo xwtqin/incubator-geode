@@ -42,6 +42,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -107,7 +108,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -149,7 +150,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -159,7 +160,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -169,7 +170,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -179,7 +180,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -189,7 +190,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(results.getClass() == ResultsBag.class);
@@ -250,7 +251,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -293,7 +294,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -302,7 +303,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -311,7 +312,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -320,7 +321,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -329,7 +330,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -338,7 +339,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -378,7 +379,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -420,7 +421,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -429,7 +430,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -438,7 +439,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(0, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -447,7 +448,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries/2, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -456,7 +457,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -465,7 +466,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -504,7 +505,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -657,7 +658,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           getLogWriter().fine("size: " + results.size());
           //assertEquals(numberOfEntries, results.size());
@@ -698,7 +699,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -743,7 +744,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -754,7 +755,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -765,7 +766,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
         }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -788,7 +789,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -811,7 +812,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           Object result = results.iterator().next();
@@ -824,7 +825,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertEquals("key-1", results.asList().get(0));
@@ -864,7 +865,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -913,7 +914,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region1.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -923,7 +924,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region1.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -963,7 +964,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             startBridgeServer(0, false);
           } catch (Exception ex) {
-            fail("While starting CacheServer", ex);
+            Assert.fail("While starting CacheServer", ex);
           }
         }
       });
@@ -1022,7 +1023,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1032,7 +1033,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1051,7 +1052,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1061,7 +1062,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           try {
             results = region.query(queryString);
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(1, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1122,7 +1123,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
            try {
              startBridgeServer(0, false);
            } catch (Exception ex) {
-             fail("While starting CacheServer", ex);
+             Assert.fail("While starting CacheServer", ex);
            }
          }
        });
@@ -1167,7 +1168,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
              try {
                results = region.query(queryStrings[i]);
              } catch (Exception e) {
-               fail("Failed executing " + queryStrings[i], e);
+               Assert.fail("Failed executing " + queryStrings[i], e);
              }
              assertEquals(9, results.size());
              String msg = "results expected to be instance of ResultsBag,"
@@ -1233,7 +1234,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
             try {
               startBridgeServer(0, false);
             } catch (Exception ex) {
-              fail("While starting CacheServer", ex);
+              Assert.fail("While starting CacheServer", ex);
             }
           }
         });
@@ -1279,7 +1280,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
               } catch (QueryInvocationTargetException qte) {
                 //Ok test passed
               } catch(Exception e) {
-                fail("Failed executing query " + queryStrings+ " due  to unexpected Excecption", e);
+                Assert.fail("Failed executing query " + queryStrings+ " due  to unexpected Excecption", e);
             }
           }
         });
@@ -1318,7 +1319,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
               } catch (QueryInvocationTargetException qte) {
                 //Ok test passed
               } catch(Exception e) {
-                fail("Failed executing query " + queryString+ " due  to unexpected Excecption", e);
+                Assert.fail("Failed executing query " + queryString+ " due  to unexpected Excecption", e);
             }
           }
         });

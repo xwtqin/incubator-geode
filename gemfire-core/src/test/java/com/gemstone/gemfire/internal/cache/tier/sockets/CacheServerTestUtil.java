@@ -50,7 +50,9 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl.PoolAttributes;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 /**
  *
  * @author Yogesh Mahajan
@@ -59,7 +61,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 public class CacheServerTestUtil extends DistributedTestCase
 {
   private static Cache cache = null;
-  private static ExpectedException expected;
+  private static IgnoredException expected;
 
   private static PoolImpl pool = null;
 
@@ -156,7 +158,7 @@ public class CacheServerTestUtil extends DistributedTestCase
   public static void createCacheClient(Pool poolAttr, String regionName,
       Properties dsProperties, Boolean addControlListener, Properties javaSystemProperties) throws Exception {  		
       new CacheServerTestUtil("temp").createCache(dsProperties);
-      addExpectedException("java.net.ConnectException||java.net.SocketException");
+      IgnoredException.addExpectedException("java.net.ConnectException||java.net.SocketException");
       
       if (javaSystemProperties != null && javaSystemProperties.size() > 0) {
       	Enumeration e = javaSystemProperties.propertyNames();
@@ -224,7 +226,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     ccf.set("log-file", "abs_client_system.log");
     ccf.set("log-level", getDUnitLogLevel());
     cache = (Cache)ccf.create();
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addExpectedException("java.net.ConnectionException||java.net.SocketException");
     pool = (PoolImpl)PoolManager.find(poolName);
     
   }
@@ -243,7 +245,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     ccf.set(DistributionConfig.DURABLE_CLIENT_ID_NAME, durableClientId);
     ccf.set(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, String.valueOf(timeout));
     cache = (Cache)ccf.create();
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addExpectedException("java.net.ConnectionException||java.net.SocketException");
     pool = (PoolImpl)PoolManager.find(poolName);
     
   }
@@ -429,7 +431,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     setSystem(props, cc.getDistributedSystem());
     cache = (Cache)cc;
     assertNotNull(cache);
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addExpectedException("java.net.ConnectionException||java.net.SocketException");
   }
 
   public static void closeCache()
@@ -493,7 +495,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       try {
         server.start();
       } catch(Exception e) {
-        fail("Unexpected exception", e);
+        Assert.fail("Unexpected exception", e);
       }
       assertTrue(server.isRunning());
     }

@@ -29,6 +29,7 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandExecutionContext;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -412,7 +413,7 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
         try {
           assertTrue(sharedConfig.getConfiguration(groupName).getJarNames().contains("DeployCommandsDUnit1.jar"));
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });
@@ -445,7 +446,7 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
         try {
           assertFalse(sharedConfig.getConfiguration(groupName).getJarNames().contains("DeployCommandsDUnit1.jar"));
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });

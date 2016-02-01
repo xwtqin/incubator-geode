@@ -35,6 +35,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.UnsupportedOperationInTransactionException;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -149,11 +150,11 @@ public class CacheMapTxnDUnitTest extends DistributedTestCase{
         DistributedTestCase.join(o3, 30 * 1000, getLogWriter());
         
         if(o2.exceptionOccurred()){
-          fail("o2 failed", o2.getException());
+          Assert.fail("o2 failed", o2.getException());
         }
         
         if(o3.exceptionOccurred()){
-          fail("o3 failed", o3.getException());
+          Assert.fail("o3 failed", o3.getException());
         }
         
     }//end of testMiscMethods

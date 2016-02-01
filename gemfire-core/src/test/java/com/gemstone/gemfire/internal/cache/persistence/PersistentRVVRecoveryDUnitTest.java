@@ -66,6 +66,7 @@ import com.gemstone.gemfire.internal.cache.TombstoneService;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -215,7 +216,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
       }
       
     });
-    ExpectedException ex = addExpectedException("DiskAccessException");
+    IgnoredException ex = IgnoredException.addExpectedException("DiskAccessException");
     try {
       //Force expiration, with our test hook that should close the cache
       tombstoneService = cache.getTombstoneService();
@@ -751,7 +752,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
     //and then do the wait in the flusher thread.
     
     //Setup the callbacks to wait for krf creation and throw an exception
-    ExpectedException ex = addExpectedException("DiskAccessException");
+    IgnoredException ex = IgnoredException.addExpectedException("DiskAccessException");
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER=true;
     try {
       final CountDownLatch krfCreated = new CountDownLatch(1);

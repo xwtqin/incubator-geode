@@ -43,6 +43,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CachedDeserializable;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.Token;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -366,7 +367,7 @@ public class ForceInvalidateEvictionDUnitTest extends CacheTestCase {
         try {
           server.start();
         } catch (IOException e) {
-          fail("IO Exception", e);
+          Assert.fail("IO Exception", e);
         }
       }
     });

@@ -40,8 +40,10 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.ha.HAHelper;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.ha.ThreadIdentifier;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -107,7 +109,7 @@ public class ReliableMessagingDUnitTest extends DistributedTestCase
    * QRM to other redundant servers.    
    */
   public void testPeriodicAckSendByClientPrimaryFailover() throws Exception {    
-    addExpectedException("java.net.ConnectException");
+    IgnoredException.addExpectedException("java.net.ConnectException");
     createEntries();
     setClientServerObserverForBeforeSendingClientAck();    
     server1.invoke(ReliableMessagingDUnitTest.class, "putOnServer");
@@ -235,7 +237,7 @@ public class ReliableMessagingDUnitTest extends DistributedTestCase
       Thread.sleep(ms);
     }
     catch (InterruptedException e) {
-      fail("Interrupted", e);
+      Assert.fail("Interrupted", e);
     }
   }
   
@@ -264,7 +266,7 @@ public class ReliableMessagingDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception e) {
-      fail("failed while stopServer()", e);
+      Assert.fail("failed while stopServer()", e);
     }
   }
   

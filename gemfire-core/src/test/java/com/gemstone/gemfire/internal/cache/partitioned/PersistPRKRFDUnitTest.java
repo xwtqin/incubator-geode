@@ -29,6 +29,7 @@ import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -73,7 +74,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
     AsyncInvocation async1 = vm0.invokeAsync(new CacheSerializableRunnable(title+"async create") {
       public void run2() throws CacheException {
         Region region = getRootRegion(PR_REGION_NAME);
-        ExpectedException expect = addExpectedException("CacheClosedException");
+        IgnoredException expect = IgnoredException.addExpectedException("CacheClosedException");
         try {
           region.put(10, "b");
           fail("Expect CacheClosedException here");
@@ -116,7 +117,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
     async1 = vm0.invokeAsync(new CacheSerializableRunnable(title+"async update") {
       public void run2() throws CacheException {
         Region region = getRootRegion(PR_REGION_NAME);
-        ExpectedException expect = addExpectedException("CacheClosedException");
+        IgnoredException expect = IgnoredException.addExpectedException("CacheClosedException");
         try {
           region.put(1, "b");
           fail("Expect CacheClosedException here");
@@ -159,7 +160,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
     async1 = vm0.invokeAsync(new CacheSerializableRunnable(title+"async destroy") {
       public void run2() throws CacheException {
         Region region = getRootRegion(PR_REGION_NAME);
-        ExpectedException expect = addExpectedException("CacheClosedException");
+        IgnoredException expect = IgnoredException.addExpectedException("CacheClosedException");
         try {
           region.destroy(2, "b");
           fail("Expect CacheClosedException here");

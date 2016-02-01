@@ -50,6 +50,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.ReplyMessage;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.partitioned.PersistentPartitionedRegionTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -402,7 +403,7 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
           results = op.getResults();
           assertEquals(1, results.getTotalBucketTransfersCompleted());
         } catch (Exception e) {
-          fail("interupted", e);
+          Assert.fail("interupted", e);
         }
       }
     });

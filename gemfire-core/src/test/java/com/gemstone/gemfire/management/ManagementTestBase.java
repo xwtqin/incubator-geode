@@ -42,6 +42,7 @@ import com.gemstone.gemfire.management.internal.LocalManager;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementStrings;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -462,7 +463,7 @@ public class ManagementTestBase extends DistributedTestCase {
 
 
         } catch (ManagementException e) {
-          fail("failed with ManagementException", e);
+          Assert.fail("failed with ManagementException", e);
         }
       }
     });

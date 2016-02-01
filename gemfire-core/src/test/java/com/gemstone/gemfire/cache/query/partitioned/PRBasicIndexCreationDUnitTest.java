@@ -25,6 +25,7 @@ import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -260,11 +261,11 @@ public class PRBasicIndexCreationDUnitTest extends
         .getCacheSerializableRunnableForPRCreateThrougXML(name, fileName));
     DistributedTestCase.join(asyInvk1, 30 * 1000, getLogWriter());
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
     DistributedTestCase.join(asyInvk0, 30 * 1000, getLogWriter());
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     // printing all the indexes are created.
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForIndexCreationCheck(name));

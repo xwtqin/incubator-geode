@@ -65,9 +65,11 @@ import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
@@ -104,7 +106,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Connection refused");
+    IgnoredException.addExpectedException("Connection refused");
     Host host = Host.getHost(0);
     member0 = host.getVM(0);
     member1 = host.getVM(1);
@@ -186,7 +188,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -805,7 +807,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
   
   public void testMetadataFetchOnlyThroughFunctions() {
     //Workaround for 52004
-    addExpectedException("InternalFunctionInvocationTargetException");
+    IgnoredException.addExpectedException("InternalFunctionInvocationTargetException");
     Integer port0 = (Integer)member0.invoke(
         PartitionedRegionSingleHopDUnitTest.class, "createServer",
         new Object[] { 3, 4 });
@@ -1404,7 +1406,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -1474,7 +1476,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -1616,7 +1618,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     return port;
   }
@@ -1699,7 +1701,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
     return port;
   }
@@ -1714,7 +1716,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -1786,7 +1788,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
   }
   

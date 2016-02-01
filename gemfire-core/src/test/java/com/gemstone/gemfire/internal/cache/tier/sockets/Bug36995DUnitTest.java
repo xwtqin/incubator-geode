@@ -29,6 +29,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
@@ -176,7 +177,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
   public void testBug36995_UserSpecified()
   {
     //work around GEODE-507
-    addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("Connection reset");
     Integer port1 = ((Integer)server1.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
     Integer port2 = ((Integer)server2.invoke(Bug36995DUnitTest.class,

@@ -25,6 +25,7 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -90,7 +91,7 @@ public class DistributedAckRegionDUnitTest extends MultiVMRegionTestCase {
             createRegion(name, "INCOMPATIBLE_ROOT", getRegionAttributes());
 
           } catch (CacheException ex) {
-            fail("While creating ACK region", ex);
+            Assert.fail("While creating ACK region", ex);
           }
         }
       });
@@ -109,7 +110,7 @@ public class DistributedAckRegionDUnitTest extends MultiVMRegionTestCase {
             }
 
           } catch (CacheException ex) {
-            fail("While creating GLOBAL Region", ex);
+            Assert.fail("While creating GLOBAL Region", ex);
           }
         }
       });
@@ -127,7 +128,7 @@ public class DistributedAckRegionDUnitTest extends MultiVMRegionTestCase {
             }
 
           } catch (CacheException ex) {
-            fail("While creating NOACK Region", ex);
+            Assert.fail("While creating NOACK Region", ex);
           }
         }
       });

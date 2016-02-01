@@ -20,6 +20,7 @@ import com.gemstone.gemfire.cache.EntryDestroyedException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.client.ServerConnectivityException;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 @SuppressWarnings({"rawtypes", "serial"})
@@ -140,7 +141,7 @@ public class HAInterestPart2DUnitTest extends HAInterestTestCase {
    * is primary
    */
   public void testRefreshEntriesFromPrimaryWhenDSMDetectsServerLive() throws Exception {
-    addExpectedException(ServerConnectivityException.class.getName());
+    IgnoredException.addExpectedException(ServerConnectivityException.class.getName());
     
     PORT1 = ((Integer) server1.invoke(HAInterestTestCase.class, "createServerCache")).intValue();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -311,7 +312,7 @@ public class HAInterestPart2DUnitTest extends HAInterestTestCase {
    * new endpoint to register interest
    */
   public void testInterestRecoveryFailure() throws Exception {
-    addExpectedException("Server unreachable");
+    IgnoredException.addExpectedException("Server unreachable");
     
     PORT1 = ((Integer) server1.invoke(HAInterestTestCase.class, "createServerCache")).intValue();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");

@@ -41,6 +41,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.cache.Token;
 import com.gemstone.gemfire.internal.cache.persistence.query.CloseableIterator;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -150,7 +151,7 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     
@@ -194,7 +195,7 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
     }
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     
@@ -253,7 +254,7 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
     
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     vm0.invoke(getCacheSerializableRunnableForIndexValidation(regionName, indexName));
@@ -315,7 +316,7 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
     }
     for (AsyncInvocation inv : asyncInvs) {
       if (inv.exceptionOccurred()) {
-        fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
+        Assert.fail("Random region operation failed on VM_"+inv.getId(), inv.getException());
       }
     }
     vm0.invoke(getCacheSerializableRunnableForIndexValidation(regionName, rindexName));

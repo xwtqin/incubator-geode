@@ -68,6 +68,7 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -85,8 +86,8 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
   public void setUp() throws Exception {
     super.setUp();
     invokeInEveryVM(this.setHeapMemoryMonitorTestMode);
-    addExpectedException("above heap critical threshold");
-    addExpectedException("below heap critical threshold");
+    IgnoredException.addExpectedException("above heap critical threshold");
+    IgnoredException.addExpectedException("below heap critical threshold");
   }
   
   @Override

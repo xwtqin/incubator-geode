@@ -34,6 +34,7 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.UpdateOperation.UpdateMessage;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -83,7 +84,7 @@ public class InterruptClientServerDUnitTest extends CacheTestCase {
    * @throws Throwable 
    */
   public void testClientPutWithInterrupt() throws Throwable {
-    addExpectedException("InterruptedException");
+    IgnoredException.addExpectedException("InterruptedException");
     Host host = Host.getHost(0);
     final VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);

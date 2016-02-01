@@ -33,6 +33,7 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -314,7 +315,7 @@ public class DistributedNoAckRegionCCEDUnitTest extends
             }
             CCRegion = (LocalRegion)f.create(name);
           } catch (CacheException ex) {
-            fail("While creating region", ex);
+            Assert.fail("While creating region", ex);
           }
         }
       };

@@ -47,6 +47,7 @@ import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -194,8 +195,8 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
     
-    addExpectedException("Unexpected IOException:");
-    addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException:");
+    IgnoredException.addExpectedException("java.net.SocketException");
 
     name = "PartionedPortfoliosPR";
     // Create Overflow Persistent Partition Region

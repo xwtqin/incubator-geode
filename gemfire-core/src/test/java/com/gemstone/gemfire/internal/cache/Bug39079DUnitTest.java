@@ -43,6 +43,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.persistence.UninterruptibleFileChannel;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -370,7 +371,7 @@ public class Bug39079DUnitTest extends CacheTestCase {
       }catch(DiskAccessException dae) {
         //OK expected
       }catch (IOException e) {
-        fail("test failed due to ", e);
+        Assert.fail("test failed due to ", e);
       }
       
       ((LocalRegion) region).getDiskStore().waitForClose();

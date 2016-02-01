@@ -43,6 +43,7 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /** A test of 46438 - missing response to an update attributes message */
 public class ConnectDisconnectDUnitTest extends CacheTestCase {
@@ -52,7 +53,7 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
   }
 
 
-  private ExpectedException ex;
+  private IgnoredException ex;
 
   public ConnectDisconnectDUnitTest(String name) {
     super(name);

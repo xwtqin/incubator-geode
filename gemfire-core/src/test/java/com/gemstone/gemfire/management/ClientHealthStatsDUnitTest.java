@@ -48,6 +48,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -101,7 +102,7 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     server = host.getVM(1);
     client = host.getVM(2);
     client2 = host.getVM(3);
-    addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("Connection reset");
   }
 
   public void tearDown2() throws Exception {

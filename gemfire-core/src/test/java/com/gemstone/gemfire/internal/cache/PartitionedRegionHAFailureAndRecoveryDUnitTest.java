@@ -32,6 +32,7 @@ import com.gemstone.gemfire.cache30.CertifiableTestCacheListener;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.NanoTimer;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -401,7 +402,7 @@ public class PartitionedRegionHAFailureAndRecoveryDUnitTest extends
     
     for (int count2 = 0; count2 < async.length; count2++) {
       if (async[count2].exceptionOccurred()) {
-        fail("exception during " + count2, async[count2].getException());
+        Assert.fail("exception during " + count2, async[count2].getException());
       }
     }  
   }
@@ -491,7 +492,7 @@ public class PartitionedRegionHAFailureAndRecoveryDUnitTest extends
                   TimeUnit.MILLISECONDS.sleep(250);
                 }
                 catch (InterruptedException e) {
-                  fail("Interrupted, ah!", e);
+                  Assert.fail("Interrupted, ah!", e);
                 }
               }
             }

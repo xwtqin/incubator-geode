@@ -35,6 +35,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisitor;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -517,7 +518,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -558,7 +559,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
       }
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -592,7 +593,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
  
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during" + count, async[count].getException());
+        Assert.fail("exception during" + count, async[count].getException());
       }
     }
   }
@@ -630,7 +631,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
      }
     }
   }
@@ -702,7 +703,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -747,7 +748,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -826,7 +827,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < 4; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("got exception on " + count, async[count].getException());
+        Assert.fail("got exception on " + count, async[count].getException());
       }
     }
 
@@ -888,7 +889,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Validation of bucket distribution failed on " + count,
+        Assert.fail("Validation of bucket distribution failed on " + count,
             async[count].getException());
       }
     }

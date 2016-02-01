@@ -36,6 +36,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -85,8 +86,8 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
         "createCacheServer", new Object[] { });
     port1 = (Integer) vm1.invoke(DurableClientQueueSizeDUnitTest.class,
         "createCacheServer", new Object[] { });
-    addExpectedException("java.net.SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException");
   }
 
   public void tearDown2() throws Exception {

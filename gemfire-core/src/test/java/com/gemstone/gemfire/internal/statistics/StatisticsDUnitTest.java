@@ -60,6 +60,7 @@ import com.gemstone.gemfire.internal.StatArchiveReader.StatSpec;
 import com.gemstone.gemfire.internal.StatSamplerStats;
 import com.gemstone.gemfire.internal.StatisticsTypeFactoryImpl;
 import com.gemstone.gemfire.internal.StatArchiveReader.StatValue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -338,7 +339,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
       for (int pubThread = 0; pubThread < publishers.length; pubThread++) {
         publishers[pubThread].join();
         if (publishers[pubThread].exceptionOccurred()) {
-          fail("Test failed", publishers[pubThread].getException());
+          Assert.fail("Test failed", publishers[pubThread].getException());
         }
       }
     }

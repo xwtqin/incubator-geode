@@ -48,6 +48,7 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.ClassBuilder;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -340,7 +341,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
           fail("Should have seen an exception");
         } catch (Exception e) {
           if(!(e.getCause() instanceof FunctionInvocationTargetException)) {
-            fail("failed", e);
+            Assert.fail("failed", e);
           }
         }
         
@@ -396,7 +397,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
     catch (Exception e) {
       getLogWriter().info("Exception Occured : "+ e.getMessage());
       e.printStackTrace();
-      fail("Test failed",e);
+      Assert.fail("Test failed",e);
     }
   }
   /*
@@ -452,7 +453,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
     catch (Exception e) {
       getLogWriter().info("Exception Occured : "+ e.getMessage());
       e.printStackTrace();
-      fail("Test failed",e);
+      Assert.fail("Test failed",e);
     }
   }
   
@@ -492,7 +493,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
     catch (Exception e) {
       getLogWriter().info("Exception Occured : "+ e.getMessage());
       e.printStackTrace();
-      fail("Test failed",e);
+      Assert.fail("Test failed",e);
     }
   }
   
@@ -594,7 +595,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
     catch (Exception e) {
       getLogWriter().info("Exception Occured : "+ e.getMessage());
       e.printStackTrace();
-      fail("Test failed",e);
+      Assert.fail("Test failed",e);
     }
   }
   
@@ -658,7 +659,7 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
       FunctionService.registerFunction(new TestFunction(true,TestFunction.TEST_FUNCTION_NO_LASTRESULT));
     }
     catch (Exception e) {
-      fail("Failed while creating the Distribued System", e);
+      Assert.fail("Failed while creating the Distribued System", e);
     }
     return ds;
   }

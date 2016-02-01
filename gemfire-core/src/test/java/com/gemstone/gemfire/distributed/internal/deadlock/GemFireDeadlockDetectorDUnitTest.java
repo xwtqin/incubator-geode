@@ -33,6 +33,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedLockService;
 import com.gemstone.gemfire.distributed.LockServiceDestroyedException;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -65,7 +66,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
             thread.join(30000);
             assertTrue(!thread.isAlive());
           } catch (InterruptedException e) {
-            fail("interrupted", e);
+            Assert.fail("interrupted", e);
           }
         }
       }
@@ -131,7 +132,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
         ResultCollector collector = FunctionService.onMember(member).execute(new TestFunction());
         //wait the function to lock the lock on member.

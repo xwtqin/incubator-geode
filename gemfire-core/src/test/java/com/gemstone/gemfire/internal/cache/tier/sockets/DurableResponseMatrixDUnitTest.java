@@ -24,8 +24,10 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.cache.client.*;
@@ -68,7 +70,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
         "createServerCache"));
     createCacheClient(getServerHostName(server1.getHost()));
     //Disconnecting the client can cause this
-    addExpectedException("Connection reset||Unexpected IOException");
+    IgnoredException.addExpectedException("Connection reset||Unexpected IOException");
   }
 
   public void testRegisterInterestResponse_NonExistent_Invalid()
@@ -369,7 +371,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       r.put(key, value);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -381,7 +383,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       r.destroy(key);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -393,7 +395,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       r.invalidate(key);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -406,7 +408,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       r.invalidate(key);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -419,7 +421,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       r.localInvalidate(key);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -434,7 +436,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
   }
 
@@ -467,7 +469,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
 
     }
     catch (Exception e) {
-      fail("test failed due to ", e);
+      Assert.fail("test failed due to ", e);
     }
 
   }

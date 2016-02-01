@@ -47,7 +47,9 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -217,7 +219,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject1.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject1", e);
+      Assert.fail("Test failed due to exception in DSObject1", e);
     }
   }
 
@@ -227,7 +229,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject2.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject2", e);
+      Assert.fail("Test failed due to exception in DSObject2", e);
     }
   }
 
@@ -237,7 +239,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject3.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject2", e);
+      Assert.fail("Test failed due to exception in DSObject2", e);
     }
   }
 
@@ -247,7 +249,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject4.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject4", e);
+      Assert.fail("Test failed due to exception in DSObject4", e);
     }
   }
 
@@ -257,7 +259,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject5.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject5", e);
+      Assert.fail("Test failed due to exception in DSObject5", e);
     }
   }
 
@@ -267,7 +269,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject6.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject6", e);
+      Assert.fail("Test failed due to exception in DSObject6", e);
     }
   }
 
@@ -277,7 +279,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject7.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject7", e);
+      Assert.fail("Test failed due to exception in DSObject7", e);
     }
   }
 
@@ -287,7 +289,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject8.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject8", e);
+      Assert.fail("Test failed due to exception in DSObject8", e);
     }
   }
 
@@ -297,7 +299,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject9.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject9", e);
+      Assert.fail("Test failed due to exception in DSObject9", e);
     }
   }
 
@@ -307,7 +309,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject10.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject10", e);
+      Assert.fail("Test failed due to exception in DSObject10", e);
     }
   }
 
@@ -317,7 +319,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject11.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject11", e);
+      Assert.fail("Test failed due to exception in DSObject11", e);
     }
   }
 
@@ -327,7 +329,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject12.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject12", e);
+      Assert.fail("Test failed due to exception in DSObject12", e);
     }
   }
 
@@ -337,7 +339,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer.register(DSObject13.class, true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObject13", e);
+      Assert.fail("Test failed due to exception in DSObject13", e);
     }
   }
 
@@ -347,7 +349,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
       InternalDataSerializer._register(new DSObjectLocalOnly(79), true);
     }
     catch (Exception e) {
-      fail("Test failed due to exception in DSObjectLocalOnly", e);
+      Assert.fail("Test failed due to exception in DSObjectLocalOnly", e);
     }
   }
   
@@ -355,7 +357,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
     try {
       InternalDataSerializer.register(TestDataSerializer.class, true);
     } catch (Exception e) {
-      fail("Test failed due to exception in TestDataSerializer", e);
+      Assert.fail("Test failed due to exception in TestDataSerializer", e);
     }
   }
 
@@ -553,7 +555,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
         "verifyDataSerializers", new Object[] { Integer.valueOf(1) });
 
     // can get server connectivity exception
-    final ExpectedException expectedEx = addExpectedException(
+    final IgnoredException expectedEx = IgnoredException.addExpectedException(
         "Server unreachable", client1);
 
     // stop the cache server
@@ -644,7 +646,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
             instanceCountWithOnePut) });
 
     // can get server connectivity exception
-    final ExpectedException expectedEx = addExpectedException(
+    final IgnoredException expectedEx = IgnoredException.addExpectedException(
         "Server unreachable", client1);
 
     server1.invoke(DataSerializerPropogationDUnitTest.class, "stopServer");

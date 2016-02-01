@@ -49,6 +49,7 @@ import com.gemstone.gemfire.management.membership.ClientMembershipListener;
 import com.gemstone.gemfire.management.membership.MembershipEvent;
 import com.gemstone.gemfire.management.membership.MembershipListener;
 import com.gemstone.gemfire.management.membership.UniversalMembershipListenerAdapter;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -1649,7 +1650,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
           new LocalLogWriter(InternalLogWriter.ALL_LEVEL, System.out);
     bgexecLogger.info("<ExpectedException action=add>" + 
         "java.io.IOException" + "</ExpectedException>");
-    final ExpectedException ex = addExpectedException(
+    final IgnoredException ex = IgnoredException.addExpectedException(
         ServerConnectivityException.class.getName());
     try {
       vm0.invoke(new SerializableRunnable("Disconnect Peer server") {

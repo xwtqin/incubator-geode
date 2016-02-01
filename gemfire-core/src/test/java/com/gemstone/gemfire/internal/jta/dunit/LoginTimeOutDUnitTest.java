@@ -40,6 +40,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -250,7 +251,7 @@ public class LoginTimeOutDUnitTest extends DistributedTestCase {
     AsyncInvocation test2 = vm0.invokeAsync(LoginTimeOutDUnitTest.class, "runTest2");
     DistributedTestCase.join(test2, 120 * 1000, getLogWriter());
     if(test2.exceptionOccurred()){
-      fail("asyncObj failed", test2.getException());
+      Assert.fail("asyncObj failed", test2.getException());
     }
     DistributedTestCase.join(test1, 30000, getLogWriter());
   }

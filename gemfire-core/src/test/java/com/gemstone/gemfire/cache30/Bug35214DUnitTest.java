@@ -29,6 +29,7 @@ import com.gemstone.gemfire.cache.RegionEvent;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -156,7 +157,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
       throw e;
     }
     catch (Throwable e1) {
-      fail("failed due to "+e1, e1);
+      Assert.fail("failed due to "+e1, e1);
     }
     System.setProperty(LocalRegion.EXPIRY_MS_PROPERTY, "true");
     com.gemstone.gemfire.internal.cache.InitialImageOperation.slowImageProcessing = 30;

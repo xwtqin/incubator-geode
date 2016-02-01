@@ -33,6 +33,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -155,7 +156,7 @@ public class VerifyUpdatesFromNonInterestEndPointDUnitTest extends DistributedTe
       assertEquals(r1.getEntry("key-2").getValue(), "key-2");
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -217,7 +218,7 @@ public class VerifyUpdatesFromNonInterestEndPointDUnitTest extends DistributedTe
 
     }
     catch (Exception ex) {
-      fail("failed while registerKey()", ex);
+      Assert.fail("failed while registerKey()", ex);
     }
   }
 
@@ -231,7 +232,7 @@ public class VerifyUpdatesFromNonInterestEndPointDUnitTest extends DistributedTe
       assertEquals("key-2", r.getEntry("key-2").getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyPut()", ex);
+      Assert.fail("failed while verifyPut()", ex);
     }
   }
 

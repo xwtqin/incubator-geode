@@ -37,6 +37,7 @@ import com.gemstone.gemfire.management.DistributedRegionMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.RegionMXBean;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResultException;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -314,7 +315,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       assertEquals(true,containsMember(set,MEMBER_2_GROUP2));
       
     } catch (CommandResultException e) {     
-      fail("CliUtil failed with exception",e);
+      Assert.fail("CliUtil failed with exception",e);
     }
   }
   
@@ -355,7 +356,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       assertEquals("executeOnGroup", region1.get(MEMBER_1_GROUP1));
       assertEquals("executeOnGroup", region1.get(MEMBER_2_GROUP1));
     } catch (CommandResultException e) {
-      fail("Error during querying members",e);
+      Assert.fail("Error during querying members",e);
     }        
   }
   

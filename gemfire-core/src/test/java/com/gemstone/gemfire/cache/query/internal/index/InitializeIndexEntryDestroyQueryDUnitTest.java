@@ -34,6 +34,7 @@ import com.gemstone.gemfire.cache.query.internal.Undefined;
 import com.gemstone.gemfire.cache.query.partitioned.PRQueryDUnitHelper;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -196,12 +197,12 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
     
     DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
     DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
   }
 
@@ -332,12 +333,12 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
 
     DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
     if (asyInvk0.exceptionOccurred()) {
-      fail("asyInvk0 failed", asyInvk0.getException());
+      Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
     DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
     if (asyInvk1.exceptionOccurred()) {
-      fail("asyInvk1 failed", asyInvk1.getException());
+      Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
   }
 
@@ -419,7 +420,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
             PRQHelp.getCache().getLogger().fine("Querying the region with " + query);
             results = (SelectResults)query.execute();
           } catch (Exception e) {
-            fail("Query: " + query + " execution failed with exception", e);
+            Assert.fail("Query: " + query + " execution failed with exception", e);
           }
 
           for (Object obj : results) {

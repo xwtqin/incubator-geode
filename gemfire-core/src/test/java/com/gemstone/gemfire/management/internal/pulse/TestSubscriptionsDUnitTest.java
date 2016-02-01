@@ -37,6 +37,7 @@ import com.gemstone.gemfire.management.DistributedRegionMXBean;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -273,7 +274,7 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
           r1.registerInterest(k1);
           r1.registerInterest(k2);
         } catch (Exception ex) {
-          fail("TestSubscriptionsDUnitTest failed while register Interest", ex);
+          Assert.fail("TestSubscriptionsDUnitTest failed while register Interest", ex);
         }
       }
 
@@ -294,7 +295,7 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
           r1.put(k2, client_k2);
           assertEquals(r1.getEntry(k2).getValue(), client_k2);
         } catch (Exception ex) {
-          fail("failed while put", ex);
+          Assert.fail("failed while put", ex);
         }
       }
 

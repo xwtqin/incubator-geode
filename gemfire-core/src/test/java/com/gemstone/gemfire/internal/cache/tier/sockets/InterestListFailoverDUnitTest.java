@@ -25,6 +25,7 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -165,7 +166,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry("key-6").getValue(), "key-6");
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -182,7 +183,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -201,7 +202,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
       return new Integer(p.getPrimaryPort());
     }
     catch (Exception ex) {
-      fail("failed while registering keys k1 to k5", ex);
+      Assert.fail("failed while registering keys k1 to k5", ex);
       return null;
     }
   }
@@ -247,7 +248,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry("key-6").getValue(), "vm2-key-6" + v);
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -294,7 +295,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
       assertEquals("key-6", r.getEntry("key-6").getValue());
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 

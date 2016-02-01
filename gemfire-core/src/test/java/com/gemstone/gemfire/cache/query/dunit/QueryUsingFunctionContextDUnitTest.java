@@ -55,7 +55,9 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.LocalDataSet;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.execute.PRClientServerTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -156,7 +158,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
    * Test on Replicated Region.
    */
   public void testQueriesWithFilterKeysOnReplicatedRegion() {
-    addExpectedException("IllegalArgumentException");
+    IgnoredException.addExpectedException("IllegalArgumentException");
 
     Object[][] r = new Object[queriesForRR.length][2];
 
@@ -226,7 +228,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
 
   public void testInvalidQueries() {
     
-    addExpectedException("Syntax error");
+    IgnoredException.addExpectedException("Syntax error");
     client.invoke(new CacheSerializableRunnable("Test query on client and server") {
       
       @Override
@@ -361,7 +363,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
    *
    */
   public void testQueriesWithFilterKeysOnPRWithBucketDestroy() {
-    addExpectedException("QueryInvocationTargetException");
+    IgnoredException.addExpectedException("QueryInvocationTargetException");
     Object[][] r = new Object[queries.length][2];
     Set filter =  new HashSet();
 
@@ -433,11 +435,11 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
   *
   */
  public void testQueriesWithFilterKeysOnPRWithRebalancing() {
-   addExpectedException("QueryInvocationTargetException");
-   addExpectedException("java.net.SocketException");
-   addExpectedException("ServerConnectivityException");
-   addExpectedException("FunctionException");
-   addExpectedException("IOException");
+   IgnoredException.addExpectedException("QueryInvocationTargetException");
+   IgnoredException.addExpectedException("java.net.SocketException");
+   IgnoredException.addExpectedException("ServerConnectivityException");
+   IgnoredException.addExpectedException("FunctionException");
+   IgnoredException.addExpectedException("IOException");
 
    // Close cache on server1
    server1.invoke(new CacheSerializableRunnable("Set QueryObserver in cache on server1") {
@@ -512,7 +514,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
 
  
  public void testNonColocatedRegionQueries() {
-   addExpectedException("UnsupportedOperationException");
+   IgnoredException.addExpectedException("UnsupportedOperationException");
    client.invoke(new CacheSerializableRunnable("Test query on non-colocated regions on server") {
      @Override
      public void run2() throws CacheException {
@@ -527,7 +529,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
           fail("Function call did not fail for query with function context");
          } catch (FunctionException e) {
           if (!(e.getCause() instanceof UnsupportedOperationException)) {
-            fail("Should have received an UnsupportedOperationException but received", e);
+            Assert.fail("Should have received an UnsupportedOperationException but received", e);
           }
          }  
         }   

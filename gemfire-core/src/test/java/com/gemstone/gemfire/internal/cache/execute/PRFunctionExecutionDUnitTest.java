@@ -66,9 +66,11 @@ import com.gemstone.gemfire.internal.cache.execute.data.Order;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -316,7 +318,7 @@ public class PRFunctionExecutionDUnitTest extends
             }
             catch (Throwable e) {
               e.printStackTrace();
-              fail("This is not expected Exception", e);
+              Assert.fail("This is not expected Exception", e);
             }
             return Boolean.TRUE;
           }
@@ -390,7 +392,7 @@ public class PRFunctionExecutionDUnitTest extends
         }
         catch (Throwable e) {
           e.printStackTrace();
-          fail("This is not expected Exception", e);
+          Assert.fail("This is not expected Exception", e);
         }
         return Boolean.TRUE;
       }
@@ -750,7 +752,7 @@ public class PRFunctionExecutionDUnitTest extends
   }
   
   public void testLocalMultiKeyExecution_BucketMoved() throws Exception {
-    addExpectedException("BucketMovedException");
+    IgnoredException.addExpectedException("BucketMovedException");
     final String rName = getUniqueName();
     Host host = Host.getHost(0);
     final VM datastore0 = host.getVM(0);
@@ -893,7 +895,7 @@ public class PRFunctionExecutionDUnitTest extends
         }
         catch (Throwable e) {
           e.printStackTrace();
-          fail("This is not expected Exception", e);
+          Assert.fail("This is not expected Exception", e);
         }
         return Boolean.TRUE;
       }
@@ -993,7 +995,7 @@ public class PRFunctionExecutionDUnitTest extends
     DistributedTestCase.join(async[0], 60 * 1000, getLogWriter());
 
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(2, l.size());
@@ -1091,7 +1093,7 @@ public class PRFunctionExecutionDUnitTest extends
     DistributedTestCase.join(async[0], 60 * 1000, getLogWriter());
 
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(2, l.size());
@@ -2603,7 +2605,7 @@ public class PRFunctionExecutionDUnitTest extends
             testKeys.add(custid);
           }
           catch (Exception e) {
-            fail(
+            Assert.fail(
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
@@ -2714,7 +2716,7 @@ public class PRFunctionExecutionDUnitTest extends
               testKeys.add(custid);
           }
           catch (Exception e) {
-            fail(
+            Assert.fail(
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
@@ -2736,7 +2738,7 @@ public class PRFunctionExecutionDUnitTest extends
               
             }
             catch (Exception e) {
-              fail(
+              Assert.fail(
                   "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                   e);
             }
@@ -3056,7 +3058,7 @@ public class PRFunctionExecutionDUnitTest extends
     catch (Exception e) {
       getLogWriter().info("Exception Occured : " + e.getMessage());
       e.printStackTrace();
-      fail("Test failed", e);
+      Assert.fail("Test failed", e);
     }
   }
 

@@ -38,6 +38,7 @@ import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.util.StopWatch;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -61,7 +62,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
   public void setUp() throws Exception {
     disconnectAllFromDS();
     super.setUp();
-    addExpectedException(OutOfOffHeapMemoryException.class.getSimpleName());
+    IgnoredException.addExpectedException(OutOfOffHeapMemoryException.class.getSimpleName());
   }
   
 //  public static void caseSetUp() {

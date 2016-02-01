@@ -39,6 +39,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -177,7 +178,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       assertNotNull(pool);
       return (pool.getPrimaryPort() == PORT1);
     } catch (Exception ex) {
-      fail("while isInterestListRegisteredToServer1", ex);
+      Assert.fail("while isInterestListRegisteredToServer1", ex);
     }
     // never reached
     return false;
@@ -257,7 +258,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -270,7 +271,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while registering keys", ex);
+      Assert.fail("failed while registering keys", ex);
     }
   }
 
@@ -283,7 +284,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while un-registering keys", ex);
+      Assert.fail("failed while un-registering keys", ex);
     }
   }
 
@@ -295,7 +296,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       //ConnectionProxyImpl.markServerUnavailable(server);
     }
     catch (Exception ex) {
-      fail("while setting server unavailable  "+ server, ex);
+      Assert.fail("while setting server unavailable  "+ server, ex);
     }
   }
   public static void setServerAvailable(String server)
@@ -305,7 +306,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       //ConnectionProxyImpl.markServerAvailable(server);
     }
     catch (Exception ex) {
-      fail("while setting server available  "+ server, ex);
+      Assert.fail("while setting server available  "+ server, ex);
     }
   }
 
@@ -333,7 +334,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
       r1.put(key, "server-"+key);
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 

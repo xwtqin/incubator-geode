@@ -39,6 +39,7 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -206,7 +207,7 @@ public class FailoverDUnitTest extends DistributedTestCase
       r.registerInterest("key-5");
     }
     catch (Exception ex) {
-      fail("failed while registering keys k1 to k5", ex);
+      Assert.fail("failed while registering keys k1 to k5", ex);
     }
   }
 
@@ -224,7 +225,7 @@ public class FailoverDUnitTest extends DistributedTestCase
       r.create("key-5", "key-5");
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -255,7 +256,7 @@ public class FailoverDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.put()", ex);
+      Assert.fail("failed while r.put()", ex);
     }
   }
 
@@ -298,7 +299,7 @@ public class FailoverDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while r.putDuringFailover()", ex);
+      Assert.fail("failed while r.putDuringFailover()", ex);
     }
   }
 

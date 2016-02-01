@@ -38,8 +38,10 @@ import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 
@@ -81,8 +83,8 @@ public class HAStartupAndFailoverDUnitTest extends DistributedTestCase
     server2 = host.getVM(1);
     server3 = host.getVM(2);
     
-    addExpectedException("java.io.IOException");
-    addExpectedException("SocketException");
+    IgnoredException.addExpectedException("java.io.IOException");
+    IgnoredException.addExpectedException("SocketException");
 
     // start servers first
     PORT1 =  ((Integer) server1.invoke(HAStartupAndFailoverDUnitTest.class, "createServerCache"));
@@ -305,7 +307,7 @@ public class HAStartupAndFailoverDUnitTest extends DistributedTestCase
         r1.put("key-3", "server-value-3");
       }
       catch (Exception ex) {
-        fail("failed while r.put()", ex);
+        Assert.fail("failed while r.put()", ex);
       }
     }
 
@@ -393,7 +395,7 @@ public class HAStartupAndFailoverDUnitTest extends DistributedTestCase
       assertNotNull(" Primary endpoint should not be null", pool.getPrimaryName());
       assertTrue("Endpoint List should not be Empty as all server are live",pool.getConnectedServerCount() > 0);
       }catch(Exception e){
-        fail("failed while verifyPrimaryShouldNotBeNullAndEPListShouldNotBeEmpty()", e);
+        Assert.fail("failed while verifyPrimaryShouldNotBeNullAndEPListShouldNotBeEmpty()", e);
       }
     }
 
@@ -404,7 +406,7 @@ public class HAStartupAndFailoverDUnitTest extends DistributedTestCase
       } catch (NoSubscriptionServersAvailableException e) {
         // pass
       } catch(Exception e){
-        fail("failed while verifyPrimaryShouldBeNullAndEPListShouldBeEmpty()", e);
+        Assert.fail("failed while verifyPrimaryShouldBeNullAndEPListShouldBeEmpty()", e);
       }
     }
 

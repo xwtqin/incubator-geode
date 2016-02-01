@@ -35,6 +35,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.*;
 
@@ -83,7 +84,7 @@ public class Bug37210DUnitTest extends DistributedTestCase
   {
     super.setUp();
     
-    addExpectedException("java.io.IOException");
+    IgnoredException.addExpectedException("java.io.IOException");
     
     final Host host = Host.getHost(0);
     server = host.getVM(0);
@@ -145,8 +146,8 @@ public class Bug37210DUnitTest extends DistributedTestCase
   public void testHAStatsCleanup() throws Exception
   {
     getLogWriter().info("testHAStatsCleanup : BEGIN");
-    addExpectedException("java.net.SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException");
     client.invoke(Bug37210DUnitTest.class, "createClientCache",
         new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT) });
     server.invoke(Bug37210DUnitTest.class, "doEntryOperations");

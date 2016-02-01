@@ -51,6 +51,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -151,7 +152,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -183,7 +184,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -216,7 +217,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -231,7 +232,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -254,7 +255,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       server1.start();
     }       
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -675,7 +676,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 
@@ -798,7 +799,7 @@ public class PRClientServerTestBase extends CacheTestCase {
      
       
     }catch(Exception e){
-      fail("Test failed ", e);
+      Assert.fail("Test failed ", e);
       
     }
   }
@@ -839,7 +840,7 @@ public class PRClientServerTestBase extends CacheTestCase {
       }
       assertTrue(expectedBucketSet.isEmpty());
     }catch(Exception e){
-      fail("Test failed ", e);
+      Assert.fail("Test failed ", e);
       
     }
   

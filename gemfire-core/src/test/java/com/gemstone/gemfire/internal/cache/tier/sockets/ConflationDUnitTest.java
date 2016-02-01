@@ -40,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.ha.HAHelper;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -155,7 +156,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm2.invoke(ConflationDUnitTest.class, "assertCounterSizes");
     }
     catch( Exception e ) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
 
@@ -186,7 +187,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm2.invoke(ConflationDUnitTest.class, "assertCounterSizes");
     }
     catch( Exception e ) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
 
@@ -221,7 +222,7 @@ public class ConflationDUnitTest extends DistributedTestCase
       vm0.invoke(ConflationDUnitTest.class, "assertConflationStatus");
     }
     catch (Exception e) {
-      fail("Test failed due to exception", e);
+      Assert.fail("Test failed due to exception", e);
     }
   }
   /**
@@ -729,7 +730,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.create()", ex);
+      Assert.fail("failed while region.create()", ex);
     }
   }
 
@@ -751,7 +752,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -765,7 +766,7 @@ public class ConflationDUnitTest extends DistributedTestCase
    }
    catch (Exception ex) {
      ex.printStackTrace();
-     fail("failed while region.create() marker", ex);
+     Assert.fail("failed while region.create() marker", ex);
    }
  }
 
@@ -788,7 +789,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -835,7 +836,7 @@ public class ConflationDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.get()", ex);
+      Assert.fail("failed while region.get()", ex);
     }
   }
 

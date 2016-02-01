@@ -33,6 +33,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalLocator;
 import com.gemstone.gemfire.internal.AvailablePort.Keeper;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -96,7 +97,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
           try {
             Locator.startLocatorAndDS(port1, logFile, null, dsProps, true, true, null);
           } catch (IOException ex) {
-            fail("While starting locator on port " + port1, ex);
+            Assert.fail("While starting locator on port " + port1, ex);
           }
         }
       });
@@ -112,7 +113,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, logFile, null, dsProps, true, true, "locator2HNFC");
 
           } catch (IOException ex) {
-            fail("While starting locator on port " + port2, ex);
+            Assert.fail("While starting locator on port " + port2, ex);
           }
         }
       });
@@ -605,7 +606,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
           try {
             Locator.startLocatorAndDS(port1, logFile, null, dsProps, true, true, null);
           } catch (IOException ex) {
-            fail("While starting locator on port " + port1, ex);
+            Assert.fail("While starting locator on port " + port1, ex);
           }
         }
       });
@@ -621,7 +622,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, logFile, null, dsProps, true, true, "locator2HNFC");
 
           } catch (IOException ex) {
-            fail("While starting locator on port " + port2, ex);
+            Assert.fail("While starting locator on port " + port2, ex);
           }
         }
       });

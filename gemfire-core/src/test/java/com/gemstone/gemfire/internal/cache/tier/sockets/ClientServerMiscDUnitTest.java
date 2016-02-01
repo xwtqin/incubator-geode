@@ -41,8 +41,10 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -707,7 +709,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testBug35380() throws Exception
   {
     //work around GEODE-477
-    addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("Connection reset");
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
     props.setProperty("locators", "");
@@ -900,7 +902,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail("Test failed due to CacheWriterException during registerInterest", e);
+      Assert.fail("Test failed due to CacheWriterException during registerInterest", e);
     }
   }
 
@@ -917,7 +919,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail(
+      Assert.fail(
           "Test failed due to CacheWriterException during registerInterestnBothRegions",
           e);
     }
@@ -936,7 +938,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (CacheWriterException e) {
       e.printStackTrace();
-      fail(
+      Assert.fail(
           "Test failed due to CacheWriterException during registerInterestnBothRegions",
           e);
     }
@@ -952,7 +954,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeRegion1", e);
+      Assert.fail("Test failed due to Exception during closeRegion1", e);
     }
   }
 
@@ -972,7 +974,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -986,7 +988,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1000,7 +1002,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1012,7 +1014,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       r2.destroyRegion();
     } catch (Exception e) {
      // e.printStackTrace();
-      fail("Test failed due to Exception during closeBothRegions", e);
+      Assert.fail("Test failed due to Exception during closeBothRegions", e);
     }
   }
 
@@ -1145,7 +1147,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       assertEquals(r2.getEntry(k2).getValue(), k2);
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -1170,7 +1172,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       assertEquals(r2.getEntry(k2).getValue(), server_k2);
     }
     catch (Exception ex) {
-      fail("failed while put()", ex);
+      Assert.fail("failed while put()", ex);
     }
   }
 
@@ -1237,7 +1239,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       // assertEquals(server_k2, r2.getEntry(k2).getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyUpdates()", ex);
+      Assert.fail("failed while verifyUpdates()", ex);
     }
   }
 
@@ -1316,7 +1318,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       DistributedTestCase.waitForCriterion(wc, 90 * 1000, 1000, true);
     }
     catch (Exception ex) {
-      fail("failed while verifyInvalidatesOnBothRegions()", ex);
+      Assert.fail("failed while verifyInvalidatesOnBothRegions()", ex);
     }
   }
 
@@ -1354,7 +1356,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
       // assertEquals(server_k2, r2.getEntry(k2).getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyUpdatesOnRegion2()", ex);
+      Assert.fail("failed while verifyUpdatesOnRegion2()", ex);
     }
   }
 

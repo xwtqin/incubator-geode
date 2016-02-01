@@ -57,6 +57,7 @@ import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.Customer;
 import com.gemstone.gemfire.internal.cache.execute.data.Order;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -1984,7 +1985,7 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
       assertTrue("This test should fail with CommitConflictException",
           txThread.gotConflict);
       if (txThread.gotOtherException) {
-        fail("Received unexpected exception ", txThread.ex);
+        Assert.fail("Received unexpected exception ", txThread.ex);
       }
     }
   }
@@ -2114,7 +2115,7 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
         e.printStackTrace();
       }
       if (txThread.gotException) {
-        fail("Received exception ", txThread.ex);
+        Assert.fail("Received exception ", txThread.ex);
       }
     }
   }

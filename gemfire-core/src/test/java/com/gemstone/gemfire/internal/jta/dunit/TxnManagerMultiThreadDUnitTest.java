@@ -42,6 +42,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
 import com.gemstone.gemfire.internal.jta.JTAUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -424,7 +425,7 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
         TxnManagerMultiThreadDUnitTest.class, "callCommitThreads");
     DistributedTestCase.join(asyncObj1, 30 * 1000, getLogWriter());
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     vm0.invoke(TxnManagerMultiThreadDUnitTest.class, "getNumberOfRows");
   }//end of testAllCommit
@@ -457,7 +458,7 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
         TxnManagerMultiThreadDUnitTest.class, "callCommitandRollbackThreads");
     DistributedTestCase.join(asyncObj1, 30 * 1000, getLogWriter());
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     vm0.invoke(TxnManagerMultiThreadDUnitTest.class, "getNumberOfRows");
   }//end of test3Commit2Rollback

@@ -416,7 +416,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while verifyIfNotInterestListEndpointAndThenPut()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while verifyIfNotInterestListEndpointAndThenPut()", ex);
     }
   }
 
@@ -428,7 +428,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
       r.registerInterest(k1, InterestResultPolicy.KEYS);
     }
     catch (Exception ex) {
-      fail("failed while region.registerInterest()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.registerInterest()", ex);
     }
   }
 

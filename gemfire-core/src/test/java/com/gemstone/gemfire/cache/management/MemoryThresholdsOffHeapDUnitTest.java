@@ -68,9 +68,11 @@ import com.gemstone.gemfire.internal.cache.control.ResourceListener;
 import com.gemstone.gemfire.internal.cache.control.TestMemoryThresholdListener;
 import com.gemstone.gemfire.internal.cache.partitioned.RegionAdvisor;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -101,8 +103,8 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
 
   @Override
   public void setUp() throws Exception {
-    addExpectedException(expectedEx);
-    addExpectedException(expectedBelow);
+    IgnoredException.addExpectedException(expectedEx);
+    IgnoredException.addExpectedException(expectedBelow);
   }
 
 
@@ -1318,14 +1320,14 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
           }
         } catch (ServerOperationException ex) {
           if (!catchServerException) {
-            fail("Unexpected exception: ", ex);
+            Assert.fail("Unexpected exception: ", ex);
           }
           if (!(ex.getCause() instanceof LowMemoryException)) {
-            fail("Unexpected exception: ", ex);
+            Assert.fail("Unexpected exception: ", ex);
           }
         } catch (LowMemoryException low) {
           if (!catchLowMemoryException) {
-            fail("Unexpected exception: ", low);
+            Assert.fail("Unexpected exception: ", low);
           }
         }
         return null;
@@ -1355,10 +1357,10 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
           }
         } catch (ServerOperationException ex) {
           if (!catchServerException) {
-            fail("Unexpected exception: ", ex);
+            Assert.fail("Unexpected exception: ", ex);
           }
           if (!(ex.getCause() instanceof LowMemoryException)) {
-            fail("Unexpected exception: ", ex);
+            Assert.fail("Unexpected exception: ", ex);
           }
           for(Integer me: temp.keySet()) {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));
@@ -1366,7 +1368,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
         } catch (LowMemoryException low) {
           getLogWriter().info("Caught LowMemoryException", low);
           if (!catchLowMemoryException) {
-            fail("Unexpected exception: ", low);
+            Assert.fail("Unexpected exception: ", low);
           }
           for(Integer me: temp.keySet()) {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));

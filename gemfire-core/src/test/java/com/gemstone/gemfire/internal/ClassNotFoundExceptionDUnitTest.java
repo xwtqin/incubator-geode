@@ -39,6 +39,7 @@ import com.gemstone.gemfire.pdx.PdxReader;
 import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -65,7 +66,7 @@ public class ClassNotFoundExceptionDUnitTest extends CacheTestCase {
   }
   
   public void doTest(final ObjectFactory objectFactory) throws InterruptedException {
-    addExpectedException("SerializationException");
+    IgnoredException.addExpectedException("SerializationException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);

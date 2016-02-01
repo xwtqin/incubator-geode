@@ -33,6 +33,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData.SectionResultData;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -222,7 +223,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
 
   public void testShutDownWithoutTimeout() {
 
-    addExpectedException("EntryDestroyedException");
+    IgnoredException.addExpectedException("EntryDestroyedException");
 
     setupForShutDown();
     ThreadUtils.sleep(2500);
@@ -259,7 +260,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
     setupForShutDown();
     ThreadUtils.sleep(2500);
 
-    addExpectedException("EntryDestroyedException");
+    IgnoredException.addExpectedException("EntryDestroyedException");
 
     String command = "shutdown --time-out=15";
     CommandResult cmdResult = executeCommand(command);

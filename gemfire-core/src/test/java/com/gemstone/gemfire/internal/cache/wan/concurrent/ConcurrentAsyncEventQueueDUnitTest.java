@@ -19,6 +19,7 @@ package com.gemstone.gemfire.internal.cache.wan.concurrent;
 import com.gemstone.gemfire.cache.asyncqueue.internal.AsyncEventQueueFactoryImpl;
 import com.gemstone.gemfire.cache.wan.GatewaySender.OrderPolicy;
 import com.gemstone.gemfire.internal.cache.wan.AsyncEventQueueTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 
 /**
@@ -183,7 +184,7 @@ public class ConcurrentAsyncEventQueueDUnitTest extends AsyncEventQueueTestBase 
       inv2.join();
       inv3.join();
     } catch (InterruptedException ie) {
-      fail(
+      Assert.fail(
           "Cought interrupted exception while waiting for the task tgo complete.",
           ie);
     }

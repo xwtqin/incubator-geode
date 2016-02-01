@@ -35,6 +35,7 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -88,7 +89,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
         try {
           deleteTestFiles();
         } catch (IOException e) {
-          fail("error", e);
+          Assert.fail("error", e);
         }
       }
     });
@@ -250,7 +251,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
       FileReader reader = new FileReader(shellConfigFile);
       reader.read(fileContents);
     } catch (Exception ex) {
-      fail("Unable to read file contents for comparison", ex);
+      Assert.fail("Unable to read file contents for comparison", ex);
     }
 
     assertEquals(configToMatch, new String(fileContents));
@@ -477,7 +478,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
           gemfireProperties = sharedConfig.getConfiguration(groupName).getGemfireProperties();
           assertEquals("fine", gemfireProperties.get(DistributionConfig.LOG_LEVEL_NAME));
         } catch (Exception e) {
-          fail("Error occurred in cluster configuration service", e);
+          Assert.fail("Error occurred in cluster configuration service", e);
         }
       }
     });

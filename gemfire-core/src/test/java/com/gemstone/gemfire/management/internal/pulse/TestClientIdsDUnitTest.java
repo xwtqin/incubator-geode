@@ -37,6 +37,7 @@ import com.gemstone.gemfire.management.CacheServerMXBean;
 import com.gemstone.gemfire.management.MBeanUtil;
 import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.management.internal.cli.CliUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -291,7 +292,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
           }
           r1.clear();
         } catch (Exception ex) {
-          fail("failed while put", ex);
+          Assert.fail("failed while put", ex);
         }
       }
 

@@ -447,7 +447,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -463,7 +463,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -557,7 +557,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -573,7 +573,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.put()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.put()", ex);
     }
   }
 
@@ -592,7 +592,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.get()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.get()", ex);
     }
   }
 
@@ -611,7 +611,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.get()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.get()", ex);
     }
   }
 
@@ -630,7 +630,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region.get()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.get()", ex);
     }
   }
 

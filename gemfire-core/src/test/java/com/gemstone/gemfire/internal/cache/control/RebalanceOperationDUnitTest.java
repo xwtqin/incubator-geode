@@ -73,6 +73,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketCountLoadProbe;
 import com.gemstone.gemfire.internal.cache.partitioned.LoadProbe;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -610,7 +611,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         try {
           barrier.await(MAX_WAIT, TimeUnit.SECONDS);
         } catch (Exception e) {
-          fail("failed waiting for barrier", e);
+          Assert.fail("failed waiting for barrier", e);
         }
         observerCalled = true;
       } else {
@@ -819,9 +820,9 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           .simulate()
           .getResults(MAX_WAIT, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
-        fail("Interrupted waiting on rebalance", e);
+        Assert.fail("Interrupted waiting on rebalance", e);
       } catch (TimeoutException e) {
-        fail("Timeout waiting on rebalance", e);
+        Assert.fail("Timeout waiting on rebalance", e);
       }
     } else {
       try {
@@ -831,9 +832,9 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         .start()
         .getResults(MAX_WAIT, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
-        fail("Interrupted waiting on rebalance", e);
+        Assert.fail("Interrupted waiting on rebalance", e);
       } catch (TimeoutException e) {
-        fail("Timeout waiting on rebalance", e);
+        Assert.fail("Timeout waiting on rebalance", e);
       }
     }
     assertEquals(Collections.emptySet(), manager.getRebalanceOperations());

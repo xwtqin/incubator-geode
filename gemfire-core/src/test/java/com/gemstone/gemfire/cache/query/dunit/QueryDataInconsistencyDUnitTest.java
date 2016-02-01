@@ -40,6 +40,7 @@ import com.gemstone.gemfire.cache.query.partitioned.PRQueryDUnitHelper;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.execute.PRClientServerTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -264,7 +265,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
           }          
         } catch (Exception e) {
           e.printStackTrace();
-          fail("Query execution failed on server.", e);
+          Assert.fail("Query execution failed on server.", e);
           IndexManager.testHook = null;
         } finally {
           hooked = false;//Let client put go further.
@@ -356,7 +357,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
           }          
         } catch (Exception e) {
           e.printStackTrace();
-          fail("Query execution failed on server.", e);
+          Assert.fail("Query execution failed on server.", e);
           IndexManager.testHook = null;
         } finally {
           hooked = false;//Let client put go further.
@@ -447,7 +448,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
           }          
         } catch (Exception e) {
           e.printStackTrace();
-          fail("Query execution failed on server.", e);
+          Assert.fail("Query execution failed on server.", e);
           IndexManager.testHook = null;
         } finally {
           hooked = false;//Let client put go further.

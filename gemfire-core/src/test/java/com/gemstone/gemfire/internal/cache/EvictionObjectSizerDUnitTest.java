@@ -37,6 +37,7 @@ import com.gemstone.gemfire.internal.SharedLibrary;
 import com.gemstone.gemfire.internal.cache.lru.HeapLRUCapacityController;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
 import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
+import com.gemstone.gemfire.test.dunit.Assert;
 
 public class EvictionObjectSizerDUnitTest extends CacheTestCase {
 
@@ -215,7 +216,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
       cache.getResourceManager().setEvictionHeapPercentage(50);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 

@@ -25,6 +25,7 @@ import com.gemstone.gemfire.cache.query.internal.index.IndexManager;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager.TestHook;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable.CacheSerializableRunnableException;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -145,7 +146,7 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
     });
     as0.join();
     if(as0.exceptionOccurred()){
-        fail("Query execution failed.", as0.getException());
+        Assert.fail("Query execution failed.", as0.getException());
     }
    
   }

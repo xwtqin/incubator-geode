@@ -33,8 +33,10 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("java.net.ConnectException");
+    IgnoredException.addExpectedException("java.net.ConnectException");
   }
 
   
@@ -300,7 +302,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("did not send last result");
+    IgnoredException.addExpectedException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -337,8 +339,8 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("Socket Closed");
-    addExpectedException("did not send last result");
+    IgnoredException.addExpectedException("Socket Closed");
+    IgnoredException.addExpectedException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -379,7 +381,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    addExpectedException("did not send last result");
+    IgnoredException.addExpectedException("did not send last result");
     createScenario();
     server1.invoke(
         ClientServerFunctionExecutionDUnitTest.class,
@@ -678,7 +680,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       assertTrue(((Integer)list.get(1)) == 5);
     } catch (Exception ex) {
       ex.printStackTrace();
-      fail("This is not expected Exception", ex);
+      Assert.fail("This is not expected Exception", ex);
     }
   }
 

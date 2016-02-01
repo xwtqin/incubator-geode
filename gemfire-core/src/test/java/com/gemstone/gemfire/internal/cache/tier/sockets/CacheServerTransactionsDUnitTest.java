@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -810,7 +811,7 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
       assertEquals(r.getEntry(k3).getValue(), k3);
     }
     catch (Exception ex) {
-      fail("failed while createEntries()", ex);
+      Assert.fail("failed while createEntries()", ex);
     }
   }
 
@@ -826,7 +827,7 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
       r.registerInterest(keys);
     }
     catch (Exception ex) {
-      fail("failed while registering keys(" + keys + ")", ex);
+      Assert.fail("failed while registering keys(" + keys + ")", ex);
     }
   }
 

@@ -17,9 +17,6 @@
 package com.gemstone.gemfire.test.dunit;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -28,9 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
 
@@ -141,8 +136,6 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   private static Properties lastSystemProperties;
   public static volatile String testName;
   
-  private static ConcurrentLinkedQueue<ExpectedException> expectedExceptions = new ConcurrentLinkedQueue<ExpectedException>();
-
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
@@ -780,10 +773,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     if (InternalDistributedSystem.systemAttemptingReconnect != null) {
       InternalDistributedSystem.systemAttemptingReconnect.stopReconnecting();
     }
-    ExpectedException ex;
-    while((ex = expectedExceptions.poll()) != null) {
-      ex.remove();
-    }
+    IgnoredException.removeAllExpectedExceptions();
   }
 
   private static void closeCache() {
@@ -957,14 +947,10 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   /**
    * Helper method that causes this test to fail because of the given
    * exception.
+   * @deprecated Use {@link Assert#fail(String,Throwable)} instead
    */
   public static void fail(String message, Throwable ex) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw, true);
-    pw.print(message);
-    pw.print(": ");
-    ex.printStackTrace(pw);
-    fail(sw.toString());
+    Assert.fail(message, ex);
   }
 
   // utility methods
@@ -998,7 +984,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       }
     }
     catch (InterruptedException e) {
-      fail("interrupted", e);
+      Assert.fail("interrupted", e);
     }
     
   }
@@ -1044,7 +1030,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       }
     }
     catch (InterruptedException e) {
-      fail("interrupted", e);
+      Assert.fail("interrupted", e);
     }
   }
   
@@ -1062,37 +1048,6 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   /**
-   * If true, we randomize the amount of time we wait before polling a
-   * {@link WaitCriterion}.
-   */
-  static private final boolean USE_JITTER = true;
-  static private final Random jitter = new Random();
-  
-  /**
-   * Return a jittered interval up to a maximum of <code>ms</code>
-   * milliseconds, inclusive.
-   * 
-   * The result is bounded by 50 ms as a minimum and 5000 ms as a maximum.
-   * 
-   * @param ms total amount of time to wait
-   * @return randomized interval we should wait
-   */
-  private static int jitterInterval(long ms) {
-    final int minLegal = 50;
-    final int maxLegal = 5000;
-    if (ms <= minLegal) {
-      return (int)ms; // Don't ever jitter anything below this.
-    }
-
-    int maxReturn = maxLegal;
-    if (ms < maxLegal) {
-      maxReturn = (int)ms;
-    }
-
-    return minLegal + jitter.nextInt(maxReturn - minLegal + 1);
-  }
-  
-  /**
    * Wait until given criterion is met
    * @param ev criterion to wait on
    * @param ms total time to wait, in milliseconds
@@ -1103,13 +1058,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   @Deprecated
   static public void waitForCriterion(WaitCriterion ev, long ms, 
       long interval, boolean throwOnTimeout) {
-    long waitThisTime;
-    if (USE_JITTER) {
-      waitThisTime = jitterInterval(interval);
-    }
-    else {
-      waitThisTime = interval;
-    }
+    long waitThisTime = Jitter.jitterInterval(interval);
     final long tilt = System.currentTimeMillis() + ms;
     for (;;) {
 //      getLogWriter().info("Testing to see if event has occurred: " + ev.description());
@@ -1162,13 +1111,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   static public void waitMutex(WaitCriterion ev, Object mutex, long ms, 
       long interval, boolean throwOnTimeout) {
     final long tilt = System.currentTimeMillis() + ms;
-    long waitThisTime;
-    if (USE_JITTER) {
-      waitThisTime = jitterInterval(interval);
-    }
-    else {
-      waitThisTime = interval;
-    }
+    long waitThisTime = Jitter.jitterInterval(interval);
     synchronized (mutex) {
       for (;;) {
         if (ev.done()) {
@@ -1204,13 +1147,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    */
   static public void join(Thread t, long ms, LogWriter logger) {
     final long tilt = System.currentTimeMillis() + ms;
-    final long incrementalWait;
-    if (USE_JITTER) {
-      incrementalWait = jitterInterval(ms);
-    }
-    else {
-      incrementalWait = ms; // wait entire time, no looping.
-    }
+    final long incrementalWait = Jitter.jitterInterval(ms);
     final long start = System.currentTimeMillis();
     for (;;) {
       // I really do *not* understand why this check is necessary
@@ -1272,74 +1209,40 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
   
   /**
-   * A class that represents an currently logged expected exception, which
-   * should be removed
-   * 
-   * @author Mitch Thomas
-   * @since 5.7bugfix
+   * @deprecated Use {@link IgnoredException} instead.
    */
-  public static class ExpectedException implements Serializable {
-    private static final long serialVersionUID = 1L;
+  @Deprecated
+  public static class ExpectedException extends IgnoredException {
 
-    final String ex;
-
-    final transient VM v;
-
-    public ExpectedException(String exception) {
-      this.ex = exception;
-      this.v = null;
+    private final IgnoredException wrappedInstance;
+    
+    public ExpectedException(final IgnoredException wrappedInstance) {
+      super(wrappedInstance.errorString(), wrappedInstance.vm());
+      this.wrappedInstance = wrappedInstance;
     }
-
-    ExpectedException(String exception, VM vm) {
-      this.ex = exception;
-      this.v = vm;
+    
+    public ExpectedException(final String exception) {
+      this(exception, null);
     }
-
-    public String getRemoveString() {
-      return "<ExpectedException action=remove>" + ex + "</ExpectedException>";
+    
+    private ExpectedException(final String exception, final VM vm) {
+      super(exception, vm);
+      this.wrappedInstance = new IgnoredException(exception);
     }
-
-    public String getAddString() {
-      return "<ExpectedException action=add>" + ex + "</ExpectedException>";
+    
+    public String getAddMessage() {
+      return this.wrappedInstance.getAddMessage();
     }
-
+    
+    public String getRemoveMessage() {
+      return this.wrappedInstance.getRemoveMessage();
+    }
+    
     public void remove() {
-      SerializableRunnable removeRunnable = new SerializableRunnable(
-          "removeExpectedExceptions") {
-        public void run() {
-          final String remove = getRemoveString();
-          final InternalDistributedSystem sys = InternalDistributedSystem
-              .getConnectedInstance();
-          if (sys != null) {
-            sys.getLogWriter().info(remove);
-          }
-          try {
-            getLogWriter().info(remove);
-          } catch (Exception noHydraLogger) {
-          }
-
-          logger.info(remove);
-        }
-      };
-
-      if (this.v != null) {
-        v.invoke(removeRunnable);
-      }
-      else {
-        invokeInEveryVM(removeRunnable);
-      }
-      String s = getRemoveString();
-      LogManager.getLogger(LogService.BASE_LOGGER_NAME).info(s);
-      // log it locally
-      final InternalDistributedSystem sys = InternalDistributedSystem
-          .getConnectedInstance();
-      if (sys != null) { // avoid creating a system
-        sys.getLogWriter().info(s);
-      }
-      getLogWriter().info(s);
+      this.wrappedInstance.remove();
     }
   }
-
+  
   /**
    * Log in all VMs, in both the test logger and the GemFire logger the
    * expected exception string to prevent grep logs from complaining. The
@@ -1353,9 +1256,10 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * @param exception
    *          the exception string to expect
    * @return an ExpectedException instance for removal
+   * @deprecated Use {@link IgnoredException#addExpectedException(String)} instead
    */
   public static ExpectedException addExpectedException(final String exception) {
-    return addExpectedException(exception, null);
+    return new ExpectedException(IgnoredException.addExpectedException(exception));
   }
 
   /**
@@ -1370,51 +1274,10 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * @param v
    *          the VM on which to log the expected exception or null for all VMs
    * @return an ExpectedException instance for removal purposes
+   * @deprecated Use {@link IgnoredException#addExpectedException(String,VM)} instead
    */
-  public static ExpectedException addExpectedException(final String exception,
-      VM v) {
-    final ExpectedException ret;
-    if (v != null) {
-      ret = new ExpectedException(exception, v);
-    }
-    else {
-      ret = new ExpectedException(exception);
-    }
-    // define the add and remove expected exceptions
-    final String add = ret.getAddString();
-    SerializableRunnable addRunnable = new SerializableRunnable(
-        "addExpectedExceptions") {
-      public void run() {
-        final InternalDistributedSystem sys = InternalDistributedSystem
-            .getConnectedInstance();
-        if (sys != null) {
-          sys.getLogWriter().info(add);
-        }
-        try {
-          getLogWriter().info(add);
-        } catch (Exception noHydraLogger) {
-        }
- 
-        logger.info(add);
-      }
-    };
-    if (v != null) {
-      v.invoke(addRunnable);
-    }
-    else {
-      invokeInEveryVM(addRunnable);
-    }
-    
-    LogManager.getLogger(LogService.BASE_LOGGER_NAME).info(add);
-    // Log it locally too
-    final InternalDistributedSystem sys = InternalDistributedSystem
-        .getConnectedInstance();
-    if (sys != null) { // avoid creating a cache
-      sys.getLogWriter().info(add);
-    }
-    getLogWriter().info(add);
-    expectedExceptions.add(ret);
-    return ret;
+  public static IgnoredException addExpectedException(final String exception, final VM v) {
+    return new ExpectedException(IgnoredException.addExpectedException(exception, v));
   }
 
   /** 

@@ -98,6 +98,7 @@ import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -3919,7 +3920,7 @@ protected static class ClientListener extends CacheListenerAdapter {
       
       //Putting a string key causes this, the partition resolver
       //doesn't handle it.
-      addExpectedException("IllegalStateException");
+      IgnoredException.addExpectedException("IllegalStateException");
       assertEquals(Status.STATUS_ACTIVE, tx.getStatus());
       final CountDownLatch latch = new CountDownLatch(1);
       Thread t = new Thread(new Runnable() {

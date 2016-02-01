@@ -37,7 +37,9 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -196,7 +198,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       r.registerInterest("ALL_KEYS");
     }
     catch (Exception ex) {
-      fail("failed in registerInterestListAll", ex);
+      Assert.fail("failed in registerInterestListAll", ex);
     }
   }
 
@@ -211,7 +213,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in putEntries()", ex);
+      Assert.fail("failed in putEntries()", ex);
     }
   }
 
@@ -224,7 +226,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in createEntries(Long)", ex);
+      Assert.fail("failed in createEntries(Long)", ex);
     }
   }
 
@@ -250,9 +252,9 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
             new Integer(PORT1), new Integer(PORT2), new Integer(2) });
     clientVM.invoke(HASlowReceiverDUnitTest.class, "registerInterest");
     // add expected socket exception string
-    final ExpectedException ex1 = addExpectedException(SocketException.class
+    final IgnoredException ex1 = IgnoredException.addExpectedException(SocketException.class
         .getName());
-    final ExpectedException ex2 = addExpectedException(InterruptedException.class
+    final IgnoredException ex2 = IgnoredException.addExpectedException(InterruptedException.class
         .getName());
     putEntries();
     Thread.sleep(20000);// wait for put to block and allow server to remove

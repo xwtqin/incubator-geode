@@ -37,6 +37,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.FilterProfile;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -214,7 +215,7 @@ public class UnregisterInterestDUnitTest extends DistributedTestCase {
       checkFilters(value, valueInv);
       break;
     default:
-      fail("Invalid interest type: " + interestType, new IllegalArgumentException("Invalid interest type: " + interestType));
+      Assert.fail("Invalid interest type: " + interestType, new IllegalArgumentException("Invalid interest type: " + interestType));
     }
   }
 
@@ -258,7 +259,7 @@ public class UnregisterInterestDUnitTest extends DistributedTestCase {
     case filter:
       break;
     default:
-      fail("Invalid interest type: " + interestType, new IllegalArgumentException("Invalid interest type: " + interestType));
+      Assert.fail("Invalid interest type: " + interestType, new IllegalArgumentException("Invalid interest type: " + interestType));
     }
   }
 

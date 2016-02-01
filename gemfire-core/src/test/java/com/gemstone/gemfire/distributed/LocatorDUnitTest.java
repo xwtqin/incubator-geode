@@ -53,6 +53,7 @@ import com.gemstone.gemfire.internal.tcp.Connection;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -87,7 +88,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     super.setUp();
     port1 = -1;
     port2 = -1;
-    addExpectedException("Removing shunned member");
+    IgnoredException.addExpectedException("Removing shunned member");
   }
   
   @Override
@@ -475,7 +476,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
    * (which is now the sole remaining member) shuts itself down.
    */
   public void testLeadAndCoordFailure() throws Exception {
-    addExpectedException("Possible loss of quorum due");
+    IgnoredException.addExpectedException("Possible loss of quorum due");
     disconnectAllFromDS();
     Host host = Host.getHost(0);
     VM vm1 = host.getVM(1);
@@ -515,7 +516,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, lf, properties);
           }
           catch (IOException ios) {
-            fail("Unable to start locator2", ios);
+            com.gemstone.gemfire.test.dunit.Assert.fail("Unable to start locator2", ios);
           }
         }
       });
@@ -649,7 +650,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             MembershipManagerHelper.inhibitForcedDisconnectLogging(true);
           }
           catch (IOException ios) {
-            fail("Unable to start locator2", ios);
+            com.gemstone.gemfire.test.dunit.Assert.fail("Unable to start locator2", ios);
           }
         }
       });
@@ -796,7 +797,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, lf, properties);
           }
           catch (IOException ios) {
-            fail("Unable to start locator2", ios);
+            com.gemstone.gemfire.test.dunit.Assert.fail("Unable to start locator2", ios);
           }
         }
       });
@@ -945,7 +946,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, lf, properties);
           }
           catch (IOException ios) {
-            fail("Unable to start locator1", ios);
+            com.gemstone.gemfire.test.dunit.Assert.fail("Unable to start locator1", ios);
           }
         }
       });
@@ -1061,7 +1062,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     } catch (Exception ex) {
       // if you see this fail, determine if unexpected exception is expected
       // if expected then add in a catch block for it above this catch
-      fail("Failed with unexpected exception", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed with unexpected exception", ex);
     }
     finally {
       if (oldValue == null) {
@@ -1106,7 +1107,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
 
             Locator.startLocatorAndDS(port, logFile, locProps);
           } catch (IOException ex) {
-            fail("While starting locator on port " + port, ex);
+            com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port, ex);
           }
         }
       });
@@ -1355,7 +1356,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
         try {
           Locator.startLocatorAndDS(port1, logFile, dsProps);
         } catch (IOException ex) {
-          fail("While starting locator on port " + port1, ex);
+          com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port1, ex);
         }
       }
     });
@@ -1370,7 +1371,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, logFile, dsProps);
 
           } catch (IOException ex) {
-            fail("While starting locator on port " + port2, ex);
+            com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port2, ex);
           }
         }
       });
@@ -1441,7 +1442,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
    */
   public void testMultipleMcastLocators() throws Exception {
     disconnectAllFromDS();
-    addExpectedException("Could not stop  Distribution Locator"); // shutdown timing issue in InternalLocator
+    IgnoredException.addExpectedException("Could not stop  Distribution Locator"); // shutdown timing issue in InternalLocator
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -1476,7 +1477,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port1, logFile, null, props);
           }
           catch (IOException ex) {
-            fail("While starting locator on port " + port1, ex);
+            com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port1, ex);
           }
         }
       });
@@ -1494,7 +1495,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Locator.startLocatorAndDS(port2, logFile, null, props);
           }
           catch (IOException ex) {
-            fail("While starting locator on port " + port2, ex);
+            com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port2, ex);
           }
         }
       });
@@ -1529,7 +1530,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             return system.getDM().getViewMembers().size() == 5;
           }
           catch (Exception e) {
-            fail("unexpected exception", e);
+            com.gemstone.gemfire.test.dunit.Assert.fail("unexpected exception", e);
           }
           return false; // NOTREACHED
         }
@@ -1831,7 +1832,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
           locProps.put("log-level", getDUnitLogLevel());
           Locator.startLocatorAndDS(port, logFile, locProps);
         } catch (IOException ex) {
-          fail("While starting locator on port " + port, ex);
+          com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port, ex);
         }
         finally {
           System.getProperties().remove(InternalLocator.LOCATORS_PREFERRED_AS_COORDINATORS);

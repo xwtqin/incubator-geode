@@ -28,6 +28,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.DistributedRegion;
 import com.gemstone.gemfire.internal.cache.StateFlushOperation;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -104,7 +105,7 @@ public class DistributedNoAckRegionDUnitTest
             assertTrue(getRootRegion("INCOMPATIBLE_ROOT").getAttributes().getScope().isDistributedNoAck());
             assertTrue(region.getAttributes().getScope().isDistributedNoAck());
           } catch (CacheException ex) {
-            fail("While creating NO ACK region", ex);
+            Assert.fail("While creating NO ACK region", ex);
           }
         }
       });
@@ -126,7 +127,7 @@ public class DistributedNoAckRegionDUnitTest
 //            assertNull(getRootRegion());
 
           } catch (CacheException ex) {
-            fail("While creating GLOBAL Region", ex);
+            Assert.fail("While creating GLOBAL Region", ex);
           }
         }
       });
@@ -147,7 +148,7 @@ public class DistributedNoAckRegionDUnitTest
 //            assertNull(getRootRegion());
 
           } catch (CacheException ex) {
-            fail("While creating ACK Region", ex);
+            Assert.fail("While creating ACK Region", ex);
           }
         }
       });
@@ -272,7 +273,7 @@ public class DistributedNoAckRegionDUnitTest
     } // finally
    getLogWriter().info("testBug30705: at end of test");
    if (async.exceptionOccurred()) {
-     fail("Got exception", async.getException());
+     Assert.fail("Got exception", async.getException());
    }
   }
 

@@ -37,6 +37,7 @@ import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -207,7 +208,7 @@ public class Bug36457DUnitTest extends DistributedTestCase
       r.destroyRegion();
     }
     catch (Exception ex) {
-      fail("failed while destroy region ", ex);
+      Assert.fail("failed while destroy region ", ex);
     }
   }
 

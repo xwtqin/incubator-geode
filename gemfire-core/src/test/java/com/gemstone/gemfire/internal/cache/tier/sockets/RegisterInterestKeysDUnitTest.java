@@ -23,6 +23,7 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -136,7 +137,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
       assertEquals(r1.getEntry("key1").getValue(), "key-1");
     }
     catch (Exception ex) {
-      fail("failed while createEntriesK1()", ex);
+      Assert.fail("failed while createEntriesK1()", ex);
     }
   }
 
@@ -220,7 +221,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest", ex);
+      Assert.fail("failed while registering interest", ex);
     }
   }
 

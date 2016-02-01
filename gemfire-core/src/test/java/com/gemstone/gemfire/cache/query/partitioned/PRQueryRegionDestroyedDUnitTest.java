@@ -32,6 +32,7 @@ import java.util.Random;
 
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -209,7 +210,7 @@ public class PRQueryRegionDestroyedDUnitTest extends PartitionedRegionDUnitTestC
       } while (t != null);
       
       if (!isForceReattempt) {
-        fail("Unexpected exception during query", async0.getException());
+        Assert.fail("Unexpected exception during query", async0.getException());
       }
     }
     getLogWriter()

@@ -54,6 +54,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -174,7 +175,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
 
   public void testNonColocatedPRLocalQuerying() throws Exception
   {
-    addExpectedException("UnsupportedOperationException");
+    IgnoredException.addExpectedException("UnsupportedOperationException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 

@@ -52,6 +52,7 @@ import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -252,7 +253,7 @@ public class PRPerformanceTestDUnitTest extends
           }
           catch (Exception ex) {
             getLogWriter().info("Exception Occured :" + ex.getMessage());
-            fail("Test failed",ex);
+            Assert.fail("Test failed",ex);
           }
           Object val = list.get(0);
           assertNotNull(val);

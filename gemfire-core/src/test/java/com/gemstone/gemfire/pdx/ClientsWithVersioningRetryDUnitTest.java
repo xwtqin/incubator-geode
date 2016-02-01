@@ -56,6 +56,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.command.Put70;
 import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -67,7 +68,7 @@ import com.gemstone.gemfire.test.dunit.VM;
  */
 public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
   // list of expected exceptions to remove in tearDown2()
-  static List<ExpectedException> expectedExceptions = new LinkedList<ExpectedException>();
+  static List<IgnoredException> expectedExceptions = new LinkedList<IgnoredException>();
 
   public ClientsWithVersioningRetryDUnitTest(String name) {
     super(name);
@@ -97,7 +98,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
       }
       
     });
-    for (ExpectedException ex: expectedExceptions) {
+    for (IgnoredException ex: expectedExceptions) {
       ex.remove();
     }
   }
@@ -298,7 +299,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     getLogWriter().info("creating region in vm3");
     createRegionInPeer(vm3, RegionShortcut.PARTITION_PROXY);
     
-    expectedExceptions.add(addExpectedException("RuntimeException", vm2));
+    expectedExceptions.add(IgnoredException.addExpectedException("RuntimeException", vm2));
     vm2.invoke(new SerializableRunnable("install message listener to ignore update") {
       public void run() {
         //Add a listener to close vm2 when we send a distributed put all operation

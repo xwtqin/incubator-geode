@@ -252,7 +252,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
               "fake_id", "fake_id_ustring", DistributionManager.NORMAL_DM_TYPE, null, null);
           tag.setMemberID(mbr);
         } catch (UnknownHostException e) {
-          fail("could not create member id", e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("could not create member id", e);
         }
         
         // generate an event to distribute that contains the fake version tag
@@ -269,7 +269,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
     try {
       partialCreate.getResult();
     } catch (Throwable e) {
-      fail("async invocation in vm2 failed", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("async invocation in vm2 failed", e);
     }
   }  
 
@@ -322,7 +322,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
           CCRegion.put("cckey0", "ccvalue");
           CCRegion.put("cckey0", "ccvalue");  // version number will end up at 4
         } catch (CacheException ex) {
-          fail("While creating region", ex);
+          com.gemstone.gemfire.test.dunit.Assert.fail("While creating region", ex);
         }
       }
     };
@@ -342,7 +342,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
         try {
           entry.makeTombstone(CCRegion, tag);
         } catch (RegionClearedException e) {
-          fail("region was mysteriously cleared during unit testing", e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("region was mysteriously cleared during unit testing", e);
         }
       }
     });
@@ -406,7 +406,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
       long gcCount = CCRegion.getCachePerfStats().getTombstoneGCCount();
       assertTrue("expected a few GCs, but not " + (gcCount - initialCount), gcCount < (initialCount + 20));
     } catch (CacheException ex) {
-      fail("While creating region", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("While creating region", ex);
     } finally {
       TombstoneService.EXPIRED_TOMBSTONE_LIMIT = saveExpiredTombstoneLimit;
       TombstoneService.FORCE_GC_MEMORY_EVENTS = false;
@@ -460,7 +460,7 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
           }
           assertEquals("expected no conflated events", 0, CCRegion.getCachePerfStats().getConflatedEventsCount());
         } catch (CacheException ex) {
-          fail("While creating region", ex);
+          com.gemstone.gemfire.test.dunit.Assert.fail("While creating region", ex);
         }
       }
     };

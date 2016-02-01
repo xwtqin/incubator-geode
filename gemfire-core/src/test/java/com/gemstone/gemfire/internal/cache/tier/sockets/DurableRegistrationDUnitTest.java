@@ -39,6 +39,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -703,7 +704,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest in registerKey function", ex);
+      Assert.fail("failed while registering interest in registerKey function", ex);
     }
   }
 
@@ -736,7 +737,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
       region.registerInterest(key, InterestResultPolicy.NONE, isDurable);
     }
     catch (Exception ex) {
-      fail("failed while registering interest in registerKey function", ex);
+      Assert.fail("failed while registering interest in registerKey function", ex);
     }
   }
 
@@ -752,7 +753,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
       region.unregisterInterest(key);
     }
     catch (Exception ex) {
-      fail("failed while registering interest in registerKey function", ex);
+      Assert.fail("failed while registering interest in registerKey function", ex);
     }
   }
 

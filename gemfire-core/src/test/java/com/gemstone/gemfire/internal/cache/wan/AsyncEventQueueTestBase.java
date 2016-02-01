@@ -75,7 +75,9 @@ import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -180,7 +182,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createReplicatedRegionWithAsyncEventQueue(
       String regionName, String asyncQueueIds, Boolean offHeap) {
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -223,7 +225,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createReplicatedRegionWithSenderAndAsyncEventQueue(
       String regionName, String senderIds, String asyncChannelId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
     try {
 
@@ -367,7 +369,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       Integer batchSize, boolean isConflation, boolean isPersistent,
       String diskStoreName, boolean isDiskSynchronous, int nDispatchers) {
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
 
     try {
@@ -590,9 +592,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createPartitionedRegion(String regionName,
       String senderIds, Integer redundantCopies, Integer totalNumBuckets) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -621,9 +623,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createPartitionedRegionWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -646,9 +648,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       String regionName, String asyncEventQueueId, Integer totalNumBuckets,
       String colocatedWith) {
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -687,7 +689,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
    */
   public static void createPRWithRedundantCopyWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
 
     try {
@@ -891,7 +893,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       boolean isParallel, Integer maxMemory, Integer batchSize,
       boolean isConflation, boolean isPersistent, GatewayEventFilter filter,
       boolean isManulaStart) {
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addExpectedException("Could not connect");
     try {
       File persistentDirectory = new File(dsName + "_disk_"
           + System.currentTimeMillis() + "_" + VM.getCurrentVMNum());
@@ -1027,14 +1029,14 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
     }
     catch (InterruptedException e) {
-      fail("Interrupted", e);
+      Assert.fail("Interrupted", e);
     }
   }
 
   public static void doPuts(String regionName, int numPuts) {
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addExpectedException(GatewaySenderException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -1094,7 +1096,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void doNextPuts(String regionName, int start, int numPuts) {
     // waitForSitesToUpdate();
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    IgnoredException exp = IgnoredException.addExpectedException(CacheClosedException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -1109,9 +1111,9 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void validateRegionSize(String regionName, final int regionSize) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(CacheClosedException.class
         .getName());
     try {
 
@@ -1467,10 +1469,10 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static Boolean killSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    final IgnoredException exln = IgnoredException.addExpectedException("Could not connect");
+    IgnoredException exp = IgnoredException.addExpectedException(CacheClosedException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addExpectedException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();

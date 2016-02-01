@@ -27,6 +27,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -117,7 +118,7 @@ public class Bug36829DUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed while registering interest in registerKey function", ex);
+      Assert.fail("failed while registering interest in registerKey function", ex);
     }
   }
 
@@ -141,7 +142,7 @@ public class Bug36829DUnitTest extends DistributedTestCase {
     }
 
     catch (Exception ex) {
-      fail("failed while registering interest in registerKey function", ex);
+      Assert.fail("failed while registering interest in registerKey function", ex);
     }
   }
 

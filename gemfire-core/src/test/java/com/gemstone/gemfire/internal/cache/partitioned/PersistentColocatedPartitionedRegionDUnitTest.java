@@ -43,7 +43,9 @@ import com.gemstone.gemfire.internal.cache.InitialImageOperation.RequestImageMes
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserver;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -107,7 +109,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
         af.setPartitionAttributes(paf.create());
         
         //Try to colocate a persistent PR with the non persistent PR. This should fail.
-        ExpectedException exp = addExpectedException("IllegalStateException");
+        IgnoredException exp = IgnoredException.addExpectedException("IllegalStateException");
         try {
           cache.createRegion("colocated", af.create());
           fail("should not have been able to create a persistent region colocated with a non persistent region");
@@ -351,7 +353,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
         try {
           recoveryDone.await(MAX_WAIT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         } 
       }
     };
@@ -498,7 +500,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
             fail("timed out");
           }
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -556,7 +558,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
             fail("timed out");
           }
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -602,7 +604,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     
     createData(vm0, 0, NUM_BUCKETS, "b");
     createData(vm0, 0, NUM_BUCKETS, "b", "region2");
-    ExpectedException expected = addExpectedException("PartitionOfflineException");
+    IgnoredException expected = IgnoredException.addExpectedException("PartitionOfflineException");
     try {
     
     //Close the remaining members.
@@ -714,7 +716,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
             fail("timed out");
           }
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -779,7 +781,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
             fail("timed out");
           }
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -804,8 +806,8 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
    * @throws Throwable 
    */
   public void replaceOfflineMemberAndRestartCreateColocatedPRLate(SerializableRunnable createParentPR, SerializableRunnable createChildPR) throws Throwable {
-    addExpectedException("PartitionOfflineException");
-    addExpectedException("RegionDestroyedException");
+    IgnoredException.addExpectedException("PartitionOfflineException");
+    IgnoredException.addExpectedException("RegionDestroyedException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -975,7 +977,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
       }
     });
     
-    ExpectedException ex = addExpectedException("PartitionOfflineException", vm1);
+    IgnoredException ex = IgnoredException.addExpectedException("PartitionOfflineException", vm1);
     try {
       
     //Do a rebalance to create buckets in vm1. THis will cause vm0 to disconnect
@@ -1292,7 +1294,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
         try {
           observer.waitForCreate();
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -1415,7 +1417,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     closeCache();
     
     //Restart colocated with "region2"
-    ExpectedException ex = addExpectedException("DiskAccessException|IllegalStateException");
+    IgnoredException ex = IgnoredException.addExpectedException("DiskAccessException|IllegalStateException");
     try {
       createColocatedPRs("region2");
       fail("Should have received an illegal state exception");
@@ -1437,7 +1439,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     
     //Restart uncolocated. We don't allow changing
     //from uncolocated to colocated.
-    ex = addExpectedException("DiskAccessException|IllegalStateException");
+    ex = IgnoredException.addExpectedException("DiskAccessException|IllegalStateException");
     try {
       createColocatedPRs(null);
       fail("Should have received an illegal state exception");

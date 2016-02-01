@@ -32,6 +32,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -181,7 +182,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
       pool.destroy();
     }
     catch (Exception ex) {
-      fail("failed while region close", ex);
+      Assert.fail("failed while region close", ex);
     }
   }
 

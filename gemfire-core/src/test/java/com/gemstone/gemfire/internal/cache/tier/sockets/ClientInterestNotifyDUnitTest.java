@@ -39,6 +39,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -170,7 +171,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
       performSteps();
     }
     catch( Exception e ) {
-      fail("testInterestNotify failed due to exception", e);
+      Assert.fail("testInterestNotify failed due to exception", e);
     }
   }
   
@@ -587,7 +588,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region doing ops", ex);
+      Assert.fail("failed while region doing ops", ex);
     }
   }
   
@@ -608,7 +609,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region doing ops", ex);
+      Assert.fail("failed while region doing ops", ex);
     }
   }
 
@@ -625,7 +626,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail("failed while region doing ops", ex);
+      Assert.fail("failed while region doing ops", ex);
     }
   }
   

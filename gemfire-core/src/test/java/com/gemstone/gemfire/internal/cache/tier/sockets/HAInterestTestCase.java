@@ -41,6 +41,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.tier.InterestType;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
@@ -108,7 +109,7 @@ public class HAInterestTestCase extends DistributedTestCase {
     PORT2 = ((Integer) server2.invoke(HAInterestTestCase.class, "createServerCache")).intValue();
     PORT3 = ((Integer) server3.invoke(HAInterestTestCase.class, "createServerCache")).intValue();
     exceptionOccured = false;
-    addExpectedException("java.net.ConnectException: Connection refused: connect");
+    IgnoredException.addExpectedException("java.net.ConnectException: Connection refused: connect");
   }
 
   @Override

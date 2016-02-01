@@ -30,6 +30,7 @@ import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -84,7 +85,7 @@ public class DurableClientBug39997DUnitTest extends CacheTestCase {
         try {
           server.start();
         } catch (IOException e) {
-          fail("couldn't start server", e);
+          Assert.fail("couldn't start server", e);
         }
       }
     });

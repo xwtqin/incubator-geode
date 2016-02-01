@@ -48,6 +48,7 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -283,7 +284,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
         public void run() {
           props.setProperty(DistributionConfig.NAME_NAME, "sleeper");
           getSystem(props);
-          addExpectedException("elapsed while waiting for replies");
+          IgnoredException.addExpectedException("elapsed while waiting for replies");
           RegionFactory rf = new RegionFactory();
           Region r = rf.setScope(Scope.DISTRIBUTED_ACK)
             .setDataPolicy(DataPolicy.REPLICATE)
@@ -397,7 +398,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
    */
   public void testKickOutSickMember() throws Exception {
     disconnectAllFromDS();
-    addExpectedException("10 seconds have elapsed while waiting");
+    IgnoredException.addExpectedException("10 seconds have elapsed while waiting");
     Host host = Host.getHost(0);
 //    VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);

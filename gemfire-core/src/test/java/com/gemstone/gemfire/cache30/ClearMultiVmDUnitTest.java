@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.UnsupportedOperationInTransactionException;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -215,11 +216,11 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         DistributedTestCase.join(as2, 30 * 1000, getLogWriter());
         
         if(as1.exceptionOccurred()){
-          fail("as1 failed", as1.getException());
+          Assert.fail("as1 failed", as1.getException());
         }
         
         if(as2.exceptionOccurred()){
-          fail("as2 failed", as2.getException());
+          Assert.fail("as2 failed", as2.getException());
         }
         
         int j = vm0.invokeInt(ClearMultiVmDUnitTest.class, "sizeMethod");
@@ -329,7 +330,7 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         
         DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
         if(async1.exceptionOccurred()){
-          fail("async1 failed", async1.getException());
+          Assert.fail("async1 failed", async1.getException());
         }
         
         SerializableRunnable validate = new

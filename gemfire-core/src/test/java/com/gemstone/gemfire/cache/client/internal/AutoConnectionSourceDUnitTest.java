@@ -37,6 +37,7 @@ import com.gemstone.gemfire.management.membership.ClientMembership;
 import com.gemstone.gemfire.management.membership.ClientMembershipEvent;
 import com.gemstone.gemfire.management.membership.ClientMembershipListenerAdapter;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -55,7 +56,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
   
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("NoAvailableLocatorsException");
+    IgnoredException.addExpectedException("NoAvailableLocatorsException");
   }
 
   public AutoConnectionSourceDUnitTest(String name) {

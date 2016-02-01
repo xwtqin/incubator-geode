@@ -26,6 +26,7 @@ import com.gemstone.gemfire.cache.LoaderHelper;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.TimeoutException;
+import com.gemstone.gemfire.test.dunit.Assert;
 
 /**
  * An abstract class whose test methods test the functionality of
@@ -68,7 +69,7 @@ public abstract class CacheLoaderTestCase
             }
 
           } catch (TimeoutException ex) {
-            fail("Why did I time out?", ex);
+            Assert.fail("Why did I time out?", ex);
           }
 
           Object argument = helper.getArgument();

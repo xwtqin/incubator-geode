@@ -78,6 +78,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.PureLogWriter;
 import com.gemstone.gemfire.internal.util.Callable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 /**
@@ -309,7 +310,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         return new Integer(0);
       }
       else {
-        fail("Got unexpected exception when starting peer", ex);
+        Assert.fail("Got unexpected exception when starting peer", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -318,11 +319,11 @@ public class SecurityTestUtil extends DistributedTestCase {
         return new Integer(0);
       }
       else {
-        fail("Got unexpected exception when starting peer", ex);
+        Assert.fail("Got unexpected exception when starting peer", ex);
       }
     }
     catch (Exception ex) {
-      fail("Got unexpected exception when starting peer", ex);
+      Assert.fail("Got unexpected exception when starting peer", ex);
     }
 
     if (setupDynamicRegionFactory.booleanValue()) {
@@ -348,7 +349,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       server1.start();
     }
     catch (Exception ex) {
-      fail("Got unexpected exception when starting CacheServer", ex);
+      Assert.fail("Got unexpected exception when starting CacheServer", ex);
     }
     return new Integer(server1.getPort());
   }
@@ -441,7 +442,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected UnsupportedOperationException in single-user mode");
         }
         else {
-          fail("Got unexpected exception in multi-user mode ", uoe);
+          Assert.fail("Got unexpected exception in multi-user mode ", uoe);
         }
       }
 
@@ -466,7 +467,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -475,7 +476,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (ServerRefusedConnectionException ex) {
@@ -484,11 +485,11 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (Exception ex) {
-      fail("Got unexpected exception when starting client", ex);
+      Assert.fail("Got unexpected exception when starting client", ex);
     }
   }
 
@@ -595,7 +596,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -604,7 +605,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (ServerRefusedConnectionException ex) {
@@ -613,11 +614,11 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        fail("Got unexpected exception when starting client", ex);
+        Assert.fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (Exception ex) {
-      fail("Got unexpected exception when starting client", ex);
+      Assert.fail("Got unexpected exception when starting client", ex);
     }
   }
 
@@ -647,7 +648,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         server.start();
       }
       catch (Exception ex) {
-        fail("Unexpected exception when restarting cache servers", ex);
+        Assert.fail("Unexpected exception when restarting cache servers", ex);
       }
       assertTrue(server.isRunning());
     }
@@ -678,7 +679,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           authProps);
     }
     catch (IOException ex) {
-      fail("While starting locator on port " + port.intValue(), ex);
+      Assert.fail("While starting locator on port " + port.intValue(), ex);
     }
   }
 
@@ -690,7 +691,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           .getDistributedSystem().getLogWriter());
     }
     catch (Exception ex) {
-      fail("While stopping locator on port " + port.intValue(), ex);
+      Assert.fail("While stopping locator on port " + port.intValue(), ex);
     }
   }
 
@@ -712,7 +713,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           return ((Boolean)cond.call()).booleanValue();
         }
         catch (Exception e) {
-          fail("Unexpected exception", e);
+          Assert.fail("Unexpected exception", e);
         }
         return false; // NOTREACHED
       }
@@ -760,7 +761,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing puts: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing puts", ex);
+        Assert.fail("Got unexpected exception when doing puts", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -783,7 +784,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -812,7 +813,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (Exception ex) {
@@ -820,7 +821,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing puts", ex);
+          Assert.fail("Got unexpected exception when doing puts", ex);
         }
       }
     }
@@ -843,7 +844,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing getAll", ex);
+        Assert.fail("Got unexpected exception when doing getAll", ex);
       }
     }
     try {
@@ -873,7 +874,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing getAll: "
                 + ex.getCause());
       } else {
-        fail("Got unexpected exception when doing getAll", ex);
+        Assert.fail("Got unexpected exception when doing getAll", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -884,13 +885,13 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
-        fail("Got unexpected exception when doing getAll", ex);
+        Assert.fail("Got unexpected exception when doing getAll", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
-        fail("Got unexpected exception when doing getAll", ex);
+        Assert.fail("Got unexpected exception when doing getAll", ex);
       }
     }
   }
@@ -919,7 +920,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing gets: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing gets", ex);
+        Assert.fail("Got unexpected exception when doing gets", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -943,7 +944,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          fail("Got unexpected exception when doing gets", ex);
+          Assert.fail("Got unexpected exception when doing gets", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -958,7 +959,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing gets", ex);
+          Assert.fail("Got unexpected exception when doing gets", ex);
         }
       }
       catch (Exception ex) {
@@ -966,7 +967,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing gets", ex);
+          Assert.fail("Got unexpected exception when doing gets", ex);
         }
       }
       assertNotNull(value);
@@ -1020,7 +1021,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        fail("Got unexpected exception when doing region destroy", ex);
+        Assert.fail("Got unexpected exception when doing region destroy", ex);
       }
     }
 
@@ -1041,7 +1042,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing region destroy: "
                 + ex.getCause());
       } else {
-        fail("Got unexpected exception when doing region destroy", ex);
+        Assert.fail("Got unexpected exception when doing region destroy", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1053,14 +1054,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        fail("Got unexpected exception when doing region destroy", ex);
+        Assert.fail("Got unexpected exception when doing region destroy", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        fail("Got unexpected exception when doing region destroy", ex);
+        Assert.fail("Got unexpected exception when doing region destroy", ex);
       }
     }
   }
@@ -1084,7 +1085,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing destroys: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing destroys", ex);
+        Assert.fail("Got unexpected exception when doing destroys", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -1102,7 +1103,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          fail("Got unexpected exception when doing destroys", ex);
+          Assert.fail("Got unexpected exception when doing destroys", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1117,7 +1118,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing destroys: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing destroys", ex);
+          Assert.fail("Got unexpected exception when doing destroys", ex);
         }
       }
       catch (Exception ex) {
@@ -1125,7 +1126,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing destroys: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing destroys", ex);
+          Assert.fail("Got unexpected exception when doing destroys", ex);
         }
       }
     }
@@ -1150,7 +1151,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing invalidates: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing invalidates", ex);
+        Assert.fail("Got unexpected exception when doing invalidates", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -1168,7 +1169,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          fail("Got unexpected exception when doing invalidates", ex);
+          Assert.fail("Got unexpected exception when doing invalidates", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1183,7 +1184,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing invalidates: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing invalidates", ex);
+          Assert.fail("Got unexpected exception when doing invalidates", ex);
         }
       }
       catch (Exception ex) {
@@ -1191,7 +1192,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing invalidates: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing invalidates", ex);
+          Assert.fail("Got unexpected exception when doing invalidates", ex);
         }
       }
     }
@@ -1216,7 +1217,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info("Got expected exception when doing containsKey: " + ex);
       }
       else {
-        fail("Got unexpected exception when doing containsKey", ex);
+        Assert.fail("Got unexpected exception when doing containsKey", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
@@ -1235,7 +1236,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          fail("Got unexpected exception when doing containsKey", ex);
+          Assert.fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1250,7 +1251,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing containsKey: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing containsKey", ex);
+          Assert.fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       catch (Exception ex) {
@@ -1258,7 +1259,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           getLogWriter().info("Got expected exception when doing containsKey: " + ex);
         }
         else {
-          fail("Got unexpected exception when doing containsKey", ex);
+          Assert.fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       assertEquals(expectedValue, result);
@@ -1279,7 +1280,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        fail("Got unexpected exception when doing queries", ex);
+        Assert.fail("Got unexpected exception when doing queries", ex);
       }
     }
     String queryStr = "SELECT DISTINCT * FROM " + region.getFullPath();
@@ -1296,7 +1297,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing queries: "
                 + ex.getCause());
       } else {
-        fail("Got unexpected exception when doing queries", ex);
+        Assert.fail("Got unexpected exception when doing queries", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1307,7 +1308,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        fail("Got unexpected exception when doing queries", ex);
+        Assert.fail("Got unexpected exception when doing queries", ex);
       }
     } catch (QueryInvocationTargetException qite) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1318,13 +1319,13 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + qite);
       } else {
-        fail("Got unexpected exception when doing queries", qite);
+        Assert.fail("Got unexpected exception when doing queries", qite);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        fail("Got unexpected exception when doing queries", ex);
+        Assert.fail("Got unexpected exception when doing queries", ex);
       }
     }
   }
@@ -1345,7 +1346,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        fail("Got unexpected exception when executing function", ex);
+        Assert.fail("Got unexpected exception when executing function", ex);
       }
     }
     try {
@@ -1376,7 +1377,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when executing function: "
                 + ex.getCause());
       } else {
-        fail("Got unexpected exception when executing function", ex);
+        Assert.fail("Got unexpected exception when executing function", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1388,7 +1389,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        fail("Got unexpected exception when executing function", ex);
+        Assert.fail("Got unexpected exception when executing function", ex);
       }
     } catch (FunctionException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1402,14 +1403,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        fail("Got unexpected exception when executing function", ex);
+        Assert.fail("Got unexpected exception when executing function", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        fail("Got unexpected exception when executing function", ex);
+        Assert.fail("Got unexpected exception when executing function", ex);
       }
     }
   }
@@ -1429,7 +1430,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        fail("Got unexpected exception when executing query", ex);
+        Assert.fail("Got unexpected exception when executing query", ex);
       }
     }
     try {
@@ -1452,7 +1453,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when executing query: "
                 + ex.getCause());
       } else {
-        fail("Got unexpected exception when executing query", ex);
+        Assert.fail("Got unexpected exception when executing query", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1464,14 +1465,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        fail("Got unexpected exception when executing query", ex);
+        Assert.fail("Got unexpected exception when executing query", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        fail("Got unexpected exception when executing query", ex);
+        Assert.fail("Got unexpected exception when executing query", ex);
       }
     }
   }
@@ -1699,7 +1700,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         }
       } catch (Exception e) {
         if (!e.getClass().getSimpleName().endsWith(expectedResult)) {
-          fail("Expected " + expectedResult + " but found "
+          Assert.fail("Expected " + expectedResult + " but found "
               + e.getClass().getSimpleName() + " in doSimplePut()", e);
         } else {
           getLogWriter().fine(

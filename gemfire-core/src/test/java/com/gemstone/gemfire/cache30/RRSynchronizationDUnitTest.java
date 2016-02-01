@@ -45,6 +45,7 @@ import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -85,7 +86,7 @@ public class RRSynchronizationDUnitTest extends CacheTestCase {
    * distributed in the 7.0 release.
    */
   public void doRegionsSyncOnPeerLoss(TestType typeOfTest) {
-    addExpectedException("killing member's ds");
+    IgnoredException.addExpectedException("killing member's ds");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);

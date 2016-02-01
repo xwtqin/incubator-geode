@@ -54,9 +54,11 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -90,10 +92,10 @@ public class ReconnectDUnitTest extends CacheTestCase
           locatorPort = locPort;
           Properties props = getDistributedSystemProperties();
           locator = Locator.startLocatorAndDS(locatorPort, new File(""), props);
-          addExpectedException("com.gemstone.gemfire.ForcedDisconnectException||Possible loss of quorum");
+          IgnoredException.addExpectedException("com.gemstone.gemfire.ForcedDisconnectException||Possible loss of quorum");
 //          MembershipManagerHelper.getMembershipManager(InternalDistributedSystem.getConnectedInstance()).setDebugJGroups(true);
         } catch (IOException e) {
-          fail("unable to start locator", e);
+          Assert.fail("unable to start locator", e);
         }
       }
     });
@@ -165,7 +167,7 @@ public class ReconnectDUnitTest extends CacheTestCase
 
   // quorum check fails, then succeeds
   public void testReconnectWithQuorum() throws Exception {
-    addExpectedException("killing member's ds");
+    IgnoredException.addExpectedException("killing member's ds");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -195,7 +197,7 @@ public class ReconnectDUnitTest extends CacheTestCase
         props.put("max-num-reconnect-tries", "2");
         props.put("log-file", "autoReconnectVM"+VM.getCurrentVMNum()+"_"+getPID()+".log");
         Cache cache = new CacheFactory(props).create();
-        addExpectedException("com.gemstone.gemfire.ForcedDisconnectException||Possible loss of quorum");
+        IgnoredException.addExpectedException("com.gemstone.gemfire.ForcedDisconnectException||Possible loss of quorum");
         Region myRegion = cache.getRegion("root/myRegion");
         ReconnectDUnitTest.savedSystem = cache.getDistributedSystem();
         myRegion.put("MyKey1", "MyValue1");
@@ -247,7 +249,7 @@ public class ReconnectDUnitTest extends CacheTestCase
   
   public void doTestReconnectOnForcedDisconnect(final boolean createInAppToo) throws Exception {
 
-    addExpectedException("killing member's ds");
+    IgnoredException.addExpectedException("killing member's ds");
 //    getSystem().disconnect();
 //    getLogWriter().fine("Cache Closed ");
 
@@ -472,7 +474,7 @@ public class ReconnectDUnitTest extends CacheTestCase
         try {
           Locator.startLocatorAndDS(secondLocPort, null, props);
         } catch (IOException e) {
-          fail("exception starting locator", e);
+          Assert.fail("exception starting locator", e);
         }
       }
     });
@@ -603,7 +605,7 @@ public class ReconnectDUnitTest extends CacheTestCase
       pw.close();
     }
     catch (IOException ex) {
-      fail("IOException during cache.xml generation to " + file, ex);
+      Assert.fail("IOException during cache.xml generation to " + file, ex);
     }
     closeCache();
     getSystem().disconnect();
@@ -736,7 +738,7 @@ public class ReconnectDUnitTest extends CacheTestCase
       pw.close();
     }
     catch (IOException ex) {
-      fail("IOException during cache.xml generation to " + file, ex);
+      Assert.fail("IOException during cache.xml generation to " + file, ex);
     }
     closeCache();
     //disconnectFromDS();
@@ -812,12 +814,12 @@ public class ReconnectDUnitTest extends CacheTestCase
     }
 
     if (roleLossAsync.getException() != null){
-      fail("Exception in Vm0", roleLossAsync.getException());
+      Assert.fail("Exception in Vm0", roleLossAsync.getException());
     }
 
     DistributedTestCase.join(avkVm1, 30 * 1000, getLogWriter());
     if (avkVm1.getException() != null){
-      fail("Exception in Vm1", avkVm1.getException());
+      Assert.fail("Exception in Vm1", avkVm1.getException());
     }
 
   }

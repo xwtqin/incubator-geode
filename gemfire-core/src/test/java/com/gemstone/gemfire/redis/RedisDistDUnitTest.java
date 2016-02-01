@@ -26,6 +26,7 @@ import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -139,8 +140,8 @@ public class RedisDistDUnitTest extends DistributedTestCase {
   }
 
   public void testConcCreateDestroy() throws Throwable {
-    addExpectedException("RegionDestroyedException");
-    addExpectedException("IndexInvalidException");
+    IgnoredException.addExpectedException("RegionDestroyedException");
+    IgnoredException.addExpectedException("IndexInvalidException");
     final int ops = 40;
     final String hKey = TEST_KEY+"hash";
     final String lKey = TEST_KEY+"list";

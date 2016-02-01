@@ -34,6 +34,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation.RequestImageMessage;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -160,11 +161,11 @@ public class Bug41091DUnitTest extends CacheTestCase {
           try {
             bindAddr = InetAddress.getByName(getServerHostName(vm.getHost()));
           } catch (UnknownHostException uhe) {
-            fail("While resolving bind address ", uhe);
+            Assert.fail("While resolving bind address ", uhe);
           }
           Locator locator = Locator.startLocatorAndDS(locatorPort, logFile, bindAddr, props);
         } catch (IOException ex) {
-          fail("While starting locator on port " + locatorPort, ex);
+          Assert.fail("While starting locator on port " + locatorPort, ex);
         }
       }
     });

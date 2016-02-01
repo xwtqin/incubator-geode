@@ -30,6 +30,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.ConnectionProxy;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -250,7 +251,7 @@ public class BackwardCompatibilityHigherVersionClientDUnitTest extends
       r.destroyRegion();
     }
     catch (Exception ex) {
-      fail("failed while destroy region ", ex);
+      Assert.fail("failed while destroy region ", ex);
     }
   }
 

@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserver;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -102,7 +103,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
           }
           assertNotNull(partitionedregion);
         } catch (InterruptedException e) {
-          fail("interrupted",e);
+          Assert.fail("interrupted",e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
@@ -219,7 +220,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
             fail("recovery didn't happen in 60 seconds");
           }
         } catch (InterruptedException e) {
-          fail("recovery wait interrupted", e);
+          Assert.fail("recovery wait interrupted", e);
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
@@ -321,7 +322,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
     // async1.join();
     
     if (async0.exceptionOccurred()) {
-      fail("async0 failed", async0.getException());
+      Assert.fail("async0 failed", async0.getException());
     }
     // assertFalse(async1.exceptionOccurred());
     

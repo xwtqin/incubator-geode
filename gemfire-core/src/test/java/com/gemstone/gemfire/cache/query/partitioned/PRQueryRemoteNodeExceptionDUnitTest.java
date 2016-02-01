@@ -41,6 +41,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -221,7 +222,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
 //                ex.printStackTrace();
                 getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
               } else {
-                fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
+                Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
             }
             if (!gotException) {
@@ -352,7 +353,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
                 ex.printStackTrace();
                 getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully.");
               } else {
-                fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from remote node rather received", ex);
+                Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from remote node rather received", ex);
               }
             }
             if (!gotException) {
@@ -485,7 +486,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
                 getLogWriter().info(ex.getMessage());
                 getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
               } else {
-                fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
+                Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
             }
             if (!gotException) {
@@ -628,7 +629,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
                 getLogWriter().info(ex.getMessage());
                 getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully as region.destroy happened before cache.close().");
               } else {
-                fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
+                Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
             }
             if (!gotException) {
@@ -772,7 +773,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Query executed successfully with ForceReattemptException on local and remote both.");
             } catch (Exception ex) {
               gotException = true;
-              fail("PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Test received Exception", ex);
+              Assert.fail("PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Test received Exception", ex);
             }
           }
         }

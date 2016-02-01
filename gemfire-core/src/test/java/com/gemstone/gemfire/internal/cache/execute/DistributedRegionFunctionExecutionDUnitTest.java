@@ -52,8 +52,10 @@ import com.gemstone.gemfire.internal.cache.functions.DistribuedRegionFunctionFun
 import com.gemstone.gemfire.internal.cache.functions.DistributedRegionFunction;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -314,7 +316,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
         "registerFunction", new Object[] { new Boolean(true), new Integer(5) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     replicate1.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
         "executeFunctionFunctionInvocationTargetException");
     ex.remove();
@@ -361,7 +363,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
                 new Integer(0) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     replicate1.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
         "executeFunctionFunctionInvocationTargetExceptionWithoutHA");
     ex.remove();
@@ -401,7 +403,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
         "registerFunction", new Object[] { new Boolean(true), new Integer(5) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetException();
     ex.remove();
   }
@@ -443,7 +445,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
             new Integer(0) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetExceptionWithoutHA();
     ex.remove();
   }
@@ -533,7 +535,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
 
     DistributedTestCase.join(async[0], 50 * 1000, getLogWriter());
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(5001, l.size());
@@ -634,9 +636,9 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     createClientAndPopulateClientRegion(DataPolicy.EMPTY, port1, port2);
     // add ExpectedException's to servers since client can connect to any
     // one of those
-    final ExpectedException expectedEx = addExpectedException(
+    final IgnoredException expectedEx = IgnoredException.addExpectedException(
         "did not send last result", empty1);
-    final ExpectedException expectedEx2 = addExpectedException(
+    final IgnoredException expectedEx2 = IgnoredException.addExpectedException(
         "did not send last result", empty2);
     try {
       executeFunction_NoLastResult();
@@ -689,7 +691,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
         "closeCacheHA");
     DistributedTestCase.join(async[0], 4 * 60 * 1000, getLogWriter());
     if (async[0].getException() != null) {
-      fail("UnExpected Exception Occured : ", async[0].getException());
+      Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
     List l = (List)async[0].getReturnValue();
     assertEquals(5001, l.size());
@@ -730,7 +732,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
 
     createClientAndPopulateClientRegion(DataPolicy.EMPTY, port1, port2);
     // add expected exception
-    final ExpectedException ex = addExpectedException(
+    final IgnoredException ex = IgnoredException.addExpectedException(
         "DataPolicy.NORMAL is not supported");
     try {
       executeFunction();
@@ -846,7 +848,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     createClientAndPopulateClientRegion(DataPolicy.EMPTY, port1, port2);
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetException_ClientServer();
     ex.remove();
   }
@@ -897,7 +899,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     createClientAndPopulateClientRegion(DataPolicy.EMPTY, port1, port2);
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetException_ClientServer_WithoutHA();
     ex.remove();
   }
@@ -939,7 +941,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
         "registerFunction", new Object[] { new Boolean(true), new Integer(5) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetException_ClientServer();
     ex.remove();
   }
@@ -989,7 +991,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
                 new Integer(0) });
 
     // add expected exception to avoid suspect strings
-    final ExpectedException ex = addExpectedException("I have been thrown");
+    final IgnoredException ex = IgnoredException.addExpectedException("I have been thrown");
     executeFunctionFunctionInvocationTargetException_ClientServer_WithoutHA();
     ex.remove();
   }
@@ -1079,7 +1081,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
   }
   
   public void testFunctionWithNoResultThrowsException(){
-    addExpectedException("RuntimeException");
+    IgnoredException.addExpectedException("RuntimeException");
     replicate1.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
         "createCacheInVm");
     replicate2.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
@@ -1134,7 +1136,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     catch (Exception e) {
       getLogWriter().info("Exception Occured : " + e.getMessage());
       e.printStackTrace();
-      fail("Test failed", e);
+      Assert.fail("Test failed", e);
     }
   }
   
@@ -1314,7 +1316,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("This is not expected Exception", e);
+      Assert.fail("This is not expected Exception", e);
     }
   }
 
@@ -1344,7 +1346,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("This is not expected Exception", e);
+      Assert.fail("This is not expected Exception", e);
     }
   }
 
@@ -1459,7 +1461,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server.isRunning());
     return new Integer(server.getPort());
@@ -1496,7 +1498,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
       FunctionService.registerFunction(function);
     }
     catch (Exception e) {
-      fail(
+      Assert.fail(
           "DistributedRegionFunctionExecutionDUnitTest#createCache() Failed while creating the cache",
           e);
     }

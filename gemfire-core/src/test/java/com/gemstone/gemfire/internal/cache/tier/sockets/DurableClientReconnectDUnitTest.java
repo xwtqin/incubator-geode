@@ -43,7 +43,9 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -333,7 +335,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     String rServer2 = (String)serverArray[1];
 
     // can see sporadic socket closed exceptions
-    final ExpectedException expectedEx = addExpectedException(
+    final IgnoredException expectedEx = IgnoredException.addExpectedException(
         SocketException.class.getName());
 
     instance.closeServer(rServer1);    
@@ -450,7 +452,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
         assertTrue(redundantServersAfterReconnect.contains(endpointName));
       }      
     }catch (Exception e){
-      fail("test failed due to" , e);
+      Assert.fail("test failed due to" , e);
     }    
   }
   
@@ -458,7 +460,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     try{
       checkNumberOfClientProxies(0);
     }catch (Exception e){
-      fail("test failed due to" , e);
+      Assert.fail("test failed due to" , e);
     }    
   }
   
@@ -536,7 +538,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     assertEquals("DurableClientReconnectDUnitTest_client", proxy.getDurableId());
 //    assertEquals(60, proxy.getDurableTimeout());
     }catch (Exception e){
-      fail("test failed due to" , e);
+      Assert.fail("test failed due to" , e);
     }    
   }
   
@@ -585,7 +587,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     cache = CacheFactory.create(ds);
     assertNotNull(cache);    
   } catch(Exception e){
-    fail("test failed due to " , e ); 
+    Assert.fail("test failed due to " , e ); 
   }
   }
 
@@ -641,7 +643,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     cache.readyForEvents();
     
     }catch(Exception e){
-      fail("test failed due to " , e );
+      Assert.fail("test failed due to " , e );
     }
     
   }
@@ -676,7 +678,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     cache.readyForEvents();
     
     }catch(Exception e){
-      fail("test failed due to " , e );
+      Assert.fail("test failed due to " , e );
     }    
   }
 
@@ -711,7 +713,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
       cache.readyForEvents();
       
       }catch(Exception e){
-        fail("test failed due to " , e );
+        Assert.fail("test failed due to " , e );
       }    
   }
 

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gemstone.gemfire.cache.FixedPartitionAttributes;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 
@@ -75,7 +76,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
       if (!((illegal.getCause() instanceof IllegalStateException) && (illegal
           .getCause().getMessage()
           .contains("not be specified in PartitionAttributesFactory if colocated-with is specified")))) {
-        fail("Expected IllegalStateException ", illegal);
+        Assert.fail("Expected IllegalStateException ", illegal);
       }
     }
   }
@@ -232,7 +233,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -373,7 +374,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -573,7 +574,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -768,7 +769,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -1080,7 +1081,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -1184,7 +1185,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 

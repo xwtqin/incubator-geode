@@ -38,6 +38,7 @@ import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -234,7 +235,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
           Thread.sleep(700);
         }
         catch (InterruptedException ie) {
-          fail("Interrupted while waiting ", ie);
+          Assert.fail("Interrupted while waiting ", ie);
         }
       }
     }
@@ -260,7 +261,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
       assertEquals(r1.getEntry(KEY2).getValue(), "key-2");
     }
     catch (Exception ex) {
-      fail("failed while createEntriesK1andK2()", ex);
+      Assert.fail("failed while createEntriesK1andK2()", ex);
     }
   }
   
@@ -320,7 +321,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest", ex);
+      Assert.fail("failed while registering interest", ex);
     }
   }
 

@@ -18,6 +18,7 @@ package com.gemstone.gemfire.internal.cache.tier.sockets;
 
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
@@ -136,7 +137,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
     }
      catch (Exception ex) {
         ex.printStackTrace();
-        fail(
+        Assert.fail(
             "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
             ex);
      }
@@ -188,7 +189,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
     }
      catch (Exception ex) {
         ex.printStackTrace();
-        fail(
+        Assert.fail(
             "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
             ex);
      }
@@ -237,7 +238,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
      }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
           ex);
     }

@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 @SuppressWarnings("serial")
@@ -166,8 +167,8 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * client ( create CCP) as welll as register IL
    */
   public void testInterstRegistrationOnRecoveredEPbyDSM() throws Exception {
-    addExpectedException("SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException");
 
     createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
     createEntriesK1andK2();

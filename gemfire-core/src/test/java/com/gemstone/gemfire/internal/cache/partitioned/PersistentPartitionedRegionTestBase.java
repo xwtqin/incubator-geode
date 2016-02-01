@@ -56,6 +56,7 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserver;
 import com.gemstone.gemfire.internal.cache.persistence.PersistenceAdvisor;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -154,7 +155,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
         try {
           rf.start().getResults();
         } catch (Exception e) {
-          fail("interupted", e);
+          Assert.fail("interupted", e);
         }
       }
     });
@@ -367,7 +368,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
         try {
           recoveryDone.await(MAX_WAIT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     };
@@ -410,7 +411,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
           try {
             recoveryDone.await();
           } catch (InterruptedException e) {
-            fail("Interrupted", e);
+            Assert.fail("Interrupted", e);
           }
         }
       }

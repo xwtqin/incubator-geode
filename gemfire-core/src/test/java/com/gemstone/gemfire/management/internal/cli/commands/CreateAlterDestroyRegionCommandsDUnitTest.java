@@ -40,6 +40,7 @@ import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -836,7 +837,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
         try {
           assertTrue(sharedConfig.getConfiguration(groupName).getCacheXmlContent().contains(regionName));
         } catch (Exception e) {
-          fail("Error in cluster configuration service", e);
+          Assert.fail("Error in cluster configuration service", e);
         }
       }
     });

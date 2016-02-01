@@ -41,8 +41,10 @@ import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -115,7 +117,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     member1 = host.getVM(1);
     member2 = host.getVM(2);
     member3 = host.getVM(3);
-    addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("java.net.SocketException");
   }
   
   public void tearDown2() throws Exception {
@@ -809,7 +811,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -895,7 +897,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -981,7 +983,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
@@ -1350,7 +1352,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       server.start();
     }
     catch (IOException e) {
-      fail("Failed to start server ", e);
+      Assert.fail("Failed to start server ", e);
     }
 
     PartitionAttributesFactory paf = new PartitionAttributesFactory();

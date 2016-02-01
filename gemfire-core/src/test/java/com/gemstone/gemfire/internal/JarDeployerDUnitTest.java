@@ -45,6 +45,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -194,9 +195,9 @@ public class JarDeployerDUnitTest extends CacheTestCase {
             fail("Should not have been able to obtain exclusive lock on file:" + jarFile1.getAbsolutePath());
           }
         } catch (FileNotFoundException fnfex) {
-          fail("JAR file not found where expected", fnfex);
+          Assert.fail("JAR file not found where expected", fnfex);
         } catch (IOException ioex) {
-          fail("IOException when trying to obtain exclusive lock", ioex);
+          Assert.fail("IOException when trying to obtain exclusive lock", ioex);
         } finally {
           if (outStream != null) {
             try {
@@ -628,7 +629,7 @@ public class JarDeployerDUnitTest extends CacheTestCase {
         randomAccessFile.write("GARBAGE".getBytes(), 0, 7);
         randomAccessFile.close();
         } catch (IOException ioex) {
-          fail("Error trying to create garbage file for test", ioex);
+          Assert.fail("Error trying to create garbage file for test", ioex);
         }
         
         getSystem();

@@ -55,8 +55,10 @@ import com.gemstone.gemfire.internal.cache.persistence.DiskStoreID;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -83,7 +85,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
 //  protected static String REGION_NAME = GIIDeltaDUnitTest.class.getSimpleName()+"_Region";
   protected static String REGION_NAME = "_Region";
   final String expectedExceptions = GemFireIOException.class.getName();
-  protected ExpectedException expectedEx;
+  protected IgnoredException expectedEx;
   static Object giiSyncObject = new Object();
   
   /**
@@ -152,7 +154,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     createDistributedRegion(vm1);
     assignVMsToPandR(vm0, vm1);
     // from now on, use P and R as vmhttps://wiki.gemstone.com/display/gfepersistence/DeltaGII+Spec+for+8.0
-    expectedEx = addExpectedException(expectedExceptions);
+    expectedEx = IgnoredException.addExpectedException(expectedExceptions);
   }
   
   // these steps are shared by all test cases
@@ -2003,7 +2005,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     try {
       future.join(MAX_WAIT);
     } catch (InterruptedException e) {
-      fail("Create region is interrupted", e);
+      Assert.fail("Create region is interrupted", e);
     }
     if(future.isAlive()) {
       fail("Region not created within" + MAX_WAIT);
@@ -2025,7 +2027,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           getLogWriter().info("In createDistributedRegion, using hydra.getLogWriter()");
           getLogWriter().fine("Unfinished Op limit="+InitialImageOperation.MAXIMUM_UNFINISHED_OPERATIONS);
         } catch (CacheException ex) {
-          fail("While creating region", ex);
+          Assert.fail("While creating region", ex);
         }
       }
     };
@@ -2367,9 +2369,9 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
         try {
           remote_rvv = DataSerializer.readObject(new DataInputStream(bais));
         } catch (IOException e) {
-          fail("Unexpected exception", e);
+          Assert.fail("Unexpected exception", e);
         } catch (ClassNotFoundException e) {
-          fail("Unexpected exception", e);
+          Assert.fail("Unexpected exception", e);
         }
         RequestImageMessage rim = new RequestImageMessage();
         rim.setSender(R_ID);
@@ -2521,10 +2523,10 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     try {
       async.join(30000);
       if (async.exceptionOccurred()) {
-        fail("Test failed", async.getException());
+        Assert.fail("Test failed", async.getException());
       }
     } catch (InterruptedException e1) {
-      fail("Test failed", e1);
+      Assert.fail("Test failed", e1);
     }
   }
   

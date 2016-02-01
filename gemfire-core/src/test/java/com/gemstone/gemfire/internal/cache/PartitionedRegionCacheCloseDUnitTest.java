@@ -27,6 +27,7 @@ import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -129,7 +130,7 @@ public class PartitionedRegionCacheCloseDUnitTest extends
     DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
 
    if(async0.exceptionOccurred()) {
-     fail("Exception during async0", async0.getException());
+     Assert.fail("Exception during async0", async0.getException());
    }
    
     // Here we would close cache on one of the vms.

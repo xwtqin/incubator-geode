@@ -40,7 +40,9 @@ import com.gemstone.gemfire.cache.query.CqException;
 import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.util.Callable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -87,8 +89,8 @@ public class DeltaClientPostAuthorizationDUnitTest extends
   }
 
   public void testPutPostOpNotifications() throws Exception {
-    addExpectedException("Unexpected IOException");
-    addExpectedException("SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("SocketException");
 
     OperationWithAction[] allOps = {
         // Test CREATE and verify with a GET
@@ -525,7 +527,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
           continue;
         }
         else {
-          fail("doOp: Got unexpected exception when doing operation. Policy = " 
+          Assert.fail("doOp: Got unexpected exception when doing operation. Policy = " 
               + policy + " flags = " + OpFlags.description(flags), ex);
         }
       }

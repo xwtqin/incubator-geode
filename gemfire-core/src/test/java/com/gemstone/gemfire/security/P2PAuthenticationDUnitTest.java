@@ -40,6 +40,7 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManage
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -306,7 +307,7 @@ public class P2PAuthenticationDUnitTest extends DistributedTestCase {
       throws Exception {
 
     disconnectAllFromDS();
-    addExpectedException("Authentication failed");
+    IgnoredException.addExpectedException("Authentication failed");
 
     CredentialGenerator gen = new DummyCredentialGenerator();
     Properties props = gen.getSystemProperties();

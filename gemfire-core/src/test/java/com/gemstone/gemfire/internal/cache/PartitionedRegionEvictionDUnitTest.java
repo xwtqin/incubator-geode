@@ -46,6 +46,7 @@ import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.lru.HeapLRUCapacityController;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -362,7 +363,7 @@ public class PartitionedRegionEvictionDUnitTest extends CacheTestCase {
           assertNotNull(pr);
         }
         catch (final CacheException ex) {
-          fail("While creating Partitioned region", ex);
+          Assert.fail("While creating Partitioned region", ex);
         }
       }
     };
@@ -543,7 +544,7 @@ public class PartitionedRegionEvictionDUnitTest extends CacheTestCase {
           assertNotNull(pr);
         }
         catch (final CacheException ex) {
-          fail("While creating Partitioned region", ex);
+          Assert.fail("While creating Partitioned region", ex);
         }
       }
     };
@@ -661,7 +662,7 @@ public class PartitionedRegionEvictionDUnitTest extends CacheTestCase {
           assertNotNull(pr);
         }
         catch (final CacheException ex) {
-          fail("While creating Partitioned region", ex);
+          Assert.fail("While creating Partitioned region", ex);
         }
       }
     };
@@ -1723,7 +1724,7 @@ public class PartitionedRegionEvictionDUnitTest extends CacheTestCase {
           assertNotNull(pr);
         }
         catch (final CacheException ex) {
-          fail("While creating Partitioned region", ex);
+          Assert.fail("While creating Partitioned region", ex);
         }
       }
     };

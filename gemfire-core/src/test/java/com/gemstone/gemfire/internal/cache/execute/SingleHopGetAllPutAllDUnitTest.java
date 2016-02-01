@@ -31,6 +31,7 @@ import com.gemstone.gemfire.cache.client.internal.ClientPartitionAdvisor;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 public class SingleHopGetAllPutAllDUnitTest extends PRClientServerTestBase{
@@ -96,7 +97,7 @@ public class SingleHopGetAllPutAllDUnitTest extends PRClientServerTestBase{
       assertTrue(secondResultMap.equals(origVals));
     }
     catch (Exception e) {
-      fail("Test failed after the getAll operation", e);
+      Assert.fail("Test failed after the getAll operation", e);
     }
   }
   
@@ -192,7 +193,7 @@ public class SingleHopGetAllPutAllDUnitTest extends PRClientServerTestBase{
       assertEquals(noValueMap, region.getAll(testKeysList));
     }
     catch (Exception e) {
-      fail("Test failed after the putAll operation", e);
+      Assert.fail("Test failed after the putAll operation", e);
     }
   }
   

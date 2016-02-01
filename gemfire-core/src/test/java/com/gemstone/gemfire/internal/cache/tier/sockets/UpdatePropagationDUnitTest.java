@@ -44,8 +44,10 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -127,8 +129,8 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     client2.invoke(getClass(), "createClientCache", new Object[] {
       getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     
-    addExpectedException("java.net.SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("java.net.SocketException");
+    IgnoredException.addExpectedException("Unexpected IOException");
 
   }
   
@@ -465,7 +467,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while createEntriesK1andK2()", ex);
+      Assert.fail("failed while createEntriesK1andK2()", ex);
     }
   }
 
@@ -541,7 +543,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest", ex);
+      Assert.fail("failed while registering interest", ex);
     }
   }
 
@@ -555,7 +557,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
       assertEquals("key-2", r.getEntry("key2").getValue());
     }
     catch (Exception ex) {
-      fail("failed while verifyNoUpdates()", ex);
+      Assert.fail("failed while verifyNoUpdates()", ex);
     }
   }
 
@@ -575,7 +577,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while region", ex);
+      Assert.fail("failed while region", ex);
     }
   }
 

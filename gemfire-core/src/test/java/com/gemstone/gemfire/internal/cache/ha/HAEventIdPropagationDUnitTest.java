@@ -46,6 +46,7 @@ import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.cache.RegionEventImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -415,7 +416,7 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("test failed due to " + e, e);
+      Assert.fail("test failed due to " + e, e);
     }
   }
 

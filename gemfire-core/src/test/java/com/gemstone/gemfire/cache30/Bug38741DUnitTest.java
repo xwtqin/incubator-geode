@@ -50,6 +50,7 @@ import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessageImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -313,7 +314,7 @@ public class Bug38741DUnitTest extends ClientServerTestCase {
               SerializationCountingValue scv = (SerializationCountingValue)cd.getDeserializedForReading();
               assertEquals(1, scv.count.get());
             } catch (IOException fail) {
-              fail("Unexpected IOException", fail);
+              Assert.fail("Unexpected IOException", fail);
             }
           }
         });

@@ -79,7 +79,9 @@ import com.gemstone.gemfire.internal.cache.TXStateProxyImpl;
 import com.gemstone.gemfire.internal.cache.locks.TXLockBatch;
 import com.gemstone.gemfire.internal.cache.locks.TXLockService;
 import com.gemstone.gemfire.internal.cache.locks.TXLockServiceImpl;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -107,7 +109,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
    * Test a remote grantor
    */
   public void testRemoteGrantor() throws Exception {
-    addExpectedException("killing members ds");
+    IgnoredException.addExpectedException("killing members ds");
     final CacheTransactionManager txMgr = this.getCache().getCacheTransactionManager();
     final String rgnName = getUniqueName();
     Region rgn = getCache().createRegion(rgnName, getRegionAttributes());
@@ -119,7 +121,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
             Region rgn1 = getCache().createRegion(rgnName, getRegionAttributes());
             rgn1.put("key", "val0");
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       });
@@ -188,7 +190,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               assertTrue(!TXLockService.getDTLS().isLockGrantor());
             }
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       };
@@ -227,7 +229,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
             rgn2.create("key", null);
             rgn3.create("key", null);
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       };
@@ -471,7 +473,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
             factory2.setMirrorType(MirrorType.KEYS);
             getCache().createRegion(rgnName, factory2.create());
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       });
@@ -526,7 +528,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
   }
 
   public void testHighAvailabilityFeatures() throws Exception {
-    addExpectedException("DistributedSystemDisconnectedException");
+    IgnoredException.addExpectedException("DistributedSystemDisconnectedException");
 //    final CacheTransactionManager txMgr = this.getCache().getCacheTransactionManager();
 //    final TXManagerImpl txMgrImpl = (TXManagerImpl) txMgr;
     final String rgnName = getUniqueName();
@@ -543,7 +545,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
             factory2.setDataPolicy(DataPolicy.REPLICATE);
             getCache().createRegion(rgnName, factory2.create());
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       });
@@ -615,7 +617,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               factory2.setDataPolicy(DataPolicy.REPLICATE);
               rgn1 = getCache().createRegion(rgnName, factory2.create());
             } catch (CacheException e) {
-              fail("While creating region", e);
+              Assert.fail("While creating region", e);
             }
           }
           Region.Entry re = rgn1.getEntry("key0");
@@ -727,7 +729,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               factory2.setDataPolicy(DataPolicy.REPLICATE);
               rgn1 = getCache().createRegion(rgnName, factory2.create());
             } catch (CacheException e) {
-              fail("While creating region", e);
+              Assert.fail("While creating region", e);
             }
           }
           long giveUp = System.currentTimeMillis() + 10000;
@@ -766,7 +768,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
             rgn1.put("soloKey0", "soloVal0_0");
             rgn1.put("soloKey1", "soloVal1_0");
           } catch (CacheException e) {
-            fail("While creating region", e);
+            Assert.fail("While creating region", e);
           }
         }
       };
@@ -829,7 +831,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               factory2.setDataPolicy(DataPolicy.REPLICATE);
               soloRgn = getCache().createRegion(soloRegionName, factory2.create());
             } catch (CacheException e) {
-              fail("While creating region ", e);
+              Assert.fail("While creating region ", e);
             }
           }
           Region.Entry re = soloRgn.getEntry("soloKey0");
@@ -959,7 +961,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               factory2.setDataPolicy(DataPolicy.REPLICATE);
               soloRgn = getCache().createRegion(soloRegionName, factory2.create());
             } catch (CacheException e) {
-              fail("While creating region ", e);
+              Assert.fail("While creating region ", e);
             }
           }
           Region.Entry re = soloRgn.getEntry("soloKey0");
@@ -985,7 +987,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
               factory2.setDataPolicy(DataPolicy.REPLICATE);
               rgn1 = getCache().createRegion(rgnName, factory2.create());
             } catch (CacheException e) {
-              fail("While creating region", e);
+              Assert.fail("While creating region", e);
             }
           }
           Region.Entry re = rgn1.getEntry("key0");
@@ -1110,7 +1112,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
           Region rgn1 = getCache().createRegion(rgnName, getRegionAttributes());
           rgn1.create("key", null);
         } catch (CacheException e) {
-          fail("While creating region", e);
+          Assert.fail("While creating region", e);
         }
       }
     };
@@ -1217,7 +1219,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
           factory.setDataPolicy(DataPolicy.REPLICATE);
           getCache().createRegion(rgnName, factory.create());
         } catch (CacheException e) {
-          fail("While creating region", e);
+          Assert.fail("While creating region", e);
         }
       }
     });
@@ -1409,9 +1411,9 @@ public class TXDistributedDUnitTest extends CacheTestCase {
         }
       }
     };
-    ExpectedException ee = null;
+    IgnoredException ee = null;
     try {
-      ee = addExpectedException(DiskAccessException.class.getName() + "|" +
+      ee = IgnoredException.addExpectedException(DiskAccessException.class.getName() + "|" +
           CommitIncompleteException.class.getName() + "|" +
           CommitReplyException.class.getName());
       origin.invoke(doTransaction);

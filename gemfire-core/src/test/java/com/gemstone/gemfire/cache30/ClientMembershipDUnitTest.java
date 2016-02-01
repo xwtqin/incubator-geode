@@ -53,8 +53,10 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.management.membership.ClientMembership;
 import com.gemstone.gemfire.management.membership.ClientMembershipEvent;
 import com.gemstone.gemfire.management.membership.ClientMembershipListener;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
@@ -119,7 +121,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
       never arrives. 
    */
   public void testConnectionTimeout() throws Exception {
-    addExpectedException("failed accepting client connection");
+    IgnoredException.addExpectedException("failed accepting client connection");
     final Host host = Host.getHost(0);
     final String hostName = getServerHostName(host);
     final VM vm0 = host.getVM(0);
@@ -727,7 +729,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
    * crashes or departs gracefully, the client will detect this as a crash.
    */
   public void testClientMembershipEventsInClient() throws Exception {
-    addExpectedException("IOException");
+    IgnoredException.addExpectedException("IOException");
     final boolean[] fired = new boolean[3];
     final DistributedMember[] member = new DistributedMember[3];
     final String[] memberId = new String[3];
@@ -850,7 +852,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
       assertNotNull(getRootRegion().getSubregion(name));
     }
     catch (CacheException ex) {
-      fail("While creating Region on Edge", ex);
+      Assert.fail("While creating Region on Edge", ex);
     }
     synchronized(listener) {
       if (!fired[JOINED] && !fired[CRASHED]) {
@@ -1301,7 +1303,7 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
     final String name = this.getUniqueName();
     final int[] ports = new int[1];
     
-    addExpectedException("ConnectException");
+    IgnoredException.addExpectedException("ConnectException");
 
     // create BridgeServer in controller vm...
     getLogWriter().info("[testGetConnectedClients] Create BridgeServer");

@@ -43,8 +43,8 @@ import com.gemstone.gemfire.internal.cache.BucketRegion;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionHelper;
-import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTestBase;
 import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTestBase.Months_Accessor;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -249,7 +249,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
             date = sdf.parse(dateString);
           }
           catch (ParseException e) {
-            FixedPartitioningTestBase.fail("Exception Occured while parseing date", e);
+            Assert.fail("Exception Occured while parseing date", e);
           }
           String value = month.toString() + 10;
           region.put(date, value);
@@ -272,7 +272,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
             date = sdf.parse(dateString);
           }
           catch (ParseException e) {
-            FixedPartitioningTestBase.fail("Exception Occured while parseing date", e);
+            Assert.fail("Exception Occured while parseing date", e);
           }
           DistributedMember key1Pri = PartitionRegionHelper.getPrimaryMemberForKey(region, date);
           assertNotNull(key1Pri);
@@ -588,7 +588,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
         } catch(IllegalStateException expected) {
           System.err.println(expected);
         } catch (UnknownHostException e) {
-          fail("Unknown host", e);
+          Assert.fail("Unknown host", e);
         }
         assertHasMembers(PartitionRegionHelper.getAllMembersForKey(region, 1), member0, member1);
 
@@ -668,7 +668,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
         } catch(IllegalStateException expected) {
           System.err.println(expected);
         } catch (UnknownHostException e) {
-          fail("Unknown host", e);
+          Assert.fail("Unknown host", e);
         }
         assertHasMembers(PartitionRegionHelper.getAllMembersForKey(region, 1), member0, member1);
         
@@ -679,7 +679,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
         } catch(IllegalStateException expected) {
           System.err.println(expected);
         } catch (UnknownHostException e) {
-          fail("Unknown host", e);
+          Assert.fail("Unknown host", e);
         }
         assertHasMembers(PartitionRegionHelper.getAllMembersForKey(region, 1), member0, member1);
         

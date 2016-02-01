@@ -28,6 +28,7 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -166,7 +167,7 @@ public class PartitionedRegionDestroyDUnitTest extends
 
     DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
     if(async1.exceptionOccurred()) {
-      fail("async1 failed", async1.getException());
+      Assert.fail("async1 failed", async1.getException());
     }
     final String expectedExceptions = "com.gemstone.gemfire.distributed.internal.ReplyException"; 
     addExceptionTag(expectedExceptions);

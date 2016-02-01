@@ -49,7 +49,9 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -94,8 +96,8 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    addExpectedException("Connection reset");
-    addExpectedException("Socket input is shutdown");
+    IgnoredException.addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("Socket input is shutdown");
   }
 
   public void tearDown2() throws Exception {
@@ -178,7 +180,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -213,7 +215,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         queryString = "import com.gemstone.gemfire.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from " + regionName;
@@ -222,7 +224,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }          
 
         assertEquals(numberOfEntries, results.size());
@@ -233,7 +235,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -243,7 +245,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(0, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -253,7 +255,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries/2, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -263,7 +265,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -273,7 +275,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -315,7 +317,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -350,7 +352,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         queryString = "import com.gemstone.gemfire.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from " + regionName;
@@ -358,7 +360,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -368,7 +370,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -378,7 +380,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(0, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -388,7 +390,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries/2, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -398,7 +400,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -408,7 +410,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -447,7 +449,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -600,7 +602,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           results = region.query(queryString);
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         getLogWriter().fine("size: " + results.size());
         //assertEquals(numberOfEntries, results.size());
@@ -643,7 +645,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -681,7 +683,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         // value query
@@ -690,7 +692,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -702,7 +704,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates());
@@ -714,7 +716,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         // All order-by query results are stored in a ResultsCollectionWrapper
@@ -738,7 +740,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         // All order-by query results are stored in a ResultsCollectionWrapper
@@ -762,7 +764,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         Object result = results.iterator().next();
@@ -776,7 +778,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertEquals("key-1", results.asList().get(0));
@@ -861,7 +863,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         for (int i=0; i < queryString.length; i++){
@@ -870,7 +872,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
             Query query = qService.newQuery(queryString[i]);
             results = (SelectResults)query.execute(params[i]);
           } catch (Exception e) {
-            fail("Failed executing " + queryString[i], e);
+            Assert.fail("Failed executing " + queryString[i], e);
           }
           try {
             assertEquals(expectedResults[i], results.size());
@@ -894,7 +896,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
         for (int x=0; x < useMaintainedCompiledQueries; x++){
           for (int i=0; i < queryString.length; i++){
@@ -903,7 +905,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
               Query query = qService.newQuery(queryString[i]);
               results = (SelectResults)query.execute(params[i]);
             } catch (Exception e) {
-              fail("Failed executing " + queryString[i], e);
+              Assert.fail("Failed executing " + queryString[i], e);
             }
             try {
               assertEquals(expectedResults[i], results.size());
@@ -1020,7 +1022,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
         for (int j=0; j < queryString.length; j++){
           for (int i=0; i < queryString.length; i++){
@@ -1029,7 +1031,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
               Query query = qService.newQuery(queryString[i]);
               results = (SelectResults)query.execute(params[i]);
             } catch (Exception e) {
-              fail("Failed executing " + queryString[i], e);
+              Assert.fail("Failed executing " + queryString[i], e);
             }
             try {
               assertEquals(expectedResults[i], results.size());
@@ -1527,7 +1529,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }      
         // Use minimal query, so that there will be multiple 
         // clients using the same compiled query at server.
@@ -1541,7 +1543,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
               rs[0][1] = (SelectResults)query2.execute();
               // Compare results.
             } catch (Exception e) {
-              fail("Failed executing " + queryString[i], e);
+              Assert.fail("Failed executing " + queryString[i], e);
             }
             getLogWriter().info("### Comparing results for Query :" + ((i+1) * (j+1)) + " : " + queryString[i]);
             compareQueryResultsWithoutAndWithIndexes(rs, 1);
@@ -1589,7 +1591,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
         for (int j=0; j < queryString.length; j++){
           for (int i=0; i < queryString.length; i++){
@@ -1602,7 +1604,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
               // Compare results.
               compareQueryResultsWithoutAndWithIndexes(rs, 1);
             } catch (Exception e) {
-              fail("Failed executing " + queryString[i], e);
+              Assert.fail("Failed executing " + queryString[i], e);
             }
           }
         }
@@ -1674,7 +1676,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -1713,7 +1715,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         queryString =
@@ -1722,7 +1724,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(numberOfEntries, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -1733,7 +1735,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
@@ -1776,7 +1778,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -1813,7 +1815,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName1)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         queryString = "SELECT DISTINCT itr.value FROM " + regionName + ".entries itr where itr.key = 'key-1'";
@@ -1821,7 +1823,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1832,7 +1834,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1850,7 +1852,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName2)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         queryString = "SELECT DISTINCT itr.value FROM " + regionName + ".entries itr where itr.key = 'key-1'";
@@ -1858,7 +1860,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1869,7 +1871,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           Query query = qService.newQuery(queryString);
           results = (SelectResults)query.execute();
         } catch (Exception e) {
-          fail("Failed executing " + queryString, e);
+          Assert.fail("Failed executing " + queryString, e);
         }
         assertEquals(1, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && !results.getCollectionType().getElementType().isStructType());
@@ -1912,7 +1914,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -1959,7 +1961,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
 
         try {
@@ -2010,7 +2012,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -2027,7 +2029,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
           QueryService qService = region.getCache().getQueryService();
           qService.createIndex("idIndex",IndexType.FUNCTIONAL, "id", region.getFullPath());
         } catch (Exception e) {
-          fail("Failed to create index.", e);
+          Assert.fail("Failed to create index.", e);
         }          
 
       }
@@ -2058,7 +2060,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }          
 
         // order by value query
@@ -2073,7 +2075,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
             Query query = qService.newQuery(queryString);
             results = (SelectResults)query.execute();
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -2114,7 +2116,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
             Query query = qService.newQuery(queryString);
             results = (SelectResults)query.execute();
           } catch (Exception e) {
-            fail("Failed executing " + queryString, e);
+            Assert.fail("Failed executing " + queryString, e);
           }
           assertEquals(numberOfEntries, results.size());
           // All order-by query results are stored in a ResultsCollectionWrapper
@@ -2166,7 +2168,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           startBridgeServer(0, false);
         } catch (Exception ex) {
-          fail("While starting CacheServer", ex);
+          Assert.fail("While starting CacheServer", ex);
         }
       }
     });
@@ -2210,7 +2212,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         try {
           qService = (PoolManager.find(poolName)).getQueryService();
         } catch (Exception e) {
-          fail("Failed to get QueryService.", e);
+          Assert.fail("Failed to get QueryService.", e);
         }
 
         // Testing Remote Query with params.
@@ -2220,7 +2222,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         } catch(UnsupportedOperationException e) {
           // Expected behavior.
         } catch (Exception e){
-          fail("Failed with UnExpected Exception.", e);
+          Assert.fail("Failed with UnExpected Exception.", e);
         }
 
         // Test with Index.
@@ -2229,7 +2231,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         } catch(UnsupportedOperationException e) {
           // Expected behavior.
         } catch (Exception e){
-          fail("Failed with UnExpected Exception.", e);
+          Assert.fail("Failed with UnExpected Exception.", e);
         }
 
         try {
@@ -2238,7 +2240,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         } catch(UnsupportedOperationException e) {
           // Expected behavior.
         } catch (Exception e){
-          fail("Failed with UnExpected Exception.", e);
+          Assert.fail("Failed with UnExpected Exception.", e);
         }
 
         try {
@@ -2384,7 +2386,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     try {
       startBridgeServer(0, false);
     } catch (Exception ex) {
-      fail("While starting CacheServer", ex);
+      Assert.fail("While starting CacheServer", ex);
     }
   }
 
@@ -2397,7 +2399,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     try {
       qService = (PoolManager.find(poolName)).getQueryService();
     } catch (Exception e) {
-      fail("Failed to get QueryService.", e);
+      Assert.fail("Failed to get QueryService.", e);
     }          
 
     for (int i=0; i < queryString.length; i++){
@@ -2406,7 +2408,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         Query query = qService.newQuery(queryString[i]);
         results = (SelectResults)query.execute(params[i]);
       } catch (Exception e) {
-        fail("Failed executing " + queryString[i], e);
+        Assert.fail("Failed executing " + queryString[i], e);
       }
     }        
   }

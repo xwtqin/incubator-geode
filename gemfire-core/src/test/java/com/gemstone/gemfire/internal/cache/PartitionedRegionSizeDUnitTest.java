@@ -31,6 +31,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -237,7 +238,7 @@ public class PartitionedRegionSizeDUnitTest extends
     DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
 
 	if (async0.exceptionOccurred()) {
-          fail("Exception during async0", async0.getException());
+          Assert.fail("Exception during async0", async0.getException());
 	}
 				   
     

@@ -74,8 +74,10 @@ import com.gemstone.gemfire.internal.cache.InitialImageOperation.RequestImageMes
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.partitioned.ManageBucketMessage.ManageBucketReplyMessage;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -143,8 +145,8 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     createPR(vm0, 0, 0, 5);
     createData(vm0, 0, 5, "a");
     closeCache(vm0);
-    ExpectedException expect = addExpectedException("IllegalStateException", vm0);
-    expect = addExpectedException("DiskAccessException", vm0);
+    IgnoredException expect = IgnoredException.addExpectedException("IllegalStateException", vm0);
+    expect = IgnoredException.addExpectedException("DiskAccessException", vm0);
     try {
       createPR(vm0, 0, 0, 2);
       fail("Expect to get java.lang.IllegalStateException, but it did not");
@@ -254,8 +256,8 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       }
     });
 
-    ExpectedException expected1 = addExpectedException("Fatal error from asynch");
-    ExpectedException expected2 = addExpectedException("ToDataException");
+    IgnoredException expected1 = IgnoredException.addExpectedException("Fatal error from asynch");
+    IgnoredException expected2 = IgnoredException.addExpectedException("ToDataException");
     try {
       int redundancy=1;
       createPR(vm0, redundancy, -1, 113, false);
@@ -422,7 +424,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     createData(vm0, numBuckets, 113, "b");
     checkData(vm0, numBuckets, 113, "b");
     
-    ExpectedException ex = addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
+    IgnoredException ex = IgnoredException.addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
     try {
       createPR(vm1, 1);
       fail("Should have recieved a SplitDistributedSystemException");
@@ -437,7 +439,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
   }
   
   public void testRevokeBeforeStartup() throws Throwable {
-    addExpectedException("RevokeFailedException");
+    IgnoredException.addExpectedException("RevokeFailedException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -491,7 +493,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     createData(vm0, numBuckets, 113, "b");
     checkData(vm0, numBuckets, 113, "b");
     
-    ExpectedException ex = addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
+    IgnoredException ex = IgnoredException.addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
     try {
       createPR(vm1, 1);
       fail("Should have recieved a SplitDistributedSystemException");
@@ -537,7 +539,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     final int aVM1Bucket = vm1Buckets.iterator().next();
     closeCache(vm1);
 
-    ExpectedException ex = addExpectedException("PartitionOfflineException");
+    IgnoredException ex = IgnoredException.addExpectedException("PartitionOfflineException");
     try { 
       checkReadWriteOperationsWithOfflineMember(vm0, aVM0Bucket, aVM1Bucket);
       //Make sure that a newly created member is informed about the offline member
@@ -574,7 +576,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       }
     }
 
-    ExpectedException expect = addExpectedException("PartitionOfflineException", vm0);
+    IgnoredException expect = IgnoredException.addExpectedException("PartitionOfflineException", vm0);
     //Try a function execution
     vm0.invoke(new SerializableRunnable("Test ways to read") {
       public void run() {
@@ -803,7 +805,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       //This should work, because this bucket is still available.
       checkData(vm0, aVM0Bucket, aVM0Bucket + 1, "a");
       
-      ExpectedException expect = addExpectedException("PartitionOfflineException", vm0);
+      IgnoredException expect = IgnoredException.addExpectedException("PartitionOfflineException", vm0);
       try {
         checkData(vm0, aVM1Bucket, aVM1Bucket + 1, "a");
         fail("Should not have been able to read from missing buckets!");
@@ -836,7 +838,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       createData(vm2, aVM1Bucket, aVM1Bucket + 1, "a");
       checkData(vm2, aVM1Bucket, aVM1Bucket + 1, "a");
       
-      ExpectedException ex = addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
+      IgnoredException ex = IgnoredException.addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
       try {
         createPR(vm1, 0);
         fail("Should have recieved a RevokedPersistentDataException");
@@ -884,7 +886,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       Set<Integer> vm2Buckets = getBucketList(vm2);
       assertEquals(vm1Buckets, vm2Buckets);
       
-      ExpectedException ex = addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
+      IgnoredException ex = IgnoredException.addExpectedException(RevokedPersistentDataException.class.getName(), vm1);
       try {
         createPR(vm1, 1);
         fail("Should have recieved a SplitDistributedSystemException");
@@ -1336,11 +1338,11 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
   
   public void testRegisterInterestNoDataStores() {
     //Closing the client may log a warning on the server
-    addExpectedException("Connection reset");
-    addExpectedException("SocketTimeoutException");
-    addExpectedException("ServerConnectivityException");
-    addExpectedException("Socket Closed");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addExpectedException("Connection reset");
+    IgnoredException.addExpectedException("SocketTimeoutException");
+    IgnoredException.addExpectedException("ServerConnectivityException");
+    IgnoredException.addExpectedException("Socket Closed");
+    IgnoredException.addExpectedException("Unexpected IOException");
     final Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -1663,7 +1665,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     
     //This should recover redundancy, which should cause vm0 to disconnect
     
-    ExpectedException ex = addExpectedException("PartitionOfflineException");
+    IgnoredException ex = IgnoredException.addExpectedException("PartitionOfflineException");
     try { 
     getLogWriter().info("Creating region in VM1");
     createPR(vm1, 1, 0, 1);
@@ -1746,7 +1748,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
         try {
           recoveryObserver.recoveryDone.await();
         } catch (InterruptedException e) {
-          fail("Interrupted", e);
+          Assert.fail("Interrupted", e);
         }
         InternalResourceManager.setResourceObserver(null);
       }
@@ -1821,7 +1823,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
    * to make sure that later we can recover redundancy.
    */
   public void testCrashDuringBucketGII() {
-    addExpectedException("PartitionOfflineException");
+    IgnoredException.addExpectedException("PartitionOfflineException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -1875,7 +1877,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
    * @throws InterruptedException 
    */
   public void testCrashDuringBucketGII2() throws InterruptedException {
-    addExpectedException("PartitionOfflineException");
+    IgnoredException.addExpectedException("PartitionOfflineException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     final VM vm1 = host.getVM(1);
@@ -1956,7 +1958,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     createData(vm1, 1, 2, "a");
     
     //this should throw a conflicting data exception.
-    ExpectedException expect = addExpectedException("ConflictingPersistentDataException", vm0);
+    IgnoredException expect = IgnoredException.addExpectedException("ConflictingPersistentDataException", vm0);
     try {
       createPR(vm0, 0);
       fail("should have seen a conflicting data exception");
@@ -1974,7 +1976,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     //view from vm0 because vm0 was in conflict!
     //In fact, this is a bit of a problem, because now vm1 is dependent
     //on vm vm0.
-    expect = addExpectedException("PartitionOfflineException", vm1);
+    expect = IgnoredException.addExpectedException("PartitionOfflineException", vm1);
     try {
       createData(vm1, 0, 1, "a");
       fail("Should have seen a PartitionOfflineException for bucket 0");

@@ -23,6 +23,7 @@ import java.util.*;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.*;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
@@ -121,7 +122,7 @@ public class PartitionedRegionPRIDDUnitTest extends
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("VM " + count 
+        Assert.fail("VM " + count 
             + " encountered this exception during async invocation", 
             async[count].getException());
       }
@@ -238,7 +239,7 @@ public class PartitionedRegionPRIDDUnitTest extends
     
     for (int i = 0; i < numNodes; i++) {
       if (async[i].exceptionOccurred()) {
-        fail("VM " + i 
+        Assert.fail("VM " + i 
             + " encountered this exception during async invocation", 
             async[i].getException());
       }
