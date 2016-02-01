@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
@@ -72,11 +71,10 @@ import com.gemstone.gemfire.internal.logging.LogWriterFactory;
 import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
-import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
-import com.jayway.awaitility.Awaitility;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import com.jayway.awaitility.Awaitility;
 
 import junit.framework.TestCase;
 
