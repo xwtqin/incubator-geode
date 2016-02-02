@@ -31,6 +31,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.ReplyException;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /*
@@ -155,10 +156,10 @@ public class Bug37241DUnitTest extends DistributedTestCase
                              .getName());
 
     //added for not to log exepected IllegalStateExcepion.
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "<ExpectedException action=add>" + expectedReplyException
             + "</ExpectedException>");
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
             "<ExpectedException action=add>" + expectedException
             + "</ExpectedException>");
     cache.getLogger().info(
@@ -199,10 +200,10 @@ public class Bug37241DUnitTest extends DistributedTestCase
     cache.getLogger().info(
         "<ExpectedException action=remove>" + expectedReplyException
         + "</ExpectedException>");
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "<ExpectedException action=remove>" + expectedException
         + "</ExpectedException>");
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "<ExpectedException action=remove>" + expectedReplyException
         + "</ExpectedException>");
   }  

@@ -115,8 +115,13 @@ import com.gemstone.gemfire.internal.cache.wan.parallel.ParallelGatewaySenderQue
 import com.gemstone.gemfire.pdx.SimpleClass;
 import com.gemstone.gemfire.pdx.SimpleClass1;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.util.test.TestUtil;
 import com.jayway.awaitility.Awaitility;
 
@@ -182,11 +187,11 @@ public class WANTestBase extends DistributedTestCase{
     //this is done to vary the number of dispatchers for sender 
     //during every test method run
     shuffleNumDispatcherThreads();
-    invokeInEveryVM(WANTestBase.class,"setNumDispatcherThreadsForTheRun",
+    Invoke.invokeInEveryVM(WANTestBase.class,"setNumDispatcherThreadsForTheRun",
     	new Object[]{dispatcherThreads.get(0)});
-    addExpectedException("Connection refused");
-    addExpectedException("Software caused connection abort");
-    addExpectedException("Connection reset");
+    IgnoredException.addIgnoredException("Connection refused");
+    IgnoredException.addIgnoredException("Software caused connection abort");
+    IgnoredException.addIgnoredException("Connection reset");
   }
   
   public static void shuffleNumDispatcherThreads() {
@@ -350,11 +355,11 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void createReplicatedRegion(String regionName, String senderIds, Boolean offHeap){
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addIgnoredException(GatewaySenderException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -455,7 +460,7 @@ public class WANTestBase extends DistributedTestCase{
   
   public static void createReplicatedRegionWithAsyncEventQueue(
       String regionName, String asyncQueueIds, Boolean offHeap) {
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -498,7 +503,7 @@ public class WANTestBase extends DistributedTestCase{
   
   public static void createReplicatedRegionWithSenderAndAsyncEventQueue(
       String regionName, String senderIds, String asyncChannelId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
 
@@ -654,7 +659,7 @@ public class WANTestBase extends DistributedTestCase{
       Integer batchSize, boolean isConflation, boolean isPersistent,
       String diskStoreName, boolean isDiskSynchronous, int nDispatchers) {
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
 
     try {
@@ -730,7 +735,7 @@ public class WANTestBase extends DistributedTestCase{
     } else {
       persistentDirectory = new File(diskStoreName); 
     }
-    getLogWriter().info("The ds is : " + persistentDirectory.getName());
+    LogWriterSupport.getLogWriter().info("The ds is : " + persistentDirectory.getName());
     persistentDirectory.mkdir();
     DiskStoreFactory dsf = cache.createDiskStoreFactory();
     File [] dirs1 = new File[] {persistentDirectory};
@@ -848,7 +853,7 @@ public class WANTestBase extends DistributedTestCase{
       final Set<RegionQueue> queues = ((AbstractGatewaySender) sender)
           .getQueues();
 
-      waitForCriterion(new WaitCriterion() {
+      Wait.waitForCriterion(new WaitCriterion() {
 
         public String description() {
           return "Waiting for EventQueue size to be " + numQueueEntries;
@@ -870,9 +875,9 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void createPartitionedRegion(String regionName, String senderIds, Integer redundantCopies, Integer totalNumBuckets, Boolean offHeap){
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -903,9 +908,9 @@ public class WANTestBase extends DistributedTestCase{
   // TODO:OFFHEAP: add offheap flavor
   public static void createPartitionedRegionWithPersistence(String regionName,
       String senderIds, Integer redundantCopies, Integer totalNumBuckets) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -934,9 +939,9 @@ public class WANTestBase extends DistributedTestCase{
   }
   public static void createColocatedPartitionedRegion(String regionName,
 	      String senderIds, Integer redundantCopies, Integer totalNumBuckets, String colocatedWith) {
-	ExpectedException exp = addExpectedException(ForceReattemptException.class
+	IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
 		.getName());
-	ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+	IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
 		.getName());
 	try {
 	  AttributesFactory fact = new AttributesFactory();
@@ -982,9 +987,9 @@ public class WANTestBase extends DistributedTestCase{
   
   public static void createPartitionedRegionWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -1006,9 +1011,9 @@ public class WANTestBase extends DistributedTestCase{
   public static void createColocatedPartitionedRegionWithAsyncEventQueue(
     String regionName, String asyncEventQueueId, Integer totalNumBuckets, String colocatedWith) {
 	
-	ExpectedException exp = addExpectedException(ForceReattemptException.class
+	IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
 	  .getName());
-	ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+	IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
 	  .getName());
 	try {
 	  AttributesFactory fact = new AttributesFactory();
@@ -1051,7 +1056,7 @@ public class WANTestBase extends DistributedTestCase{
    */
   public static void createPRWithRedundantCopyWithAsyncEventQueue(
       String regionName, String asyncEventQueueId, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
 
     try {
@@ -1141,9 +1146,9 @@ public class WANTestBase extends DistributedTestCase{
       Integer totalNumBuckets,
       Boolean offHeap){
     
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(PartitionOfflineException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(PartitionOfflineException.class
         .getName());
     try {
 
@@ -1175,7 +1180,7 @@ public class WANTestBase extends DistributedTestCase{
   public static void createCustomerOrderShipmentPartitionedRegion(
       String regionName, String senderIds, Integer redundantCopies,
       Integer totalNumBuckets, Boolean offHeap) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       AttributesFactory fact = new AttributesFactory();
@@ -1201,7 +1206,7 @@ public class WANTestBase extends DistributedTestCase{
       customerRegion = (PartitionedRegion)cache.createRegionFactory(
           fact.create()).create(customerRegionName);
       assertNotNull(customerRegion);
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
           "Partitioned Region CUSTOMER created Successfully :"
               + customerRegion.toString());
 
@@ -1226,7 +1231,7 @@ public class WANTestBase extends DistributedTestCase{
       orderRegion = (PartitionedRegion)cache.createRegionFactory(fact.create())
           .create(orderRegionName);
       assertNotNull(orderRegion);
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
           "Partitioned Region ORDER created Successfully :"
               + orderRegion.toString());
 
@@ -1251,7 +1256,7 @@ public class WANTestBase extends DistributedTestCase{
       shipmentRegion = (PartitionedRegion)cache.createRegionFactory(
           fact.create()).create(shipmentRegionName);
       assertNotNull(shipmentRegion);
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
           "Partitioned Region SHIPMENT created Successfully :"
               + shipmentRegion.toString());
     }
@@ -1361,7 +1366,7 @@ public class WANTestBase extends DistributedTestCase{
     boolean gatewaySslRequireAuth = true;
     
     Properties gemFireProps = new Properties();
-    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_ENABLED_NAME, String.valueOf(gatewaySslenabled));
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_PROTOCOLS_NAME, gatewaySslprotocols);
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_CIPHERS_NAME, gatewaySslciphers);
@@ -1378,7 +1383,7 @@ public class WANTestBase extends DistributedTestCase{
     gemFireProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     gemFireProps.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
     
-    getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
+    LogWriterSupport.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
     
     InternalDistributedSystem ds = test.getSystem(gemFireProps);
     cache = CacheFactory.create(ds);    
@@ -1433,7 +1438,7 @@ public class WANTestBase extends DistributedTestCase{
       server1.start();
     }
     catch (IOException e) {
-      fail("Failed to start the Server", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed to start the Server", e);
     }
     assertTrue(server1.isRunning());
 
@@ -1467,11 +1472,11 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void startSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
 
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -1569,7 +1574,7 @@ public class WANTestBase extends DistributedTestCase{
               + " but actual entries: " + regionQueue.size();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+      Wait.waitForCriterion(wc, 120000, 500, true);
     }
     ArrayList<Integer> stats = new ArrayList<Integer>();
     stats.add(statistics.getEventQueueSize());
@@ -1871,7 +1876,7 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void waitForSenderRunningState(String senderId){
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
       final GatewaySender sender = getGatewaySenderById(senders, senderId);
@@ -1888,7 +1893,7 @@ public class WANTestBase extends DistributedTestCase{
           return "Expected sender isRunning state to be true but is false";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 300000, 500, true);
+      Wait.waitForCriterion(wc, 300000, 500, true);
     } finally {
       exln.remove();
     }
@@ -1909,7 +1914,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected sender primary state to be true but is false";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10000, 1000, true); 
+    Wait.waitForCriterion(wc, 10000, 1000, true); 
   }
   
   private static GatewaySender getGatewaySenderById(Set<GatewaySender> senders, String senderId) {
@@ -1951,7 +1956,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected seconadry map to be " + primaryUpdatesMap + " but it is " + secondaryUpdatesMap;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 300000, 500, true); 
+    Wait.waitForCriterion(wc, 300000, 500, true); 
   }
   
   public static HashMap checkQueue2(){
@@ -2149,8 +2154,8 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void pauseSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -2170,8 +2175,8 @@ public class WANTestBase extends DistributedTestCase{
   }
       
   public static void pauseSenderAndWaitForDispatcherToPause(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -2191,8 +2196,8 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void resumeSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -2212,8 +2217,8 @@ public class WANTestBase extends DistributedTestCase{
   }
 
   public static void stopSender(String senderId) {
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -2254,7 +2259,7 @@ public class WANTestBase extends DistributedTestCase{
       boolean isParallel, Integer maxMemory,
       Integer batchSize, boolean isConflation, boolean isPersistent,
       GatewayEventFilter filter, boolean isManulaStart) {
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       File persistentDirectory = new File(dsName + "_disk_"
           + System.currentTimeMillis() + "_" + VM.getCurrentVMNum());
@@ -2319,7 +2324,7 @@ public class WANTestBase extends DistributedTestCase{
 	boolean isParallel, Integer maxMemory,
 	Integer batchSize, boolean isConflation, boolean isPersistent,
 	GatewayEventFilter filter, boolean isManulaStart, int numDispatchers, OrderPolicy orderPolicy) {
-	  final ExpectedException exln = addExpectedException("Could not connect");
+	  final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
 	  try {
 		File persistentDirectory = new File(dsName + "_disk_"
 			+ System.currentTimeMillis() + "_" + VM.getCurrentVMNum());
@@ -2504,7 +2509,7 @@ public class WANTestBase extends DistributedTestCase{
       List<GatewayEventFilter> eventfilters,
       List<GatewayTransportFilter> tranportFilters, boolean isManulaStart,
       boolean isDiskSync) {
-    ExpectedException exp1 = addExpectedException(RegionDestroyedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(RegionDestroyedException.class
         .getName());
     try {
       File persistentDirectory = new File(dsName + "_disk_"
@@ -2596,7 +2601,7 @@ public class WANTestBase extends DistributedTestCase{
     else {
       persistentDirectory = new File(dsStore);  
     }
-    getLogWriter().info("The ds is : " + persistentDirectory.getName());
+    LogWriterSupport.getLogWriter().info("The ds is : " + persistentDirectory.getName());
     
     persistentDirectory.mkdir();
     DiskStoreFactory dsf = cache.createDiskStoreFactory();
@@ -2618,12 +2623,12 @@ public class WANTestBase extends DistributedTestCase{
         gateway.setPersistenceEnabled(true);
         String dsname = dsf.setDiskDirs(dirs1).create(dsName).getName();
         gateway.setDiskStoreName(dsname);
-        getLogWriter().info("The DiskStoreName is : " + dsname);
+        LogWriterSupport.getLogWriter().info("The DiskStoreName is : " + dsname);
       }
       else {
         DiskStore store = dsf.setDiskDirs(dirs1).create(dsName);
         gateway.setDiskStoreName(store.getName());
-        getLogWriter().info("The ds is : " + store.getName());
+        LogWriterSupport.getLogWriter().info("The ds is : " + store.getName());
       }
       gateway.setBatchConflationEnabled(isConflation);
       gateway.create(dsName, remoteDsId);
@@ -2733,7 +2738,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected to wait for " + millisec + " millisec.";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, millisec, 500, false); 
+    Wait.waitForCriterion(wc, millisec, 500, false); 
   }
   
   public static int createReceiver(int locPort) {
@@ -2766,7 +2771,7 @@ public class WANTestBase extends DistributedTestCase{
     WANTestBase test = new WANTestBase(testName);
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
 
@@ -2784,7 +2789,7 @@ public class WANTestBase extends DistributedTestCase{
       fail("Expected GatewayReciever Exception");
     }
     catch (GatewayReceiverException gRE){
-      getLogWriter().fine("KBKBKB : got the GatewayReceiverException", gRE);
+      LogWriterSupport.getLogWriter().fine("KBKBKB : got the GatewayReceiverException", gRE);
       assertTrue(gRE.getMessage().contains("Failed to create server socket on"));
     }
     catch (IOException e) {
@@ -2802,7 +2807,7 @@ public class WANTestBase extends DistributedTestCase{
     
     Properties gemFireProps = new Properties();
 
-    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_ENABLED_NAME, String.valueOf(gatewaySslenabled));
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_PROTOCOLS_NAME, gatewaySslprotocols);
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_CIPHERS_NAME, gatewaySslciphers);
@@ -2819,7 +2824,7 @@ public class WANTestBase extends DistributedTestCase{
     gemFireProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     gemFireProps.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
 
-    getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
+    LogWriterSupport.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
     
     InternalDistributedSystem ds = test.getSystem(gemFireProps);
     cache = CacheFactory.create(ds);    
@@ -2899,7 +2904,7 @@ public class WANTestBase extends DistributedTestCase{
     try {
       server.start();
     } catch (IOException e) {
-      fail("Failed to start server ", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed to start server ", e);
     }
   }
   
@@ -2915,7 +2920,7 @@ public class WANTestBase extends DistributedTestCase{
         }
         catch (IOException e) {
           e.printStackTrace();
-          fail("Failed to start GatewayRecevier on port " + port, e);
+          com.gemstone.gemfire.test.dunit.Assert.fail("Failed to start GatewayRecevier on port " + port, e);
         }
 	return port;
   }
@@ -2937,7 +2942,7 @@ public class WANTestBase extends DistributedTestCase{
     try {
       server.start();
     } catch (IOException e) {
-      fail("Failed to start server ", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed to start server ", e);
     }
     return port;
   }
@@ -2973,7 +2978,7 @@ public class WANTestBase extends DistributedTestCase{
     region = cache.createRegion(regionName, attrs);
     region.registerInterest("ALL_KEYS");
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region " + regionName + " created Successfully :"
             + region.toString());
   }
@@ -3032,9 +3037,9 @@ public class WANTestBase extends DistributedTestCase{
     CacheTransactionManager txMgr = cache.getCacheTransactionManager();
     txMgr.setDistributed(true);
     
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addIgnoredException(GatewaySenderException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -3054,9 +3059,9 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void doPuts(String regionName, int numPuts) {
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addIgnoredException(GatewaySenderException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -3157,7 +3162,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Looking for min size of region to be " + min;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 30000, 5, false); 
+    Wait.waitForCriterion(wc, 30000, 5, false); 
     r.destroyRegion();
   }
 
@@ -3176,13 +3181,13 @@ public class WANTestBase extends DistributedTestCase{
         return "Looking for min size of region to be " + min;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 30000, 5, false); 
+    Wait.waitForCriterion(wc, 30000, 5, false); 
     r.destroyRegion();
     destroyFlag = false;
   }
   
   public static void localDestroyRegion(String regionName) {
-    ExpectedException exp = addExpectedException(PRLocallyDestroyedException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(PRLocallyDestroyedException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -3219,11 +3224,11 @@ public class WANTestBase extends DistributedTestCase{
         custKeyValues.put(custid, customer);
       }
       catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterSupport.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
     return custKeyValues;
   }
@@ -3245,11 +3250,11 @@ public class WANTestBase extends DistributedTestCase{
 
       }
       catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+      LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3268,11 +3273,11 @@ public class WANTestBase extends DistributedTestCase{
         assertEquals(order, orderRegion.get(custid));
 
       } catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putOrderPartitionedRegionUsingCustId : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Order :- { " + custid + " : " + order + " }");
+      LogWriterSupport.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3295,11 +3300,11 @@ public class WANTestBase extends DistributedTestCase{
 
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "updateOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
     return orderKeyValues;
@@ -3318,11 +3323,11 @@ public class WANTestBase extends DistributedTestCase{
         assertEquals(order, orderRegion.get(custid));
         orderKeyValues.put(custid, order);
       } catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "updateOrderPartitionedRegionUsingCustId : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Order :- { " + custid + " : " + order + " }");
+      LogWriterSupport.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3347,11 +3352,11 @@ public class WANTestBase extends DistributedTestCase{
             shipmentKeyValue.put(shipmentId, shipment);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -3396,11 +3401,11 @@ public class WANTestBase extends DistributedTestCase{
         assertEquals(shipment, shipmentRegion.get(custid));
         shipmentKeyValue.put(custid, shipment);
       } catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putShipmentPartitionedRegionUsingCustId : failed while doing put operation in ShipmentPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
+      LogWriterSupport.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
     }
     return shipmentKeyValue;
   }
@@ -3425,11 +3430,11 @@ public class WANTestBase extends DistributedTestCase{
             shipmentKeyValue.put(shipmentId, shipment);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "updateShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -3450,11 +3455,11 @@ public class WANTestBase extends DistributedTestCase{
         assertEquals(shipment, shipmentRegion.get(custid));
         shipmentKeyValue.put(custid, shipment);
       } catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "updateShipmentPartitionedRegionUsingCustId : failed while doing put operation in ShipmentPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
+      LogWriterSupport.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
     }
     return shipmentKeyValue;
   }
@@ -3490,7 +3495,7 @@ public class WANTestBase extends DistributedTestCase{
     
   public static void doNextPuts(String regionName, int start, int numPuts) {
     //waitForSitesToUpdate();
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
@@ -3572,7 +3577,7 @@ public class WANTestBase extends DistributedTestCase{
         
       };
       
-      DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+      Wait.waitForCriterion(wc, 120000, 500, true);
     }
   }
   
@@ -3666,9 +3671,9 @@ public class WANTestBase extends DistributedTestCase{
   }
 
   public static void validateRegionSize(String regionName, final int regionSize) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
 
@@ -3688,7 +3693,7 @@ public class WANTestBase extends DistributedTestCase{
               + " present region keyset " + r.keySet();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 240000, 500, true);
+      Wait.waitForCriterion(wc, 240000, 500, true);
     } finally {
       exp.remove();
       exp1.remove();
@@ -3752,7 +3757,7 @@ public class WANTestBase extends DistributedTestCase{
             + " but actual entries: " + eventsMap.size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 500, true); //TODO:Yogs 
+    Wait.waitForCriterion(wc, 60000, 500, true); //TODO:Yogs 
   }
   
    public static void validateCustomAsyncEventListener(String asyncQueueId,
@@ -3781,7 +3786,7 @@ public class WANTestBase extends DistributedTestCase{
             + " but actual entries: " + eventsMap.size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
+    Wait.waitForCriterion(wc, 60000, 500, true); // TODO:Yogs
     
    Iterator<AsyncEvent> itr = eventsMap.values().iterator();
    while (itr.hasNext()) {
@@ -3828,7 +3833,7 @@ public class WANTestBase extends DistributedTestCase{
               + size;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+      Wait.waitForCriterion(wc, 60000, 500, true);
 
     } else {
       WaitCriterion wc = new WaitCriterion() {
@@ -3856,7 +3861,7 @@ public class WANTestBase extends DistributedTestCase{
               + size;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+      Wait.waitForCriterion(wc, 60000, 500, true);
     }
   }
   
@@ -3879,7 +3884,7 @@ public class WANTestBase extends DistributedTestCase{
     for (int bucketId : bucketIds) {
       List<GatewaySenderEventImpl> eventsForBucket = bucketToEventsMap
           .get(bucketId);
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
           "Events for bucket: " + bucketId + " is " + eventsForBucket);
       assertNotNull(eventsForBucket);
       for (int i = 0; i < batchSize; i++) {
@@ -3901,7 +3906,7 @@ public class WANTestBase extends DistributedTestCase{
 
     final Map eventsMap = ((MyAsyncEventListener)theListener).getEventsMap();
     assertNotNull(eventsMap);
-    getLogWriter().info("The events map size is " + eventsMap.size());
+    LogWriterSupport.getLogWriter().info("The events map size is " + eventsMap.size());
     return eventsMap.size();
   }
   
@@ -3935,9 +3940,9 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected region entries: " + regionSize + " but actual entries: " + r.keySet().size() + " present region keyset " + r.keySet()  ;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 200000, 500, true); 
+    Wait.waitForCriterion(wc, 200000, 500, true); 
     for(int i = 0 ; i < regionSize; i++){
-      getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
+      LogWriterSupport.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
       assertEquals(new SimpleClass(i, (byte)i), r.get("Key_" + i));
     }
   }
@@ -3957,9 +3962,9 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected region entries: " + regionSize + " but actual entries: " + r.keySet().size() + " present region keyset " + r.keySet()  ;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 200000, 500, true); 
+    Wait.waitForCriterion(wc, 200000, 500, true); 
     for(int i = 0 ; i < regionSize; i++){
-      getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
+      LogWriterSupport.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
       assertEquals(new SimpleClass1(false, (short) i, "" + i, i,"" +i ,""+ i,i, i), r.get("Key_" + i));
     }
   }
@@ -3967,7 +3972,7 @@ public class WANTestBase extends DistributedTestCase{
   public static void validateQueueSizeStat(String id, final int queueSize) {
     final AbstractGatewaySender sender = (AbstractGatewaySender)  cache.getGatewaySender(id);
     
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       
       @Override
       public boolean done() {
@@ -4020,7 +4025,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected region size to remain same below a specified limit but actual region size does not remain same or exceeded the specified limit " + sameRegionSizeCounter + " :regionSize " + previousSize;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 200000, 500, true); 
+    Wait.waitForCriterion(wc, 200000, 500, true); 
   }
   
   public static String getRegionFullPath(String regionName) {
@@ -4042,7 +4047,7 @@ public class WANTestBase extends DistributedTestCase{
       public boolean done() {
         for(Object key: keyValues.keySet()) {
           if (!r.get(key).equals(keyValues.get(key))) {
-            getLogWriter().info(
+            LogWriterSupport.getLogWriter().info(
                 "The values are for key " + "  " + key + " " + r.get(key)
                     + " in the map " + keyValues.get(key));
             return false;
@@ -4055,7 +4060,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected region entries doesn't match";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120000, 500, true); 
+    Wait.waitForCriterion(wc, 120000, 500, true); 
   }
   
   public static void CheckContent(String regionName, final int regionSize) {
@@ -4082,7 +4087,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected region entries: " + regionSize + " but actual entries: " + r.keySet().size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120000, 500, true); 
+    Wait.waitForCriterion(wc, 120000, 500, true); 
   }
   
   public static void verifyPrimaryStatus(final Boolean isPrimary) {
@@ -4102,7 +4107,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Expected sender to be : " + isPrimary.booleanValue() + " but actually it is : " + sender.isPrimary();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+    Wait.waitForCriterion(wc, 120000, 500, true);
   }
   
   public static Boolean getPrimaryStatus(){
@@ -4121,7 +4126,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Checking Primary Status";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10000, 500, false);
+    Wait.waitForCriterion(wc, 10000, 500, false);
     return sender.isPrimary();
   }
   
@@ -4189,10 +4194,10 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static Boolean killSender(String senderId){
-    final ExpectedException exln = addExpectedException("Could not connect");
-    ExpectedException exp = addExpectedException(CacheClosedException.class
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
+    IgnoredException exp = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
     Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -4204,7 +4209,7 @@ public class WANTestBase extends DistributedTestCase{
       }
     }
     if (sender.isPrimary()) {
-      getLogWriter().info("Gateway sender is killed by a test");
+      LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
       cache.getDistributedSystem().disconnect();
       return Boolean.TRUE;
     }
@@ -4226,7 +4231,7 @@ public class WANTestBase extends DistributedTestCase{
       }
     }
     if (queue.isPrimary()) {
-      getLogWriter().info("AsyncEventQueue is killed by a test");
+      LogWriterSupport.getLogWriter().info("AsyncEventQueue is killed by a test");
       cache.getDistributedSystem().disconnect();
       return Boolean.TRUE;
     }
@@ -4234,10 +4239,10 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void killSender(){
-    getLogWriter().info("Gateway sender is going to be killed by a test"); 
+    LogWriterSupport.getLogWriter().info("Gateway sender is going to be killed by a test"); 
     cache.close();
     cache.getDistributedSystem().disconnect();
-    getLogWriter().info("Gateway sender is killed by a test");
+    LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
   }
   
   static void waitForSitesToUpdate() {
@@ -4249,7 +4254,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Waiting for all sites to get updated";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10000, 500, false);
+    Wait.waitForCriterion(wc, 10000, 500, false);
   }
   
   public static void checkAllSiteMetaData(     
@@ -4300,7 +4305,7 @@ public class WANTestBase extends DistributedTestCase{
         return "Making sure system is initialized";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 50000, 1000, true); 
+    Wait.waitForCriterion(wc, 50000, 1000, true); 
     assertNotNull(system);
     
 //    final Map<Integer,Set<DistributionLocatorId>> allSiteMetaData = ((DistributionConfigImpl)system
@@ -4339,7 +4344,7 @@ public class WANTestBase extends DistributedTestCase{
             + " but actual meta data: " + allSiteMetaData;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 300000, 500, true); 
+    Wait.waitForCriterion(wc, 300000, 500, true); 
     return System.currentTimeMillis();
   }
   
@@ -4367,9 +4372,9 @@ public class WANTestBase extends DistributedTestCase{
   
   public static void validateQueueContents(final String senderId,
       final int regionSize) {
-    ExpectedException exp1 = addExpectedException(InterruptedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
-    ExpectedException exp2 = addExpectedException(GatewaySenderException.class
+    IgnoredException exp2 = IgnoredException.addIgnoredException(GatewaySenderException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -4403,7 +4408,7 @@ public class WANTestBase extends DistributedTestCase{
                 + " but actual entries: " + size;
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+        Wait.waitForCriterion(wc, 120000, 500, true);
 
       } else if (sender.isParallel()) {
         final RegionQueue regionQueue;
@@ -4422,7 +4427,7 @@ public class WANTestBase extends DistributedTestCase{
                 + " but actual entries: " + regionQueue.size();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+        Wait.waitForCriterion(wc, 120000, 500, true);
       }
     } finally {
       exp1.remove();
@@ -4487,7 +4492,7 @@ public class WANTestBase extends DistributedTestCase{
             + " but actual entries: " + size;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+    Wait.waitForCriterion(wc, 120000, 500, true);
   }
   
   public static Integer getQueueContentSize(final String senderId) {
@@ -4535,9 +4540,9 @@ public class WANTestBase extends DistributedTestCase{
 
   public static void validateParallelSenderQueueAllBucketsDrained(
       final String senderId) {
-    ExpectedException exp = addExpectedException(RegionDestroyedException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(RegionDestroyedException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(ForceReattemptException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
@@ -4556,7 +4561,7 @@ public class WANTestBase extends DistributedTestCase{
         WaitCriterion wc = new WaitCriterion() {
           public boolean done() {
             if (bucket.keySet().size() == 0) {
-              getLogWriter().info("Bucket " + bucket.getId() + " is empty");
+              LogWriterSupport.getLogWriter().info("Bucket " + bucket.getId() + " is empty");
               return true;
             }
             return false;
@@ -4570,7 +4575,7 @@ public class WANTestBase extends DistributedTestCase{
                 + bucket.keySet();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 180000, 50, true);
+        Wait.waitForCriterion(wc, 180000, 50, true);
       }// for loop ends
     } finally {
       exp.remove();

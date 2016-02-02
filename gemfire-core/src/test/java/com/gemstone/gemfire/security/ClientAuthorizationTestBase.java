@@ -61,7 +61,10 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import security.DummyCredentialGenerator;
 import security.XmlAuthzCredentialGenerator;
@@ -264,7 +267,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
       policy = InterestResultPolicy.NONE;
     }
     final int numOps = indices.length;
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Got doOp for op: " + op.toString() + ", numOps: " + numOps
             + ", indices: " + indicesToString(indices) + ", expect: " + expectedResult);
     boolean exceptionOccured = false;
@@ -304,7 +307,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
               // server
               if ((flags & OpFlags.CHECK_NOKEY) > 0) {
                 AbstractRegionEntry entry = (AbstractRegionEntry)((LocalRegion)region).getRegionEntry(searchKey);
-                getLogWriter().info(""+keyNum+": key is " + searchKey + " and entry is " + entry);
+                LogWriterSupport.getLogWriter().info(""+keyNum+": key is " + searchKey + " and entry is " + entry);
                 assertFalse(region.containsKey(searchKey));
               }
               else {
@@ -562,7 +565,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
                 return null;
               }
             };
-            DistributedTestCase.waitForCriterion(ev, 3 * 1000, 200, true);
+            Wait.waitForCriterion(ev, 3 * 1000, 200, true);
             if ((flags & OpFlags.CHECK_FAIL) > 0) {
               assertEquals(0, listener.getNumUpdates());
             }
@@ -645,7 +648,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
               }
               catch (RegionDestroyedException ex) {
                 // harmless to ignore this
-                getLogWriter().info(
+                LogWriterSupport.getLogWriter().info(
                     "doOp: sub-region " + region.getFullPath()
                         + " already destroyed");
                 operationOmitted = true;
@@ -672,14 +675,14 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
             || ex instanceof QueryInvocationTargetException || ex instanceof CqException)
             && (expectedResult.intValue() == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
             && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "doOp: Got expected NotAuthorizedException when doing operation ["
                   + op + "] with flags " + OpFlags.description(flags) 
                   + ": " + ex.getCause());
           continue;
         }
         else if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "doOp: Got expected exception when doing operation: "
                   + ex.toString());
           continue;
@@ -725,7 +728,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
           fail("executeOpBlock: Unknown client number " + clientNum);
           break;
       }
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
           "executeOpBlock: performing operation number ["
               + currentOp.getOpNum() + "]: " + currentOp);
       if ((opFlags & OpFlags.USE_OLDCONN) == 0) {
@@ -761,7 +764,7 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
                 extraAuthzProps });
         // Start the client with valid credentials but allowed or disallowed to
         // perform an operation
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "executeOpBlock: For client" + clientNum + credentialsTypeStr
                 + " credentials: " + opCredentials);
         boolean setupDynamicRegionFactory = (opFlags & OpFlags.ENABLE_DRF) > 0;
@@ -845,9 +848,9 @@ public class ClientAuthorizationTestBase extends DistributedTestCase {
       String accessor = gen.getAuthorizationCallback();
       TestAuthzCredentialGenerator tgen = new TestAuthzCredentialGenerator(gen);
 
-      getLogWriter().info(testName + ": Using authinit: " + authInit);
-      getLogWriter().info(testName + ": Using authenticator: " + authenticator);
-      getLogWriter().info(testName + ": Using accessor: " + accessor);
+      LogWriterSupport.getLogWriter().info(testName + ": Using authinit: " + authInit);
+      LogWriterSupport.getLogWriter().info(testName + ": Using authenticator: " + authenticator);
+      LogWriterSupport.getLogWriter().info(testName + ": Using accessor: " + accessor);
 
       // Start servers with all required properties
       Properties serverProps = buildProperties(authenticator, accessor, false,

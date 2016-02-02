@@ -41,6 +41,8 @@ import com.gemstone.gemfire.cache.util.CqListenerAdapter;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class ClientSnapshotDUnitTest extends CacheTestCase {
@@ -253,9 +255,9 @@ public class ClientSnapshotDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory()
-          .set("log-level", getDUnitLogLevel())
+          .set("log-level", LogWriterSupport.getDUnitLogLevel())
           .setPdxSerializer(new MyPdxSerializer())
-          .addPoolServer(getServerHostName(host), port)
+          .addPoolServer(NetworkSupport.getServerHostName(host), port)
           .setPoolSubscriptionEnabled(true)
           .setPoolPRSingleHopEnabled(false);
     

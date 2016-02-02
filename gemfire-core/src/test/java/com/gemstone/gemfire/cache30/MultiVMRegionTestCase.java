@@ -114,13 +114,17 @@ import com.gemstone.gemfire.internal.offheap.MemoryChunkWithRefCount;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 
 
 /**
@@ -458,7 +462,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                 Object value = e.getNewValue();
                 assertNotNull(value);
                 try {
-                  getLogWriter().info("++ Adding " + value);
+                  com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("++ Adding " + value);
                   queue.put(value);
 
                 } catch (InterruptedException ex) {
@@ -478,9 +482,9 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               (LinkedBlockingQueue) region.getUserAttribute();
             for (int i = 0; i <= lastNumber; i++) {
               try {
-                getLogWriter().info("++ Waiting for " + i);
+                com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("++ Waiting for " + i);
                 Integer value = (Integer) queue.take();
-                getLogWriter().info("++ Got " + value);
+                com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("++ Got " + value);
                 assertEquals(i, value.intValue());
 
               } catch (InterruptedException ex) {
@@ -502,8 +506,8 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         });
 
-    DistributedTestCase.join(ai0, 30 * 1000, getLogWriter());
-    DistributedTestCase.join(ai1, 30 * 1000, getLogWriter());
+    Threads.join(ai0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    Threads.join(ai1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
 
     if (ai0.exceptionOccurred()) {
       com.gemstone.gemfire.test.dunit.Assert.fail("ai0 failed", ai0.getException());
@@ -649,13 +653,13 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           region.put(key, newValue);
         }
       });
-    invokeRepeatingIfNecessary(vm1, new CacheSerializableRunnable("Get entry") {
+    Invoke.invokeRepeatingIfNecessary(vm1, new CacheSerializableRunnable("Get entry") {
         public void run2() throws CacheException {
           Region region =
             getRootRegion().getSubregion(name);
           assertEquals(newValue, region.get(key));
         }
-      });
+      }, getRepeatTimeoutMs());
   }
 
 
@@ -767,7 +771,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         };
 
-    invokeInEveryVM(create);
+    Invoke.invokeInEveryVM(create);
 
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
@@ -781,7 +785,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       });
 
-    invokeInEveryVM(new CacheSerializableRunnable("Verify region destruction") {
+    Invoke.invokeInEveryVM(new CacheSerializableRunnable("Verify region destruction") {
       public void run2() throws CacheException {
         WaitCriterion ev = new WaitCriterion() {
           public boolean done() {
@@ -791,7 +795,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             return "Waiting for region " + name + " to be destroyed";
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 10, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 10, true);
         Region region = getRootRegion().getSubregion(name);
         assertNull(region);
       }
@@ -979,7 +983,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               // changed from severe to fine because it is possible
               // for this to return non-null on d-no-ack
               // that is was invokeRepeatingIfNecessary is called
-              getLogWriter().fine("invalidated entry has value of " + entry.getValue());
+              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().fine("invalidated entry has value of " + entry.getValue());
             }
             assertNull(entry.getValue());
           }
@@ -1086,7 +1090,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         };
 
-    invokeInEveryVM(create);
+    Invoke.invokeInEveryVM(create);
 
     final Object key = "KEY";
     final Object value = "VALUE";
@@ -1111,7 +1115,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         };
 
-    invokeInEveryVM(put);
+    Invoke.invokeInEveryVM(put);
 
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
@@ -1153,7 +1157,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         };
 
-    invokeInEveryVMRepeatingIfNecessary(verify);
+    Invoke.invokeInEveryVMRepeatingIfNecessary(verify, getRepeatTimeoutMs());
   }
 
   /**
@@ -2342,7 +2346,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                 return "never saw off-heap object count go to zero. Last value was " + ma.getStats().getObjects();
               }
             };
-            DistributedTestCase.waitForCriterion(waitForStatChange, 3000, 10, true);
+            Wait.waitForCriterion(waitForStatChange, 3000, 10, true);
           }
         }
       });
@@ -2731,13 +2735,13 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       rgn.put("key", "value");
       getSystem().getLogWriter().info("testDistributedPut: Put Value");
 
-      invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testDistributedPut: Verify Received Value") {
+      Invoke.invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testDistributedPut: Verify Received Value") {
         public void run2() {
           Region rgn1 = getRootRegion().getSubregion(rgnName);
           assertNotNull("Could not find entry for 'key'", rgn1.getEntry("key"));
           assertEquals("value", rgn1.getEntry("key").getValue());
         }
-      });
+      }, getRepeatTimeoutMs());
 
     }
     catch(Exception e) {
@@ -2913,14 +2917,14 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
       });
 
-    invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Wait for update") {
+    Invoke.invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Wait for update") {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(name);
         assertNotNull(region.getEntry(key1));
         assertNotNull(region.getEntry(key2));
         assertNotNull(region.getEntry(key3));
       }
-    });
+    }, getRepeatTimeoutMs());
 
     // Destroy the local entries so we know that they are not found by
     // a netSearch
@@ -2933,7 +2937,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       });
 
-    invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Verify keys") {
+    Invoke.invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Verify keys") {
         public void run2() throws CacheException {
           Region region =
             getRootRegion().getSubregion(name);
@@ -2953,7 +2957,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertNotNull(entry3);
           assertEquals(value3, entry3.getValue());
         }
-      });
+      }, getRepeatTimeoutMs());
   }
   
   /**
@@ -3039,14 +3043,14 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     });
     
-    invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Wait for update") {
+    Invoke.invokeRepeatingIfNecessary(vm2, new CacheSerializableRunnable("Wait for update") {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(name);
         assertNotNull(region.getEntry(key1));
         assertNotNull(region.getEntry(key2));
         assertNotNull(region.getEntry(key3));
       }
-    });
+    }, getRepeatTimeoutMs());
     
     // apply delta
     vm0.invoke(new CacheSerializableRunnable("Apply delta") {
@@ -3077,7 +3081,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       };
     
-    invokeRepeatingIfNecessary(vm0, verify);
+    Invoke.invokeRepeatingIfNecessary(vm0, verify, getRepeatTimeoutMs());
     
     
     // Destroy the local entries so we know that they are not found by
@@ -3089,7 +3093,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     });
     
-    invokeRepeatingIfNecessary(vm2, verify);
+    Invoke.invokeRepeatingIfNecessary(vm2, verify, getRepeatTimeoutMs());
     
   }
   
@@ -3312,7 +3316,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         assertTrue(index >= 0);
         assertEquals(expectedValues.remove(index), event.getNewValue());
         expectedKeys.remove(index);
-        getLogWriter().info("afterCreate called in " +
+        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("afterCreate called in " +
          "MirroredDataFromNonMirroredListener for key:" + event.getKey());
       }
     }
@@ -3433,7 +3437,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           Region.Entry entry1 = region.getEntry(key1);
           if (!getRegionAttributes().getDataPolicy().withReplication()) {
             if (entry1 != null) {
-              getLogWriter().info("found entry " + entry1);
+              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("found entry " + entry1);
             }
             assertNull(entry1);
           }
@@ -3715,7 +3719,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     });
 
-    pause(shortTimeout * 10);
+    Wait.pause(shortTimeout * 10);
 
     // Even though netSearch finds vm1's entry is not expired, it is considered
     // expired with respect to vm0's attributes
@@ -3806,7 +3810,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     });
 
-    pause(shortTimeout * 2);
+    Wait.pause(shortTimeout * 2);
 
     // Even though netSearch finds vm1's entry is not expired, it is considered
     // expired with respect to vm0's attributes
@@ -3942,7 +3946,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               return "never saw create of " + key;
             }
           };
-          DistributedTestCase.waitForCriterion(waitForCreate, 3000, 10, true);
+          Wait.waitForCriterion(waitForCreate, 3000, 10, true);
         }
       });
       
@@ -3966,7 +3970,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                 return "never saw expire of " + key + " entry=" + region.getEntry(key);
               }
             };
-            DistributedTestCase.waitForCriterion(waitForExpire, 4000, 10, true);
+            Wait.waitForCriterion(waitForExpire, 4000, 10, true);
           }
         });
 
@@ -3981,7 +3985,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                 return "never saw expire of " + key + " entry=" + region.getEntry(key);
               }
             };
-            DistributedTestCase.waitForCriterion(waitForExpire, 4000, 10, true);
+            Wait.waitForCriterion(waitForExpire, 4000, 10, true);
             assertTrue(destroyListener.waitForInvocation(555));
             assertTrue(((DestroyListener)destroyListener).eventIsExpiration);
           }
@@ -4091,7 +4095,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                   break;
                 } catch (AssertionFailedError e) {
                   if (retry > 0) {
-                    pause(1);
+                    Wait.pause(1);
                   } else {
                     throw e;
                   }
@@ -4131,7 +4135,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                   return "Entry for key " + key + " never expired (since it still exists) " + expiryInfo;
                 }
               };
-              DistributedTestCase.waitForCriterion(waitForUpdate, 30000, 1, true);
+              Wait.waitForCriterion(waitForUpdate, 30000, 1, true);
             }
             assertNull(region.getEntry(key));
           }
@@ -4193,7 +4197,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           region.create(key, null);
           EntryExpiryTask eet = region.getEntryExpiryTask(key);
           region.create("createExpiryTime", eet.getExpirationTime());
-          waitForExpiryClockToChange(region);
+          Wait.waitForExpiryClockToChange(region);
         }
       });
 
@@ -4235,7 +4239,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               return "never saw update of " + key;
             }
           };
-          DistributedTestCase.waitForCriterion(waitForUpdate, 3000, 10, true);
+          Wait.waitForCriterion(waitForUpdate, 3000, 10, true);
 
           EntryExpiryTask eet = region.getEntryExpiryTask(key);
           long createExpiryTime = (Long) region.get("createExpiryTime");
@@ -4287,7 +4291,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             factory.setScope(Scope.DISTRIBUTED_ACK);
             factory.setDataPolicy(DataPolicy.NORMAL);
             factory.setSubscriptionAttributes(new SubscriptionAttributes(InterestPolicy.ALL));
-            getLogWriter().info("MJT DEBUG: attrs0 are " + factory.create());
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("MJT DEBUG: attrs0 are " + factory.create());
             createRootRegion(factory.create());
           }
           {
@@ -4297,7 +4301,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             if (getRegionAttributes().getDataPolicy() == DataPolicy.NORMAL) {
               factory.setDataPolicy(DataPolicy.PRELOADED);
             }
-            getLogWriter().info("MJT DEBUG: attrs1 are " + factory.create());
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("MJT DEBUG: attrs1 are " + factory.create());
             Region region = createRegion(name, factory.create());
           }
           finishCacheXml(name);
@@ -4359,7 +4363,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             return "replicate count never reached " + expectedProfiles;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 200, true);
 
         DataPolicy currentPolicy = getRegionAttributes().getDataPolicy();
         int numProfiles = 0;
@@ -4376,7 +4380,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         // before the get initial image is complete.
         for (int i = 1; i < NB1_NUM_ENTRIES; i += 2) {
           Object key = new Integer(i);
-          getLogWriter().info("Operation #"+i+" on key " + key);
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Operation #"+i+" on key " + key);
           switch (i % 6) {
             case 1: // UPDATE
               // use the current timestamp so we know when it happened
@@ -4434,28 +4438,28 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         });
     }
 
-    getLogWriter().info("Before GetInitialImage, data policy is "+getRegionAttributes().getDataPolicy()+", scope is "+getRegionAttributes().getScope());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Before GetInitialImage, data policy is "+getRegionAttributes().getDataPolicy()+", scope is "+getRegionAttributes().getScope());
     AsyncInvocation asyncGII = vm2.invokeAsync(create);
 
     if (!getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
       vm2.invoke(new SerializableRunnable("Set fast image processing") {
           public void run() {
             com.gemstone.gemfire.internal.cache.InitialImageOperation.slowImageProcessing = 0;
           }
         });
-      getLogWriter().info("after async nonblocking ops complete");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after async nonblocking ops complete");
     }
 
     // wait for GII to complete
-    DistributedTestCase.join(asyncGII, 30 * 1000, getLogWriter());
+    Threads.join(asyncGII, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     final long iiComplete = System.currentTimeMillis();
-    getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
 
     if (getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     }
     if (async.exceptionOccurred()) {
       com.gemstone.gemfire.test.dunit.Assert.fail("async failed", async.getException());
@@ -4473,7 +4477,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           region.localDestroyRegion();
         }
       });
-    getLogWriter().info("after localDestroyRegion");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after localDestroyRegion");
 
       // invoke repeating so noack regions wait for all updates to get processed
     vm2.invokeRepeatingIfNecessary(new CacheSerializableRunnable("Verify entryCount") {
@@ -4496,7 +4500,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           if (entriesDumped) return;
           entriesDumped = true;
 
-          LogWriter logger = getLogWriter();
+          LogWriter logger = com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter();
           logger.info("DUMPING Entries with values in VM that should have been destroyed:");
           for (int i = 5; i < NB1_NUM_ENTRIES; i += 6) {
             try {
@@ -4509,7 +4513,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         }
     }, 5000);
-    getLogWriter().info("after verify entryCount");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after verify entryCount");
 
 
     vm2.invoke(new CacheSerializableRunnable("Verify keys/values & Nonblocking") {
@@ -4563,7 +4567,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               }
             }
           }
-          getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
                               " were updated concurrently with getInitialImage");
           // make sure at least some of them were concurrent
           if (region.getAttributes().getScope().isGlobal()) {
@@ -4579,7 +4583,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         }
       });
-    getLogWriter().info("after verify key/values");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after verify key/values");
   }
 
   /**
@@ -4691,7 +4695,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             return "replicate count never reached " + expectedProfiles;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 100 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 100 * 1000, 200, true);
 
         // operate on every odd entry with different value, alternating between
         // updates, invalidates, and destroys. These operations are likely
@@ -4769,23 +4773,23 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
 
     if (!getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
 
       vm2.invoke(new SerializableRunnable("Set fast image processing") {
           public void run() {
             com.gemstone.gemfire.internal.cache.InitialImageOperation.slowImageProcessing = 0;
           }
         });
-      getLogWriter().info("after async nonblocking ops complete");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after async nonblocking ops complete");
     }
 
     // wait for GII to complete
-    DistributedTestCase.join(asyncGII, 30 * 1000, getLogWriter());
+    Threads.join(asyncGII, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     final long iiComplete = System.currentTimeMillis();
-    getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
     if (getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     }
 
     if (async.exceptionOccurred()) {
@@ -4826,7 +4830,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           if (entriesDumped) return;
           entriesDumped = true;
 
-          LogWriter logger = getLogWriter();
+          LogWriter logger = com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter();
           logger.info("DUMPING Entries with values in VM that should have been destroyed:");
           for (int i = 5; i < NB1_NUM_ENTRIES; i += 6) {
             logger.info(i + "-->" +
@@ -4887,7 +4891,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               }
             }
           }
-          getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
                               " were updated concurrently with getInitialImage");
           // make sure at least some of them were concurrent
           {
@@ -5000,7 +5004,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             return "profile count never reached " + expectedProfiles;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 30 * 1000, 200, true);
 
         // operate on every odd entry with different value, alternating between
         // updates, invalidates, and destroys. These operations are likely
@@ -5082,7 +5086,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     if (!getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
       try {
-        DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+        Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
       } finally {
         vm2.invoke(new SerializableRunnable("Set fast image processing") {
           public void run() {
@@ -5090,16 +5094,16 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           }
         });
       }
-      getLogWriter().info("after async nonblocking ops complete");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after async nonblocking ops complete");
     }
 
     // wait for GII to complete
-    DistributedTestCase.join(asyncGII, 30 * 1000, getLogWriter());
+    Threads.join(asyncGII, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     final long iiComplete = System.currentTimeMillis();
-    getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
     if (getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     }
     if (asyncGII.exceptionOccurred()) {
       throw new Error("asyncGII failed", asyncGII.getException());
@@ -5140,7 +5144,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           if (entriesDumped) return;
           entriesDumped = true;
 
-          LogWriter logger = getLogWriter();
+          LogWriter logger = com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter();
           logger.info("DUMPING Entries with values in VM that should have been destroyed:");
           for (int i = 5; i < NB1_NUM_ENTRIES; i += 6) {
             logger.info(i + "-->" +
@@ -5206,7 +5210,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
               }
             }
           }
-          getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": " + numConcurrent + " entries out of " + entryCount +
                               " were updated concurrently with getInitialImage");
 
           // [sumedh] Occasionally fails. Do these assertions really make sense?
@@ -5280,7 +5284,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     // start asynchronous process that does updates to the data
     AsyncInvocation async = vm0.invokeAsync(new CacheSerializableRunnable("Do Nonblocking Operations") {
       public void run2() throws CacheException {
-        pause(200); // give the gii guy a chance to start
+        Wait.pause(200); // give the gii guy a chance to start
         Region region =
           getRootRegion().getSubregion(name);
 
@@ -5297,7 +5301,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             return "profile count never became exactly " + expectedProfiles;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 200, true);
 
         // since we want to force a GII while updates are flying, make sure
         // the other VM gets its CreateRegionResponse and starts its GII
@@ -5366,7 +5370,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     });
     
-    IgnoredException ex = IgnoredException.addExpectedException("RegionDestroyedException");
+    IgnoredException ex = IgnoredException.addIgnoredException("RegionDestroyedException");
     try {
     // in the meantime, do the get initial image in vm2
     AsyncInvocation asyncGII = vm2.invokeAsync(new CacheSerializableRunnable("Create Mirrored Region") {
@@ -5405,7 +5409,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       });
     if (getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
       if (async.exceptionOccurred()) {
         com.gemstone.gemfire.test.dunit.Assert.fail("async invocation failed", async.getException());
       }
@@ -5415,16 +5419,16 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             com.gemstone.gemfire.internal.cache.InitialImageOperation.slowImageProcessing = 0;
           }
         });
-      getLogWriter().info("after async nonblocking ops complete");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("after async nonblocking ops complete");
     }
 
     // wait for GII to complete
     //getLogWriter().info("starting wait for GetInitialImage Completion");
-    DistributedTestCase.join(asyncGII, 30 * 1000, getLogWriter());
-    getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
+    Threads.join(asyncGII, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Complete GetInitialImage at: " + System.currentTimeMillis());
     if (getRegionAttributes().getScope().isGlobal()) {
       // wait for nonblocking operations to complete
-      DistributedTestCase.join(async, 30 * 1000, getLogWriter());
+      Threads.join(async, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
     }
     if (async.exceptionOccurred()) {
       com.gemstone.gemfire.test.dunit.Assert.fail("async failed", async.getException());
@@ -5461,10 +5465,10 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     VM vm1 = host.getVM(1);
     VM vm2 = host.getVM(2);
 
-    getLogWriter().info(name + ": before creates");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": before creates");
     vm0.invoke(create);
     vm1.invoke(create);
-    getLogWriter().info(name + ": after creates");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after creates");
 
     final Object key = "KEY";
     final Object key2 = "KEY2";
@@ -5477,7 +5481,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           disconnectFromDS();
         }
       });
-    getLogWriter().info(name + ": after vm2 disconnect");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm2 disconnect");
 
     try {
     vm0.invoke(new CacheSerializableRunnable("Put int") {
@@ -5486,7 +5490,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           IntWrapper.IntWrapperSerializer serializer =
             (IntWrapper.IntWrapperSerializer)
             DataSerializer.register(c);
-          getLogWriter().info("Registered serializer id:" + serializer.getId()
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Registered serializer id:" + serializer.getId()
               + " class:" + c.getName());
 
           Region region = getRootRegion().getSubregion(name);
@@ -5496,7 +5500,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertTrue(serializer.wasInvoked);
         }
       });
-    getLogWriter().info(name + ": after vm0 put");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm0 put");
 
     SerializableRunnable get = new CacheSerializableRunnable("Get int") {
         public void run2() throws CacheException {
@@ -5522,7 +5526,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                 return "DataSerializer with id 120 was never registered";
               }
             };
-            DistributedTestCase.waitForCriterion(ev, 30 * 1000, 10, true);
+            Wait.waitForCriterion(ev, 30 * 1000, 10, true);
           } finally {
             InternalDataSerializer.GetMarker.WAIT_MS = savVal;
           }
@@ -5533,7 +5537,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       };
     vm1.invoke(get);
-    getLogWriter().info(name + ": after vm1 get");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm1 get");
 
     // Make sure that VMs that connect after registration can get the
     // serializer
@@ -5547,7 +5551,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       });
     vm2.invoke(create);
-    getLogWriter().info(name + ": after vm2 create");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm2 create");
     vm2.invoke(new CacheSerializableRunnable("Put long") {
         public void run2() throws CacheException {
           Region region = getRootRegion().getSubregion(name);
@@ -5561,9 +5565,9 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertTrue(serializer.wasInvoked);
         }
       });
-    getLogWriter().info(name + ": after vm2 put");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm2 put");
     vm2.invoke(get);
-    getLogWriter().info(name + ": after vm2 get");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm2 get");
 
     SerializableRunnable get2 = new CacheSerializableRunnable("Get long") {
         public void run2() throws CacheException {
@@ -5575,17 +5579,17 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         }
       };
     vm0.invoke(get2);
-    getLogWriter().info(name + ": after vm0 get2");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm0 get2");
     vm1.invoke(get2);
-    getLogWriter().info(name + ": after vm1 get2");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after vm1 get2");
 
     // wait a little while for other netsearch requests to return
     // before unregistering the serializers that will be needed to process these
     // responses.
     } finally {
-    pause(1500);
+    Wait.pause(1500);
     unregisterAllSerializers();
-    getLogWriter().info(name + ": after unregister");
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(name + ": after unregister");
     }
   }
 
@@ -5697,7 +5701,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     // wait a little while for other netsearch requests to return
     // before unregistering the serializers that will be needed to process these
     // responses.
-    pause(1500);
+    Wait.pause(1500);
     unregisterAllSerializers();
     }
   }
@@ -5708,7 +5712,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
    * system.
    */
   private static void unregisterAllSerializers() {
-    unregisterAllDataSerializersFromAllVms();
+    DistributedTestSupport.unregisterAllDataSerializersFromAllVms();
     cleanupAllVms();
   }
 
@@ -6006,7 +6010,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         return "waiting for entry event";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     EntryEvent listenEvent = cdcl.getEntryEvent();
     assertNotNull("Cannot assert TX CacheListener Events with a null Entry Event", listenEvent);
     assertEquals(re, listenEvent.getRegion());
@@ -6127,10 +6131,10 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         assertEquals(commitWaits, dmStats.getCommitWaits());
       }
       getSystem().getLogWriter().info("testTXSimpleOps: Create/Put Value");
-      invokeInEveryVM(MultiVMRegionTestCase.class,
+      Invoke.invokeInEveryVM(MultiVMRegionTestCase.class,
                       "assertCacheCallbackEvents",
                       new Object[] {rgnName, txId, "key", null, "value"});
-      invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
+      Invoke.invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
         public void run2() {
           Region rgn1 = getRootRegion().getSubregion(rgnName);
           assertNotNull("Could not find entry for 'key'", rgn1.getEntry("key"));
@@ -6173,17 +6177,17 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           cdcL.assertCount(0, 1, 0, 0);
 
         }
-      });
+      }, getRepeatTimeoutMs());
 
       txMgr.begin();
       rgn.put("key", "value2");
       txId = txMgr.getTransactionId();
       txMgr.commit();
       getSystem().getLogWriter().info("testTXSimpleOps: Put(update) Value2");
-      invokeInEveryVM(MultiVMRegionTestCase.class,
+      Invoke.invokeInEveryVM(MultiVMRegionTestCase.class,
                       "assertCacheCallbackEvents",
                       new Object[] {rgnName, txId, "key", "value", "value2"});
-      invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
+      Invoke.invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
         public void run2() {
           Region rgn1 = getRootRegion().getSubregion(rgnName);
           assertNotNull("Could not find entry for 'key'", rgn1.getEntry("key"));
@@ -6216,7 +6220,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           cdcL.assertCount(0, 2, 0, 0);
 
         }
-      });
+      }, getRepeatTimeoutMs());
 
       txMgr.begin();
       rgn.invalidate("key");
@@ -6224,10 +6228,10 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       txMgr.commit();
       getSystem().getLogWriter().info("testTXSimpleOps: invalidate key");
       // validate each of the CacheListeners EntryEvents
-      invokeInEveryVM(MultiVMRegionTestCase.class,
+      Invoke.invokeInEveryVM(MultiVMRegionTestCase.class,
                       "assertCacheCallbackEvents",
                       new Object[] {rgnName, txId, "key", "value2", null});
-      invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
+      Invoke.invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
         public void run2() {
           Region rgn1 = getRootRegion().getSubregion(rgnName);
           assertNotNull("Could not find entry for 'key'", rgn1.getEntry("key"));
@@ -6261,7 +6265,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           cdcL.assertCount(0, 2, 1, 0);
 
         }
-      });
+      }, getRepeatTimeoutMs());
 
       txMgr.begin();
       rgn.destroy("key");
@@ -6269,10 +6273,10 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       txMgr.commit();
       getSystem().getLogWriter().info("testTXSimpleOps: destroy key");
       // validate each of the CacheListeners EntryEvents
-      invokeInEveryVM(MultiVMRegionTestCase.class,
+      Invoke.invokeInEveryVM(MultiVMRegionTestCase.class,
                       "assertCacheCallbackEvents",
                       new Object[] {rgnName, txId, "key", null, null});
-      invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
+      Invoke.invokeInEveryVMRepeatingIfNecessary(new CacheSerializableRunnable("testTXSimpleOps: Verify Received Value") {
         public void run2() {
           Region rgn1 = getRootRegion().getSubregion(rgnName);
           assertTrue(!rgn1.containsKey("key"));
@@ -6303,7 +6307,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             (CountingDistCacheListener) rgn1.getAttributes().getCacheListeners()[0];
           cdcL.assertCount(0, 2, 1, 1);
         }
-      });
+      }, getRepeatTimeoutMs());
 
     }
     catch(Exception e) {
@@ -7480,7 +7484,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     };
 
-    invokeInEveryVM(create);
+    Invoke.invokeInEveryVM(create);
     // make sure each op sequence has the correct affect transaction event
     // check C + C -> EX
     // check C + P -> C
@@ -7505,7 +7509,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       txMgr.commit();
       // Make sure commit did not trigger callbacks
       //// callbackVal.reAssert();
-      invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+P->C") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+P->C") {
           public void run2() {
             Region rgn1 = getRootRegion().getSubregion(rgnName);
             CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -7582,7 +7586,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       assertTrue(!rgn.containsValueForKey("key"));
       txMgr.commit();
       //// callbackVal.reAssert();
-      invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+DI->C (invalid value)") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+DI->C (invalid value)") {
           public void run2() {
             Region rgn1 = getRootRegion().getSubregion(rgnName);
             CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -7652,7 +7656,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       assertTrue(rgn.containsKey("key"));
       assertTrue(!rgn.containsValueForKey("key"));
       txMgr.commit();
-      invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: committed LI + TX DI-> NOOP") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: committed LI + TX DI-> NOOP") {
           public void run2() {
             Region rgn1 = getRootRegion().getSubregion(rgnName);
             CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -7682,7 +7686,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         assertTrue(rgn.containsKey("key"));
         assertTrue(!rgn.containsValueForKey("key"));
         txMgr.commit();
-        invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: TX LI + TX DI -> LI") {
+        Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: TX LI + TX DI -> LI") {
             public void run2() {
               Region rgn1 = getRootRegion().getSubregion(rgnName);
               CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -7734,7 +7738,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       assertTrue(!rgn.containsKey("key"));
       txMgr.commit();
       //// callbackVal.reAssert();
-      invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+DD->DD") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+DD->DD") {
           public void run2() {
             Region rgn1 = getRootRegion().getSubregion(rgnName);
             CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -7770,7 +7774,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       // Check C + LI -> C
       if (!getRegionAttributes().getDataPolicy().withReplication()) {
         // assume that remote regions have same mirror type as local
-        invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: C+LI-> entry creation") {
+        Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: C+LI-> entry creation") {
             public void run2() {
               Region rgn1 = getRootRegion().getSubregion(rgnName);
               try {
@@ -7792,7 +7796,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       assertTrue(!rgn.containsValueForKey("key"));
       txMgr.commit();
       //// callbackVal.reAssert();
-      invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+LI->C (with value)") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("testTXAlgebra: check: C+LI->C (with value)") {
           public void run2() {
             Region rgn1 = getRootRegion().getSubregion(rgnName);
             CacheTransactionManager txMgr2 = getCache().getCacheTransactionManager();
@@ -8171,11 +8175,11 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       long start = System.currentTimeMillis();
       RegionVersionVector vm0vv = getVersionVector(vm0);
       long end = System.currentTimeMillis();
-      getLogWriter().info("version vector transmission took " + (end-start) + " ms");
-      getLogWriter().info("vm0 vector = " + vm0vv);
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("version vector transmission took " + (end-start) + " ms");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("vm0 vector = " + vm0vv);
   
-      RegionVersionVector vm1vv = getVersionVector(vm1);    getLogWriter().info("vm1 vector = " + vm1vv);
-      RegionVersionVector vm2vv = getVersionVector(vm2);    getLogWriter().info("vm2 vector = " + vm2vv);
+      RegionVersionVector vm1vv = getVersionVector(vm1);    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("vm1 vector = " + vm1vv);
+      RegionVersionVector vm2vv = getVersionVector(vm2);    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("vm2 vector = " + vm2vv);
       
       Map<String, VersionTag> vm0Versions = (Map<String, VersionTag>)vm0.invoke(this.getClass(), "getCCRegionVersions");
       Map<String, VersionTag> vm1Versions = (Map<String, VersionTag>)vm1.invoke(this.getClass(), "getCCRegionVersions");
@@ -8508,10 +8512,10 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             }
           };
           try {
-            waitForCriterion(waitForExpiration, TombstoneService.REPLICATED_TOMBSTONE_TIMEOUT+10000, 1000, true);
+            Wait.waitForCriterion(waitForExpiration, TombstoneService.REPLICATED_TOMBSTONE_TIMEOUT+10000, 1000, true);
           } catch (AssertionFailedError e) {
             CCRegion.dumpBackingMap();
-            getLogWriter().info("tombstone service state: " + CCRegion.getCache().getTombstoneService());
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("tombstone service state: " + CCRegion.getCache().getTombstoneService());
             throw e;
           }
         }
@@ -8540,7 +8544,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
                   + " tombstones left out of " + origCount + " initial tombstones";
               }
             };
-            waitForCriterion(waitForExpiration, TombstoneService.REPLICATED_TOMBSTONE_TIMEOUT+10000, 1000, true);
+            Wait.waitForCriterion(waitForExpiration, TombstoneService.REPLICATED_TOMBSTONE_TIMEOUT+10000, 1000, true);
             logger.debug("creating tombstones.  current count={}", CCRegion.getTombstoneCount());
             for (int i=0; i<numEntries; i++) {
               CCRegion.create("cckey" + i, i);
@@ -8563,7 +8567,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             }
           } catch (AssertionFailedError e) {
             CCRegion.dumpBackingMap();
-            getLogWriter().info("tombstone service state: " + CCRegion.getCache().getTombstoneService());
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("tombstone service state: " + CCRegion.getCache().getTombstoneService());
             throw e;
           } catch (CacheException e) {
             com.gemstone.gemfire.test.dunit.Assert.fail("while performing create/destroy operations", e);
@@ -8942,7 +8946,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           public void close() {
           }
           public Object load(LoaderHelper helper) throws CacheLoaderException {
-            getLogWriter().info("The test CacheLoader has been invoked for key '" + helper.getKey() + "'");
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("The test CacheLoader has been invoked for key '" + helper.getKey() + "'");
             return "loadedValue";
           }
         });
@@ -9030,7 +9034,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
         for (int i=0; i<100; i++) {
           RegionEntry entry = r.getRegionEntry("cckey"+i);
           int stamp = entry.getVersionStamp().getEntryVersion();
-          getLogWriter().info("checking key cckey" + i + " having version " + stamp + " entry=" + entry);
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("checking key cckey" + i + " having version " + stamp + " entry=" + entry);
           assertEquals(2, stamp);
           assertEquals(result.get("cckey"+i), i+1);
         }
@@ -9057,6 +9061,15 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
       }
     }
     return failed;
+  }
+  
+  /**
+   * The number of milliseconds to try repeating validation code in the
+   * event that AssertionFailedError is thrown.  For ACK scopes, no
+   * repeat should be necessary.
+   */
+  protected long getRepeatTimeoutMs() {
+    return 0;
   }
   
   public static void assertNoClearTimeouts() {
@@ -9088,13 +9101,13 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
   public static byte[] getCCRegionVersionVector() throws Exception {
     Object id = getMemberId();
     int vm = VM.getCurrentVMNum();
-    getLogWriter().info("vm" + vm + " with id " + id + " copying " + CCRegion.getVersionVector().fullToString());
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("vm" + vm + " with id " + id + " copying " + CCRegion.getVersionVector().fullToString());
     RegionVersionVector vector = CCRegion.getVersionVector().getCloneForTransmission();
-    getLogWriter().info("clone is " + vector);
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("clone is " + vector);
     HeapDataOutputStream dos = new HeapDataOutputStream(3000, Version.CURRENT);
     DataSerializer.writeObject(vector, dos);
     byte[] bytes = dos.toByteArray();
-    getLogWriter().info("serialized size is " + bytes.length);
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("serialized size is " + bytes.length);
     return bytes;
   }
 

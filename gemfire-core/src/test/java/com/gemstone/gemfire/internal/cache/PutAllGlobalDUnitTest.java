@@ -48,7 +48,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -86,7 +89,7 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(PutAllGlobalDUnitTest.class, "createCacheForVM0");
       vm1.invoke(PutAllGlobalDUnitTest.class, "createCacheForVM1");
-      getLogWriter().fine("Cache created successfully");
+      LogWriterSupport.getLogWriter().fine("Cache created successfully");
     }
     
     public void tearDown2(){
@@ -96,7 +99,7 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
         vm0.invoke(PutAllGlobalDUnitTest.class, "closeCache");
         vm1.invoke(PutAllGlobalDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCacheForVM0(){
@@ -182,16 +185,16 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
               long startTime = 0;
                 try{
                     Thread.sleep(500);
-                    getLogWriter().info("async2 proceeding with put operation");
+                    LogWriterSupport.getLogWriter().info("async2 proceeding with put operation");
                     startTime = System.currentTimeMillis();
                     region.put(new Integer(1),"mapVal");
-                    getLogWriter().info("async2 done with put operation");
+                    LogWriterSupport.getLogWriter().info("async2 done with put operation");
                     fail("Should have thrown TimeoutException");
                 }catch(TimeoutException Tx){
                    // Tx.printStackTrace();
-                    getLogWriter().info("PASS: As expected Caught TimeoutException ");
+                    LogWriterSupport.getLogWriter().info("PASS: As expected Caught TimeoutException ");
                     if (startTime + TIMEOUT_PERIOD + DLockGrantor.GRANTOR_THREAD_MAX_WAIT /* slop of grantor max wait ms */ < System.currentTimeMillis()) {
-                      getLogWriter().warning("though this test passed, the put() timed out in "
+                      LogWriterSupport.getLogWriter().warning("though this test passed, the put() timed out in "
                           + (System.currentTimeMillis() - startTime) +
                           " instead of the expected " + TIMEOUT_PERIOD + " milliseconds");
                     }
@@ -203,13 +206,13 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
             }
         });
         
-        DistributedTestCase.join(async2, 30 * 1000, getLogWriter());
+        Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
         if (async2.exceptionOccurred()) {
-          DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+          Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
           Assert.fail("async2 failed", async2.getException());
         }
         
-        DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+        Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
         if (async1.exceptionOccurred()) {
           Assert.fail("async1 failed", async1.getException());
         }
@@ -221,14 +224,14 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
     public static void putAllMethod() throws Exception {
         Map m = new HashMap();
         serverSocket.accept();
-        getLogWriter().info("async1 connection received - continuing with putAll operation");
+        LogWriterSupport.getLogWriter().info("async1 connection received - continuing with putAll operation");
         serverSocket.close();
         try{
           for (int i=1; i<2; i++) {
             m.put(new Integer(i), String.valueOf(i));
           }
             region.putAll(m);
-            getLogWriter().info("async1 done with putAll operation");
+            LogWriterSupport.getLogWriter().info("async1 done with putAll operation");
             
         }catch(Exception ex){
 //            ex.printStackTrace();
@@ -277,13 +280,13 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
     
     static class BeforeCreateCallback extends CacheWriterAdapter {
         public void beforeCreate(EntryEvent event){
-          getLogWriter().info("beforeCreate invoked for " + event.getKey());
+          LogWriterSupport.getLogWriter().info("beforeCreate invoked for " + event.getKey());
             try{
                 Thread.sleep(5000);
             }catch(InterruptedException ex) {
                 fail("interrupted");
             }
-          getLogWriter().info("beforeCreate done for " + event.getKey());
+          LogWriterSupport.getLogWriter().info("beforeCreate done for " + event.getKey());
             
         }
     }// end of BeforeCreateCallback

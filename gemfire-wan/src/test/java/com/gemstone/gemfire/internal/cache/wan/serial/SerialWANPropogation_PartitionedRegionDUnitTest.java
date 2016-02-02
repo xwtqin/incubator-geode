@@ -22,6 +22,7 @@ import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 public class SerialWANPropogation_PartitionedRegionDUnitTest extends WANTestBase {
 
@@ -334,9 +335,9 @@ public class SerialWANPropogation_PartitionedRegionDUnitTest extends WANTestBase
   }
 
   public void testPartitionedSerialPropagationHA() throws Exception {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
 
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
@@ -376,9 +377,9 @@ public class SerialWANPropogation_PartitionedRegionDUnitTest extends WANTestBase
     //do initial 100 puts to create all the buckets
     vm5.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 100 });
     
-    addExpectedException(CancelException.class.getName());
-    addExpectedException(CacheClosedException.class.getName());
-    addExpectedException(ForceReattemptException.class.getName());
+    IgnoredException.addIgnoredException(CancelException.class.getName());
+    IgnoredException.addIgnoredException(CacheClosedException.class.getName());
+    IgnoredException.addIgnoredException(ForceReattemptException.class.getName());
     //start async puts
     AsyncInvocation inv = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 1000 });

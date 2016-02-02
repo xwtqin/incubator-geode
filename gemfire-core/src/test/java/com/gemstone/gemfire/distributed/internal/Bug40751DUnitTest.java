@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache.SubscriptionAttributes;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -95,7 +96,7 @@ public class Bug40751DUnitTest extends CacheTestCase {
 
       vm1.invoke(createEmptyRegion);
     } finally {
-      invokeInEveryVM(new SerializableCallable() {
+      Invoke.invokeInEveryVM(new SerializableCallable() {
         public Object call() throws Exception {
           System.getProperties().remove("p2p.oldIO");
           System.getProperties().remove("p2p.nodirectBuffers");

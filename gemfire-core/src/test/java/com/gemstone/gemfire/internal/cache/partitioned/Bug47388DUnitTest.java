@@ -44,6 +44,8 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * The test creates two datastores with a partitioned region, and also running a
@@ -244,7 +246,7 @@ public class Bug47388DUnitTest extends DistributedTestCase {
       }
     };
     
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 500, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 500, true);
   }
 
   public static void waitForLastKeyDestroyed() throws Exception {
@@ -261,7 +263,7 @@ public class Bug47388DUnitTest extends DistributedTestCase {
 
     };
 
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 500, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 500, true);
   }
 
   public void bug51931_testQRMOfExpiredEventsProcessedSuccessfully() throws Exception {

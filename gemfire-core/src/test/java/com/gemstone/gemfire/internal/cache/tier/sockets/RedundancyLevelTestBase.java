@@ -44,7 +44,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 
 /**
@@ -109,7 +112,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
     server2 = host.getVM(2);
     server3 = host.getVM(3);
 
-    IgnoredException.addExpectedException("java.net.SocketException||java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.SocketException||java.net.ConnectException");
 
     // start servers first
     PORT1 = ((Integer)server0.invoke(RedundancyLevelTestBase.class,
@@ -121,7 +124,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
     PORT4 = ((Integer)server3.invoke(RedundancyLevelTestBase.class,
         "createServerCache")).intValue();
 
-    String hostName = getServerHostName(Host.getHost(0));
+    String hostName = NetworkSupport.getServerHostName(Host.getHost(0));
     SERVER1 = hostName + PORT1;
     SERVER2 = hostName + PORT2;
     SERVER3 = hostName + PORT3;
@@ -171,7 +174,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
 
       CacheServerImpl bs = (CacheServerImpl)cache.getCacheServers()
           .iterator().next();
@@ -188,7 +191,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
 
 
       Iterator iter_prox = ccn.getClientProxies().iterator();
@@ -206,7 +209,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
             return excuse;
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+        Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
         // assertTrue("Dispatcher on primary should be alive",   proxy._messageDispatcher.isAlive());
       }
 
@@ -230,7 +233,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
 
       CacheServerImpl bs = (CacheServerImpl)cache.getCacheServers()
           .iterator().next();
@@ -247,7 +250,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
 
       Iterator iter_prox = ccn.getClientProxies().iterator();
       if (iter_prox.hasNext()) {
@@ -273,7 +276,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
         + pool.getRedundantNames() + ") does not contain " + server;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 2000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 2000, true);
   }
 
   public static void verifyLiveAndRedundantServers(final int liveServers,
@@ -291,7 +294,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
             + ") to become " + redundantServers;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120 * 1000, 2 * 1000, true);
+    Wait.waitForCriterion(wc, 120 * 1000, 2 * 1000, true);
   }
   
   public static void verifyDeadServers(int deadServers )
@@ -384,7 +387,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
       
       CacheServerImpl bs = (CacheServerImpl)cache.getCacheServers()
           .iterator().next();
@@ -403,7 +406,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
     }
     catch (Exception ex) {
       Assert.fail("exception in verifyCCP()", ex);
@@ -422,7 +425,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
               + cache.getCacheServers().size() + ") never became 1";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 180 * 1000, 2000, true);
+      Wait.waitForCriterion(wc, 180 * 1000, 2000, true);
 
       CacheServerImpl bs = (CacheServerImpl)cache.getCacheServers()
           .iterator().next();
@@ -438,7 +441,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
           return "Notifier's proxies is empty";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 180 * 1000, 2000, true);
+      Wait.waitForCriterion(wc, 180 * 1000, 2000, true);
 
       Iterator iter_prox = ccn.getClientProxies().iterator();
 
@@ -464,7 +467,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
             return excuse;
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 180 * 1000, 2 * 1000, true);
+        Wait.waitForCriterion(wc, 180 * 1000, 2 * 1000, true);
         
         Set keysMap = ccp.cils[RegisterInterestTracker.interestListIndex]
           .getProfile(Region.SEPARATOR + REGION_NAME)

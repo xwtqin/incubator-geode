@@ -26,7 +26,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.cache.client.*;
 
 /**
@@ -66,7 +69,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
 
     final Host host = Host.getHost(0);
     //Server1 VM
@@ -86,15 +89,15 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
       host.getVM(i).invoke(getClass(), "createImpl", null);
     }
 
-    getLogWriter().info("implementation class is " + impl.getClass());
+    LogWriterSupport.getLogWriter().info("implementation class is " + impl.getClass());
 
     PORT1 =  ((Integer)server1.invoke(impl.getClass(), "createServerCache" )).intValue();
     PORT2 =  ((Integer)server2.invoke(impl.getClass(), "createServerCache" )).intValue();
     
     client1.invoke(impl.getClass(), "createClientCache", new Object[] { 
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     client2.invoke(impl.getClass(), "createClientCache", new Object[] {
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
 
   }
 

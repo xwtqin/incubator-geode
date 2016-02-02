@@ -54,6 +54,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -158,7 +159,7 @@ public class PRPerformanceTestDUnitTest extends
       }
     }
     if (!foundIt) {
-      getLogWriter().severe("Key " + key + " not found in any bucket");      
+      LogWriterSupport.getLogWriter().severe("Key " + key + " not found in any bucket");      
     }
     return foundIt;
   }
@@ -252,7 +253,7 @@ public class PRPerformanceTestDUnitTest extends
             list = (ArrayList)rc.getResult();
           }
           catch (Exception ex) {
-            getLogWriter().info("Exception Occured :" + ex.getMessage());
+            LogWriterSupport.getLogWriter().info("Exception Occured :" + ex.getMessage());
             Assert.fail("Test failed",ex);
           }
           Object val = list.get(0);
@@ -278,7 +279,7 @@ public class PRPerformanceTestDUnitTest extends
         }
         
         t.stop();        
-        getLogWriter().info("Time taken to iterate over " + vals.size()+ " no. of keys: " + t.getTimeInMs() + " ms");
+        LogWriterSupport.getLogWriter().info("Time taken to iterate over " + vals.size()+ " no. of keys: " + t.getTimeInMs() + " ms");
                 
         // Call the execute method for each key and see if this takes more time
 
@@ -305,7 +306,7 @@ public class PRPerformanceTestDUnitTest extends
         }
         t.stop();
         assertEquals(vals.size(),listOfKeys.size());            
-        getLogWriter().info("Time taken to iterate over " + vals.size()+ " no. of keys using FunctionExecution: " + t.getTimeInMs() + " ms");
+        LogWriterSupport.getLogWriter().info("Time taken to iterate over " + vals.size()+ " no. of keys using FunctionExecution: " + t.getTimeInMs() + " ms");
         
       }
     });

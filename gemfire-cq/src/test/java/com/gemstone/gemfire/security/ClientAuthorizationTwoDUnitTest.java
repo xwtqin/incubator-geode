@@ -18,6 +18,7 @@ package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /**
  * Tests for authorization from client to server. This tests for authorization
@@ -64,11 +65,11 @@ public class ClientAuthorizationTwoDUnitTest extends
   // Region: Tests
 
   public void testAllOpsWithFailover2() {
-    addExpectedException("Read timed out");
-    addExpectedException("Connection reset");
-    addExpectedException("SocketTimeoutException");
-    addExpectedException("ServerConnectivityException");
-    addExpectedException("Socket Closed");
+    IgnoredException.addIgnoredException("Read timed out");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("SocketTimeoutException");
+    IgnoredException.addIgnoredException("ServerConnectivityException");
+    IgnoredException.addIgnoredException("Socket Closed");
 
     OperationWithAction[] allOps = {
         // Register interest in all keys using list

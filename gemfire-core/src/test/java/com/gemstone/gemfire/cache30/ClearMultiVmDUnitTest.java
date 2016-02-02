@@ -40,7 +40,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -80,7 +83,7 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         vm0.invoke(ClearMultiVmDUnitTest.class, "closeCache");
         vm1.invoke(ClearMultiVmDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
         
     }
     
@@ -212,8 +215,8 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         
         AsyncInvocation as1 = vm0.invokeAsync(ClearMultiVmDUnitTest.class, "firstVM");
         AsyncInvocation as2 = vm1.invokeAsync(ClearMultiVmDUnitTest.class, "secondVM");
-        DistributedTestCase.join(as1, 30 * 1000, getLogWriter());
-        DistributedTestCase.join(as2, 30 * 1000, getLogWriter());
+        Threads.join(as1, 30 * 1000, LogWriterSupport.getLogWriter());
+        Threads.join(as2, 30 * 1000, LogWriterSupport.getLogWriter());
         
         if(as1.exceptionOccurred()){
           Assert.fail("as1 failed", as1.getException());
@@ -328,7 +331,7 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
             }
         });
         
-        DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+        Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
         if(async1.exceptionOccurred()){
           Assert.fail("async1 failed", async1.getException());
         }

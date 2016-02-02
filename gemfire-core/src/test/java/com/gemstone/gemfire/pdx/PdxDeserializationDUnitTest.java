@@ -43,6 +43,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * A test to ensure that we do not deserialize PDX objects
@@ -269,7 +271,7 @@ public class PdxDeserializationDUnitTest extends CacheTestCase {
   
   protected void checkClientValue(final Region<Object, Object> region) {
     //Because register interest is asynchronous, we need to wait for the value to arrive.
-    waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       
       public boolean done() {
         return region.get("A") != null;

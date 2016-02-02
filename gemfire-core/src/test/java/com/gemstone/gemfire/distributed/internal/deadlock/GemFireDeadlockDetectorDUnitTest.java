@@ -36,6 +36,8 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -56,7 +58,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
   }
 
   private void stopStuckThreads() {
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       
       public void run() {
         for(Thread thread: stuckThreads) {
@@ -115,7 +117,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
     Thread.sleep(5000);
     GemFireDeadlockDetector detect = new GemFireDeadlockDetector();
     LinkedList<Dependency> deadlock = detect.find().findCycle();
-    getLogWriter().info("Deadlock=" + DeadlockDetector.prettyFormat(deadlock));
+    LogWriterSupport.getLogWriter().info("Deadlock=" + DeadlockDetector.prettyFormat(deadlock));
     assertEquals(8, deadlock.size());
     stopStuckThreads();
     async1.getResult(30000);
@@ -162,7 +164,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
     }
     
     assertTrue(deadlock != null);
-    getLogWriter().info("Deadlock=" + DeadlockDetector.prettyFormat(deadlock));
+    LogWriterSupport.getLogWriter().info("Deadlock=" + DeadlockDetector.prettyFormat(deadlock));
     assertEquals(4, deadlock.size());
     stopStuckThreads();
     disconnectAllFromDS();

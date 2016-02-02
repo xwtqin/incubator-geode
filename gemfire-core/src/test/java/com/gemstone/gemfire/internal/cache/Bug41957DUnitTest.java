@@ -35,7 +35,9 @@ import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -64,7 +66,7 @@ import com.gemstone.gemfire.test.dunit.VM;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false);
 
@@ -89,7 +91,7 @@ import com.gemstone.gemfire.test.dunit.VM;
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
         getSystem(config);
 
         // Create Region

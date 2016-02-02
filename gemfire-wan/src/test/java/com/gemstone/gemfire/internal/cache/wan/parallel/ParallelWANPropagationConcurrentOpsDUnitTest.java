@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ParallelWANPropagationConcurrentOpsDUnitTest extends WANTestBase {
 
@@ -79,7 +80,7 @@ public class ParallelWANPropagationConcurrentOpsDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
-    pause(5000);
+    Wait.pause(5000);
     
     AsyncInvocation async1 = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 700 });
     AsyncInvocation async2 = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
@@ -203,13 +204,13 @@ public class ParallelWANPropagationConcurrentOpsDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "addQueueListener", new Object[] { "ln", true});
     vm7.invoke(WANTestBase.class, "addQueueListener", new Object[] { "ln", true});
 
-    pause(2000);
+    Wait.pause(2000);
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
     
-    pause(2000);
+    Wait.pause(2000);
     
     vm6.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
       4 });

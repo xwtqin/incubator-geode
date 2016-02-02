@@ -28,7 +28,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
@@ -68,9 +71,9 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
     // start servers first
     PORT1 = ((Integer)server1.invoke(DurableResponseMatrixDUnitTest.class,
         "createServerCache"));
-    createCacheClient(getServerHostName(server1.getHost()));
+    createCacheClient(NetworkSupport.getServerHostName(server1.getHost()));
     //Disconnecting the client can cause this
-    IgnoredException.addExpectedException("Connection reset||Unexpected IOException");
+    IgnoredException.addIgnoredException("Connection reset||Unexpected IOException");
   }
 
   public void testRegisterInterestResponse_NonExistent_Invalid()
@@ -198,7 +201,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 120 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 120 * 1000, 200, true);
   }
   
   public void testNotification_NonExistent_Create() throws Exception

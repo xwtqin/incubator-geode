@@ -48,7 +48,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -125,12 +128,12 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     PORT2 =  ((Integer)server2.invoke(getClass(), "createServerCache" )).intValue();
 
     client1.invoke(getClass(), "createClientCache", new Object[] {
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     client2.invoke(getClass(), "createClientCache", new Object[] {
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     
-    IgnoredException.addExpectedException("java.net.SocketException");
-    IgnoredException.addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("java.net.SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
 
   }
   
@@ -193,7 +196,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -218,7 +221,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -246,7 +249,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -254,7 +257,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     // Client1 should not receive updated value while client2 should receive
     client1.invoke(impl.getClass(),
         "acquireConnectionsAndPutonK1andK2",
-        new Object[] { getServerHostName(client1.getHost())});
+        new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
     //pause(5000);
     //Check if both the puts ( on key1 & key2 ) have reached the servers
     server1.invoke(impl.getClass(), "verifyUpdates");
@@ -303,7 +306,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
     client2.invoke(new CacheSerializableRunnable("Wait for server on port1 to be dead") {
@@ -327,7 +330,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -350,7 +353,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -370,18 +373,18 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
     
-    pause(5000);
+    Wait.pause(5000);
 
     //Do a put on Server1 via Connection object from client1.
     // Client1 should not receive updated value while client2 should receive
     client1.invoke(impl.getClass(),
         "acquireConnectionsAndPutonK1andK2",
-        new Object[] { getServerHostName(client1.getHost())});
-    pause(5000);
+        new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
+    Wait.pause(5000);
     //Check if both the puts ( on key1 & key2 ) have reached the servers
     server1.invoke(impl.getClass(), "verifyUpdates");
     server2.invoke(impl.getClass(), "verifyUpdates");

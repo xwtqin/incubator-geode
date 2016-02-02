@@ -37,7 +37,9 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxyStats;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -92,7 +94,7 @@ public class Bug51400DUnitTest extends DistributedTestCase {
   public static Integer createServerCache(Integer mcastPort,
       Integer maxMessageCount) throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
 //    props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
 //    props.setProperty("log-level", "fine");
 //    props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()
@@ -175,7 +177,7 @@ public class Bug51400DUnitTest extends DistributedTestCase {
         "createServerCache", new Object[] { maxQSize });
 
     client1.invoke(Bug51400DUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(Host.getHost(0)), new Integer[]{port1}, ackInterval});
+        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer[]{port1}, ackInterval});
 
     // Do puts from server as well as from client on the same key.
     AsyncInvocation ai1 = server0.invokeAsync(Bug51400DUnitTest.class,

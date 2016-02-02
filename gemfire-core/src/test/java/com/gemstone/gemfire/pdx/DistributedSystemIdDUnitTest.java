@@ -70,7 +70,7 @@ public class DistributedSystemIdDUnitTest extends DistributedTestCase {
   }
   
   public void testMismatch() {
-    IgnoredException.addExpectedException("Rejected new system node");
+    IgnoredException.addIgnoredException("Rejected new system node");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);

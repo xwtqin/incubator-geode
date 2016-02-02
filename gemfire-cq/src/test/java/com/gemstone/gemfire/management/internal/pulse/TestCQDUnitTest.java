@@ -21,7 +21,11 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing continuous query.
@@ -71,7 +75,7 @@ public class TestCQDUnitTest extends ManagementTestBase {
         return "wait for getNumOfCQ to complete and get results";
       }
     };
-    waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);    
+    Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);    
     final DistributedSystemMXBean bean = getManagementService().getDistributedSystemMXBean();
     assertNotNull(bean);
     return bean.getActiveCQCount();
@@ -79,12 +83,12 @@ public class TestCQDUnitTest extends ManagementTestBase {
 
   public void testNumOfCQ() throws Exception {
     initManagement(false);
-    getLogWriter().info("started testNumOfCQ");
+    LogWriterSupport.getLogWriter().info("started testNumOfCQ");
 
     VM server = managedNodeList.get(1);
     VM client = managedNodeList.get(2);    
     
-    final String host0 = getServerHostName(server.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server.getHost());
 
     int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     cqDUnitTest.createServer(server, serverPort);
@@ -128,7 +132,7 @@ public class TestCQDUnitTest extends ManagementTestBase {
     long numOfCQ = ((Number) managingNode.invoke(TestCQDUnitTest.class,
         "getNumOfCQ")).intValue();
 
-    getLogWriter().info("testNumOfCQ numOfCQ= " + numOfCQ);
+    LogWriterSupport.getLogWriter().info("testNumOfCQ numOfCQ= " + numOfCQ);
 
     cqDUnitTest.closeClient(client);
     cqDUnitTest.closeServer(server);

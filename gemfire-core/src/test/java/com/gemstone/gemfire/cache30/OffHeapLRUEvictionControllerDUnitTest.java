@@ -23,6 +23,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -50,7 +51,7 @@ public class OffHeapLRUEvictionControllerDUnitTest extends
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {

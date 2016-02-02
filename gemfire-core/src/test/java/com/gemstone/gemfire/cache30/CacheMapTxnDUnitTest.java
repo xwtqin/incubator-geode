@@ -39,6 +39,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class CacheMapTxnDUnitTest extends DistributedTestCase{
@@ -146,8 +148,8 @@ public class CacheMapTxnDUnitTest extends DistributedTestCase{
         vm0.invoke(CacheMapTxnDUnitTest.class, "miscMethodsOwner");
         AsyncInvocation o2 = vm0.invokeAsync(CacheMapTxnDUnitTest.class, "miscMethodsNotOwner");//invoke in same vm but in seperate thread
         AsyncInvocation o3 = vm1.invokeAsync(CacheMapTxnDUnitTest.class, "miscMethodsNotOwner");//invoke in another vm
-        DistributedTestCase.join(o2, 30 * 1000, getLogWriter());
-        DistributedTestCase.join(o3, 30 * 1000, getLogWriter());
+        Threads.join(o2, 30 * 1000, LogWriterSupport.getLogWriter());
+        Threads.join(o3, 30 * 1000, LogWriterSupport.getLogWriter());
         
         if(o2.exceptionOccurred()){
           Assert.fail("o2 failed", o2.getException());

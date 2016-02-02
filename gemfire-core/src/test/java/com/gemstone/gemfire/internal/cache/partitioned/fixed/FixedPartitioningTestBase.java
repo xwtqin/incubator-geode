@@ -73,8 +73,10 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.cache.tier.sockets.Message;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is the base class to do operations
@@ -461,7 +463,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterSupport.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
   }
   
@@ -485,7 +487,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -512,7 +514,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -536,7 +538,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterSupport.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
   }
   
@@ -560,7 +562,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -587,7 +589,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -612,7 +614,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
               e);
         }
-        getLogWriter()
+        LogWriterSupport.getLogWriter()
             .info("Customer :- { " + custid + " : " + customer + " }");
       }
     }
@@ -639,7 +641,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                 e);
           }
-          getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+          LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
         }
       }
     }
@@ -668,7 +670,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                   "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                   e);
             }
-            getLogWriter().info(
+            LogWriterSupport.getLogWriter().info(
                 "Shipment :- { " + shipmentId + " : " + shipment + " }");
           }
         }
@@ -694,7 +696,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
               e);
         }
-        getLogWriter()
+        LogWriterSupport.getLogWriter()
             .info("Customer :- { " + custid + " : " + customer + " }");
       }
     }
@@ -721,7 +723,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                 e);
           }
-          getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+          LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
         }
       }
     }
@@ -750,7 +752,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                   "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                   e);
             }
-            getLogWriter().info(
+            LogWriterSupport.getLogWriter().info(
                 "Shipment :- { " + shipmentId + " : " + shipment + " }");
           }
         }
@@ -851,7 +853,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           // assertNotNull(orderPartitionedregion.get(orderId));
 
           if (custId.equals(orderId.getCustId())) {
-            getLogWriter().info(
+            LogWriterSupport.getLogWriter().info(
                 orderId + "belongs to node " + idmForCustomer + " "
                     + idmForOrder);
             assertEquals(idmForCustomer, idmForOrder);
@@ -863,7 +865,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             ShipmentId shipmentId = (ShipmentId)shipmentIterator.next();
             // assertNotNull(shipmentPartitionedregion.get(shipmentId));
             if (orderId.equals(shipmentId.getOrderId())) {
-              getLogWriter().info(
+              LogWriterSupport.getLogWriter().info(
                   shipmentId + "belongs to node " + idmForOrder + " "
                       + idmForShipment);
             }
@@ -1087,15 +1089,15 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       Integer primaryBuckets) {
     HashMap localBucket2RegionMap = (HashMap)region_FPR.getDataStore()
         .getSizeLocally();
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Size of the " + region_FPR + " in this VM :- "
             + localBucket2RegionMap.size() + "List of buckets : "
             + localBucket2RegionMap.keySet());
     assertEquals(numBuckets.intValue(), localBucket2RegionMap.size());
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Size of primary buckets the " + region_FPR + " in this VM :- "
             + region_FPR.getDataStore().getNumberOfPrimaryBucketsManaged());
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Lit of Primaries in this VM :- "
             + region_FPR.getDataStore().getAllLocalPrimaryBucketIds());
     
@@ -1107,15 +1109,15 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       Integer numBuckets, Integer primaryBuckets) {
     HashMap localBucket2RegionMap = (HashMap)region_FPR.getDataStore()
         .getSizeLocally();
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Size of the " + region_FPR + " in this VM :- "
             + localBucket2RegionMap.size() + "List of buckets : "
             + localBucket2RegionMap.keySet());
     assertEquals(numBuckets.intValue(), localBucket2RegionMap.size());
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Size of primary buckets the " + region_FPR + " in this VM :- "
             + region_FPR.getDataStore().getNumberOfPrimaryBucketsManaged());
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Lit of Primaries in this VM :- "
             + region_FPR.getDataStore().getAllLocalPrimaryBucketIds());
 
@@ -1304,8 +1306,8 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 return excuse;
               }
             };
-            DistributedTestCase.waitForCriterion(wc, 20000, 500, false);
-            getLogWriter().info("end of beforeCalculatingStartingBucketId");
+            Wait.waitForCriterion(wc, 20000, 500, false);
+            LogWriterSupport.getLogWriter().info("end of beforeCalculatingStartingBucketId");
           }
         });
   }
@@ -1362,7 +1364,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             throw e;
           }
           catch (Throwable t) {
-            getLogWriter().error(t);
+            LogWriterSupport.getLogWriter().error(t);
           }
         }
       }
@@ -1376,7 +1378,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
         throw e;
       }
       catch (Throwable t) {
-        getLogWriter().error("Error in closing the cache ", t);
+        LogWriterSupport.getLogWriter().error("Error in closing the cache ", t);
         
       }
     }
@@ -1384,7 +1386,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     try {
       cleanDiskDirs();
     } catch(IOException e) {
-      getLogWriter().error("Error cleaning disk dirs", e);
+      LogWriterSupport.getLogWriter().error("Error cleaning disk dirs", e);
     }
   }
   

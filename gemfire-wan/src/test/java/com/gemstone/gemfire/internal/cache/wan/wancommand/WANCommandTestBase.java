@@ -44,6 +44,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.internal.cli.commands.CliCommandTestBase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -178,7 +180,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void startSender(String senderId){
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
       GatewaySender sender = null;
@@ -195,7 +197,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void pauseSender(String senderId){
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
       GatewaySender sender = null;
@@ -331,7 +333,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
    * Enable system property gemfire.disableManagement false in each VM.
    */
   public void enableManagement() {
-    invokeInEveryVM(new SerializableRunnable("Enable Management") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Enable Management") {
       public void run() {
         System.setProperty(InternalDistributedSystem.DISABLE_MANAGEMENT_PROPERTY, "false");
       }
@@ -340,7 +342,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void verifySenderState(String senderId, boolean isRunning, boolean isPaused) {
-    final ExpectedException exln = addExpectedException("Could not connect");
+    final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     try {
       Set<GatewaySender> senders = cache.getGatewaySenders();
       AbstractGatewaySender sender = null;

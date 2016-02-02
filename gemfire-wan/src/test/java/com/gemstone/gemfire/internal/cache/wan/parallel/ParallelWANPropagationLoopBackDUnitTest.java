@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ParallelWANPropagationLoopBackDUnitTest extends WANTestBase {
 
@@ -109,7 +110,7 @@ public class ParallelWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ny" });
     
     //this is required since sender pause doesn't take effect immediately
-    pause(1000);
+    Wait.pause(1000);
     
     //Do 100 puts on site1
     vm2.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
@@ -221,7 +222,7 @@ public class ParallelWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "tk" });
     
     //need to have this pause since pauseSender doesn't take effect immediately
-    pause(1000);
+    Wait.pause(1000);
     
     //do puts on site1
     vm3.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
@@ -355,7 +356,7 @@ public class ParallelWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "tk2" });
     
     //this is required since sender pause doesn't take effect immediately
-    pause(1000);
+    Wait.pause(1000);
 
     //do puts on site1
     vm3.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",

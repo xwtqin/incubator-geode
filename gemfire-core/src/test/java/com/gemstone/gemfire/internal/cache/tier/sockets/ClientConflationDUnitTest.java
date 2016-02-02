@@ -42,7 +42,11 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 
 /**
@@ -129,8 +133,8 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   }
   
   private void performSteps(String conflation) throws Exception {
-    createClientCacheFeeder(getServerHostName(Host.getHost(0)), new Integer(PORT));
-    vm1.invoke(ClientConflationDUnitTest.class, "createClientCache", new Object[] { getServerHostName(vm1.getHost()), new Integer(PORT),
+    createClientCacheFeeder(NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT));
+    vm1.invoke(ClientConflationDUnitTest.class, "createClientCache", new Object[] { NetworkSupport.getServerHostName(vm1.getHost()), new Integer(PORT),
       conflation});
     vm1.invoke(ClientConflationDUnitTest.class, "setClientServerObserverForBeforeInterestRecovery");
     vm1.invoke(ClientConflationDUnitTest.class, "setAllCountersZero");
@@ -335,7 +339,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     final int u1 = update1;
     ev = new WaitCriterion() {
@@ -347,7 +351,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     ev = new WaitCriterion() {
       public boolean done() {
@@ -358,7 +362,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     final int u2 = update2;
     ev = new WaitCriterion() {
@@ -370,7 +374,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
   }
 
   /**
@@ -501,7 +505,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   public static void putEntries()
   {
     try {
-      getLogWriter().info("Putting entries...");
+      LogWriterSupport.getLogWriter().info("Putting entries...");
       Region r1 = cacheFeeder.getRegion(Region.SEPARATOR +REGION_NAME1);
       Region r2 = cacheFeeder.getRegion(Region.SEPARATOR +REGION_NAME2);
       r1.put("key-1", "11");

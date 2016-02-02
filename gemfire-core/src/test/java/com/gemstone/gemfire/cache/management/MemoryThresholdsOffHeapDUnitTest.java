@@ -71,11 +71,17 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the Off-Heap Memory thresholds of {@link ResourceManager}
@@ -103,15 +109,15 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
 
   @Override
   public void setUp() throws Exception {
-    IgnoredException.addExpectedException(expectedEx);
-    IgnoredException.addExpectedException(expectedBelow);
+    IgnoredException.addIgnoredException(expectedEx);
+    IgnoredException.addIgnoredException(expectedBelow);
   }
 
 
 
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(this.resetResourceManager);
+    Invoke.invokeInEveryVM(this.resetResourceManager);
     super.tearDown2();
   }
 
@@ -497,7 +503,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return dr.getMemoryThresholdReachedMembers().size() == 0;
           }
         };
-        waitForCriterion(wc, 10000, 10, true);
+        Wait.waitForCriterion(wc, 10000, 10, true);
         return null;
       }
     });
@@ -598,7 +604,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(2); 
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -613,7 +619,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(3);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -662,7 +668,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(5);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -677,7 +683,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         {
           Integer k = new Integer(6);
           assertEquals(k.toString(), r.get(k, new Integer(expectedInvocations++)));
@@ -834,7 +840,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return keyFoundOnSickMember && caughtException;
           }
         };
-        waitForCriterion(wc, 10000, 10, true);
+        Wait.waitForCriterion(wc, 10000, 10, true);
         return null;
       }
     });
@@ -864,7 +870,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
         vm.invoke(new SerializableCallable("local destroy sick member") {
           public Object call() throws Exception {
             Region r = getRootRegion().getSubregion(regionName);
-            getLogWriter().info("PRLocalDestroy");
+            LogWriterSupport.getLogWriter().info("PRLocalDestroy");
             r.localDestroyRegion();
             return null;
           }
@@ -908,7 +914,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return done;
           }
         };
-        waitForCriterion(wc, 10000, 10, true);
+        Wait.waitForCriterion(wc, 10000, 10, true);
         return null;
       }
     });
@@ -1003,7 +1009,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return false;
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         
         final Integer k = new Integer(2); // reload with same key again and again
         final Integer expectedInvocations3 = new Integer(expectedInvocations.getAndIncrement());
@@ -1048,7 +1054,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         
         Integer k = new Integer(3); // same key as previously used, this time is should stick
         Integer expectedInvocations8 = new Integer(expectedInvocations.incrementAndGet());
@@ -1198,7 +1204,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         { 
           Integer k = new Integer(2);
           assertEquals(k.toString(), r.get(k));
@@ -1219,7 +1225,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return !r.memoryThresholdReached.get();
           }
         };
-        waitForCriterion(wc, 30*1000, 10, true);
+        Wait.waitForCriterion(wc, 30*1000, 10, true);
         
         {
           Integer k = new Integer(3);
@@ -1366,7 +1372,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));
           }
         } catch (LowMemoryException low) {
-          getLogWriter().info("Caught LowMemoryException", low);
+          LogWriterSupport.getLogWriter().info("Caught LowMemoryException", low);
           if (!catchLowMemoryException) {
             Assert.fail("Unexpected exception: ", low);
           }
@@ -1433,7 +1439,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
                 return null;
               }
             };
-            waitForCriterion(waitForCritical, 30*1000, 9, false);
+            Wait.waitForCriterion(waitForCritical, 30*1000, 9, false);
             th.validateUpdateStateAndSendEventBeforeProcess(bytesUsedAfterSmallKey + 943720 + 8, MemoryState.EVICTION_DISABLED_CRITICAL);
           } finally {
             ohm.testHook = null;
@@ -1474,7 +1480,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             }
           };
         }
-        waitForCriterion(wc, 30000, 9, true);
+        Wait.waitForCriterion(wc, 30000, 9, true);
         getCache().getLoggerI18n().fine(removeExpectedExString);
         return bytesUsedAfterSmallKey;
       }
@@ -1512,7 +1518,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return ohm.getState().isNormal();
           }
         };
-        waitForCriterion(wc, 30000, 9, true);
+        Wait.waitForCriterion(wc, 30000, 9, true);
         getCache().getLogger().fine(MemoryThresholdsOffHeapDUnitTest.this.removeExpectedBelow);
         return;
       }
@@ -1650,7 +1656,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
         getCache();
 
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(getServerHostName(server.getHost()), serverPort);
+        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), serverPort);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1783,7 +1789,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
           throw new IllegalStateException("Unknown memory state");
         }
         if (useWaitCriterion) {
-          waitForCriterion(wc, 5000, 10, true);
+          Wait.waitForCriterion(wc, 5000, 10, true);
         }
         return null;
       }
@@ -1803,7 +1809,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             return numberOfProfiles == ra.adviseGeneric().size();
           }
         };
-        waitForCriterion(wc, 10000, 10, true);
+        Wait.waitForCriterion(wc, 10000, 10, true);
         return null;
       }
     });
@@ -1811,7 +1817,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
   
   private Properties getOffHeapProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
     p.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1m");
     return p;
   }

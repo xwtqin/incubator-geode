@@ -27,6 +27,7 @@ import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -96,9 +97,9 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
    * @throws Exception
    */
   public void testCreateCacheWithBadCompressor() throws Exception {
-    IgnoredException.addExpectedException("Unable to load class BAD_COMPRESSOR");
+    IgnoredException.addIgnoredException("Unable to load class BAD_COMPRESSOR");
     File cacheXml = createCacheXml(BAD_COMPRESSOR);
-    IgnoredException expectedException = IgnoredException.addExpectedException("While reading Cache XML file");
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       assertFalse(createCacheOnVM(getVM(0), cacheXml.getCanonicalPath()));
     } finally {
@@ -138,15 +139,15 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
           disconnectFromDS();
           Properties props = new Properties();
           props.setProperty("cache-xml-file",cacheXml);
-          getLogWriter().info("<ExpectedException action=add>ClassNotFoundException</ExpectedException>");
+          LogWriterSupport.getLogWriter().info("<ExpectedException action=add>ClassNotFoundException</ExpectedException>");
           getSystem(props);
           assertNotNull(getCache());
           return Boolean.TRUE;
         } catch(Exception e) {
-          getLogWriter().error("Could not create the cache", e);
+          LogWriterSupport.getLogWriter().error("Could not create the cache", e);
           return Boolean.FALSE;
         } finally {
-          getLogWriter().info("<ExpectedException action=remove>ClassNotFoundException</ExpectedException>");
+          LogWriterSupport.getLogWriter().info("<ExpectedException action=remove>ClassNotFoundException</ExpectedException>");
         }
       }      
     });

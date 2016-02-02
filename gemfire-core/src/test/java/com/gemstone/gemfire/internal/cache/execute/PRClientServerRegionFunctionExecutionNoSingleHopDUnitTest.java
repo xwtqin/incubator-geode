@@ -49,8 +49,11 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     PRClientServerTestBase {
@@ -331,7 +334,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
    */
   public void testServerFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    IgnoredException.addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -364,7 +367,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 6 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 6 * 60 * 1000, LogWriterSupport.getLogWriter());
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -379,7 +382,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
    */
   public void testServerCacheClosedFailoverWithTwoServerAliveHA()
       throws InterruptedException {
-    IgnoredException.addExpectedException("FunctionInvocationTargetException");
+    IgnoredException.addIgnoredException("FunctionInvocationTargetException");
     ArrayList commonAttributes = createCommonServerAttributes(
         "TestPartitionedRegion", null, 1, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
@@ -412,7 +415,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
         PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    DistributedTestCase.join(async[0], 5 * 60 * 1000, getLogWriter());
+    Threads.join(async[0], 5 * 60 * 1000, LogWriterSupport.getLogWriter());
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -517,7 +520,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
 
       public boolean done() {
         int sz = pool.getConnectedServerCount();
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "Checking for the Live Servers : Expected  : "
                 + expectedLiveServers + " Available :" + sz);
         if (sz == expectedLiveServers.intValue()) {
@@ -532,7 +535,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
   }
 
   public static void executeFunction() throws ServerException,
@@ -571,7 +574,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       }
     }
     catch (Exception e) {
-      getLogWriter().info("Got an exception : " + e.getMessage());
+      LogWriterSupport.getLogWriter().info("Got an exception : " + e.getMessage());
       assertTrue(e instanceof EOFException || e instanceof SocketException
           || e instanceof SocketTimeoutException
           || e instanceof ServerException || e instanceof IOException
@@ -592,7 +595,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     ResultCollector rc1 = dataSet.withFilter(testKeysSet)
         .withArgs(Boolean.TRUE).execute(function.getId());
     List l = ((List)rc1.getResult());
-    getLogWriter().info("Result size : " + l.size());
+    LogWriterSupport.getLogWriter().info("Result size : " + l.size());
     return l;
   }
 
@@ -629,7 +632,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
         .getRegion(PartitionedRegionName);
     HashMap localBucket2RegionMap = (HashMap)region.getDataStore()
         .getSizeLocally();
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Size of the " + PartitionedRegionName + " in this VM :- "
             + localBucket2RegionMap.size());
     Set entrySet = localBucket2RegionMap.entrySet();
@@ -658,8 +661,8 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       ResultCollector rc1 = executeOnAll(dataSet, Boolean.TRUE, function,
           isByName);
       List resultList = (List)((List)rc1.getResult());
-      getLogWriter().info("Result size : " + resultList.size());
-      getLogWriter().info("Result are SSSS : " + resultList);
+      LogWriterSupport.getLogWriter().info("Result size : " + resultList.size());
+      LogWriterSupport.getLogWriter().info("Result are SSSS : " + resultList);
       assertEquals(3, resultList.size());
 
       Iterator resultIterator = resultList.iterator();
@@ -718,7 +721,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       }
       Map resultMap = region.getAll(testKeysList);
       assertTrue(resultMap.equals(origVals));
-      pause(2000);
+      Wait.pause(2000);
       Map secondResultMap = region.getAll(testKeysList);
       assertTrue(secondResultMap.equals(origVals));
 
@@ -748,7 +751,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       }
       Map resultMap = region.getAll(testKeysList);
       assertTrue(resultMap.equals(origVals));
-      pause(2000);
+      Wait.pause(2000);
       Map secondResultMap = region.getAll(testKeysList);
       assertTrue(secondResultMap.equals(origVals));
 
@@ -796,7 +799,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
             .iterator().next());
       }
       catch (Exception expected) {
-        getLogWriter().info("Exception : " + expected.getMessage());
+        LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
         expected.printStackTrace();
         fail("Test failed after the put operation");
       }
@@ -826,7 +829,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,
           function, isByName);
       l = ((List)rc1.getResult());
-      getLogWriter().info("Result size : " + l.size());
+      LogWriterSupport.getLogWriter().info("Result size : " + l.size());
       assertEquals(3, l.size());
       for (Iterator i = l.iterator(); i.hasNext();) {
         assertEquals(Boolean.TRUE, i.next());
@@ -879,7 +882,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
       ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,
           function, isByName);
       l = ((List)rc1.getResult());
-      getLogWriter().info("Result size : " + l.size());
+      LogWriterSupport.getLogWriter().info("Result size : " + l.size());
       assertEquals(3, l.size());
       for (Iterator i = l.iterator(); i.hasNext();) {
         assertEquals(Boolean.TRUE, i.next());
@@ -918,7 +921,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       Assert.fail("Test failed after the put operation", ex);
     }
   }
@@ -961,14 +964,14 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
             }
           });
       l = ((List)rc1.getResult());
-      getLogWriter().info("Result size : " + l.size());
+      LogWriterSupport.getLogWriter().info("Result size : " + l.size());
       assertEquals(3, l.size());
       for (Iterator i = l.iterator(); i.hasNext();) {
         assertEquals(Boolean.TRUE, i.next());
       }
     }
     catch (Exception e) {
-      getLogWriter().info("Exception : " + e.getMessage());
+      LogWriterSupport.getLogWriter().info("Exception : " + e.getMessage());
       e.printStackTrace();
       fail("Test failed after the put operation");
 
@@ -1055,7 +1058,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (FunctionException expected) {
       expected.printStackTrace();
-      getLogWriter().info("Exception : " + expected.getMessage());
+      LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
       assertTrue(expected.getMessage().startsWith(
           (LocalizedStrings.ExecuteFunction_CANNOT_0_RESULTS_HASRESULT_FALSE
               .toLocalizedString("return any"))));
@@ -1116,7 +1119,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       Assert.fail("Test failed after the put operation", ex);
     }
   }
@@ -1180,7 +1183,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
           });
     }
     catch (Exception expected) {
-      getLogWriter().fine("Exception occured : " + expected.getMessage());
+      LogWriterSupport.getLogWriter().fine("Exception occured : " + expected.getMessage());
       assertTrue(expected.getMessage().contains(
           "No target node found for KEY = " + testKey)
           || expected.getMessage()
@@ -1242,7 +1245,7 @@ public class PRClientServerRegionFunctionExecutionNoSingleHopDUnitTest extends
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       Assert.fail("Test failed after the put operation", ex);
     }
   }

@@ -32,6 +32,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * This tests that basic entry operations work properly when regions are
@@ -73,7 +74,7 @@ public class NewRegionAttributesDUnitTest extends DistributedTestCase
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
     final Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     vm1 = host.getVM(1);

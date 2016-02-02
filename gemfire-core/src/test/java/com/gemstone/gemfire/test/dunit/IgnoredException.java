@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.gemstone.gemfire.test.dunit;
 
 import java.io.Serializable;
@@ -63,7 +79,7 @@ public class IgnoredException implements Serializable {
           sys.getLogWriter().info(remove);
         }
         try {
-          DistributedTestCase.getLogWriter().info(remove);
+          LogWriterSupport.getLogWriter().info(remove);
         } catch (Exception noHydraLogger) {
         }
 
@@ -75,7 +91,7 @@ public class IgnoredException implements Serializable {
       vm.invoke(removeRunnable);
     }
     else {
-      DistributedTestCase.invokeInEveryVM(removeRunnable);
+      Invoke.invokeInEveryVM(removeRunnable);
     }
     String s = getRemoveMessage();
     LogManager.getLogger(LogService.BASE_LOGGER_NAME).info(s);
@@ -85,7 +101,7 @@ public class IgnoredException implements Serializable {
     if (sys != null) { // avoid creating a system
       sys.getLogWriter().info(s);
     }
-    DistributedTestCase.getLogWriter().info(s);
+    LogWriterSupport.getLogWriter().info(s);
   }
 
   public static void removeAllExpectedExceptions() {
@@ -108,7 +124,7 @@ public class IgnoredException implements Serializable {
    *          the VM on which to log the expected exception or null for all VMs
    * @return an ExpectedException instance for removal purposes
    */
-  public static IgnoredException addExpectedException(final String exception,
+  public static IgnoredException addIgnoredException(final String exception,
       VM v) {
     final IgnoredException ret;
     if (v != null) {
@@ -128,7 +144,7 @@ public class IgnoredException implements Serializable {
           sys.getLogWriter().info(add);
         }
         try {
-          DistributedTestCase.getLogWriter().info(add);
+          LogWriterSupport.getLogWriter().info(add);
         } catch (Exception noHydraLogger) {
         }
   
@@ -139,7 +155,7 @@ public class IgnoredException implements Serializable {
       v.invoke(addRunnable);
     }
     else {
-      DistributedTestCase.invokeInEveryVM(addRunnable);
+      Invoke.invokeInEveryVM(addRunnable);
     }
     
     LogManager.getLogger(LogService.BASE_LOGGER_NAME).info(add);
@@ -149,8 +165,8 @@ public class IgnoredException implements Serializable {
     if (sys != null) { // avoid creating a cache
       sys.getLogWriter().info(add);
     }
-    DistributedTestCase.getLogWriter().info(add);
-    IgnoredException.ignoredExceptions.add(ret);
+    LogWriterSupport.getLogWriter().info(add);
+    ignoredExceptions.add(ret);
     return ret;
   }
 
@@ -168,7 +184,7 @@ public class IgnoredException implements Serializable {
    *          the exception string to expect
    * @return an ExpectedException instance for removal
    */
-  public static IgnoredException addExpectedException(final String exception) {
-    return IgnoredException.addExpectedException(exception, null);
+  public static IgnoredException addIgnoredException(final String exception) {
+    return addIgnoredException(exception, null);
   }
 }

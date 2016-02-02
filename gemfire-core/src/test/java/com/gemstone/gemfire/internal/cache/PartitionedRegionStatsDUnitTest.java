@@ -34,6 +34,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author tapshank, Created on Jan 19, 2006
@@ -518,7 +520,7 @@ public class PartitionedRegionStatsDUnitTest extends
         Cache cache = getCache();
         PartitionedRegion region = (PartitionedRegion) cache.getRegion("region1");
         final PartitionedRegionStats stats = region.getPrStats();
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           
           @Override
           public boolean done() {

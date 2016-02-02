@@ -23,7 +23,10 @@ import com.gemstone.gemfire.internal.cache.wan.GatewaySenderException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.RMIException;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * DUnit test for operations on ParallelGatewaySender
@@ -40,7 +43,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
   
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Broken pipe||Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe||Unexpected IOException");
   }
   
   public void testParallelGatewaySenderWithoutStarting() {
@@ -70,7 +73,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
 
     createSendersReceiversAndPartitionedRegion(lnPort, nyPort, true, true);
 
-    pause(2000);
+    Wait.pause(2000);
     
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
@@ -138,7 +141,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //sleep for a second or two
-    pause(2000);
+    Wait.pause(2000);
     
     //resume the senders
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
@@ -146,7 +149,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
 
     validateParallelSenderQueueAllBucketsDrained();
     
@@ -222,7 +225,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
    * @throws Exception
    */
   public void testParallelPropagationSenderStop() throws Exception {
-    addExpectedException("Broken pipe");
+    IgnoredException.addIgnoredException("Broken pipe");
     Integer[] locatorPorts = createLNAndNYLocators();
     Integer lnPort = locatorPorts[0];
     Integer nyPort = locatorPorts[1];
@@ -250,7 +253,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
    * @throws Exception
    */
   public void testParallelPropagationSenderStartAfterStop() throws Exception {
-    addExpectedException("Broken pipe");
+    IgnoredException.addIgnoredException("Broken pipe");
     Integer[] locatorPorts = createLNAndNYLocators();
     Integer lnPort = locatorPorts[0];
     Integer nyPort = locatorPorts[1];
@@ -266,7 +269,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     //now, stop all of the senders
     stopSenders();
     
-    pause(2000);
+    Wait.pause(2000);
     
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
@@ -284,7 +287,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     AsyncInvocation async = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     async.join();
     
-    pause(2000);
+    Wait.pause(2000);
     
     //verify all the buckets on all the sender nodes are drained
     validateParallelSenderQueueAllBucketsDrained();
@@ -305,7 +308,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
    * @throws Exception
    */
   public void testParallelPropagationSenderStartAfterStop_Scenario2() throws Exception {
-    addExpectedException("Broken pipe");
+    IgnoredException.addIgnoredException("Broken pipe");
     Integer[] locatorPorts = createLNAndNYLocators();
     Integer lnPort = locatorPorts[0];
     Integer nyPort = locatorPorts[1];
@@ -315,42 +318,42 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     //make sure all the senders are running before doing any puts
     waitForSendersRunning();
     
-    getLogWriter().info("All the senders are now started");
+    LogWriterSupport.getLogWriter().info("All the senders are now started");
     
     //FIRST RUN: now, the senders are started. So, do some of the puts
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 200 });
     
-    getLogWriter().info("Done few puts");
+    LogWriterSupport.getLogWriter().info("Done few puts");
     
     //now, stop all of the senders
     stopSenders();
     
-    getLogWriter().info("All the senders are stopped");
-    pause(2000);
+    LogWriterSupport.getLogWriter().info("All the senders are stopped");
+    Wait.pause(2000);
     
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Done some more puts in second run");
+    LogWriterSupport.getLogWriter().info("Done some more puts in second run");
     
     //Region size on remote site should remain same and below the number of puts done in the FIRST RUN
     vm2.invoke(WANTestBase.class, "validateRegionSizeRemainsSame", new Object[] {testName + "_PR", 200 });
     
     //SECOND RUN: start async puts on region
     AsyncInvocation async = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 5000 });
-    getLogWriter().info("Started high number of puts by async thread");
+    LogWriterSupport.getLogWriter().info("Started high number of puts by async thread");
 
-    getLogWriter().info("Starting the senders at the same time");
+    LogWriterSupport.getLogWriter().info("Starting the senders at the same time");
     //when puts are happening by another thread, start the senders
     vm4.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    getLogWriter().info("All the senders are started");
+    LogWriterSupport.getLogWriter().info("All the senders are started");
     
     async.join();
         
-    pause(2000);
+    Wait.pause(2000);
     
     //verify all the buckets on all the sender nodes are drained
     validateParallelSenderQueueAllBucketsDrained();
@@ -364,9 +367,9 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
    * @throws Exception
    */
   public void testParallelPropagationSenderStartAfterStopOnAccessorNode() throws Exception {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
     Integer[] locatorPorts = createLNAndNYLocators();
     Integer lnPort = locatorPorts[0];
     Integer nyPort = locatorPorts[1];
@@ -382,7 +385,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     //now, stop all of the senders
     stopSenders();
     
-    pause(2000);
+    Wait.pause(2000);
     
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
@@ -399,7 +402,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     //SECOND RUN: do some more puts
     AsyncInvocation async = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     async.join();
-    pause(5000);
+    Wait.pause(5000);
     
     //verify all buckets drained only on non-accessor nodes.
     vm4.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] {"ln"});
@@ -421,7 +424,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     createSendersReceiversAndPartitionedRegion(lnPort, nyPort, false, true);
 
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Done 1000 puts on local site");
+    LogWriterSupport.getLogWriter().info("Done 1000 puts on local site");
     
     //Since puts are already done on userPR, it will have the buckets created. 
     //During sender start, it will wait until those buckets are created for shadowPR as well.
@@ -434,16 +437,16 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
 
     waitForSendersRunning();
     
-    getLogWriter().info("Started senders on local site");
+    LogWriterSupport.getLogWriter().info("Started senders on local site");
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 5000 });
-    getLogWriter().info("Done 5000 puts on local site");
+    LogWriterSupport.getLogWriter().info("Done 5000 puts on local site");
     
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
-    getLogWriter().info("Paused senders on local site");
+    LogWriterSupport.getLogWriter().info("Paused senders on local site");
     
     vm4.invoke(WANTestBase.class, "verifySenderPausedState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "verifySenderPausedState", new Object[] { "ln" });
@@ -452,13 +455,13 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Started 1000 async puts on local site");
+    LogWriterSupport.getLogWriter().info("Started 1000 async puts on local site");
 
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
-    getLogWriter().info("Resumed senders on local site");
+    LogWriterSupport.getLogWriter().info("Resumed senders on local site");
 
     vm4.invoke(WANTestBase.class, "verifySenderResumedState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "verifySenderResumedState", new Object[] { "ln" });
@@ -528,7 +531,7 @@ public class ParallelGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
         1000 });
     
-    pause(2000);
+    Wait.pause(2000);
     
     //stop the sender and remove from region before calling destroy on it
     stopSenders();

@@ -291,7 +291,7 @@ public class Bug40299DUnitTest extends CacheTestCase
 
   public void testQueryGetWithClear()
   {
-    IgnoredException.addExpectedException("Entry has been cleared and is not present on disk");
+    IgnoredException.addIgnoredException("Entry has been cleared and is not present on disk");
 	// create region in VM0 
 	vm0.invoke(createCacheForVM0());
 	// Do puts to region.

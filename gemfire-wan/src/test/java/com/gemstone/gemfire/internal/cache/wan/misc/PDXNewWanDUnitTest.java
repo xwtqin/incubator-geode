@@ -20,6 +20,8 @@ import com.gemstone.gemfire.cache.CacheWriterException;
 import com.gemstone.gemfire.cache.client.ServerOperationException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class PDXNewWanDUnitTest extends WANTestBase{
 
@@ -172,11 +174,11 @@ public class PDXNewWanDUnitTest extends WANTestBase{
     //bounce vm3
     vm3.invoke(WANTestBase.class, "closeCache");
     
-    ExpectedException ex1 = addExpectedException("Trying to add a PDXType with the same id");
-    ExpectedException ex2 = addExpectedException("CacheWriterException");
-    ExpectedException ex3 = addExpectedException("does match the existing PDX type");
-    ExpectedException ex4 = addExpectedException("ServerOperationException");
-    ExpectedException ex5 = addExpectedException("Stopping the processor");
+    IgnoredException ex1 = IgnoredException.addIgnoredException("Trying to add a PDXType with the same id");
+    IgnoredException ex2 = IgnoredException.addIgnoredException("CacheWriterException");
+    IgnoredException ex3 = IgnoredException.addIgnoredException("does match the existing PDX type");
+    IgnoredException ex4 = IgnoredException.addIgnoredException("ServerOperationException");
+    IgnoredException ex5 = IgnoredException.addIgnoredException("Stopping the processor");
     
     try {
     //blow away vm3's PDX data
@@ -197,7 +199,7 @@ public class PDXNewWanDUnitTest extends WANTestBase{
       2 });
     
     //Give the updates some time to make it over the WAN
-    pause(10000);
+    Wait.pause(10000);
     
     vm2.invoke(WANTestBase.class, "validateRegionSize_PDX", new Object[] {
       testName + "_RR", 1 });
@@ -269,7 +271,7 @@ public class PDXNewWanDUnitTest extends WANTestBase{
     //to ny from ln
     vm3.invoke(WANTestBase.class, "pauseSender", new Object[] { "ny" });
     
-    pause(5000);
+    Wait.pause(5000);
     
     //Do some puts that define a PDX type in ln
     vm3.invoke(WANTestBase.class, "doPutsPDXSerializable", new Object[] { testName + "_RR",

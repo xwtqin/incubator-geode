@@ -27,6 +27,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -61,7 +62,7 @@ public class DistributedAckRegionDUnitTest extends MultiVMRegionTestCase {
   public Properties getDistributedSystemProperties() {
     Properties p = new Properties();
     p.put(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
-    p.put(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+    p.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
     return p;
   }
 

@@ -57,12 +57,15 @@ import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -97,7 +100,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
 
   public void setUp() throws Exception {
     super.setUp();
-    invokeInEveryVM(GIIDeltaDUnitTest.class,"setRegionName", new Object[]{getUniqueName()});
+    Invoke.invokeInEveryVM(GIIDeltaDUnitTest.class,"setRegionName", new Object[]{getUniqueName()});
     setRegionName(getUniqueName());
   }
   
@@ -154,7 +157,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     createDistributedRegion(vm1);
     assignVMsToPandR(vm0, vm1);
     // from now on, use P and R as vmhttps://wiki.gemstone.com/display/gfepersistence/DeltaGII+Spec+for+8.0
-    expectedEx = IgnoredException.addExpectedException(expectedExceptions);
+    expectedEx = IgnoredException.addIgnoredException(expectedExceptions);
   }
   
   // these steps are shared by all test cases
@@ -518,7 +521,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     // force tombstone GC to let RVVGC to become P4:R0
     changeTombstoneTimout(R, MAX_WAIT);
     changeTombstoneTimout(P, MAX_WAIT);
-    pause((int)MAX_WAIT);
+    Wait.pause((int)MAX_WAIT);
     forceGC(P, 2);
     waitForToVerifyRVV(P, memberP, 6, null, 4); // P's rvv=p6, gc=4
 
@@ -1246,7 +1249,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
       }
     };
 
-    DistributedTestCase.waitForCriterion(ev, 30000, 200, true);
+    Wait.waitForCriterion(ev, 30000, 200, true);
     int count = getDeltaGIICount(P);
     assertEquals(2, count);
 
@@ -1255,7 +1258,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     changeTombstoneTimout(R, MAX_WAIT);
     changeTombstoneTimout(P, MAX_WAIT);
     changeTombstoneTimout(T, MAX_WAIT);
-    pause((int)MAX_WAIT);
+    Wait.pause((int)MAX_WAIT);
     forceGC(P, 2);
     waitForToVerifyRVV(P, memberP, 7, null, 0); // P's rvv=p7, gc=0
 
@@ -1272,7 +1275,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev2, 30000, 200, true);
+    Wait.waitForCriterion(ev2, 30000, 200, true);
     count = getDeltaGIICount(P);
     assertEquals(0, count);
     verifyTombstoneExist(P, "key2", true, true); // expect key2 is still tombstone during and after GIIs
@@ -1374,7 +1377,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
       }
     };
 
-    DistributedTestCase.waitForCriterion(ev, 30000, 200, true);
+    Wait.waitForCriterion(ev, 30000, 200, true);
     int count = getDeltaGIICount(P);
     assertEquals(1, count);
     
@@ -1382,7 +1385,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     // Wait for tombstone is GCed at R, but still exists in P
     changeTombstoneTimout(R, MAX_WAIT);
     changeTombstoneTimout(P, MAX_WAIT);
-    pause((int)MAX_WAIT);
+    Wait.pause((int)MAX_WAIT);
     forceGC(R, 3);
     forceGC(P, 3);
     
@@ -1434,7 +1437,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     forceAddGIICount(P);
     changeTombstoneTimout(R, MAX_WAIT);
     changeTombstoneTimout(P, MAX_WAIT);
-    pause((int)MAX_WAIT);
+    Wait.pause((int)MAX_WAIT);
     forceGC(R, 3);
     waitForToVerifyRVV(P, memberR, 6, null, 0); // P's rvv=r6, gc=0
     waitForToVerifyRVV(P, memberR, 6, null, 0); // P's rvv=r6, gc=0
@@ -2024,8 +2027,8 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           RegionFactory f = getCache().createRegionFactory(getRegionAttributes());
 //          CCRegion = (LocalRegion)f.create(REGION_NAME);
           LocalRegion lr = (LocalRegion)f.create(REGION_NAME);
-          getLogWriter().info("In createDistributedRegion, using hydra.getLogWriter()");
-          getLogWriter().fine("Unfinished Op limit="+InitialImageOperation.MAXIMUM_UNFINISHED_OPERATIONS);
+          LogWriterSupport.getLogWriter().info("In createDistributedRegion, using hydra.getLogWriter()");
+          LogWriterSupport.getLogWriter().fine("Unfinished Op limit="+InitialImageOperation.MAXIMUM_UNFINISHED_OPERATIONS);
         } catch (CacheException ex) {
           Assert.fail("While creating region", ex);
         }
@@ -2093,9 +2096,9 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
   protected void removeSystemPropertiesInVM(VM vm, final String prop) {
     SerializableRunnable change = new SerializableRunnable() {
       public void run() {
-        getLogWriter().info("Current prop setting: "+prop+"="+System.getProperty(prop));
+        LogWriterSupport.getLogWriter().info("Current prop setting: "+prop+"="+System.getProperty(prop));
         System.getProperties().remove(prop);
-        getLogWriter().info(prop+"="+System.getProperty(prop));
+        LogWriterSupport.getLogWriter().info(prop+"="+System.getProperty(prop));
       }
     };
     vm.invoke(change);
@@ -2128,7 +2131,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     DiskStoreID dsid0 = getMemberID(vm0);
     DiskStoreID dsid1 = getMemberID(vm1);
     int compare = dsid0.compareTo(dsid1);
-    getLogWriter().info("Before assignVMsToPandR, dsid0 is "+dsid0+",dsid1 is "+dsid1+",compare="+compare);
+    LogWriterSupport.getLogWriter().info("Before assignVMsToPandR, dsid0 is "+dsid0+",dsid1 is "+dsid1+",compare="+compare);
     if (compare > 0) {
       P = vm0;
       R = vm1;
@@ -2136,7 +2139,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
       P = vm1;
       R = vm0;
     }
-    getLogWriter().info("After assignVMsToPandR, P is "+P.getPid()+"; R is "+R.getPid()+" for region "+REGION_NAME);
+    LogWriterSupport.getLogWriter().info("After assignVMsToPandR, P is "+P.getPid()+"; R is "+R.getPid()+" for region "+REGION_NAME);
   }
   
   private DiskStoreID getMemberID(VM vm) {
@@ -2190,7 +2193,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           for (long i:exceptionList) {
             exceptionListVerified = !rvv.contains(member, i);
             if (!exceptionListVerified) {
-              getLogWriter().finer("DeltaGII:missing exception "+i+":"+rvv);
+              LogWriterSupport.getLogWriter().finer("DeltaGII:missing exception "+i+":"+rvv);
               break;
             }
           }
@@ -2199,7 +2202,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           for (long i = 1; i<=regionversion; i++) {
             if (!rvv.contains(member, i)) {
               exceptionListVerified = false;
-              getLogWriter().finer("DeltaGII:unexpected exception "+i);
+              LogWriterSupport.getLogWriter().finer("DeltaGII:unexpected exception "+i);
               break;
             }
           }
@@ -2215,8 +2218,8 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
             long gcversion = getRegionVersionForMember(rvv, member, true);
             
             boolean exceptionListVerified = verifyExceptionList(member, regionversion, rvv, exceptionList);
-            getLogWriter().info("DeltaGII:expected:"+expectedRegionVersion+":"+expectedGCVersion);
-            getLogWriter().info("DeltaGII:actual:"+regionversion+":"+gcversion+":"+exceptionListVerified+":"+rvv);
+            LogWriterSupport.getLogWriter().info("DeltaGII:expected:"+expectedRegionVersion+":"+expectedGCVersion);
+            LogWriterSupport.getLogWriter().info("DeltaGII:actual:"+regionversion+":"+gcversion+":"+exceptionListVerified+":"+rvv);
 
             boolean match = true;
             if (expectedRegionVersion != -1) {
@@ -2235,7 +2238,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           }
         };
         
-        DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 10 * 1000, 200, true);
         RegionVersionVector rvv = ((LocalRegion)getCache().getRegion(REGION_NAME)).getVersionVector().getCloneForTransmission();
         long regionversion = getRegionVersionForMember(rvv, member, false);
         long gcversion = getRegionVersionForMember(rvv, member, true);
@@ -2267,7 +2270,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           }
         };
 
-        DistributedTestCase.waitForCriterion(ev, 30000, 200, true);
+        Wait.waitForCriterion(ev, 30000, 200, true);
         if (callback == null || !callback.isRunning) {
           fail("GII tesk hook is not started yet");
         }
@@ -2305,7 +2308,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           }
         };
         
-        DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 10 * 1000, 200, true);
         String value = (String)((LocalRegion)getCache().getRegion(REGION_NAME)).get(key);
         assertEquals(expect_value, value);
       }
@@ -2501,7 +2504,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           }
         };
         
-        DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 10 * 1000, 200, true);
         assertTrue(doneVerify());
       }
     };

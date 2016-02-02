@@ -42,7 +42,10 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 import com.gemstone.gemfire.cache.client.internal.RegisterInterestTracker;
@@ -88,7 +91,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
   @Override
   public void setUp() throws Exception {
     disconnectAllFromDS();
-    pause(2000);
+    Wait.pause(2000);
     super.setUp();
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
@@ -97,10 +100,10 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     PORT1 =  ((Integer)server1.invoke(InterestListRecoveryDUnitTest.class, "createServerCache" )).intValue();
     PORT2 =  ((Integer)server2.invoke(InterestListRecoveryDUnitTest.class, "createServerCache" )).intValue();
 
-    getLogWriter().info("server1 port is " + String.valueOf(PORT1));
-    getLogWriter().info("server2 port is " + String.valueOf(PORT2));
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("server1 port is " + String.valueOf(PORT1));
+    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("server2 port is " + String.valueOf(PORT2));
 
-    createClientCache(getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
+    createClientCache(NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
   }
 
   // this test fails because of bug# 35352 , hence commented the bug is Deferred to: Danube
@@ -110,12 +113,12 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     server1.invoke(InterestListRecoveryDUnitTest.class, "createEntries");
     registerK1toK5();
     setServerUnavailable("localhost"+PORT1);
-    pause(20000);
+    Wait.pause(20000);
     unregisterK1toK3();
     setServerAvailable("localhost"+PORT1);
-    pause(20000);
+    Wait.pause(20000);
     setServerUnavailable("localhost"+PORT2);
-    pause(20000);
+    Wait.pause(20000);
     server1.invoke(InterestListRecoveryDUnitTest.class, "verifyUnregisterK1toK3");
 
   }
@@ -361,7 +364,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
   
    public static void verifyRegionToProxyMapForFullRegistration()
@@ -403,7 +406,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return "verifyRegisterK4toK5Retry";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
 
    public static void verifyRegisterK4toK5() {
@@ -442,7 +445,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
   }
 
  public static void verifyRegionToProxyMapForNoRegistration()
@@ -510,6 +513,6 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
   }
 }

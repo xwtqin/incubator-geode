@@ -23,6 +23,8 @@ import com.gemstone.gemfire.cache.wan.GatewaySender.OrderPolicy;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase.MyGatewayEventFilter;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class SerialWANStatsDUnitTest extends WANTestBase {
   
@@ -34,9 +36,9 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("java.net.ConnectException");
-    addExpectedException("java.net.SocketException");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
   }
   
   public void testReplicatedSerialPropagation() throws Exception {
@@ -78,7 +80,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 1000 });
     
-    pause(2000);
+    Wait.pause(2000);
     vm2.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {100, 1000, 1000 });
     
     vm4.invoke(WANTestBase.class, "checkQueueStats", new Object[] {"ln",
@@ -132,7 +134,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
 	vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
 		testName + "_RR", 1000 });
 	    
-	pause(2000);
+	Wait.pause(2000);
 	vm2.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {100, 1000, 1000 });
 	    
 	vm4.invoke(WANTestBase.class, "checkQueueStats", new Object[] {"ln",
@@ -201,7 +203,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 1000 });
     
-    pause(2000);
+    Wait.pause(2000);
     vm2.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {100, 1000, 1000 });
     vm3.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {100, 1000, 1000 });
     
@@ -260,7 +262,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_RR", 10000 });
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender", new Object[] { "ln" });
     Boolean isKilled = Boolean.FALSE;
     try {
@@ -355,7 +357,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR_2", 500 });
     
-    pause(2000);
+    Wait.pause(2000);
     vm4.invoke(WANTestBase.class, "checkQueueStats", new Object[] {"ln",
       0, 1500, 1500, 1500});
     vm4.invoke(WANTestBase.class, "checkBatchStats", new Object[] {"ln",
@@ -492,7 +494,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName, 800 });
     
-    pause(2000);
+    Wait.pause(2000);
     vm4.invoke(WANTestBase.class, "checkQueueStats", new Object[] {"ln",
       0, 1000, 900, 800});
     vm4.invoke(WANTestBase.class, "checkEventFilteredStats", new Object[] {"ln",
@@ -552,7 +554,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     
     vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, keyValues });
 
-    pause(5000);
+    Wait.pause(5000);
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size() });
     for(int i=0;i<500;i++) {
       updateKeyValues.put(i, i+"_updated");
@@ -560,7 +562,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     
     vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, updateKeyValues });
 
-    pause(5000);
+    Wait.pause(5000);
     
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size()  + updateKeyValues.size() });
 
@@ -569,7 +571,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     
     vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, updateKeyValues });
 
-    pause(5000);
+    Wait.pause(5000);
     
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size()  + updateKeyValues.size() });
 
@@ -586,7 +588,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm3.invoke(WANTestBase.class, "validateRegionContents", new Object[] {
         testName, keyValues });
     
-    pause(2000);
+    Wait.pause(2000);
     vm4.invoke(WANTestBase.class, "checkQueueStats", new Object[] {"ln",
       0, 2000, 2000, 1500});
     vm4.invoke(WANTestBase.class, "checkConflatedStats", new Object[] {"ln",

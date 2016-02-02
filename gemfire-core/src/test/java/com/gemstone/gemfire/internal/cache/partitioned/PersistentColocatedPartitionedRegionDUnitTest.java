@@ -50,6 +50,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author dsmith
@@ -109,7 +111,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
         af.setPartitionAttributes(paf.create());
         
         //Try to colocate a persistent PR with the non persistent PR. This should fail.
-        IgnoredException exp = IgnoredException.addExpectedException("IllegalStateException");
+        IgnoredException exp = IgnoredException.addIgnoredException("IllegalStateException");
         try {
           cache.createRegion("colocated", af.create());
           fail("should not have been able to create a persistent region colocated with a non persistent region");
@@ -292,7 +294,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     vm1.invoke(createChildPR);
     vm2.invoke(createChildPR);
     
-    pause(4000);
+    Wait.pause(4000);
     
     assertEquals(vm0Buckets, getBucketList(vm0, PR_REGION_NAME));
     assertEquals(vm0Buckets, getBucketList(vm0, "region2"));
@@ -604,7 +606,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     
     createData(vm0, 0, NUM_BUCKETS, "b");
     createData(vm0, 0, NUM_BUCKETS, "b", "region2");
-    IgnoredException expected = IgnoredException.addExpectedException("PartitionOfflineException");
+    IgnoredException expected = IgnoredException.addIgnoredException("PartitionOfflineException");
     try {
     
     //Close the remaining members.
@@ -632,7 +634,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     //by starting it last.
     AsyncInvocation async0 = vm0.invokeAsync(createPRs);
     AsyncInvocation async1 = vm1.invokeAsync(createPRs);
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation async2 = vm2.invokeAsync(createPRs);
     async0.getResult(MAX_WAIT);
     async1.getResult(MAX_WAIT);
@@ -806,8 +808,8 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
    * @throws Throwable 
    */
   public void replaceOfflineMemberAndRestartCreateColocatedPRLate(SerializableRunnable createParentPR, SerializableRunnable createChildPR) throws Throwable {
-    IgnoredException.addExpectedException("PartitionOfflineException");
-    IgnoredException.addExpectedException("RegionDestroyedException");
+    IgnoredException.addIgnoredException("PartitionOfflineException");
+    IgnoredException.addIgnoredException("RegionDestroyedException");
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -862,14 +864,14 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     //by starting it last.
     AsyncInvocation async2 = vm2.invokeAsync(createParentPR);
     AsyncInvocation async1 = vm1.invokeAsync(createParentPR);
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation async0 = vm0.invokeAsync(createParentPR);
     async0.getResult(MAX_WAIT);
     async1.getResult(MAX_WAIT);
     async2.getResult(MAX_WAIT);
     
     //Wait for async tasks
-    pause(2000);
+    Wait.pause(2000);
     
     //Recreate the child region. 
     async2 = vm2.invokeAsync(createChildPR);
@@ -977,7 +979,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
       }
     });
     
-    IgnoredException ex = IgnoredException.addExpectedException("PartitionOfflineException", vm1);
+    IgnoredException ex = IgnoredException.addIgnoredException("PartitionOfflineException", vm1);
     try {
       
     //Do a rebalance to create buckets in vm1. THis will cause vm0 to disconnect
@@ -997,7 +999,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     vm0.invoke(new SerializableCallable() {
       
       public Object call() throws Exception {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           public boolean done() {
             InternalDistributedSystem ds = system;
             return ds == null || !ds.isConnected();
@@ -1417,7 +1419,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     closeCache();
     
     //Restart colocated with "region2"
-    IgnoredException ex = IgnoredException.addExpectedException("DiskAccessException|IllegalStateException");
+    IgnoredException ex = IgnoredException.addIgnoredException("DiskAccessException|IllegalStateException");
     try {
       createColocatedPRs("region2");
       fail("Should have received an illegal state exception");
@@ -1439,7 +1441,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
     
     //Restart uncolocated. We don't allow changing
     //from uncolocated to colocated.
-    ex = IgnoredException.addExpectedException("DiskAccessException|IllegalStateException");
+    ex = IgnoredException.addIgnoredException("DiskAccessException|IllegalStateException");
     try {
       createColocatedPRs(null);
       fail("Should have received an illegal state exception");

@@ -66,10 +66,14 @@ import com.gemstone.gemfire.internal.cache.control.ResourceListener;
 import com.gemstone.gemfire.internal.cache.control.TestMemoryThresholdListener;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCase {
@@ -85,15 +89,15 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    invokeInEveryVM(this.setHeapMemoryMonitorTestMode);
-    IgnoredException.addExpectedException("above heap critical threshold");
-    IgnoredException.addExpectedException("below heap critical threshold");
+    Invoke.invokeInEveryVM(this.setHeapMemoryMonitorTestMode);
+    IgnoredException.addIgnoredException("above heap critical threshold");
+    IgnoredException.addIgnoredException("below heap critical threshold");
   }
   
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(resetQueryMonitor);
-    invokeInEveryVM(resetResourceManager);
+    Invoke.invokeInEveryVM(resetQueryMonitor);
+    Invoke.invokeInEveryVM(resetResourceManager);
     super.tearDown2();
   }
 
@@ -724,7 +728,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
     //unless otherwise configured
     releaseHook(server);
     
-    DistributedTestCase.join(queryExecution, 60000, getLogWriter());
+    Threads.join(queryExecution, 60000, LogWriterSupport.getLogWriter());
     //Make sure no exceptions were thrown during query testing
     try {
       assertEquals(0, queryExecution.getResult());
@@ -1021,7 +1025,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
         getSystem(props);
         
         final ClientCacheFactory ccf = new ClientCacheFactory(props);
-        ccf.addPoolServer(getServerHostName(server.getHost()), port);
+        ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
         ClientCache cache = (ClientCache)getClientCache(ccf);
       }
     });
@@ -1036,7 +1040,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
         getSystem(props);
         
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(getServerHostName(server.getHost()), port);
+        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), port);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1058,7 +1062,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
 
   protected Properties getServerProperties(boolean disableQueryMonitorForMemory, int queryTimeout) {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
     return p;
   }
   

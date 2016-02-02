@@ -35,8 +35,11 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,7 +64,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
 
   public void setUp() throws Exception {
     super.setUp();
-    IgnoredException.addExpectedException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
   }
 
   
@@ -99,7 +102,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);   
     toRegister = new Boolean(true);
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -116,7 +119,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);   
     toRegister = new Boolean(true);
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution_SendException", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -135,7 +138,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);   
     toRegister = new Boolean(true);
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution_NoLastResult", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -151,7 +154,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);  
     toRegister = new Boolean(false);
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -162,7 +165,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
    */   
   public void testServerExecution_byInlineFunction() {
     createScenario();
-    getLogWriter().info("ClientServerFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution_Inline");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -175,7 +178,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
    */   
   public void testServerExecution_byInlineFunction_InvalidAttrbiutes() {
     createScenario();
-    getLogWriter().info("ClientServerFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution_Inline_InvalidAttributes");
   }
@@ -185,7 +188,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
    */
   public void testBug40714() {
     createScenario();
-    getLogWriter()
+    LogWriterSupport.getLogWriter()
         .info(
             "ClientServerFunctionExecutionDUnitTest#testBug40714 : Starting test");
 
@@ -255,7 +258,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation.");
     }
   }
@@ -270,7 +273,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);
     toRegister = new Boolean(true);    
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -284,7 +287,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     registerFunctionAtServer(function);
     isByName = new Boolean(true);
     toRegister = new Boolean(false);
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#testServerSingleKeyExecution_byName : Starting test");
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "serverExecution", new Object[] { isByName, function, toRegister});
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
@@ -302,7 +305,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    IgnoredException.addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -319,7 +322,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_HA_SERVER);
     registerFunctionAtServer(function);
@@ -339,8 +342,8 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    IgnoredException.addExpectedException("Socket Closed");
-    IgnoredException.addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("Socket Closed");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     
     server1.invoke(
@@ -357,7 +360,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_HA_SERVER);
     registerFunctionAtServer(function);
@@ -381,7 +384,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     //The test code appears to trigger this because the first
     //call to the function disconnects from the DS but does not call
     //last result;
-    IgnoredException.addExpectedException("did not send last result");
+    IgnoredException.addIgnoredException("did not send last result");
     createScenario();
     server1.invoke(
         ClientServerFunctionExecutionDUnitTest.class,
@@ -397,7 +400,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     
     client.invoke(ClientServerFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { getServerHostName(server1.getHost()) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
     
     function = new TestFunction(true, TestFunction.TEST_FUNCTION_NONHA_SERVER);
     registerFunctionAtServer(function);
@@ -428,7 +431,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
   
   
   private void createScenario() {
-    getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#createScenario : creating scenario");
+    LogWriterSupport.getLogWriter().info("ClientServerFFunctionExecutionDUnitTest#createScenario : creating scenario");
     createClientServerScenarionWithoutRegion();    
   }
    
@@ -447,7 +450,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -467,7 +470,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operations");
     }
   }
@@ -504,7 +507,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -531,7 +534,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operations");
     }
   }
@@ -576,7 +579,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       String excuse;
       public boolean done() {
         int sz = pool.getConnectedServerCount();
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "Checking for the Live Servers : Expected  : " + expectedLiveServers
                 + " Available :" + sz);
         if (sz == expectedLiveServers.intValue()) {
@@ -589,7 +592,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
   }
   
   public static Object serverExecutionHAOneServerDown(Boolean isByName, Function function,
@@ -610,7 +613,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       assertEquals(retryRegionName, ((List)rs.getResult()).get(0));
     } catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation");
     }
     return rs.getResult();
@@ -633,7 +636,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     } catch (Exception ex) {
       if (!(ex instanceof ServerConnectivityException)) {
         ex.printStackTrace();
-        getLogWriter().info("Exception : ", ex);
+        LogWriterSupport.getLogWriter().info("Exception : ", ex);
         fail("Test failed after the execute operation");
       }
     }
@@ -657,7 +660,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
     } catch (Exception ex) {
       if (!(ex instanceof ServerConnectivityException)) {
         ex.printStackTrace();
-        getLogWriter().info("Exception : ", ex);
+        LogWriterSupport.getLogWriter().info("Exception : ", ex);
         fail("Test failed after the execute operation");
       }
     }
@@ -731,7 +734,7 @@ public class ClientServerFunctionExecutionDUnitTest extends PRClientServerTestBa
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation nn TRUE");
     }
   }
@@ -766,7 +769,7 @@ public static void serverExecution_Inline_InvalidAttributes() {
       fail("Should have failed with Invalid attributes.");
       
     }catch (Exception ex) {
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       assertTrue(ex.getMessage().contains(
           "For Functions with isHA true, hasResult must also be true."));
     }
@@ -795,7 +798,7 @@ public static void serverExecution_Inline_InvalidAttributes() {
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -820,7 +823,7 @@ public static void serverExecution_Inline_InvalidAttributes() {
           
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -848,7 +851,7 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -874,7 +877,7 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
       
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation");
     }
     
@@ -929,7 +932,7 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
            
     }catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : " , ex);
+      LogWriterSupport.getLogWriter().info("Exception : " , ex);
       fail("Test failed after the execute operation asdfasdfa   ");
     }
   }
@@ -937,9 +940,9 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
   private static ResultCollector execute(Execution member,
       Serializable args, Function function, Boolean isByName) throws Exception {
     if (isByName.booleanValue()) {// by name
-      getLogWriter().info("The function name to execute : " + function.getId());
+      LogWriterSupport.getLogWriter().info("The function name to execute : " + function.getId());
       Execution me = member.withArgs(args);   
-      getLogWriter().info("The args passed  : " + args);
+      LogWriterSupport.getLogWriter().info("The args passed  : " + args);
       return me.execute(function.getId()); 
     }
     else { // By Instance

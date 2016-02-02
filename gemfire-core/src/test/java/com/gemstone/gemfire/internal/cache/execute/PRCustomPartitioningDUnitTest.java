@@ -53,6 +53,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisi
 import com.gemstone.gemfire.internal.cache.xmlcache.Declarable2;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -154,12 +155,12 @@ public class PRCustomPartitioningDUnitTest extends
     for (int b = 0; b < numBucks; b++) {
       if (par.getBucketKeys(b).contains(key)) {
         foundIt = true;
-        getLogWriter().info("Key " + key + " found in bucket " + b);
+        LogWriterSupport.getLogWriter().info("Key " + key + " found in bucket " + b);
         break;
       }
     }
     if (!foundIt) {
-      getLogWriter().severe("Key " + key + " not found in any bucket");      
+      LogWriterSupport.getLogWriter().severe("Key " + key + " not found in any bucket");      
     }
     return foundIt;
   }

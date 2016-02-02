@@ -23,6 +23,7 @@ import com.gemstone.gemfire.cache.FixedPartitionAttributes;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
     FixedPartitioningTestBase {
@@ -492,7 +493,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               "Customer", "Order", "Shipment" });
 
       member3.invoke(FixedPartitioningTestBase.class, "closeCache");
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocationAfterCacheClosed", new Object[] {
@@ -522,7 +523,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -553,7 +554,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -687,7 +688,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               "Customer", "Order", "Shipment" });
 
       member3.invoke(FixedPartitioningTestBase.class, "closeCache");
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocationAfterCacheClosed", new Object[] {
@@ -717,7 +718,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -748,7 +749,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -802,7 +803,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     member2.invoke(FixedPartitioningTestBase.class, "closeCache");
 
-    pause(1000);
+    Wait.pause(1000);
 
     member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
     fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter2, true, 3);
@@ -910,14 +911,14 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member2.invoke(FixedPartitioningTestBase.class, "getForQuarter",
         new Object[] { "Quarter", Quarter1 });
     member2.invoke(FixedPartitioningTestBase.class, "getForQuarter",
         new Object[] { "Quarter", Quarter2 });
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryDataPersistence", new Object[] { Quarter2 });
-    pause(2000);
+    Wait.pause(2000);
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryBucketsForQuarter", new Object[] { 6, 6 });
 
@@ -931,7 +932,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
 
     member1.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryDataPersistence", new Object[] { Quarter1 });
@@ -1065,7 +1066,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 1, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocation", new Object[] { 10, 5, "Customer",
               "Order", "Shipment" });
@@ -1179,7 +1180,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               fpaList, 1, 50, 20, new CustomerFixedPartitionResolver(), null,
               true });
 
-      pause(4000);
+      Wait.pause(4000);
       member2.invoke(FixedPartitioningTestBase.class, "getForColocation",
           new Object[] { "Customer", "Order", "Shipment" });
 
@@ -1248,7 +1249,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 0, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimarySecondaryData", new Object[] { Quarter3, false });
 
@@ -1375,7 +1376,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member4.invoke(FixedPartitioningTestBase.class,
         "checkPrimarySecondaryData", new Object[] { Quarter4, false });
 
@@ -1425,7 +1426,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
     member1.invoke(FixedPartitioningTestBase.class, "closeCache");
     member2.invoke(FixedPartitioningTestBase.class, "closeCache");
 
-    pause(1000);
+    Wait.pause(1000);
 
     member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
     member2.invoke(FixedPartitioningTestBase.class,

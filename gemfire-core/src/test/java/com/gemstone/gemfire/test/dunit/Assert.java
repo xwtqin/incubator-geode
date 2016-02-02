@@ -27,8 +27,7 @@ public class Assert extends org.junit.Assert {
   public static void fail(final String message, final Throwable cause) {
     if (message == null && cause == null) {
       throw new AssertionError();
-    }
-    if (message == null) {
+    }    if (message == null) {
       throw new AssertionError(cause);
     }
     if (cause == null) {

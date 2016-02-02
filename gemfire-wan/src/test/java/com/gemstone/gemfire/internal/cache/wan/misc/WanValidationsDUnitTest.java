@@ -31,6 +31,8 @@ import com.gemstone.gemfire.internal.cache.wan.GatewaySenderException;
 import com.gemstone.gemfire.internal.cache.wan.MyGatewayTransportFilter3;
 import com.gemstone.gemfire.internal.cache.wan.MyGatewayTransportFilter4;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 public class WanValidationsDUnitTest extends WANTestBase {
 
@@ -55,7 +57,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
   
   public void testSameSerialGatewaySenderIdAcrossSameDistributedRegion()
       throws Exception {
-    addExpectedException("another cache has the same region defined");
+    IgnoredException.addIgnoredException("another cache has the same region defined");
     try {
       Integer lnPort = (Integer)vm0.invoke(WANTestBase.class, "createFirstLocatorWithDSId",
           new Object[] {1});
@@ -87,7 +89,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("Cannot create Region"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids message",
             e);
       }
@@ -131,7 +133,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     }
     catch (Exception e) {
-      fail("Caught Exception", e);
+      Assert.fail("Caught Exception", e);
     }
   }
   
@@ -141,7 +143,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
    */
   public void testSameSerialGatewaySenderIdAcrossSamePartitionedRegion()
       throws Exception {
-    addExpectedException("another cache has the same region defined");
+    IgnoredException.addIgnoredException("another cache has the same region defined");
     try {
       Integer lnPort = (Integer)vm0.invoke(WANTestBase.class, "createFirstLocatorWithDSId",
           new Object[] {1});
@@ -170,7 +172,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("Cannot create Region"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids message",
             e);
       }
@@ -179,7 +181,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
   
   
   public void testReplicatedSerialAsyncEventQueueWithPeristenceEnabled() {
-    addExpectedException("another cache has the same region defined");
+    IgnoredException.addIgnoredException("another cache has the same region defined");
     try {
       Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
           "createFirstLocatorWithDSId", new Object[] { 1 });
@@ -198,7 +200,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("Cannot create Region"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids message",
             e);
       }
@@ -211,7 +213,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
    */
   public void testSameParallelGatewaySenderIdAcrossSamePartitionedRegion()
       throws Exception {
-    addExpectedException("another cache has the same region defined");
+    IgnoredException.addIgnoredException("another cache has the same region defined");
     try {
       Integer lnPort = (Integer)vm0.invoke(WANTestBase.class, "createFirstLocatorWithDSId",
           new Object[] {1});
@@ -241,7 +243,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("Cannot create Region"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids message",
             e);
       }
@@ -279,14 +281,14 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("cannot have the same parallel gateway sender id"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
 
   public void testSameParallelGatewaySenderIdAcrossColocatedPartitionedRegion()
       throws Exception {
-    addExpectedException("another cache has the same region defined");
+    IgnoredException.addIgnoredException("another cache has the same region defined");
     try {
       Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
           "createFirstLocatorWithDSId", new Object[] { 1 });
@@ -311,7 +313,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("should have same parallel gateway sender ids"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids in colocated regions",
             e);
       }
@@ -346,7 +348,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       
     }
     catch (Exception e) {
-      fail("The tests caught Exception.", e);
+      Assert.fail("The tests caught Exception.", e);
     }
   }
   
@@ -377,7 +379,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
               testName + "_PR2", null, "ln1_Parallel", testName + "_PR1", isOffHeap()  });
 
     } catch (Exception e) {
-      fail("The tests caught Exception.", e);
+      Assert.fail("The tests caught Exception.", e);
     }
   }
   
@@ -414,7 +416,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("should have same parallel gateway sender ids"))) {
-        fail(
+        Assert.fail(
             "Expected IllegalStateException with incompatible gateway sender ids in colocated regions",
             e);
       }
@@ -440,7 +442,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("is already defined in this cache"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -467,7 +469,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with remote ds id"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -493,7 +495,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same sender as serial gateway sender"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -520,7 +522,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same sender as parallel gateway sender"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -547,7 +549,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("another cache has the same Gateway Sender defined with isBatchConfaltionEnabled"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -571,7 +573,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same Gateway Sender defined with isPersistentEnabled"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -594,7 +596,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same Gateway Sender defined with alertThreshold"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -617,7 +619,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same Gateway Sender defined with manual start"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -646,7 +648,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with GatewayEventFilters"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -676,7 +678,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with GatewayEventFilters"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -707,7 +709,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with GatewayTransportFilters"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -738,7 +740,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with GatewayTransportFilters"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -790,7 +792,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("because another cache has the same Gateway Sender defined with isDiskSynchronous"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -865,7 +867,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same Gateway Sender defined with dispatcherThread"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -896,7 +898,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
     catch (Exception e) {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage().contains("because another cache has the same Gateway Sender defined with orderPolicy"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -945,7 +947,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, gateway sender ids should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -992,7 +994,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, AsyncEvent queue IDs should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -1151,7 +1153,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, gateway sender ids should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -1197,7 +1199,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, AsyncEvent queue IDs should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -1357,7 +1359,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, gateway sender ids should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -1403,7 +1405,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderConfigurationException)
           || !(e.getCause().getMessage()
               .contains("For region across all members, AsyncEvent queue IDs should be same."))) {
-        fail("Expected GatewaySenderConfigurationException", e);
+        Assert.fail("Expected GatewaySenderConfigurationException", e);
       }
     }
   }
@@ -1532,7 +1534,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
   
   public void testBug50247_NonPersistentSenderWithPersistentRegion()
       throws Exception {
-    addExpectedException("could not get remote locator information");
+    IgnoredException.addIgnoredException("could not get remote locator information");
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
 
@@ -1550,7 +1552,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderException)
           || !(e.getCause().getMessage()
               .contains("can not be attached to persistent region "))) {
-        fail(
+        Assert.fail(
             "Expected GatewaySenderException with incompatible gateway sender ids and region",
             e);
       }
@@ -1567,7 +1569,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof GatewaySenderException)
           || !(e.getCause().getMessage()
               .contains("can not be attached to persistent region "))) {
-        fail(
+        Assert.fail(
             "Expected GatewaySenderException with incompatible gateway sender ids and region",
             e);
       }

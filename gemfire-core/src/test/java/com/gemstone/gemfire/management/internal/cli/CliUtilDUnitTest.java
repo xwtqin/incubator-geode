@@ -38,11 +38,13 @@ import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.RegionMXBean;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResultException;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * 
@@ -163,22 +165,22 @@ public class CliUtilDUnitTest extends CacheTestCase {
             checkBean(REGION_MEMBER1_GROUP2,1) &&
             checkBean(REGION_MEMBER2_GROUP2,1) ;                    
         if(!flag){
-          getLogWriter().info("Still probing for mbeans");
+          LogWriterSupport.getLogWriter().info("Still probing for mbeans");
           return false; 
         }
         else{
-          getLogWriter().info("All distributed region mbeans are federated to manager.");
+          LogWriterSupport.getLogWriter().info("All distributed region mbeans are federated to manager.");
           return true;
         }
       }
       private boolean checkBean(String string, int memberCount) {
         DistributedRegionMXBean bean2 = service.getDistributedRegionMXBean(Region.SEPARATOR+string);        
-        getLogWriter().info("DistributedRegionMXBean for region=" + string + " is " + bean2);
+        LogWriterSupport.getLogWriter().info("DistributedRegionMXBean for region=" + string + " is " + bean2);
         if(bean2==null)
           return false;
         else{
           int members = bean2.getMemberCount();
-          getLogWriter().info("DistributedRegionMXBean for region=" + string + " is aggregated for " + memberCount + " expected count=" + memberCount);
+          LogWriterSupport.getLogWriter().info("DistributedRegionMXBean for region=" + string + " is aggregated for " + memberCount + " expected count=" + memberCount);
           if(members<memberCount){            
             return false;
           }
@@ -193,8 +195,8 @@ public class CliUtilDUnitTest extends CacheTestCase {
       }
     };
     
-    DistributedTestCase.waitForCriterion(waitForMaangerMBean, 120000, 2000, true);  
-    getLogWriter().info("Manager federation is complete");
+    Wait.waitForCriterion(waitForMaangerMBean, 120000, 2000, true);  
+    LogWriterSupport.getLogWriter().info("Manager federation is complete");
   }
   
   private void registerFunction() {    
@@ -210,7 +212,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
     assertNotNull(service.getMemberMXBean());
     RegionMXBean bean = service.getLocalRegionMBean(Region.SEPARATOR+regionName); 
     assertNotNull(bean);
-    getLogWriter().info("Created region=" + regionName + " Bean=" + bean);
+    LogWriterSupport.getLogWriter().info("Created region=" + regionName + " Bean=" + bean);
     return region;
   }
   
@@ -222,7 +224,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
     localProps.setProperty(DistributionConfig.JMX_MANAGER_START_NAME, "false");    
     int jmxPort = AvailablePortHelper.getRandomAvailableTCPPort();
     localProps.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME, ""+jmxPort);
-    getLogWriter().info("Set jmx-port="+ jmxPort);
+    LogWriterSupport.getLogWriter().info("Set jmx-port="+ jmxPort);
     getSystem(localProps);
     getCache();
     final ManagementService service = ManagementService.getManagementService(getCache());
@@ -241,7 +243,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
     
     final VM vm1 = Host.getHost(0).getVM(0);
     
-    getLogWriter().info("testFor - findAllMatchingMembers");
+    LogWriterSupport.getLogWriter().info("testFor - findAllMatchingMembers");
     vm1.invoke(new SerializableRunnable() {      
       @Override
       public void run() {
@@ -257,7 +259,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       }
     });
     
-    getLogWriter().info("testFor - getDistributedMemberByNameOrId");
+    LogWriterSupport.getLogWriter().info("testFor - getDistributedMemberByNameOrId");
     vm1.invoke(new SerializableRunnable() {      
       @Override
       public void run() {
@@ -265,7 +267,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       }     
     });
     
-    getLogWriter().info("testFor - executeFunction");
+    LogWriterSupport.getLogWriter().info("testFor - executeFunction");
     vm1.invoke(new SerializableRunnable() {      
       @Override
       public void run() {
@@ -273,7 +275,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       }     
     });
     
-    getLogWriter().info("testFor - getRegionAssociatedMembers");
+    LogWriterSupport.getLogWriter().info("testFor - getRegionAssociatedMembers");
     vm1.invoke(new SerializableRunnable() {      
       @Override
       public void run() {
@@ -419,7 +421,7 @@ public class CliUtilDUnitTest extends CacheTestCase {
       Region region = cache.getRegion(COMMON_REGION);
       String id = cache.getDistributedSystem().getDistributedMember().getName();
       region.put(id, object);
-      getLogWriter().info("Completed executeFunction on member : " + id);
+      LogWriterSupport.getLogWriter().info("Completed executeFunction on member : " + id);
       context.getResultSender().lastResult(true);
     }
 

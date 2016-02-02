@@ -37,7 +37,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.Version;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 /**
@@ -62,7 +65,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
+    Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
       
       @Override
       public void run2() throws CacheException {
@@ -73,7 +76,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
 
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
+    Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
       
       @Override
       public void run2() throws CacheException {
@@ -185,7 +188,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
             }
           };
           
-          DistributedTestCase.waitForCriterion(ev, 1000, 200, true);
+          Wait.waitForCriterion(ev, 1000, 200, true);
           fail("this test must be fixed to work with the jgroups replacement");
           // TODO
 //          Vector members = client.getMembers("mygroup1", new IpAddress(InetAddress.getLocalHost(), port0), true, 5000);

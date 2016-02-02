@@ -45,9 +45,11 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionQueryEvaluator.TestHook;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Test creates a persistent-overflow region and performs updates in region
@@ -115,7 +117,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -167,7 +169,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
             .newQuery("select * from /" + name + " p where p.ID > -1");
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         try {
           PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -180,8 +182,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
     });
 
     //If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
-    DistributedTestCase.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
+    Threads.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
+    Threads.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
   }
 
   /**
@@ -217,7 +219,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -269,7 +271,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
             .newQuery("select * from /" + name + " p where p.ID > -1");
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         try {
           PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -282,8 +284,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
     });
 
     //If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
-    DistributedTestCase.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
+    Threads.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
+    Threads.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
   }
 
   /**
@@ -322,7 +324,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -378,7 +380,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
             .newQuery("select * from /" + name + " p where p.ID > -1");
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         try {
           PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -391,9 +393,9 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
         .getLogger());
-    DistributedTestCase.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
         .getLogger());
   }
 
@@ -433,7 +435,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -489,7 +491,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
             .newQuery("select * from /" + name + " p where p.ID > -1");
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         try {
           PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -502,9 +504,9 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
         .getLogger());
-    DistributedTestCase.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
         .getLogger());
   }
 
@@ -532,7 +534,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
          RegionFactory regionFactory = cache.createRegionFactory(attr.create());
          partitionRegion = regionFactory.create(name);
        } catch (IllegalStateException ex) {
-         getLogWriter().warning("Creation caught IllegalStateException", ex);
+         LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
        }
        assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
        assertNotNull("Region ref null", partitionRegion);
@@ -584,7 +586,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
            .newQuery("select * from /" + name + " p where p.ID > -1");
 
        while (!hooked) {
-         pause(10);
+         Wait.pause(10);
        }
        try {
          PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -597,8 +599,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
    });
 
    //If we take more than 30 seconds then its a deadlock.
-   DistributedTestCase.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
-   DistributedTestCase.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
+   Threads.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
+   Threads.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
  }
 
  /**
@@ -625,7 +627,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
          RegionFactory regionFactory = cache.createRegionFactory(attr.create());
          partitionRegion = regionFactory.create(name);
        } catch (IllegalStateException ex) {
-         getLogWriter().warning("Creation caught IllegalStateException", ex);
+         LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
        }
        assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
        assertNotNull("Region ref null", partitionRegion);
@@ -677,7 +679,7 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
            .newQuery("select * from /" + name + " p where p.ID > -1");
 
        while (!hooked) {
-         pause(10);
+         Wait.pause(10);
        }
        try {
          PRQHelp.getCache().getLogger().fine("Querying the region");
@@ -690,8 +692,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
    });
 
    //If we take more than 30 seconds then its a deadlock.
-   DistributedTestCase.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
-   DistributedTestCase.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
+   Threads.join(asyncInv2, 30*1000, PRQHelp.getCache().getLogger());
+   Threads.join(asyncInv1, 30*1000, PRQHelp.getCache().getLogger());
  }
 
   public class IndexManagerTestHook implements com.gemstone.gemfire.cache.query.internal.index.IndexManager.TestHook{
@@ -699,8 +701,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
       switch (spot) {
       case 5: //Before Index update and after region entry lock.
         hooked  = true;
-        getLogWriter().fine("IndexManagerTestHook is hooked.");
-        pause(10000);
+        LogWriterSupport.getLogWriter().fine("IndexManagerTestHook is hooked.");
+        Wait.pause(10000);
         //hooked = false;
         break;
       default:
@@ -713,8 +715,8 @@ public class ConcurrentIndexOperationsOnOverflowRegionDUnitTest extends
       switch (spot) {
       case 5: //Before Index update and after region entry lock.
         hooked  = true;
-        getLogWriter().fine("IndexManagerTestHook is hooked.");
-        pause(100);
+        LogWriterSupport.getLogWriter().fine("IndexManagerTestHook is hooked.");
+        Wait.pause(100);
        // hooked = false;
         break;
       default:

@@ -37,7 +37,10 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.internal.cache.TXRegionLockRequestImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 
 /**
  * This class tests distributed ownership via the DistributedLockService api.
@@ -89,7 +92,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
 //    invokeInEveryVM(TXLockServiceDUnitTest.class,
 //                    "remoteDumpAllDLockServices");
                     
-    invokeInEveryVM(TXLockServiceDUnitTest.class,
+    Invoke.invokeInEveryVM(TXLockServiceDUnitTest.class,
                     "destroyServices"); 
     
     destroyServices();
@@ -123,7 +126,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
   }
   
   public void disable_testTXRecoverGrantorMessageProcessor() throws Exception {
-    getLogWriter().info("[testTXOriginatorRecoveryProcessor]");
+    LogWriterSupport.getLogWriter().info("[testTXOriginatorRecoveryProcessor]");
     TXLockService.createDTLS();
     checkDLockRecoverGrantorMessageProcessor();
     
@@ -173,7 +176,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     dtls.release(txLockId);
     
     // check results to verify no locks were provided in reply
-    DistributedTestCase.join(thread, 30 * 1000, getLogWriter());
+    Threads.join(thread, 30 * 1000, LogWriterSupport.getLogWriter());
     assertEquals("testTXRecoverGrantor_replyCode_PASS is false", true, 
         testTXRecoverGrantor_replyCode_PASS);
     assertEquals("testTXRecoverGrantor_heldLocks_PASS is false", true, 
@@ -182,7 +185,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
   
   protected static volatile TXLockId testTXLock_TXLockId;
   public void testTXLock() {
-    getLogWriter().info("[testTXLock]");
+    LogWriterSupport.getLogWriter().info("[testTXLock]");
     final int grantorVM = 0;
     final int clientA = 1;
     final int clientB = 2;
@@ -200,7 +203,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
         ));
     
     // create grantor
-    getLogWriter().info("[testTXLock] create grantor");
+    LogWriterSupport.getLogWriter().info("[testTXLock] create grantor");
     
     Host.getHost(0).getVM(grantorVM).invoke(new SerializableRunnable() {
       public void run() {
@@ -210,7 +213,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     sleep(20);
     
     // create client and request txLock
-    getLogWriter().info("[testTXLock] create clientA and request txLock");
+    LogWriterSupport.getLogWriter().info("[testTXLock] create clientA and request txLock");
     
     Host.getHost(0).getVM(clientA).invoke(new SerializableRunnable() {
       public void run() {
@@ -228,7 +231,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     });
     
     // create nuther client and request overlapping txLock... verify fails
-    getLogWriter().info("[testTXLock] create clientB and fail txLock");
+    LogWriterSupport.getLogWriter().info("[testTXLock] create clientB and fail txLock");
     
     Host.getHost(0).getVM(clientB).invoke(new SerializableRunnable() {
       public void run() {
@@ -258,7 +261,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     */
     
     // release txLock
-    getLogWriter().info("[testTXLock] clientA releases txLock");
+    LogWriterSupport.getLogWriter().info("[testTXLock] clientA releases txLock");
     
     Host.getHost(0).getVM(clientA).invoke(
         new SerializableRunnable("[testTXLock] clientA releases txLock") {
@@ -270,7 +273,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     sleep(20);
     
     // try nuther client again and verify success
-    getLogWriter().info("[testTXLock] clientB requests txLock");
+    LogWriterSupport.getLogWriter().info("[testTXLock] clientB requests txLock");
     
     Host.getHost(0).getVM(clientB).invoke(
         new SerializableRunnable("[testTXLock] clientB requests txLock") {
@@ -282,7 +285,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     });
 
     // release txLock
-    getLogWriter().info("[testTXLock] clientB releases txLock");
+    LogWriterSupport.getLogWriter().info("[testTXLock] clientB releases txLock");
     
     Host.getHost(0).getVM(clientB).invoke(
         new SerializableRunnable("[testTXLock] clientB releases txLock") {
@@ -295,7 +298,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
   
   protected static volatile TXLockId testTXOriginatorRecoveryProcessor_TXLockId;
   public void testTXOriginatorRecoveryProcessor() {
-    getLogWriter().info("[testTXOriginatorRecoveryProcessor]");
+    LogWriterSupport.getLogWriter().info("[testTXOriginatorRecoveryProcessor]");
     final int originatorVM = 0;
     final int grantorVM = 1;
     final int particpantA = 2;
@@ -321,7 +324,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     }
     
     // create grantor
-    getLogWriter().info("[testTXOriginatorRecoveryProcessor] grantorVM becomes grantor");
+    LogWriterSupport.getLogWriter().info("[testTXOriginatorRecoveryProcessor] grantorVM becomes grantor");
     
     Host.getHost(0).getVM(grantorVM).invoke(new SerializableRunnable() {
       public void run() {
@@ -338,7 +341,7 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
                  Boolean.TRUE, isGrantor);
     
     // have a originatorVM get a txLock with three participants including grantor
-    getLogWriter().info("[testTXOriginatorRecoveryProcessor] originatorVM requests txLock");
+    LogWriterSupport.getLogWriter().info("[testTXOriginatorRecoveryProcessor] originatorVM requests txLock");
     
     Host.getHost(0).getVM(originatorVM).invoke(new SerializableRunnable() {
       public void run() {
@@ -422,14 +425,14 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
   }
   
   public void testDTLSIsDistributed() {
-    getLogWriter().info("[testDTLSIsDistributed]");
+    LogWriterSupport.getLogWriter().info("[testDTLSIsDistributed]");
     
     // have all vms lock and hold the same LTLS lock simultaneously
     final Host host = Host.getHost(0);
     int vmCount = host.getVMCount();
     for (int vm = 0; vm < vmCount; vm++) {
       final int finalvm = vm;
-      getLogWriter().info("[testDTLSIsDistributed] testing vm " + finalvm);
+      LogWriterSupport.getLogWriter().info("[testDTLSIsDistributed] testing vm " + finalvm);
     
       Host.getHost(0).getVM(finalvm).invoke(new SerializableRunnable() {
         public void run() {
@@ -442,21 +445,21 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
           TXLockServiceDUnitTest.class, "isDistributed_DTLS", new Object[] {});
       assertEquals("isDistributed should be true for DTLS", 
                    Boolean.TRUE, isDistributed);
-      getLogWriter().info("[testDTLSIsDistributed] isDistributed=" + isDistributed);
+      LogWriterSupport.getLogWriter().info("[testDTLSIsDistributed] isDistributed=" + isDistributed);
                    
       // lock a key...                
       Boolean gotLock = (Boolean)host.getVM(finalvm).invoke(
           TXLockServiceDUnitTest.class, "lock_DTLS", new Object[] {"KEY"});
       assertEquals("gotLock is false after calling lock_DTLS", 
                    Boolean.TRUE, gotLock);
-      getLogWriter().info("[testDTLSIsDistributed] gotLock=" + gotLock);
+      LogWriterSupport.getLogWriter().info("[testDTLSIsDistributed] gotLock=" + gotLock);
       
       // unlock it...                
       Boolean unlock = (Boolean)host.getVM(finalvm).invoke(
           TXLockServiceDUnitTest.class, "unlock_DTLS", new Object[] {"KEY"});
       assertEquals("unlock is false after calling unlock_DTLS", 
                    Boolean.TRUE, unlock);
-      getLogWriter().info("[testDTLSIsDistributed] unlock=" + unlock);
+      LogWriterSupport.getLogWriter().info("[testDTLSIsDistributed] unlock=" + unlock);
     }
   }
   
@@ -667,14 +670,14 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     Host host = Host.getHost(0);
     int vmCount = host.getVMCount();
     for (int i=0; i<vmCount; i++) {
-      getLogWriter().info("Invoking " + methodName + "on VM#" + i);
+      LogWriterSupport.getLogWriter().info("Invoking " + methodName + "on VM#" + i);
       host.getVM(i).invoke(this.getClass(), methodName, args);
     }
   }
   
   public Properties getDistributedSystemProperties() {
     Properties props = super.getDistributedSystemProperties();
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
     return props;
   }
 

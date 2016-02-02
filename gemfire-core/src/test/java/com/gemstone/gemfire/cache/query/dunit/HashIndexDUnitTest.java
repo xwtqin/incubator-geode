@@ -22,7 +22,9 @@ import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.query.QueryTestUtils;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -38,7 +40,7 @@ public class HashIndexDUnitTest extends DistributedTestCase{
   public void setUp() throws Exception {
     super.setUp();
     getSystem();
-    invokeInEveryVM(new SerializableRunnable("getSystem") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("getSystem") {
       public void run() {
         getSystem();
       }
@@ -46,7 +48,7 @@ public class HashIndexDUnitTest extends DistributedTestCase{
     Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     utils = new QueryTestUtils();
-    utils.createServer(vm0, getAllDistributedSystemProperties(new Properties()));
+    utils.createServer(vm0, DistributedTestSupport.getAllDistributedSystemProperties(new Properties()));
     utils.createReplicateRegion("exampleRegion", vm0);
     utils.createHashIndex(vm0,"ID", "r.ID", "/exampleRegion r");
   }

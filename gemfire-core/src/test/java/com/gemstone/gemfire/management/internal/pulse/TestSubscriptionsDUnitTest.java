@@ -40,9 +40,13 @@ import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing subscriptions
@@ -98,8 +102,8 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
 
     int port = (Integer) createServerCache(server);
     DistributedMember serverMember = helper.getMember(server);
-    createClientCache(client, getServerHostName(server.getHost()), port);
-    createClientCache(client2, getServerHostName(server.getHost()), port);
+    createClientCache(client, NetworkSupport.getServerHostName(server.getHost()), port);
+    createClientCache(client2, NetworkSupport.getServerHostName(server.getHost()), port);
     put(client);
     put(client2);
     registerInterest(client);
@@ -236,11 +240,11 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
               return "TestSubscriptionsDUnitTest wait for getDistributedSystemMXBean to complete and get results";
             }
           };
-          waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
+          Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
           final DistributedSystemMXBean dsBean = ManagementService
               .getExistingManagementService(cache).getDistributedSystemMXBean();
           assertNotNull(dsBean);
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "TestSubscriptionsDUnitTest dsBean.getNumSubscriptions() ="
                   + dsBean.getNumSubscriptions());
           assertTrue(dsBean.getNumSubscriptions() == 2 ? true : false);

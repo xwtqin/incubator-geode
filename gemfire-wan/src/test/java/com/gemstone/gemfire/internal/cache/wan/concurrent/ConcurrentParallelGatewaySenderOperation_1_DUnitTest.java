@@ -19,6 +19,9 @@ package com.gemstone.gemfire.internal.cache.wan.concurrent;
 import com.gemstone.gemfire.cache.wan.GatewaySender.OrderPolicy;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author skumar
@@ -33,9 +36,9 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
   
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
   }
   
   public void testParallelGatewaySenderWithoutStarting() {
@@ -132,7 +135,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
     
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
@@ -207,7 +210,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
-    pause(2000);
+    Wait.pause(2000);
     //SECOND RUN: keep one thread doing puts to the region
     vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     
@@ -277,7 +280,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //sleep for a second or two
-    pause(2000);
+    Wait.pause(2000);
     
     //resume the senders
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
@@ -285,7 +288,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
     
     vm4.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] {"ln"});
     vm5.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] {"ln"});
@@ -488,7 +491,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
 
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
@@ -583,12 +586,12 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now started");
+    LogWriterSupport.getLogWriter().info("All the senders are now started");
     
     //FIRST RUN: now, the senders are started. So, do some of the puts
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 200 });
     
-    getLogWriter().info("Done few puts");
+    LogWriterSupport.getLogWriter().info("Done few puts");
     
     //now, stop all of the senders
     vm4.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
@@ -596,32 +599,32 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are stopped");
-    pause(2000);
+    LogWriterSupport.getLogWriter().info("All the senders are stopped");
+    Wait.pause(2000);
     
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Done some more puts in second run");
+    LogWriterSupport.getLogWriter().info("Done some more puts in second run");
     
     //Region size on remote site should remain same and below the number of puts done in the FIRST RUN
     vm2.invoke(WANTestBase.class, "validateRegionSizeRemainsSame", new Object[] {testName + "_PR", 200 });
     
     //SECOND RUN: start async puts on region
     AsyncInvocation async = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 5000 });
-    getLogWriter().info("Started high number of puts by async thread");
+    LogWriterSupport.getLogWriter().info("Started high number of puts by async thread");
 
-    getLogWriter().info("Starting the senders at the same time");
+    LogWriterSupport.getLogWriter().info("Starting the senders at the same time");
     //when puts are happening by another thread, start the senders
     vm4.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    getLogWriter().info("All the senders are started");
+    LogWriterSupport.getLogWriter().info("All the senders are started");
     
     async.join();
         
-    pause(2000);
+    Wait.pause(2000);
     
     //verify all the buckets on all the sender nodes are drained
     vm4.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] {"ln"});
@@ -695,7 +698,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "stopSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
     
     //SECOND RUN: do some of the puts after the senders are stopped
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
@@ -720,7 +723,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     //SECOND RUN: do some more puts
     AsyncInvocation async = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     async.join();
-    pause(5000);
+    Wait.pause(5000);
     
     //verify all buckets drained only on non-accessor nodes.
     vm4.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] {"ln"});
@@ -749,7 +752,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
 
-    getLogWriter().info("Created cache on local site");
+    LogWriterSupport.getLogWriter().info("Created cache on local site");
     
     vm4.invoke(WANTestBase.class, "createConcurrentSender", new Object[] { "ln", 2,
         true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY });
@@ -760,7 +763,7 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm7.invoke(WANTestBase.class, "createConcurrentSender", new Object[] { "ln", 2,
         true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY });
     
-    getLogWriter().info("Created senders on local site");
+    LogWriterSupport.getLogWriter().info("Created senders on local site");
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName + "_PR", "ln", 1, 100, isOffHeap() });
@@ -771,16 +774,16 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName + "_PR", "ln", 1, 100, isOffHeap() });
 
-    getLogWriter().info("Created PRs on local site");
+    LogWriterSupport.getLogWriter().info("Created PRs on local site");
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName + "_PR", null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName + "_PR", null, 1, 100, isOffHeap() });
-    getLogWriter().info("Created PRs on remote site");
+    LogWriterSupport.getLogWriter().info("Created PRs on remote site");
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Done 1000 puts on local site");
+    LogWriterSupport.getLogWriter().info("Done 1000 puts on local site");
     
     //Since puts are already done on userPR, it will have the buckets created. 
     //During sender start, it will wait until those buckets are created for shadowPR as well.
@@ -796,16 +799,16 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("Started senders on local site");
+    LogWriterSupport.getLogWriter().info("Started senders on local site");
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 5000 });
-    getLogWriter().info("Done 5000 puts on local site");
+    LogWriterSupport.getLogWriter().info("Done 5000 puts on local site");
     
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
-    getLogWriter().info("Paused senders on local site");
+    LogWriterSupport.getLogWriter().info("Paused senders on local site");
     
     vm4.invoke(WANTestBase.class, "verifySenderPausedState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "verifySenderPausedState", new Object[] { "ln" });
@@ -814,13 +817,13 @@ public class ConcurrentParallelGatewaySenderOperation_1_DUnitTest extends WANTes
     
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Started 1000 async puts on local site");
+    LogWriterSupport.getLogWriter().info("Started 1000 async puts on local site");
 
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
-    getLogWriter().info("Resumed senders on local site");
+    LogWriterSupport.getLogWriter().info("Resumed senders on local site");
 
     vm4.invoke(WANTestBase.class, "verifySenderResumedState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "verifySenderResumedState", new Object[] { "ln" });

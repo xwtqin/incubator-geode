@@ -37,7 +37,7 @@ public class CommonParallelAsyncEventQueueDUnitTest extends AsyncEventQueueTestB
   }
     
   public void testSameSenderWithNonColocatedRegions() throws Exception {
-    IgnoredException.addExpectedException("cannot have the same parallel async");
+    IgnoredException.addIgnoredException("cannot have the same parallel async");
     Integer lnPort = (Integer)vm0.invoke(AsyncEventQueueTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
     vm4.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });

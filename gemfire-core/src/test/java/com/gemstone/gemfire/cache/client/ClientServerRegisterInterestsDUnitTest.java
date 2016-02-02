@@ -69,7 +69,7 @@ public class ClientServerRegisterInterestsDUnitTest extends DistributedTestCase 
     super.setUp();
     disconnectAllFromDS();
     setupGemFireCacheServer();
-    IgnoredException.addExpectedException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
   }
 
   @Override

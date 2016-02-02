@@ -249,7 +249,7 @@ public class CacheXml65DUnitTest extends CacheXml61DUnitTest {
     attrs.setPoolName("mypool");
     attrs.setDataPolicy(DataPolicy.EMPTY); // required for multiuser mode
     cache.createVMRegion("rootNORMAL", attrs);
-    IgnoredException.addExpectedException("Connection refused: connect");
+    IgnoredException.addIgnoredException("Connection refused: connect");
     testXml(cache);
     Cache c = getCache();
     assertNotNull(c);

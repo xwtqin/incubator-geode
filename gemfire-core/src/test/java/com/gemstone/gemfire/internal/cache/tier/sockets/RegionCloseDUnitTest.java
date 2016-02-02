@@ -35,7 +35,10 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.*;
 
 /**
@@ -76,7 +79,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
 
     PORT1 =  ((Integer)server1.invoke(RegionCloseDUnitTest.class, "createServerCache" )).intValue();
     client1.invoke(RegionCloseDUnitTest.class, "createClientCache", new Object[] {
-      getServerHostName(host), new Integer(PORT1)});
+      NetworkSupport.getServerHostName(host), new Integer(PORT1)});
 
   }
 
@@ -158,7 +161,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 15 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 15 * 1000, 200, true);
     assertEquals(1, bs.getAcceptor().getCacheClientNotifier().getClientProxies().size());
 
     Iterator iter = bs.getAcceptor().getCacheClientNotifier().getClientProxies().iterator();
@@ -197,7 +200,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 40 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 40 * 1000, 200, true);
 
     final CacheServerImpl bs = (CacheServerImpl)c.getCacheServers().iterator()
         .next();
@@ -209,7 +212,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 40 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 40 * 1000, 200, true);
     
     ev = new WaitCriterion() {
       public boolean done() {
@@ -219,7 +222,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 40 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 40 * 1000, 200, true);
     // assertNull(c.getRegion("/"+clientMembershipId));
     assertEquals(0, bs.getAcceptor().getCacheClientNotifier()
         .getClientProxies().size());

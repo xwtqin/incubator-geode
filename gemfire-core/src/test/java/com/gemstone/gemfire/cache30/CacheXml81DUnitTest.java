@@ -140,7 +140,7 @@ public class CacheXml81DUnitTest extends CacheXml80DUnitTest {
     assertEquals(0, extension.onCreateCounter.get());
     assertEquals(0, extension.getXmlGeneratorCounter.get());
 
-    IgnoredException expectedException = IgnoredException.addExpectedException("While reading Cache XML file");
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       testXml(cache);
       fail("Excepted CacheXmlException");

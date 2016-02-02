@@ -24,6 +24,8 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase.MyGatewayEventFilter;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * All the test cases are similar to SerialWANPropogationDUnitTest except that
@@ -194,9 +196,9 @@ public class ConcurrentWANPropogation_2_DUnitTest extends WANTestBase {
   }
 
   public void testReplicatedSerialPropagationHA() throws Exception {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
 
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
@@ -235,7 +237,7 @@ public class ConcurrentWANPropogation_2_DUnitTest extends WANTestBase {
 
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_RR", 10000 });
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     
     inv1.join();
@@ -452,7 +454,7 @@ public class ConcurrentWANPropogation_2_DUnitTest extends WANTestBase {
         testName + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    pause(500);
+    Wait.pause(500);
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     vm4.invoke(WANTestBase.class, "createNormalRegion", new Object[] {

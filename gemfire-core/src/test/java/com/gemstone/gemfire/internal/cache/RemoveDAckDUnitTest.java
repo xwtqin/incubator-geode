@@ -35,6 +35,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -65,7 +66,7 @@ public class RemoveDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(RemoveDAckDUnitTest.class, "createCacheVM0");
       vm1.invoke(RemoveDAckDUnitTest.class, "createCacheVM1");
-      getLogWriter().fine("Cache created in successfully");
+      LogWriterSupport.getLogWriter().fine("Cache created in successfully");
     }
     
     public void tearDown2(){

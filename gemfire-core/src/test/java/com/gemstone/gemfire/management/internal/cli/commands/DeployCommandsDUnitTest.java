@@ -30,10 +30,11 @@ import com.gemstone.gemfire.management.internal.cli.remote.CommandExecutionConte
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -347,7 +348,7 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -358,7 +359,7 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }

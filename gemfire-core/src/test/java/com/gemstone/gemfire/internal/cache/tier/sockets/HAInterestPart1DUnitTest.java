@@ -17,6 +17,7 @@
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 @SuppressWarnings("serial")
@@ -30,7 +31,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * Tests whether interest is registered or not on both primary and secondaries
    */
   public void testInterestRegistrationOnBothPrimaryAndSecondary() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -47,7 +48,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * verify their responses
    */
   public void testInterestRegistrationResponseOnBothPrimaryAndSecondary() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -61,7 +62,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * interest map
    */
   public void testRERegistrationWillNotCreateDuplicateKeysOnServerInterstMaps() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -80,7 +81,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * registerInterest
    */
   public void testPrimaryFailureInRegisterInterest() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -101,7 +102,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * list
    */
   public void testSecondaryFailureInRegisterInterest() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -123,7 +124,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * registration on newly selected primary
    */
   public void testBothPrimaryAndSecondaryFailureInRegisterInterest() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -147,7 +148,7 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    *
    */
   public void testProbablePrimaryFailureInRegisterInterest() throws Exception {
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
     server2.invoke(HAInterestTestCase.class, "createEntriesK1andK2");
@@ -167,10 +168,10 @@ public class HAInterestPart1DUnitTest extends HAInterestTestCase {
    * client ( create CCP) as welll as register IL
    */
   public void testInterstRegistrationOnRecoveredEPbyDSM() throws Exception {
-    IgnoredException.addExpectedException("SocketException");
-    IgnoredException.addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
 
-    createClientPoolCache(this.getName(), getServerHostName(server1.getHost()));
+    createClientPoolCache(this.getName(), NetworkSupport.getServerHostName(server1.getHost()));
     createEntriesK1andK2();
     registerK1AndK2();
     server1.invoke(HAInterestTestCase.class, "createEntriesK1andK2");

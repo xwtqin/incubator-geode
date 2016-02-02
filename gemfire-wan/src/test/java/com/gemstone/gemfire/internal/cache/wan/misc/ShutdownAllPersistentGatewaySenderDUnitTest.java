@@ -29,8 +29,12 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
   private static final long MAX_WAIT = 70000;
@@ -44,13 +48,13 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Cache is being closed by ShutdownAll");
+    IgnoredException.addIgnoredException("Cache is being closed by ShutdownAll");
   }
 
   private static final long serialVersionUID = 1L;
 
   public void testGatewaySender() throws Exception {
-    addExpectedException("Cache is shutting down");
+    IgnoredException.addIgnoredException("Cache is shutting down");
 
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
@@ -87,7 +91,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
           @Override
           public void beforeShutdownAll() {
             final Region region = cache.getRegion(testName + "_PR");
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
               @Override
               public boolean done() {
                 return region.size() >= 2;
@@ -113,7 +117,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     future.join(MAX_WAIT);
 
     // now restart vm1 with gatewayHub
-    getLogWriter().info("restart in VM2");
+    LogWriterSupport.getLogWriter().info("restart in VM2");
     vm2.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     vm3.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     AsyncInvocation vm3_future = vm3.invokeAsync(WANTestBase.class,
@@ -149,7 +153,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
 
         cache.getLogger().info(
             "vm1's region size after restart gatewayhub is " + region.size());
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           public boolean done() {
             Object lastvalue = region.get(NUM_KEYS - 1);
             if (lastvalue != null && lastvalue.equals(NUM_KEYS - 1)) {

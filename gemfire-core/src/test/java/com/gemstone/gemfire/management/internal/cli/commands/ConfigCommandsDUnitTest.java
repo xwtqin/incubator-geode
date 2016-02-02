@@ -36,11 +36,14 @@ import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import org.apache.commons.io.FileUtils;
 
@@ -82,7 +85,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
 
   public void tearDown2() throws Exception {
     deleteTestFiles();
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
 
       @Override
       public void run() {
@@ -122,10 +125,10 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     List<String> jvmArgs = runtimeBean.getInputArguments();
 
-    getLogWriter().info("#SB Actual JVM Args : ");
+    LogWriterSupport.getLogWriter().info("#SB Actual JVM Args : ");
 
     for (String jvmArg : jvmArgs) {
-      getLogWriter().info("#SB JVM " + jvmArg);
+      LogWriterSupport.getLogWriter().info("#SB JVM " + jvmArg);
     }
 
     InternalDistributedSystem system = (InternalDistributedSystem) cache.getDistributedSystem();
@@ -139,7 +142,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     CommandResult cmdResult = executeCommand(command);
 
     String resultStr = commandResultToString(cmdResult);
-    getLogWriter().info("#SB Hiding the defaults\n" + resultStr);
+    LogWriterSupport.getLogWriter().info("#SB Hiding the defaults\n" + resultStr);
 
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(true, resultStr.contains("G1"));
@@ -149,7 +152,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
 
     cmdResult = executeCommand(command + " --" + CliStrings.DESCRIBE_CONFIG__HIDE__DEFAULTS + "=false");
     resultStr = commandResultToString(cmdResult);
-    getLogWriter().info("#SB No hiding of defaults\n" + resultStr);
+    LogWriterSupport.getLogWriter().info("#SB No hiding of defaults\n" + resultStr);
 
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(true, resultStr.contains("is-server"));
@@ -278,8 +281,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "10");
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultString = commandResultToString(cmdResult);
-    getLogWriter().info("Result\n");
-    getLogWriter().info(resultString);
+    LogWriterSupport.getLogWriter().info("Result\n");
+    LogWriterSupport.getLogWriter().info(resultString);
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(LogWriterImpl.INFO_LEVEL, config.getLogLevel());
     assertEquals(50, config.getLogFileSizeLimit());
@@ -317,8 +320,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     CommandStringBuilder csb = new CommandStringBuilder(CliStrings.ALTER_RUNTIME_CONFIG);
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultAsString = commandResultToString(cmdResult);
-    getLogWriter().info("#SB Result\n");
-    getLogWriter().info(resultAsString);
+    LogWriterSupport.getLogWriter().info("#SB Result\n");
+    LogWriterSupport.getLogWriter().info(resultAsString);
     assertEquals(true, cmdResult.getStatus().equals(Status.ERROR));
     assertTrue(resultAsString.contains(CliStrings.ALTER_RUNTIME_CONFIG__RELEVANT__OPTION__MESSAGE));
 
@@ -326,8 +329,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "2000000000");
     cmdResult = executeCommand(csb.getCommandString());
     resultAsString = commandResultToString(cmdResult);
-    getLogWriter().info("#SB Result\n");
-    getLogWriter().info(resultAsString);
+    LogWriterSupport.getLogWriter().info("#SB Result\n");
+    LogWriterSupport.getLogWriter().info(resultAsString);
     assertEquals(true, cmdResult.getStatus().equals(Status.ERROR));
 
   }
@@ -362,8 +365,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "10");
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultString = commandResultToString(cmdResult);
-    getLogWriter().info("#SB Result\n");
-    getLogWriter().info(resultString);
+    LogWriterSupport.getLogWriter().info("#SB Result\n");
+    LogWriterSupport.getLogWriter().info(resultString);
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(LogWriterImpl.INFO_LEVEL, config.getLogLevel());
     assertEquals(50, config.getLogFileSizeLimit());
@@ -416,7 +419,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locatorPort, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -427,7 +430,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 5000, 500, true);
+          Wait.waitForCriterion(wc, 5000, 500, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }

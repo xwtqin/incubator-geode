@@ -295,8 +295,8 @@ public class CacheServerSSLConnectionDUnitTest extends DistributedTestCase {
     params[3] = cacheClientSslRequireAuth;
     params[4] = TRUSTED_STORE;
     params[5] = TRUSTED_STORE;
-    IgnoredException expect = IgnoredException.addExpectedException("javax.net.ssl.SSLException", serverVM);
-    IgnoredException expect2 = IgnoredException.addExpectedException("IOException", serverVM);
+    IgnoredException expect = IgnoredException.addIgnoredException("javax.net.ssl.SSLException", serverVM);
+    IgnoredException expect2 = IgnoredException.addIgnoredException("IOException", serverVM);
     try{
       //getLogWriter().info("Starting client with server endpoint " + hostName + ":" + port);    
       clientVM.invoke(CacheServerSSLConnectionDUnitTest.class, "setUpClientVMTaskNoSubscription", params);
@@ -385,7 +385,7 @@ public class CacheServerSSLConnectionDUnitTest extends DistributedTestCase {
     params[3] = cacheClientSslRequireAuth;
     params[4] = TRUSTED_STORE;
     params[5] = TRUSTED_STORE;
-    IgnoredException expect = IgnoredException.addExpectedException("javax.net.ssl.SSLHandshakeException", serverVM);
+    IgnoredException expect = IgnoredException.addIgnoredException("javax.net.ssl.SSLHandshakeException", serverVM);
     try{
       //getLogWriter().info("Starting client with server endpoint " + hostName + ":" + port);    
       clientVM.invoke(CacheServerSSLConnectionDUnitTest.class, "setUpClientVMTask", params);

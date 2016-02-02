@@ -45,7 +45,10 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -294,7 +297,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 200, true);
       }
     });
 
@@ -403,7 +406,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 60 * 1000, 200, true);
 
       /*
        * if (region.get(new Long(0)) != null) { fail("Expected message to have
@@ -851,7 +854,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
           if (opThreads[i].isInterrupted()) {
             fail("Test failed because  thread encountered exception");
           }
-          DistributedTestCase.join(opThreads[i], 30 * 1000, getLogWriter());
+          Threads.join(opThreads[i], 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
         }
       }
     };
@@ -965,8 +968,8 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
-        DistributedTestCase.join(createQueuesThread, 300 * 1000, getLogWriter());
+        Wait.waitForCriterion(ev, 30 * 1000, 200, true);
+        Threads.join(createQueuesThread, 300 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
       }
     };
 
@@ -980,7 +983,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
         if (opThreads[0].isInterrupted()) {
           fail("The test has failed as it encountered interrupts in puts & takes");
         }
-        DistributedTestCase.join(opThreads[0], 30 * 1000, getLogWriter());
+        Threads.join(opThreads[0], 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
       }
     };
     vm0.invoke(joinWithThread);
@@ -1106,7 +1109,7 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     // assertEquals(0, hrq.getAvalaibleIds().size());
   }
 

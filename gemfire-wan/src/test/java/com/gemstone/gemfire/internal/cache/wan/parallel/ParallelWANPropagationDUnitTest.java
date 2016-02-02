@@ -31,6 +31,9 @@ import com.gemstone.gemfire.internal.cache.wan.BatchException70;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase.MyGatewayEventFilter;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ParallelWANPropagationDUnitTest extends WANTestBase {
   private static final long serialVersionUID = 1L;
@@ -418,7 +421,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
     
     Integer regionSize = 
       (Integer) vm2.invoke(WANTestBase.class, "getRegionSize", new Object[] {testName + "_PR" });
-    getLogWriter().info("Region size on remote is: " + regionSize);
+    LogWriterSupport.getLogWriter().info("Region size on remote is: " + regionSize);
     
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -459,9 +462,9 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     //------------------------------------------------------------------------------------
     
-    addExpectedException(EntryExistsException.class.getName());
-    addExpectedException(BatchException70.class.getName());
-    addExpectedException(ServerOperationException.class.getName());
+    IgnoredException.addIgnoredException(EntryExistsException.class.getName());
+    IgnoredException.addIgnoredException(BatchException70.class.getName());
+    IgnoredException.addIgnoredException(ServerOperationException.class.getName());
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     
@@ -836,9 +839,9 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
   }
 
   public void testPartitionedParallelPropagationHA() throws Exception {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
     Integer nyPort = (Integer)vm1.invoke(WANTestBase.class,
@@ -887,11 +890,11 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
 
     AsyncInvocation inv1 = vm7.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 5000 });
-    pause(500);
+    Wait.pause(500);
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 10000 });
-    pause(1500);
+    Wait.pause(1500);
     AsyncInvocation inv4 = vm5.invokeAsync(WANTestBase.class, "killSender");
     inv1.join();
     inv2.join();
@@ -1098,7 +1101,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
-    pause(2000);
+    Wait.pause(2000);
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
     vm4.invoke(WANTestBase.class, "doDestroys", new Object[] { testName + "_PR", 500 });
@@ -1115,7 +1118,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
     //give some time for the queue to drain
-    pause(5000);
+    Wait.pause(5000);
     
     vm4.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "validateParallelSenderQueueAllBucketsDrained", new Object[] { "ln" });
@@ -1232,7 +1235,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
      */
 //    vm4.invoke(WANTestBase.class, "waitForSenderPausedState", new Object[] { "ln" });
 //    vm5.invoke(WANTestBase.class, "waitForSenderPausedState", new Object[] { "ln" });
-    pause(1000);
+    Wait.pause(1000);
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
         10 });
@@ -1249,9 +1252,9 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
 
 
   public void tParallelGatewaySenderQueueLocalSizeWithHA() {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
     Integer nyPort = (Integer)vm1.invoke(WANTestBase.class,
@@ -1289,7 +1292,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
      */
 //    vm4.invoke(WANTestBase.class, "waitForSenderPausedState", new Object[] { "ln" });
 //    vm5.invoke(WANTestBase.class, "waitForSenderPausedState", new Object[] { "ln" });
-    pause(1000);
+    Wait.pause(1000);
     
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
         10 });

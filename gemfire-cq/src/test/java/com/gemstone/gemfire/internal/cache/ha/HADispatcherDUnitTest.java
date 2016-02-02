@@ -56,7 +56,11 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HAEventWrapper;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This Dunit test is to verify that when the dispatcher of CS dispatches the
@@ -143,12 +147,12 @@ public class HADispatcherDUnitTest extends DistributedTestCase
     client2.invoke( CacheServerTestUtil.class, "disableShufflingOfEndpoints");
     client1.invoke(HADispatcherDUnitTest.class, "createClientCache",
         new Object[] {
-            getServerHostName(Host.getHost(0)),
+            NetworkSupport.getServerHostName(Host.getHost(0)),
             new Integer(PORT1), new Integer(PORT2),
             new Boolean(false) });
     client2.invoke(HADispatcherDUnitTest.class, "createClientCache",
         new Object[] {
-            getServerHostName(Host.getHost(0)),
+            NetworkSupport.getServerHostName(Host.getHost(0)),
             new Integer(PORT1), new Integer(PORT2),
             new Boolean(true) });
     //createClientCache(new Integer(PORT1), new Integer(PORT2), new Boolean(true) );
@@ -290,7 +294,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
                     + " for proxy " + proxy;
               }
             };
-            DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+            Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
             cache.getLogger().fine("processed a proxy");
         }
       }
@@ -412,7 +416,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 30 * 1000, 200, true);
       ev = new WaitCriterion() {
         public boolean done() {
           return pool.getRedundants().size() >= 1;
@@ -421,7 +425,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 30 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 30 * 1000, 200, true);
       
       assertNotNull(pool.getPrimary());
       assertTrue("backups="+pool.getRedundants() + " expected=" + 1,
@@ -446,7 +450,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
     
     // Create CQ Attributes.
     CqAttributesFactory cqf = new CqAttributesFactory();
-    CqListener[] cqListeners = {new CqQueryTestListener(getLogWriter())};    
+    CqListener[] cqListeners = {new CqQueryTestListener(LogWriterSupport.getLogWriter())};    
     cqf.initCqListeners(cqListeners);
     CqAttributes cqa = cqf.create();
     
@@ -458,7 +462,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
       CqQuery cq1 = cqService.newCq(cqName, queryStr, cqa);
       cq1.execute();
     } catch (Exception ex){
-      getLogWriter().info("CQService is :" + cqService);
+      LogWriterSupport.getLogWriter().info("CQService is :" + cqService);
       ex.printStackTrace();
       AssertionError err = new AssertionError("Failed to create/execute CQ " + cqName + " . ");
       err.initCause(ex);

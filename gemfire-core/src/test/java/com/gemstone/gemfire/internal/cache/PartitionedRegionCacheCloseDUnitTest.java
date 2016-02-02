@@ -29,9 +29,11 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test to verify the meta-data cleanUp done at the time of cache close Op. This
@@ -100,7 +102,7 @@ public class PartitionedRegionCacheCloseDUnitTest extends
             key = new Integer(k);
             pr.put(key, rName + k);
           }
-          getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
               .info("VM0 Done put successfully for PR = " + rName + j);
         }
       }
@@ -121,13 +123,13 @@ public class PartitionedRegionCacheCloseDUnitTest extends
             key = new Integer(k);
             pr.put(key, rName + k);
           }
-          getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
               .info("VM1 Done put successfully for PR = " + rName + j);
         }
       }
     });
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
-    DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    Threads.join(async1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
 
    if(async0.exceptionOccurred()) {
      Assert.fail("Exception during async0", async0.getException());
@@ -201,7 +203,7 @@ public class PartitionedRegionCacheCloseDUnitTest extends
         for (int j = 0; j < MAX_REGIONS; j++) {
           final String regionName = "#" + rName + j;
 
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             
             private Set<Node> nodes;
 

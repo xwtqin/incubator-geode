@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /**
  * @author skumar
@@ -36,7 +37,7 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
   }
 
   public void testParallelPropagationConflationDisabled() throws Exception {

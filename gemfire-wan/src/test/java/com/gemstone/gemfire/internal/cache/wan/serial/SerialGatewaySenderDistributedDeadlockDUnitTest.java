@@ -23,6 +23,7 @@ import com.gemstone.gemfire.cache.execute.*;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 //The tests here are to validate changes introduced because a distributed deadlock
 //was found that caused issues for a production customer. 
@@ -267,31 +268,31 @@ public class SerialGatewaySenderDistributedDeadlockDUnitTest extends WANTestBase
         //exercise region and gateway operations
         vm4.invoke(WANTestBase.class, "doPuts", new Object[]{testName + "_RR", 100});
         vm5.invoke(WANTestBase.class, "doPuts", new Object[]{testName + "_RR", 100});
-        pause(2000); //wait for events to propogate
+        Wait.pause(2000); //wait for events to propogate
         vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 100});
         vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 100});
         vm5.invoke(WANTestBase.class, "doDestroys", new Object[]{testName + "_RR", 100});
-        pause(2000);//wait for events to propogate
+        Wait.pause(2000);//wait for events to propogate
         vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 0});
         vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 0});
         vm4.invoke(WANTestBase.class, "doPuts", new Object[]{testName + "_RR", 100});
         vm5.invoke(WANTestBase.class, "doPuts", new Object[]{testName + "_RR", 100});
-        pause(2000); //wait for events to propogate
+        Wait.pause(2000); //wait for events to propogate
         vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 100});
         vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 100});
         vm4.invoke(SerialGatewaySenderDistributedDeadlockDUnitTest.class, "doInvalidates",
                 new Object[]{testName + "_RR", 100, 100});
         vm4.invoke(WANTestBase.class, "doPutAll", new Object[]{testName + "_RR", 100, 10});
         vm5.invoke(WANTestBase.class, "doPutAll", new Object[]{testName + "_RR", 100, 10});
-        pause(2000);//wait for events to propogate
+        Wait.pause(2000);//wait for events to propogate
         vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 1000});
         vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 1000});
         vm4.invoke(WANTestBase.class, "doDestroys", new Object[]{testName + "_RR", 1000});
-        pause(2000);//wait for events to propogate
+        Wait.pause(2000);//wait for events to propogate
         vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 0});
         vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[]{testName + "_RR", 0});
         vm4.invoke(WANTestBase.class, "doPutsPDXSerializable", new Object[]{testName + "_RR", 100});
-        pause(2000);
+        Wait.pause(2000);
         vm5.invoke(WANTestBase.class, "validateRegionSize_PDX", new Object[]{testName + "_RR", 100});
         vm2.invoke(WANTestBase.class, "validateRegionSize_PDX", new Object[]{testName + "_RR", 100});
     }

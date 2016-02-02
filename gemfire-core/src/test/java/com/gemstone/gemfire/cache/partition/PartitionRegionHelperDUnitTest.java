@@ -47,6 +47,7 @@ import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTe
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -468,7 +469,7 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
           assertTrue(buk0.getBucketAdvisor().isPrimary());
         }
         catch (ForceReattemptException e) {
-          getLogWriter().severe(e);
+          LogWriterSupport.getLogWriter().severe(e);
           fail();
         }
       }
@@ -485,14 +486,14 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
           assertNotNull(k1e);
         }
         catch (ForceReattemptException e) {
-          getLogWriter().severe(e);
+          LogWriterSupport.getLogWriter().severe(e);
           fail();
         }
       }
     };
     for (DistributedMember bom: buk0AllMems) {
       VM v = d2v.get(bom);
-      getLogWriter().info("Visiting bucket owner member " + bom + " for key " + buk0Key1);
+      LogWriterSupport.getLogWriter().info("Visiting bucket owner member " + bom + " for key " + buk0Key1);
       v.invoke(assertHasBucket);
     }
 
@@ -507,14 +508,14 @@ public class PartitionRegionHelperDUnitTest extends CacheTestCase {
           assertFalse(buk0.getBucketAdvisor().isPrimary());
         }
         catch (ForceReattemptException e) {
-          getLogWriter().severe(e);
+          LogWriterSupport.getLogWriter().severe(e);
           fail();
         }
       }
     };
     for (DistributedMember redm: buk0Redundants) {
       VM v = d2v.get(redm);
-      getLogWriter().info("Visiting redundant member " + redm + " for key " + buk0Key1);
+      LogWriterSupport.getLogWriter().info("Visiting redundant member " + redm + " for key " + buk0Key1);
       v.invoke(assertRed);
     }
   }

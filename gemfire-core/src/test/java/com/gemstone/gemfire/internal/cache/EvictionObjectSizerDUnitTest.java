@@ -38,6 +38,7 @@ import com.gemstone.gemfire.internal.cache.lru.HeapLRUCapacityController;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
 import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
 import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 
 public class EvictionObjectSizerDUnitTest extends CacheTestCase {
 
@@ -140,7 +141,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
       int valueSize = SharedLibrary.getObjectHeaderSize() + 4 /* array length */ + 0 /* bytes */;
       valueSize = (int) ReflectionSingleObjectSizer.roundUpSize(valueSize);
       int entrySize = keySize + valueSize + ((HeapLRUCapacityController)((PartitionedRegion)region).getEvictionController()).getPerEntryOverhead();
-      getLogWriter().info("testObjectSizerForHeapLRU_CustomizedNonSizerObject expected= " + entrySize);
+      LogWriterSupport.getLogWriter().info("testObjectSizerForHeapLRU_CustomizedNonSizerObject expected= " + entrySize);
       assertEquals(entrySize, getSizeOfCustomizedData(1));
     }
 
@@ -154,7 +155,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
       int valueSize = SharedLibrary.getObjectHeaderSize() + 4 /* array length */ + 4 /* bytes */;
       valueSize = (int) ReflectionSingleObjectSizer.roundUpSize(valueSize);
       int entrySize = keySize + valueSize + ((HeapLRUCapacityController)((PartitionedRegion)region).getEvictionController()).getPerEntryOverhead();
-      getLogWriter().info("testObjectSizerForHeapLRU_CustomizedNonSizerObject expected= " + entrySize);
+      LogWriterSupport.getLogWriter().info("testObjectSizerForHeapLRU_CustomizedNonSizerObject expected= " + entrySize);
       assertEquals(entrySize, getSizeOfCustomizedData(2));
     }
   }
@@ -172,7 +173,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
     // Total Size of entry should be= 71
     putCustomizedData(1, new TestObjectSizerImpl());
     int expected = (0+160+(Sizeable.PER_OBJECT_OVERHEAD*2)+((HeapLRUCapacityController)((PartitionedRegion)region).getEvictionController()).getPerEntryOverhead());
-    getLogWriter().info("testObjectSizerForHeapLRU_CustomizedSizerObject expected= " + expected);
+    LogWriterSupport.getLogWriter().info("testObjectSizerForHeapLRU_CustomizedSizerObject expected= " + expected);
     assertEquals(expected, getSizeOfCustomizedData(1));
     assertEquals(expected, ((PartitionedRegion)region).getEvictionController()
         .getLRUHelper().getStats().getCounter());
@@ -190,7 +191,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
     // Total Size of entry should be= 72
     putCustomizedObjects(new TestNonSizerObject("1"), new TestObjectSizerImpl());
     int expected = (1+160+(Sizeable.PER_OBJECT_OVERHEAD*2)+((HeapLRUCapacityController)((PartitionedRegion)region).getEvictionController()).getPerEntryOverhead());
-    getLogWriter().info("testObjectSizerForHeapLRU_CustomizedSizerObjects expected= " + expected);
+    LogWriterSupport.getLogWriter().info("testObjectSizerForHeapLRU_CustomizedSizerObjects expected= " + expected);
     assertEquals(expected, getSizeOfCustomizedObject(new TestNonSizerObject("1")));
     assertEquals(expected, ((PartitionedRegion)region).getEvictionController()
         .getLRUHelper().getStats().getCounter());
@@ -211,8 +212,8 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
       ds = getSystem(props);
       cache = CacheFactory.create(ds);
       assertNotNull(cache);
-      getLogWriter().info("cache= " + cache);
-      getLogWriter().info("cache closed= " + cache.isClosed());
+      LogWriterSupport.getLogWriter().info("cache= " + cache);
+      LogWriterSupport.getLogWriter().info("cache closed= " + cache.isClosed());
       cache.getResourceManager().setEvictionHeapPercentage(50);
     }
     catch (Exception e) {
@@ -265,7 +266,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
 
     region = cache.createRegion(regionName, factory.create());
     assertNotNull(region);
-    getLogWriter().info("Partitioned Region created Successfully :" + region);
+    LogWriterSupport.getLogWriter().info("Partitioned Region created Successfully :" + region);
   }
 
   /**
@@ -299,7 +300,7 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
         if (map == null || map.size() == 0) {
           continue;
         }
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "Checking for entry in bucket region: " + bucketRegion);
         for (int counter = 1; counter <= noOfElememts; counter++) {
           assertEquals(entrySize, ((AbstractLRURegionEntry)map

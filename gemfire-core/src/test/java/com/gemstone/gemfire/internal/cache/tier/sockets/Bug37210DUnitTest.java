@@ -36,6 +36,8 @@ import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.*;
 
@@ -84,7 +86,7 @@ public class Bug37210DUnitTest extends DistributedTestCase
   {
     super.setUp();
     
-    IgnoredException.addExpectedException("java.io.IOException");
+    IgnoredException.addIgnoredException("java.io.IOException");
     
     final Host host = Host.getHost(0);
     server = host.getVM(0);
@@ -145,11 +147,11 @@ public class Bug37210DUnitTest extends DistributedTestCase
    */
   public void testHAStatsCleanup() throws Exception
   {
-    getLogWriter().info("testHAStatsCleanup : BEGIN");
-    IgnoredException.addExpectedException("java.net.SocketException");
-    IgnoredException.addExpectedException("Unexpected IOException");
+    LogWriterSupport.getLogWriter().info("testHAStatsCleanup : BEGIN");
+    IgnoredException.addIgnoredException("java.net.SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException");
     client.invoke(Bug37210DUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT) });
+        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT) });
     server.invoke(Bug37210DUnitTest.class, "doEntryOperations");
     
     server.invoke(Bug37210DUnitTest.class,
@@ -159,7 +161,7 @@ public class Bug37210DUnitTest extends DistributedTestCase
     Thread.currentThread().sleep(1000);
     server.invoke(Bug37210DUnitTest.class,
             "closeCacheClientProxyAndVerifyStats2");
-    getLogWriter().info("testHAStatsCleanup : END");
+    LogWriterSupport.getLogWriter().info("testHAStatsCleanup : END");
   }
 
   /**
@@ -188,7 +190,7 @@ public class Bug37210DUnitTest extends DistributedTestCase
     server.setSocketBufferSize(32768);
     server.setMaximumTimeBetweenPings(1000000);
     server.start();
-    getLogWriter().info("Server started at PORT = " + port);
+    LogWriterSupport.getLogWriter().info("Server started at PORT = " + port);
     return new Integer(server.getPort());
   }
 

@@ -42,6 +42,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
@@ -73,7 +74,7 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
       VM vm1 = host.getVM(1);
       vm0.invoke(PutAllCallBkSingleVMDUnitTest.class, "createCache");
       vm1.invoke(PutAllCallBkSingleVMDUnitTest.class, "createCache");
-      getLogWriter().fine("Cache created in successfully");
+      LogWriterSupport.getLogWriter().fine("Cache created in successfully");
     }
     
     public void tearDown2(){
@@ -266,12 +267,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class AfterCreateCallback extends CacheListenerAdapter {
         public void afterCreate(EntryEvent event){            
             putAllcounter++;
-            getLogWriter().fine("In afterCreate"+putAllcounter);
+            LogWriterSupport.getLogWriter().fine("In afterCreate"+putAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllCreateCallback", event.getCallbackArgument());
             }
             if(putAllcounter == 25){
-                getLogWriter().fine("performingtrue");
+                LogWriterSupport.getLogWriter().fine("performingtrue");
                 afterCreate = true;
             }            
         }
@@ -280,12 +281,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class AfterUpdateCallback extends CacheListenerAdapter {
         public void afterUpdate(EntryEvent event){            
             afterUpdateputAllcounter++;
-            getLogWriter().fine("In afterUpdate"+afterUpdateputAllcounter);
+            LogWriterSupport.getLogWriter().fine("In afterUpdate"+afterUpdateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllAfterUpdateCallback", event.getCallbackArgument());
             }
             if(afterUpdateputAllcounter == 5){
-                getLogWriter().fine("performingtrue afterUpdate");
+                LogWriterSupport.getLogWriter().fine("performingtrue afterUpdate");
                 afterUpdate = true;
             }            
         }
@@ -293,12 +294,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class BeforeCreateCallback extends CacheWriterAdapter {
           public void beforeCreate(EntryEvent event){            
             beforeCreateputAllcounter++;
-            getLogWriter().fine("In beforeCreate"+beforeCreateputAllcounter);
+            LogWriterSupport.getLogWriter().fine("In beforeCreate"+beforeCreateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllCreateCallback", event.getCallbackArgument());
             }
             if(beforeCreateputAllcounter == 25){
-                getLogWriter().fine("performingtrue beforeCreateputAll");
+                LogWriterSupport.getLogWriter().fine("performingtrue beforeCreateputAll");
                 beforeCreate = true;
             }            
         }
@@ -306,12 +307,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
       static class BeforeUpdateCallback extends CacheWriterAdapter {
         public void beforeUpdate(EntryEvent event){            
             beforeUpdateputAllcounter++;
-            getLogWriter().fine("In beforeUpdate"+beforeUpdateputAllcounter);
+            LogWriterSupport.getLogWriter().fine("In beforeUpdate"+beforeUpdateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllAfterUpdateCallback", event.getCallbackArgument());
             }
             if(beforeUpdateputAllcounter == 5){
-                getLogWriter().fine("performingtrue beforeUpdate");
+                LogWriterSupport.getLogWriter().fine("performingtrue beforeUpdate");
                 beforeUpdate = true;
             }            
         }

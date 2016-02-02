@@ -44,8 +44,11 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 /**
  * This tests the flag setting for region ( DataPolicy as Empty ) for
  * Delta propogation for a client while registering CQ
@@ -115,7 +118,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
   public void setUp() throws Exception
   {
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
     final Host host = Host.getHost(0);
     server = host.getVM(0);
     client = host.getVM(1);
@@ -331,7 +334,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
       else  
         cq1.execute();
     } catch (Exception ex){
-      getLogWriter().info("CqService is :" + cqService);
+      LogWriterSupport.getLogWriter().info("CqService is :" + cqService);
       ex.printStackTrace();
       AssertionError err = new AssertionError("Failed to create CQ " + cqName1 + " . ");
       err.initCause(ex);
@@ -372,7 +375,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
       else  
         cq1.execute();
     } catch (Exception ex){
-      getLogWriter().info("CqService is :" + cqService);
+      LogWriterSupport.getLogWriter().info("CqService is :" + cqService);
       ex.printStackTrace();
       AssertionError err = new AssertionError("Failed to create CQ " + cqName1 + " . ");
       err.initCause(ex);
@@ -401,7 +404,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         return "Wait Expired";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 5 * 1000, 100, true);
+    Wait.waitForCriterion(wc, 5 * 1000, 100, true);
     
     assertTrue(REGION_NAME1
         + " not present in cache client proxy : Delta is enable", proxy
@@ -442,7 +445,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         return "Wait Expired";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 5 * 1000, 100, true);
+    Wait.waitForCriterion(wc, 5 * 1000, 100, true);
     
     assertTrue("Multiple entries for a region", proxy
         .getRegionsWithEmptyDataPolicy().size() == 2);
@@ -667,7 +670,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         "createServerCache")).intValue();
     client
         .invoke(DeltaToRegionRelationCQRegistrationDUnitTest.class, "createClientCache",
-            new Object[] { getServerHostName(server.getHost()),
+            new Object[] { NetworkSupport.getServerHostName(server.getHost()),
                 new Integer(PORT1) });
   }
   
@@ -679,7 +682,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         "createServerCache")).intValue();
     client
         .invoke(DeltaToRegionRelationCQRegistrationDUnitTest.class, "createClientCacheWithNoRegion",
-            new Object[] { getServerHostName(server.getHost()),
+            new Object[] { NetworkSupport.getServerHostName(server.getHost()),
                 new Integer(PORT1) });
   }
   /*
@@ -702,8 +705,8 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         "createServerCache")).intValue();
     primary = (Integer)client2.invoke(
         DeltaToRegionRelationCQRegistrationDUnitTest.class, "createClientCache2",
-        new Object[] { getServerHostName(server.getHost()),
-            getServerHostName(server2.getHost()), new Integer(PORT1),
+        new Object[] { NetworkSupport.getServerHostName(server.getHost()),
+            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT1),
             new Integer(PORT2) });
   }
   
@@ -718,8 +721,8 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
         "createServerCache")).intValue();
     primary = (Integer)client2.invoke(
         DeltaToRegionRelationCQRegistrationDUnitTest.class, "createClientCache3",
-        new Object[] { getServerHostName(server.getHost()),
-            getServerHostName(server2.getHost()), new Integer(PORT1),
+        new Object[] { NetworkSupport.getServerHostName(server.getHost()),
+            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT1),
             new Integer(PORT2) });
   }
   

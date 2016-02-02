@@ -27,6 +27,7 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author dsmith
@@ -45,7 +46,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    IgnoredException ex = IgnoredException.addExpectedException( "IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addIgnoredException( "IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -65,7 +66,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    IgnoredException ex = IgnoredException.addExpectedException( "IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addIgnoredException( "IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -85,7 +86,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
     createPR(vm0, "region1", 5);
     createPR(vm1, "region2", 10);
     //This should fail
-    IgnoredException ex = IgnoredException.addExpectedException("IllegalStateException", vm1);
+    IgnoredException ex = IgnoredException.addIgnoredException("IllegalStateException", vm1);
     try {
       createPR(vm1, "region1", 10);
       fail("Should have received an exception");
@@ -95,7 +96,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
       ex.remove();
     }
     
-    ex = IgnoredException.addExpectedException("DistributedSystemDisconnectedException", vm0);
+    ex = IgnoredException.addIgnoredException("DistributedSystemDisconnectedException", vm0);
     try {
       fakeCrash(vm0);
     } finally {
@@ -163,7 +164,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
           .setEntryTimeToLive(new ExpirationAttributes(expirationTime));
 
         //We may log an exception if the create fails. Ignore thse.
-          IgnoredException ex = IgnoredException.addExpectedException("IllegalStateException");
+          IgnoredException ex = IgnoredException.addIgnoredException("IllegalStateException");
           try {
             int i= 0;
             //Loop until a successful create
@@ -180,7 +181,7 @@ public class PartitionedRegionMetaDataCleanupDUnitTest extends CacheTestCase {
                 }
                 
                 //wait a bit before the next attempt.
-                pause(500);
+                Wait.pause(500);
               }
             }
           } finally {

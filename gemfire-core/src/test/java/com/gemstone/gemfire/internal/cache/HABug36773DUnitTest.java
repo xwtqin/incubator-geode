@@ -41,6 +41,8 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -157,7 +159,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
 
   public void testDummyForBug36773()
   {
-    getLogWriter().info(" This is the dummy test for the Bug 36773");
+    LogWriterSupport.getLogWriter().info(" This is the dummy test for the Bug 36773");
     
   }
   
@@ -172,7 +174,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
       {
         Region region = cache.getRegion(Region.SEPARATOR + REGION_NAME);
         assertNotNull(region);
-        getLogWriter().info("Size of the region " + region.size());
+        LogWriterSupport.getLogWriter().info("Size of the region " + region.size());
         assertEquals(size, region.size());
       }
     };
@@ -281,7 +283,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
     new HABug36773DUnitTest("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
-    ClientServerTestCase.configureConnectionPool(factory, DistributedTestCase.getIPLiteral(), new int[] {PORT1,PORT2}, true, -1, 2, null);
+    ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getIPLiteral(), new int[] {PORT1,PORT2}, true, -1, 2, null);
     RegionAttributes attrs = factory.create();
     cache.createRegion(REGION_NAME, attrs);
   }

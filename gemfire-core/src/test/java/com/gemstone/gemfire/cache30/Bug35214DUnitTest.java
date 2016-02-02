@@ -31,9 +31,12 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Make sure entry expiration does not happen during gii for bug 35214
@@ -94,7 +97,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
                 //pause(5);
               }
               else {
-                getLogWriter().info("PROFILE CHECK: Found " + numProfiles + " getInitialImage Profiles (OK)");
+                LogWriterSupport.getLogWriter().info("PROFILE CHECK: Found " + numProfiles + " getInitialImage Profiles (OK)");
                 break;
               }
             }
@@ -185,7 +188,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
         };
       af.addCacheListener(cl1);
       final Region r1 = createRootRegion("r1", af.create());
-      DistributedTestCase.join(updater, 60 * 1000, getLogWriter());
+      Threads.join(updater, 60 * 1000, LogWriterSupport.getLogWriter());
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
           return r1.values().size() == 0;
@@ -194,7 +197,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
           return "region never became empty";
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 2 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 2 * 1000, 200, true);
       {
         assertEquals(0, r1.values().size());
         assertEquals(ENTRY_COUNT, r1.keys().size());

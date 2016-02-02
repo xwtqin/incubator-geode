@@ -63,6 +63,8 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @since 6.1
@@ -657,7 +659,7 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
       primary = (((PoolImpl)pool).getPrimaryPort() == PORT1) ? VM0
           : ((((PoolImpl)pool).getPrimaryPort() == PORT2) ? VM1 : VM2);
   
-      getLogWriter().info("waiting for client to receive last_key");
+      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("waiting for client to receive last_key");
       waitForLastKey();
   
       long fromDeltasOnClient = DeltaTestImpl.getFromDeltaInvokations()
@@ -866,7 +868,7 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
         }
       };
     }
-    DistributedTestCase.waitForCriterion(wc, 5 * 1000, 100, true);
+    Wait.waitForCriterion(wc, 5 * 1000, 100, true);
   }
 
   public static void assertValue(String rName, String key, Object expected) {
@@ -897,7 +899,7 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
         return "HA Overflow did not occure.";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10 * 1000, 100, true);
+    Wait.waitForCriterion(wc, 10 * 1000, 100, true);
   }
 
   public static void waitForLastKey() {
@@ -910,7 +912,7 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
         return "Last key NOT received.";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10 * 1000, 100, true);
+    Wait.waitForCriterion(wc, 10 * 1000, 100, true);
   }
 
   public static void prepareDeltas() {

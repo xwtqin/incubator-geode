@@ -41,6 +41,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -72,7 +73,7 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(PutAllDAckDUnitTest.class, "createCacheForVM0");
       vm1.invoke(PutAllDAckDUnitTest.class, "createCacheForVM1");
-      getLogWriter().fine("Cache created successfully");
+      LogWriterSupport.getLogWriter().fine("Cache created successfully");
     }
     
     public void tearDown2(){
@@ -215,7 +216,7 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
 //             }
             
             beforeCreateputAllcounter++;
-            getLogWriter().fine("*******BeforeCreate*****");
+            LogWriterSupport.getLogWriter().fine("*******BeforeCreate*****");
             beforeCreate = true;
         }
     }

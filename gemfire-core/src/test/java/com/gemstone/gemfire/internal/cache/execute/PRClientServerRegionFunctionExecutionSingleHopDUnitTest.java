@@ -49,8 +49,11 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
   public class PRClientServerRegionFunctionExecutionSingleHopDUnitTest extends PRClientServerTestBase {
     private static final String TEST_FUNCTION7 = TestFunction.TEST_FUNCTION7;
 
@@ -66,8 +69,8 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
     @Override
     public void setUp() throws Exception {
       //Workaround for bug #52004
-      IgnoredException.addExpectedException("InternalFunctionInvocationTargetException");
-      IgnoredException.addExpectedException("Connection refused");
+      IgnoredException.addIgnoredException("InternalFunctionInvocationTargetException");
+      IgnoredException.addIgnoredException("Connection refused");
       super.setUp();
     }
 
@@ -134,7 +137,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
       registerFunctionAtServer(function);
       isByName = Boolean.TRUE;
       // add expected exception for server going down after wait
-      final IgnoredException expectedEx = IgnoredException.addExpectedException(
+      final IgnoredException expectedEx = IgnoredException.addIgnoredException(
           DistributedSystemDisconnectedException.class.getName(), server1);
       try {
         client.invoke(
@@ -254,8 +257,8 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
      * After 5th attempt function will send Boolean as last result.
      */
     public void testserverMultiKeyExecution_FunctionInvocationTargetException() {
-      IgnoredException.addExpectedException("FunctionException: IOException while sending");
-      IgnoredException.addExpectedException("java.net.SocketException: Software caused connection abort");
+      IgnoredException.addIgnoredException("FunctionException: IOException while sending");
+      IgnoredException.addIgnoredException("java.net.SocketException: Software caused connection abort");
       createScenario();
       client.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class,
           "serverMultiKeyExecution_FunctionInvocationTargetException");
@@ -266,7 +269,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
      * object and using the name of the function
      */
     public void testserverMultiKeyExecutionNoResult_byName(){
-      IgnoredException.addExpectedException("Cannot send result");
+      IgnoredException.addIgnoredException("Cannot send result");
       createScenario();
       Function function = new TestFunction(false,TEST_FUNCTION7);
       registerFunctionAtServer(function);
@@ -350,7 +353,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
       client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
           "verifyDeadAndLiveServers", new Object[] { new Integer(1),
               new Integer(2) });
-      DistributedTestCase.join(async[0], 6 * 60 * 1000, getLogWriter());
+      Threads.join(async[0], 6 * 60 * 1000, LogWriterSupport.getLogWriter());
       if (async[0].getException() != null) {
         Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
@@ -379,7 +382,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
       server3.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "startServerHA");
       server1.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "closeCacheHA");
       client.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "verifyDeadAndLiveServers",new Object[]{new Integer(1),new Integer(2)});
-      DistributedTestCase.join(async[0],  5 * 60 * 1000, getLogWriter());
+      Threads.join(async[0],  5 * 60 * 1000, LogWriterSupport.getLogWriter());
       if(async[0].getException() != null){
         Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
@@ -483,7 +486,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         String excuse;
         public boolean done() {
           int sz = pool.getConnectedServerCount();
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Checking for the Live Servers : Expected  : " + expectedLiveServers
                   + " Available :" + sz);
           if (sz == expectedLiveServers.intValue()) {
@@ -496,7 +499,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
           return excuse;
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+      Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
     }
     
     public static void executeFunction() throws ServerException,
@@ -533,7 +536,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         }
       }
       catch (Exception e) {
-        getLogWriter().info("Got an exception : " + e.getMessage());
+        LogWriterSupport.getLogWriter().info("Got an exception : " + e.getMessage());
         assertTrue(e instanceof EOFException || e instanceof SocketException
             || e instanceof SocketTimeoutException
             || e instanceof ServerException || e instanceof IOException
@@ -554,7 +557,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
       ResultCollector rc1 = dataSet.withFilter(testKeysSet).withArgs(Boolean.TRUE).execute(
           function.getId());
       List l = ((List)rc1.getResult());
-      getLogWriter().info("Result size : " + l.size());
+      LogWriterSupport.getLogWriter().info("Result size : " + l.size());
       return l;
     }
     
@@ -589,7 +592,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
       PartitionedRegion region = (PartitionedRegion)cache.getRegion(PartitionedRegionName);
       HashMap localBucket2RegionMap = (HashMap)region
       .getDataStore().getSizeLocally();
-      getLogWriter().info(
+      LogWriterSupport.getLogWriter().info(
       "Size of the " + PartitionedRegionName + " in this VM :- "
           + localBucket2RegionMap.size());
       Set entrySet = localBucket2RegionMap.entrySet();
@@ -617,8 +620,8 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         }
         ResultCollector rc1 = executeOnAll(dataSet, Boolean.TRUE,  function, isByName);
         List resultList = ((List)rc1.getResult());
-        getLogWriter().info("Result size : " + resultList.size());
-        getLogWriter().info("Result are SSSS : " + resultList);
+        LogWriterSupport.getLogWriter().info("Result size : " + resultList.size());
+        LogWriterSupport.getLogWriter().info("Result are SSSS : " + resultList);
         assertEquals(3, resultList.size());
 
 //        while (resultIterator.hasNext()) {
@@ -671,7 +674,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         }
         Map resultMap = region.getAll(testKeysList);
         assertTrue(resultMap.equals(origVals));
-        pause(2000);
+        Wait.pause(2000);
         Map secondResultMap = region.getAll(testKeysList);
         assertTrue(secondResultMap.equals(origVals));
         
@@ -700,7 +703,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         }
         Map resultMap = region.getAll(testKeysList);
         assertTrue(resultMap.equals(origVals));
-        pause(2000);
+        Wait.pause(2000);
         Map secondResultMap = region.getAll(testKeysList);
         assertTrue(secondResultMap.equals(origVals));
         
@@ -748,7 +751,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
               .iterator().next());
         }
         catch (Exception expected) {
-          getLogWriter().info("Exception : " + expected.getMessage());
+          LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
           expected.printStackTrace();
           fail("Test failed after the put operation");
         }
@@ -777,7 +780,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         List l = null;
         ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,  function, isByName);
         l = ((List)rc1.getResult());
-        getLogWriter().info("Result size : " + l.size());
+        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
@@ -827,7 +830,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,
             function, isByName);
         l = ((List)rc1.getResult());
-        getLogWriter().info("Result size : " + l.size());
+        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
@@ -863,7 +866,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        getLogWriter().info("Exception : " , ex);
+        LogWriterSupport.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }
@@ -907,13 +910,13 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
           }
         });
         l = ((List)rc1.getResult());
-        getLogWriter().info("Result size : " + l.size());
+        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
         }
       }catch(Exception e){
-        getLogWriter().info("Exception : " + e.getMessage());
+        LogWriterSupport.getLogWriter().info("Exception : " + e.getMessage());
         e.printStackTrace();
         fail("Test failed after the put operation");
         
@@ -1000,7 +1003,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         fail("Test failed after the put operation");
       } catch(FunctionException expected) {
         expected.printStackTrace();
-        getLogWriter().info("Exception : " + expected.getMessage());
+        LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
         assertTrue(expected.getMessage().startsWith((LocalizedStrings.ExecuteFunction_CANNOT_0_RESULTS_HASRESULT_FALSE
             .toLocalizedString("return any"))));
       }
@@ -1058,7 +1061,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        getLogWriter().info("Exception : " , ex);
+        LogWriterSupport.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }
@@ -1125,7 +1128,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
         });
       }
       catch (Exception expected) {
-        getLogWriter().fine("Exception occured : " + expected.getMessage());
+        LogWriterSupport.getLogWriter().fine("Exception occured : " + expected.getMessage());
         assertTrue(expected.getMessage().contains(
             "No target node found for KEY = " + testKey)
             || expected.getMessage()
@@ -1187,7 +1190,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        getLogWriter().info("Exception : " , ex);
+        LogWriterSupport.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }

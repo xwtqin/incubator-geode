@@ -21,7 +21,11 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing Number of clients and can be extended for relevant test
@@ -69,7 +73,7 @@ public class TestClientsDUnitTest extends ManagementTestBase {
       }
     };
 
-    waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
+    Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);
     final DistributedSystemMXBean bean = getManagementService()
         .getDistributedSystemMXBean();
     assertNotNull(bean);
@@ -87,11 +91,11 @@ public class TestClientsDUnitTest extends ManagementTestBase {
     cqDUnitTest.createServer(server, serverPort);
     final int port = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = getServerHostName(server.getHost());
+    final String host0 = NetworkSupport.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client, port, host0);
     Integer numOfClients = (Integer) managingNode.invoke(
         TestClientsDUnitTest.class, "getNumOfClients");
-    getLogWriter().info("testNumOfClients numOfClients = " + numOfClients);
+    LogWriterSupport.getLogWriter().info("testNumOfClients numOfClients = " + numOfClients);
     cqDUnitTest.closeClient(client);
     cqDUnitTest.closeServer(server);
     assertEquals(1, numOfClients.intValue());

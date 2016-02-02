@@ -36,6 +36,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -67,7 +68,7 @@ public class Bug33359DUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(Bug33359DUnitTest.class, "createCacheVM0");
       vm1.invoke(Bug33359DUnitTest.class, "createCacheVM1");
-      getLogWriter().fine("Cache created in successfully");
+      LogWriterSupport.getLogWriter().fine("Cache created in successfully");
     }
     
     public void tearDown2(){
@@ -140,7 +141,7 @@ public class Bug33359DUnitTest extends DistributedTestCase {
                 for(int i=0; i<10; i++){
                     region.put(new Integer(i), Integer.toString(i));
                 }                
-                getLogWriter().fine("Did all puts successfully");
+                LogWriterSupport.getLogWriter().fine("Did all puts successfully");
             }
         }
         );        
@@ -148,7 +149,7 @@ public class Bug33359DUnitTest extends DistributedTestCase {
         vm0.invoke(new CacheSerializableRunnable("perform clear on region"){
             public void run2() throws CacheException {
                 region.clear();
-                getLogWriter().fine("region is cleared");
+                LogWriterSupport.getLogWriter().fine("region is cleared");
             }
         }
         );        

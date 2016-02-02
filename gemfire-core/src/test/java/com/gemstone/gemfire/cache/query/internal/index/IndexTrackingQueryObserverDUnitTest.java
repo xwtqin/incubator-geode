@@ -45,8 +45,11 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionQueryEvaluator.TestH
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author shobhit
@@ -250,7 +253,7 @@ public class IndexTrackingQueryObserverDUnitTest extends CacheTestCase {
         final IndexTrackingTestHook th = (IndexTrackingTestHook) ((IndexTrackingQueryObserver) observer)
             .getTestHook();
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public boolean done() {
             if(th.getRegionMap() != null) {
@@ -272,7 +275,7 @@ public class IndexTrackingQueryObserverDUnitTest extends CacheTestCase {
           totalResults += i.intValue();
         }
         
-        getLogWriter().fine("Index Info result size is " + totalResults);
+        LogWriterSupport.getLogWriter().fine("Index Info result size is " + totalResults);
         assertEquals(results, totalResults);
       }
     };

@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -45,7 +46,7 @@ public class ForceInvalidateOffHeapEvictionDUnitTest extends
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {

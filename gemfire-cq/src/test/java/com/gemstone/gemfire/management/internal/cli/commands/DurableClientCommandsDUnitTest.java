@@ -44,7 +44,10 @@ import com.gemstone.gemfire.management.cli.Result.Status;
 import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -247,7 +250,7 @@ public class DurableClientCommandsDUnitTest extends CliCommandTestBase {
   }
   
   private void writeToLog(String text, String resultAsString) {
-    getLogWriter().info(getUniqueName() + ": " + text + "\n" + resultAsString);
+    LogWriterSupport.getLogWriter().info(getUniqueName() + ": " + text + "\n" + resultAsString);
   }
   
   private void setupSystem() throws Exception {
@@ -357,7 +360,7 @@ public class DurableClientCommandsDUnitTest extends CliCommandTestBase {
         getSystem(props);
         
         final ClientCacheFactory ccf = new ClientCacheFactory(props);
-        ccf.addPoolServer(getServerHostName(server.getHost()), port);
+        ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
         ccf.setPoolSubscriptionEnabled(true);
         
         ClientCache cache = (ClientCache)getClientCache(ccf);
@@ -420,7 +423,7 @@ public class DurableClientCommandsDUnitTest extends CliCommandTestBase {
 
   protected Properties getServerProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
     return p;
   }
   

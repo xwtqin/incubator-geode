@@ -31,6 +31,7 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 import com.gemstone.gemfire.internal.logging.PureLogWriter;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 
@@ -95,7 +96,7 @@ public class PartitionedRegionDUnitTestCase extends CacheTestCase
   {
     try {
       closeCache();
-      invokeInEveryVM(CacheTestCase.class, "closeCache");
+      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
     } finally {
       super.tearDown2();
     }
@@ -197,10 +198,10 @@ public class PartitionedRegionDUnitTestCase extends CacheTestCase
                 prPrefix + i,
                 PartitionedRegionTestHelper.createRegionAttrsForPR(redundancy,
                     localmaxMemory, recoveryDelay));
-            getLogWriter().info("Created Region  new  --- " + prPrefix + i);
+            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Created Region  new  --- " + prPrefix + i);
           } catch (RegionExistsException ignore) {}
         }
-        getLogWriter().info("getCreateMultiplePRregion() - Partition Regions Successfully Completed ");
+        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("getCreateMultiplePRregion() - Partition Regions Successfully Completed ");
       }
     };
   }

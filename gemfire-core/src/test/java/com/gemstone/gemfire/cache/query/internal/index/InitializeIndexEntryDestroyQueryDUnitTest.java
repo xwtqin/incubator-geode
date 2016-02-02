@@ -36,9 +36,11 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Test creates a local region. Creates and removes index in a parallel running thread.
@@ -88,7 +90,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           localRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", localRegion);
@@ -122,11 +124,11 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           }
           assertNotNull(index);
 
-          pause(100);
+          Wait.pause(100);
 
           PRQHelp.getCache().getQueryService().removeIndex(index);
 
-          pause(100);
+          Wait.pause(100);
         }
       }
     });
@@ -148,7 +150,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           PRQHelp.getCache().getLogger().fine("Going to destroy the value" + p);
           r.destroy(j);
 
-          pause(100);
+          Wait.pause(100);
 
           //Put the value back again.
           PRQHelp.getCache().getLogger().fine("Putting the value back" + p);
@@ -195,12 +197,12 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
       }
     });
     
-    DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 1000 * 1000, LogWriterSupport.getLogWriter());
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
-    DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 1000 * 1000, LogWriterSupport.getLogWriter());
     if (asyInvk1.exceptionOccurred()) {
       Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
@@ -225,7 +227,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -284,7 +286,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           PRQHelp.getCache().getLogger().fine("Going to destroy the value" + p);
           r.destroy(j);
 
-          pause(20);
+          Wait.pause(20);
 
           //Put the value back again.
           PRQHelp.getCache().getLogger().fine("Putting the value back" + p);
@@ -331,12 +333,12 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
       }
     });
 
-    DistributedTestCase.join(asyInvk0, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk0, 1000 * 1000, LogWriterSupport.getLogWriter());
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
     
-    DistributedTestCase.join(asyInvk1, 1000 * 1000, getLogWriter());
+    Threads.join(asyInvk1, 1000 * 1000, LogWriterSupport.getLogWriter());
     if (asyInvk1.exceptionOccurred()) {
       Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
@@ -361,7 +363,7 @@ public class InitializeIndexEntryDestroyQueryDUnitTest extends CacheTestCase {
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);

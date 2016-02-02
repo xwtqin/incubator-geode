@@ -38,10 +38,11 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.Resou
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -247,14 +248,14 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
         public void run2() throws CacheException {
           getCache().getLogger().info("<ExpectedException action=add>" + 
               expectedExceptions + "</ExpectedException>");
-          getLogWriter().info("<ExpectedException action=add>" + 
+          LogWriterSupport.getLogWriter().info("<ExpectedException action=add>" + 
                   expectedExceptions + "</ExpectedException>");
         }
       };
     SerializableRunnable removeExpectedExceptions = 
       new CacheSerializableRunnable("removeExpectedExceptions") {
         public void run2() throws CacheException {
-          getLogWriter().info("<ExpectedException action=remove>" + 
+          LogWriterSupport.getLogWriter().info("<ExpectedException action=remove>" + 
                     expectedExceptions + "</ExpectedException>");	
           getCache().getLogger().info("<ExpectedException action=remove>" + 
               expectedExceptions + "</ExpectedException>");
@@ -272,7 +273,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
           for (int k = 0; k < 10; k++) {
             pr.put(j + PR_PREFIX + k, PR_PREFIX + k);
           }
-          getLogWriter().info("VM0 Done put successfully for PR = " + PR_PREFIX
+          LogWriterSupport.getLogWriter().info("VM0 Done put successfully for PR = " + PR_PREFIX
               + j);
         }
       }
@@ -289,7 +290,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
           for (int k = 10; k < 20; k++) {
             pr.put(j + PR_PREFIX + k, PR_PREFIX + k);
           }
-          getLogWriter().info("VM1 Done put successfully for PR = " + PR_PREFIX
+          LogWriterSupport.getLogWriter().info("VM1 Done put successfully for PR = " + PR_PREFIX
               + j);
         }
       }
@@ -298,7 +299,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
     // dataStore1.invoke(addExpectedExceptions);
     AsyncInvocation async0 = dataStore0.invokeAsync(dataStore0Puts);
     // AsyncInvocation  async1 = dataStore1.invokeAsync(dataStore1Puts);
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000, LogWriterSupport.getLogWriter());
     // async1.join();
     dataStore0.invoke(removeExpectedExceptions);
     // dataStore1.invoke(removeExpectedExceptions);
@@ -318,7 +319,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
     
     async0 = dataStore0.invokeAsync(dataStore0Puts);
     // async1 = dataStore1.invokeAsync(dataStore1Puts);
-    DistributedTestCase.join(async0, 30 * 1000, getLogWriter());
+    Threads.join(async0, 30 * 1000, LogWriterSupport.getLogWriter());
     // async1.join();
     
     if (async0.exceptionOccurred()) {
@@ -379,7 +380,7 @@ public class PartitionedRegionHADUnitTest extends PartitionedRegionDUnitTestCase
       // This accessor should NOT have picked up any buckets.
       assertFalse(vm3LBRsize != 0);
       int vm2B2Nsize = ((Integer)dataStore2.invoke(validateBucketsOnNode)).intValue();
-      getLogWriter().info("vm2B2Nsize = " + vm2B2Nsize);
+      LogWriterSupport.getLogWriter().info("vm2B2Nsize = " + vm2B2Nsize);
       assertEquals(vm2B2Nsize, vm2LBRsize);
     }
   }

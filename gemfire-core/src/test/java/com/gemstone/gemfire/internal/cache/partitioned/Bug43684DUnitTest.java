@@ -36,6 +36,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -77,7 +78,7 @@ public class Bug43684DUnitTest extends DistributedTestCase {
     server2 = host.getVM(1);
     server3 = host.getVM(2);
     client1 = host.getVM(3);
-    IgnoredException.addExpectedException("Connection refused: connect");
+    IgnoredException.addIgnoredException("Connection refused: connect");
   }
 
   public void tearDown2() throws Exception {
@@ -236,7 +237,7 @@ public class Bug43684DUnitTest extends DistributedTestCase {
   public static Integer createServerCache(Boolean isReplicated, Boolean isPrimaryEmpty) throws Exception {
     DistributedTestCase.disconnectFromDS();
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
 //    props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
 //    props.setProperty("log-level", "fine");
     props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()

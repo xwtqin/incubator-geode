@@ -39,7 +39,10 @@ import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.internal.util.StopWatch;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Test behavior of region when running out of off-heap memory.
@@ -62,7 +65,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
   public void setUp() throws Exception {
     disconnectAllFromDS();
     super.setUp();
-    IgnoredException.addExpectedException(OutOfOffHeapMemoryException.class.getSimpleName());
+    IgnoredException.addIgnoredException(OutOfOffHeapMemoryException.class.getSimpleName());
   }
   
 //  public static void caseSetUp() {
@@ -90,11 +93,11 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {
-      invokeInEveryVM(getClass(), "cleanup");
+      Invoke.invokeInEveryVM(getClass(), "cleanup");
       super.tearDown2();
     }
   }
@@ -163,7 +166,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
         return "Waiting for cache, system and dm to close";
       }
     };
-    waitForCriterion(waitForDisconnect, 10*1000, 100, true);
+    Wait.waitForCriterion(waitForDisconnect, 10*1000, 100, true);
     
     // wait for cache instance to be nulled out
     final WaitCriterion waitForNull = new WaitCriterion() {
@@ -174,7 +177,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
         return "Waiting for GemFireCacheImpl to null its instance";
       }
     };
-    waitForCriterion(waitForNull, 10*1000, 100, true);
+    Wait.waitForCriterion(waitForNull, 10*1000, 100, true);
     assertNull(GemFireCacheImpl.getInstance());
     
     // verify system was closed out due to OutOfOffHeapMemoryException
@@ -331,7 +334,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
               return msg;
             }
           };
-          waitForCriterion(waitForDisconnect, 30*1000, 10, true);
+          Wait.waitForCriterion(waitForDisconnect, 30*1000, 10, true);
         }
       });
     }

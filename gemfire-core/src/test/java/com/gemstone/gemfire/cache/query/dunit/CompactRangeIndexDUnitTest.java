@@ -28,9 +28,12 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable.CacheSerializableR
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class CompactRangeIndexDUnitTest extends DistributedTestCase{
 
@@ -44,7 +47,7 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
   public void setUp() throws Exception {
     super.setUp();
     getSystem();
-    invokeInEveryVM(new SerializableRunnable("getSystem") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("getSystem") {
       public void run() {
         getSystem();
       }
@@ -52,7 +55,7 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
     Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     utils = new QueryTestUtils();
-    utils.createServer(vm0, getAllDistributedSystemProperties(new Properties()));
+    utils.createServer(vm0, DistributedTestSupport.getAllDistributedSystemProperties(new Properties()));
     utils.createReplicateRegion("exampleRegion", vm0);
     utils.createIndex(vm0,"type", "\"type\"", "/exampleRegion");
   }
@@ -192,7 +195,7 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
     @Override
     public void hook(int spot) throws RuntimeException {
      if(spot == 11){
-         pause(10);
+         Wait.pause(10);
      }
    }
   }

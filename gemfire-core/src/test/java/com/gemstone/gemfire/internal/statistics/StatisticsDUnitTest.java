@@ -63,8 +63,11 @@ import com.gemstone.gemfire.internal.StatArchiveReader.StatValue;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Integration tests for Statistics. VM0 performs puts and VM1 receives
@@ -129,7 +132,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
 
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(getClass(), "cleanup");
+    Invoke.invokeInEveryVM(getClass(), "cleanup");
     disconnectAllFromDS(); // because this test enabled stat sampling!
   }
   
@@ -174,7 +177,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
               return "sampler.getSampleCollector() is still null!";
             }
           };
-          waitForCriterion(waitForSampleCollector, 4*1000, 10, true);
+          Wait.waitForCriterion(waitForSampleCollector, 4*1000, 10, true);
   
           final SampleCollector sampleCollector = sampler.getSampleCollector();
           assertNotNull(sampleCollector);
@@ -231,7 +234,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
             return "sampler.getSampleCollector() is still null!";
           }
         };
-        waitForCriterion(waitForSampleCollector, 2*1000, 10, true);
+        Wait.waitForCriterion(waitForSampleCollector, 2*1000, 10, true);
 
         final SampleCollector sampleCollector = sampler.getSampleCollector();
         assertNotNull(sampleCollector);
@@ -285,7 +288,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
                 return rml.members + " should contain " + subMember;
               }
             };
-            waitForCriterion(wc, 4*1000, 10, true);
+            Wait.waitForCriterion(wc, 4*1000, 10, true);
             
             // publish lots of puts cycling through the NUM_KEYS
             assertEquals(0, statistics.getPuts());
@@ -332,7 +335,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
                 return "Waiting for " + StatSamplerStats.SAMPLE_COUNT + " >= " + initialSampleCount + 2;
               }
             };
-            waitForCriterion(wc, 4*1000, 10, true);
+            Wait.waitForCriterion(wc, 4*1000, 10, true);
           }
         });
       }
@@ -362,7 +365,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
             return "Waiting for " + StatSamplerStats.SAMPLE_COUNT + " >= " + initialSampleCount + 2;
           }
         };
-        waitForCriterion(wc, 4*1000, 10, true);
+        Wait.waitForCriterion(wc, 4*1000, 10, true);
         
         // now post total updateEvents to static
         final PubSubStats statistics = subStatsRef.get();

@@ -42,11 +42,13 @@ import com.gemstone.gemfire.internal.admin.GfManagerAgentConfig;
 import com.gemstone.gemfire.internal.admin.GfManagerAgentFactory;
 import com.gemstone.gemfire.internal.admin.StatResource;
 import com.gemstone.gemfire.internal.admin.remote.RemoteTransportConfig;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This class tests the functionality of the {@linkplain com.gemstone.gemfire.internal.admin internal
@@ -65,13 +67,13 @@ public class ConsoleDistributionManagerDUnitTest
 //  private volatile Alert lastAlert = null;
 
   public void alert(Alert alert) {
-    getLogWriter().info("DEBUG: alert=" + alert);
+    LogWriterSupport.getLogWriter().info("DEBUG: alert=" + alert);
 //    this.lastAlert = alert;
   }
 
   public void setUp() throws Exception {
     boolean finishedSetup = false;
-    IgnoredException.addExpectedException("Error occurred while reading system log");
+    IgnoredException.addIgnoredException("Error occurred while reading system log");
     try {
       if (firstTime) {
         disconnectFromDS(); //make sure there's no ldm lying around
@@ -95,7 +97,7 @@ public class ConsoleDistributionManagerDUnitTest
       }
       // create a GfManagerAgent in the master vm.
       this.agent = GfManagerAgentFactory.
-        getManagerAgent(new GfManagerAgentConfig(null, transport, getLogWriter(), Alert.SEVERE, this, null));
+        getManagerAgent(new GfManagerAgentConfig(null, transport, LogWriterSupport.getLogWriter(), Alert.SEVERE, this, null));
       if (!agent.isConnected()) {
         WaitCriterion ev = new WaitCriterion() {
           public boolean done() {
@@ -105,7 +107,7 @@ public class ConsoleDistributionManagerDUnitTest
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+        Wait.waitForCriterion(ev, 60 * 1000, 200, true);
       }
       finishedSetup = true;
     } finally {
@@ -190,7 +192,7 @@ public class ConsoleDistributionManagerDUnitTest
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     }
 
     //final Serializable controllerId = getSystem().getDistributionManager().getId(); //can't do this...
@@ -250,7 +252,7 @@ public class ConsoleDistributionManagerDUnitTest
       
       Region[] roots = apps[i].getRootRegions();
       if (roots.length == 0) {
-        getLogWriter().info("DEBUG: testApplications: apps[" + i + "]=" + apps[i] + " did not have a root region");
+        LogWriterSupport.getLogWriter().info("DEBUG: testApplications: apps[" + i + "]=" + apps[i] + " did not have a root region");
       } else {
         Region root = roots[0];
         assertNotNull(root);
@@ -291,7 +293,7 @@ public class ConsoleDistributionManagerDUnitTest
         assertTrue(!node.isPrimitiveOrString());
         EntryValueNode[] fields = node.getChildren();
         assertNotNull(fields);
-        getLogWriter().warning("The tests use StringBuffers for values which might be implmented differently in jdk 1.5");
+        LogWriterSupport.getLogWriter().warning("The tests use StringBuffers for values which might be implmented differently in jdk 1.5");
        // assertTrue(fields.length > 0);
         
         /// test destruction in the last valid app
@@ -315,7 +317,7 @@ public class ConsoleDistributionManagerDUnitTest
               return "Waited 20 seconds for region " + r.getFullPath() + "to be destroyed.";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 20 * 1000, 200, true);
         }
       }
     }
@@ -368,7 +370,7 @@ public class ConsoleDistributionManagerDUnitTest
     region.create(entryName, value);
     
     
-    getLogWriter().info("Put value " + value + " in entry " +
+    LogWriterSupport.getLogWriter().info("Put value " + value + " in entry " +
                         entryName + " in region '" +
                         region.getFullPath() +"'");
     

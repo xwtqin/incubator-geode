@@ -35,7 +35,10 @@ import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Provides helper methods for testing clients and servers. This
@@ -201,7 +204,7 @@ public class ClientServerTestCase extends CacheTestCase {
       boolean threadLocalCnxs, int lifetimeTimeout, int statisticInterval) {
 
     if(AUTO_LOAD_BALANCE) {
-      pf.addLocator(host,getDUnitLocatorPort());
+      pf.addLocator(host,DistributedTestSupport.getDUnitLocatorPort());
     } else {
       for(int z=0;z<ports.length;z++) {
         pf.addServer(host,ports[z]);
@@ -299,7 +302,7 @@ public class ClientServerTestCase extends CacheTestCase {
     int waitMillis = 10000;
     int interval = 100;
     boolean throwException = true;
-    waitForCriterion(w, waitMillis, interval, throwException);
+    Wait.waitForCriterion(w, waitMillis, interval, throwException);
     return system.getMemberId();
   }
 

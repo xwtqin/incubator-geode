@@ -33,9 +33,12 @@ import com.gemstone.gemfire.internal.cache.InitialImageOperation.ImageReplyMessa
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author dsmith
@@ -57,7 +60,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
 
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(new SerializableRunnable("reset chunk size") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("reset chunk size") {
       public void run() {
         InitialImageOperation.CHUNK_SIZE_IN_BYTES = origChunkSize;
         InitialImageOperation.CHUNK_PERMITS = origNumChunks;
@@ -70,7 +73,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
-    invokeInEveryVM(new SerializableRunnable("reset chunk size") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("reset chunk size") {
       public void run() {
         InitialImageOperation.CHUNK_SIZE_IN_BYTES = 10;
         InitialImageOperation.CHUNK_PERMITS = 2;
@@ -91,7 +94,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
-    invokeInEveryVM(new SerializableRunnable("set chunk size") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("set chunk size") {
       public void run() {
         InitialImageOperation.CHUNK_SIZE_IN_BYTES = 10;
         InitialImageOperation.CHUNK_PERMITS = 2;
@@ -120,7 +123,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     vm1.invoke(new SerializableRunnable("Wait for chunks") {
       
       public void run() {
-        waitForCriterion(new WaitCriterion(){
+        Wait.waitForCriterion(new WaitCriterion(){
 
           public String description() {
             return "Waiting for messages to be at least 2: " + observer.messageCount.get();
@@ -160,7 +163,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
-    invokeInEveryVM(new SerializableRunnable("set chunk size") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("set chunk size") {
       public void run() {
         InitialImageOperation.CHUNK_SIZE_IN_BYTES = 10;
         InitialImageOperation.CHUNK_PERMITS = 2;
@@ -187,7 +190,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     vm1.invoke(new SerializableRunnable("Wait to flow control messages") {
 
       public void run() {
-        waitForCriterion(new WaitCriterion(){
+        Wait.waitForCriterion(new WaitCriterion(){
 
           public String description() {
             return "Waiting for messages to be at least 2: " + observer.messageCount.get();
@@ -239,7 +242,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
-    invokeInEveryVM(new SerializableRunnable("set chunk size") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("set chunk size") {
       public void run() {
         InitialImageOperation.CHUNK_SIZE_IN_BYTES = 10;
         InitialImageOperation.CHUNK_PERMITS = 2;
@@ -270,7 +273,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
       vm1.invoke(new SerializableRunnable("Wait to flow control messages") {
 
         public void run() {
-          waitForCriterion(new WaitCriterion(){
+          Wait.waitForCriterion(new WaitCriterion(){
 
             public String description() {
               return "Waiting for messages to be at least 2: " + observer.messageCount.get();
@@ -308,7 +311,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
         throw e;
       }
 
-      expectedEx = IgnoredException.addExpectedException(InterruptedException.class.getName(),
+      expectedEx = IgnoredException.addIgnoredException(InterruptedException.class.getName(),
           vm1);
       if(disconnect) {
         disconnect(vm1);
@@ -327,7 +330,7 @@ public class GIIFlowControlDUnitTest extends CacheTestCase {
 
         public void run() {
           final DMStats stats = getSystem().getDMStats();
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             
             public boolean done() {
               return stats.getInitialImageMessagesInFlight() == 0;

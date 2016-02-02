@@ -41,6 +41,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -63,7 +65,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
       //
       //    sb.append(lineSep);
     }
-    getLogWriter().fine("***********\n " + sb);
+    LogWriterSupport.getLogWriter().fine("***********\n " + sb);
     return sb.toString();
   }
 
@@ -113,20 +115,20 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
      * value=\"83f0069202c571faf1ae6c42b4ad46030e4e31c17409e19a\"/>";
      */
     int n1 = str.indexOf(search);
-    getLogWriter().fine("Start Index = " + n1);
+    LogWriterSupport.getLogWriter().fine("Start Index = " + n1);
     int n2 = str.indexOf(last_search, n1);
     StringBuffer sbuff = new StringBuffer(str);
-    getLogWriter().fine("END Index = " + n2);
+    LogWriterSupport.getLogWriter().fine("END Index = " + n2);
     String modified_str = sbuff.replace(n1, n2, new_str).toString();
     return modified_str;
   }
 
   public static String init(String className) throws Exception {
-    getLogWriter().fine("PATH11 ");
+    LogWriterSupport.getLogWriter().fine("PATH11 ");
     Properties props = new Properties();
     int pid = OSProcess.getId();
     String path = File.createTempFile("dunit-cachejta_", ".xml").getAbsolutePath();
-    getLogWriter().fine("PATH " + path);
+    LogWriterSupport.getLogWriter().fine("PATH " + path);
     /** * Return file as string and then modify the string accordingly ** */
     String file_as_str = readFile(TestUtil.getResourcePath(CacheUtils.class, "cachejta.xml"));
     file_as_str = file_as_str.replaceAll("newDB", "newDB_" + pid);
@@ -168,7 +170,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     String sql = "create table "
         + tableName
         + " (id integer NOT NULL, name varchar(50), CONSTRAINT "+tableName+"_key PRIMARY KEY(id))";
-    getLogWriter().fine(sql);
+    LogWriterSupport.getLogWriter().fine(sql);
     Connection conn = ds.getConnection();
     Statement sm = conn.createStatement();
     sm.execute(sql);
@@ -177,7 +179,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     for (int i = 1; i <= 10; i++) {
       sql = "insert into " + tableName + " values (" + i + ",'name" + i + "')";
       sm.addBatch(sql);
-      getLogWriter().fine(sql);
+      LogWriterSupport.getLogWriter().fine(sql);
     }
     sm.executeBatch();
     conn.close();
@@ -189,19 +191,19 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
       Context ctx = cache.getJNDIContext();
       DataSource ds = (DataSource) ctx.lookup("java:/SimpleDataSource");
       Connection conn = ds.getConnection();
-      getLogWriter().fine(" trying to drop table: " + tableName);
+      LogWriterSupport.getLogWriter().fine(" trying to drop table: " + tableName);
       String sql = "drop table " + tableName;
       Statement sm = conn.createStatement();
       sm.execute(sql);
       conn.close();
     }
     catch (NamingException ne) {
-      getLogWriter().fine("destroy table naming exception: " + ne);
+      LogWriterSupport.getLogWriter().fine("destroy table naming exception: " + ne);
       throw ne;
     }
     catch (SQLException se) {
       if (!se.getMessage().contains("A lock could not be obtained within the time requested")) {
-        getLogWriter().fine("destroy table sql exception: " + se);
+        LogWriterSupport.getLogWriter().fine("destroy table sql exception: " + se);
         throw se;
       } else {
         // disregard - this happens sometimes on unit test runs on slower
@@ -239,7 +241,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
       ds.disconnect();
     }
     catch (Exception e) {
-      getLogWriter().fine("Error in disconnecting from Distributed System");
+      LogWriterSupport.getLogWriter().fine("Error in disconnecting from Distributed System");
     }
   }
 
@@ -268,7 +270,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     VM vm0 = host.getVM(0);
     AsyncInvocation asyncObj = vm0.invokeAsync(MaxPoolSizeDUnitTest.class,
         "runTest1");
-    DistributedTestCase.join(asyncObj, 30 * 1000, getLogWriter());
+    Threads.join(asyncObj, 30 * 1000, LogWriterSupport.getLogWriter());
     if(asyncObj.exceptionOccurred()){
       Assert.fail("asyncObj failed", asyncObj.getException());
     }
@@ -283,19 +285,19 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
       ds = (DataSource) ctx.lookup("java:/XAPooledDataSource");
     }
     catch (NamingException e) {
-      getLogWriter().fine("Naming Exception caught in lookup: " + e);
+      LogWriterSupport.getLogWriter().fine("Naming Exception caught in lookup: " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
     catch (Exception e) {
-      getLogWriter().fine("Exception caught during naming lookup: " + e);
+      LogWriterSupport.getLogWriter().fine("Exception caught during naming lookup: " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
     try {
       for (count = 0; count < MAX_CONNECTIONS; count++) {
         ds.getConnection();
-        getLogWriter().fine("Thread 1 acquired connection #" + count);
+        LogWriterSupport.getLogWriter().fine("Thread 1 acquired connection #" + count);
       }
       fail("expected max connect exception");
     }
@@ -304,7 +306,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
         Assert.fail("runTest1 SQL Exception", e);
       }
       else {
-        getLogWriter().fine("Success SQLException caught at connection #"
+        LogWriterSupport.getLogWriter().fine("Success SQLException caught at connection #"
             + count);
       }
     }

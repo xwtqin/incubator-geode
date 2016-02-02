@@ -27,8 +27,10 @@ import com.gemstone.gemfire.GemFireConfigException;
 import com.gemstone.gemfire.IncompatibleSystemException;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 
 public class WanAutoDiscoveryDUnitTest extends WANTestBase {
 
@@ -56,7 +58,7 @@ public class WanAutoDiscoveryDUnitTest extends WANTestBase {
     }
     catch (Exception e) {
       if (!(e.getCause() instanceof GemFireConfigException)) {
-        fail("Expected GemFireConfigException but received :", e);
+        Assert.fail("Expected GemFireConfigException but received :", e);
       }
     }
   }
@@ -83,7 +85,7 @@ public class WanAutoDiscoveryDUnitTest extends WANTestBase {
     }
     catch (Exception e) {
       if (!(e.getCause()instanceof IncompatibleSystemException)) {
-        fail("Expected IncompatibleSystemException but received :", e);
+        Assert.fail("Expected IncompatibleSystemException but received :", e);
       }
     }
   }
@@ -453,10 +455,10 @@ public class WanAutoDiscoveryDUnitTest extends WANTestBase {
     }
     catch (Throwable e) {
       e.printStackTrace();
-     fail("Could not get end time", e);
+     Assert.fail("Could not get end time", e);
     }
     
-    getLogWriter().info("Time taken for all 9 locators discovery in 3 sites: " + (endTime.longValue() - startTime));
+    LogWriterSupport.getLogWriter().info("Time taken for all 9 locators discovery in 3 sites: " + (endTime.longValue() - startTime));
     
     vm0.invoke(WANTestBase.class, "checkAllSiteMetaDataFor3Sites",
         new Object[] { dsVsPort });

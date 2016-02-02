@@ -26,9 +26,12 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Performs eviction dunit tests for off-heap memory.
@@ -50,7 +53,7 @@ public class OffHeapEvictionDUnitTest extends EvictionDUnitTest {
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {
@@ -75,12 +78,12 @@ public class OffHeapEvictionDUnitTest extends EvictionDUnitTest {
       ds = getSystem(getDistributedSystemProperties());
       cache = CacheFactory.create(ds);
       assertNotNull(cache);
-      getLogWriter().info("cache= " + cache);
-      getLogWriter().info("cache closed= " + cache.isClosed());
+      LogWriterSupport.getLogWriter().info("cache= " + cache);
+      LogWriterSupport.getLogWriter().info("cache closed= " + cache.isClosed());
       cache.getResourceManager().setEvictionOffHeapPercentage(85);
       ((GemFireCacheImpl) cache).getResourceManager().getOffHeapMonitor().stopMonitoring(true);
-      getLogWriter().info("eviction= "+cache.getResourceManager().getEvictionOffHeapPercentage());
-      getLogWriter().info("critical= "+cache.getResourceManager().getCriticalOffHeapPercentage());
+      LogWriterSupport.getLogWriter().info("eviction= "+cache.getResourceManager().getEvictionOffHeapPercentage());
+      LogWriterSupport.getLogWriter().info("critical= "+cache.getResourceManager().getCriticalOffHeapPercentage());
     }
     catch (Exception e) {
       Assert.fail("Failed while creating the cache", e);
@@ -116,7 +119,7 @@ public class OffHeapEvictionDUnitTest extends EvictionDUnitTest {
             .getEvictions();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 60000, 1000, true);
+        Wait.waitForCriterion(wc, 60000, 1000, true);
       }
     });
   }

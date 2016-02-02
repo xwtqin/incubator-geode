@@ -40,8 +40,11 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class HASlowReceiverDUnitTest extends DistributedTestCase {
   protected static Cache cache = null;
@@ -241,20 +244,20 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
             + ") to become " + redundantServers.intValue();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 200 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 200 * 1000, 1000, true);
   }
 
   // Test slow client
   public void testSlowClient() throws Exception {
     setBridgeObeserverForAfterQueueDestroyMessage();
     clientVM.invoke(HASlowReceiverDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT0),
+        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT0),
             new Integer(PORT1), new Integer(PORT2), new Integer(2) });
     clientVM.invoke(HASlowReceiverDUnitTest.class, "registerInterest");
     // add expected socket exception string
-    final IgnoredException ex1 = IgnoredException.addExpectedException(SocketException.class
+    final IgnoredException ex1 = IgnoredException.addIgnoredException(SocketException.class
         .getName());
-    final IgnoredException ex2 = IgnoredException.addExpectedException(InterruptedException.class
+    final IgnoredException ex2 = IgnoredException.addIgnoredException(InterruptedException.class
         .getName());
     putEntries();
     Thread.sleep(20000);// wait for put to block and allow server to remove

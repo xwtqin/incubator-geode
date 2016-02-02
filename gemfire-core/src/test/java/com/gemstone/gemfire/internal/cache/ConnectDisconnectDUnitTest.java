@@ -38,12 +38,13 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedSystemSupport;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 
 /** A test of 46438 - missing response to an update attributes message */
 public class ConnectDisconnectDUnitTest extends CacheTestCase {
@@ -75,7 +76,7 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
 //     setLocatorPorts(ports);
 
     for(int i = 0; i < 20; i++) {
-      getLogWriter().info("Test run: " + i);
+      LogWriterSupport.getLogWriter().info("Test run: " + i);
       runOnce();
       tearDown();
       setUp();
@@ -89,7 +90,7 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
   static int[] locatorPorts;
   
   public void setLocatorPorts(int[] ports) {
-    deleteLocatorStateFile(ports);
+    DistributedSystemSupport.deleteLocatorStateFile(ports);
     String locators = "";
     for (int i=0; i<ports.length; i++) {
       if (i > 0) {
@@ -113,7 +114,7 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
   public void tearDown2() throws Exception {
     super.tearDown2();
     if (locatorPorts != null) {
-      deleteLocatorStateFile(locatorPorts);
+      DistributedSystemSupport.deleteLocatorStateFile(locatorPorts);
     }
   }
   

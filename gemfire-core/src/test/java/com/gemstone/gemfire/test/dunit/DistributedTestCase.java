@@ -16,20 +16,14 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
-import java.io.File;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.InternalGemFireError;
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.admin.internal.AdminDistributedSystemImpl;
 import com.gemstone.gemfire.cache.Cache;
@@ -43,38 +37,23 @@ import com.gemstone.gemfire.cache30.MultiVMRegionTestCase;
 import com.gemstone.gemfire.cache30.RegionTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem.CreationStackGenerator;
-import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
-import com.gemstone.gemfire.internal.InternalDataSerializer;
-import com.gemstone.gemfire.internal.InternalInstantiator;
-import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.admin.ClientStatsManager;
 import com.gemstone.gemfire.internal.cache.DiskStoreObserver;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
-import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.tier.InternalClientMembership;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
-import com.gemstone.gemfire.internal.cache.tier.sockets.DataSerializerPropogationDUnitTest;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
-import com.gemstone.gemfire.internal.logging.InternalLogWriter;
-import com.gemstone.gemfire.internal.logging.LocalLogWriter;
-import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.internal.logging.LogWriterFactory;
-import com.gemstone.gemfire.internal.logging.LogWriterImpl;
-import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
-import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
-import com.jayway.awaitility.Awaitility;
 
 import junit.framework.TestCase;
 
@@ -93,8 +72,7 @@ import junit.framework.TestCase;
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
 public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
-  private static final Logger logger = LogService.getLogger();
-  private static final LogWriterLogger oldLogger = LogWriterLogger.create(logger);
+  
   private static final LinkedHashSet<String> testHistory = new LinkedHashSet<String>();
 
   private static void setUpCreationStackGenerator() {
@@ -141,268 +119,14 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
 
   public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
-  ///////////////////////  Utility Methods  ///////////////////////
-  
-  public void attachDebugger(VM vm, final String msg) {
-    vm.invoke(new SerializableRunnable("Attach Debugger") {
-      public void run() {
-        com.gemstone.gemfire.internal.util.DebuggerSupport.
-        waitForJavaDebugger(getSystem().getLogWriter().convertToLogWriterI18n(), msg);
-      } 
-    });
-  }
-
-
-  /**
-   * Invokes a <code>SerializableRunnable</code> in every VM that
-   * DUnit knows about.
-   *
-   * @see VM#invoke(SerializableRunnableIF)
-   */
-  public static void invokeInEveryVM(SerializableRunnable work) {
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invoke(work);
-      }
-    }
-  }
-
-  public static void invokeInLocator(SerializableRunnable work) {
-    Host.getLocator().invoke(work);
-  }
-  
-  /**
-   * Invokes a <code>SerializableCallable</code> in every VM that
-   * DUnit knows about.
-   *
-   * @return a Map of results, where the key is the VM and the value is the result
-   * @see VM#invoke(SerializableCallableIF)
-   */
-  protected static Map invokeInEveryVM(SerializableCallable work) {
-    HashMap ret = new HashMap();
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        ret.put(vm, vm.invoke(work));
-      }
-    }
-    return ret;
-  }
-
-  /**
-   * Invokes a method in every remote VM that DUnit knows about.
-   *
-   * @see VM#invoke(Class, String)
-   */
-  protected static void invokeInEveryVM(Class c, String method) {
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invoke(c, method);
-      }
-    }
-  }
-
-  /**
-   * Invokes a method in every remote VM that DUnit knows about.
-   *
-   * @see VM#invoke(Class, String)
-   */
-  protected static void invokeInEveryVM(Class c, String method, Object[] methodArgs) {
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invoke(c, method, methodArgs);
-      }
-    }
-  }
-  
-  /**
-   * The number of milliseconds to try repeating validation code in the
-   * event that AssertionFailedError is thrown.  For ACK scopes, no
-   * repeat should be necessary.
-   */
-  protected long getRepeatTimeoutMs() {
-    return 0;
-  }
-  
-  protected void invokeRepeatingIfNecessary(VM vm, RepeatableRunnable task) {
-    vm.invokeRepeatingIfNecessary(task, getRepeatTimeoutMs());
-  }
-  
-  /**
-   * Invokes a <code>SerializableRunnable</code> in every VM that
-   * DUnit knows about.  If work.run() throws an assertion failure, 
-   * its execution is repeated, until no assertion failure occurs or
-   * repeatTimeout milliseconds have passed.
-   *
-   * @see VM#invoke(SerializableRunnableIF)
-   */
-  protected void invokeInEveryVMRepeatingIfNecessary(RepeatableRunnable work) {
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invokeRepeatingIfNecessary(work, getRepeatTimeoutMs());
-      }
-    }
-  }
-
-  /** Return the total number of VMs on all hosts */
-  protected static int getVMCount() {
-    int count = 0;
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-      count += host.getVMCount();
-    }
-    return count;
-  }
-
-
-  /** print a stack dump for this vm
-      @author bruce
-      @since 5.0
-   */
-  public static void dumpStack() {
-    com.gemstone.gemfire.internal.OSProcess.printStacks(0, false);
-  }
-  
-  /** print a stack dump for the given vm
-      @author bruce
-      @since 5.0
-   */
-  public static void dumpStack(VM vm) {
-    vm.invoke(com.gemstone.gemfire.test.dunit.DistributedTestCase.class, "dumpStack");
-  }
-  
-  /** print stack dumps for all vms on the given host
-      @author bruce
-      @since 5.0
-   */
-  public static void dumpStack(Host host) {
-    for (int v=0; v < host.getVMCount(); v++) {
-      host.getVM(v).invoke(com.gemstone.gemfire.test.dunit.DistributedTestCase.class, "dumpStack");
-    }
-  }
-  
-  /** print stack dumps for all vms
-      @author bruce
-      @since 5.0
-   */
-  public static void dumpAllStacks() {
-    for (int h=0; h < Host.getHostCount(); h++) {
-      dumpStack(Host.getHost(h));
-    }
-  }
-
-
-  public static String noteTiming(long operations, String operationUnit,
-                                  long beginTime, long endTime,
-                                  String timeUnit)
-  {
-    long delta = endTime - beginTime;
-    StringBuffer sb = new StringBuffer();
-    sb.append("  Performed ");
-    sb.append(operations);
-    sb.append(" ");
-    sb.append(operationUnit);
-    sb.append(" in ");
-    sb.append(delta);
-    sb.append(" ");
-    sb.append(timeUnit);
-    sb.append("\n");
-
-    double ratio = ((double) operations) / ((double) delta);
-    sb.append("    ");
-    sb.append(format.format(ratio));
-    sb.append(" ");
-    sb.append(operationUnit);
-    sb.append(" per ");
-    sb.append(timeUnit);
-    sb.append("\n");
-
-    ratio = ((double) delta) / ((double) operations);
-    sb.append("    ");
-    sb.append(format.format(ratio));
-    sb.append(" ");
-    sb.append(timeUnit);
-    sb.append(" per ");
-    sb.append(operationUnit);
-    sb.append("\n");
-
-    return sb.toString();
-  }
-
-  /**
-   * Creates a new LogWriter and adds it to the config properties. The config
-   * can then be used to connect to DistributedSystem, thus providing early
-   * access to the LogWriter before connecting. This call does not connect
-   * to the DistributedSystem. It simply creates and returns the LogWriter
-   * that will eventually be used by the DistributedSystem that connects using
-   * config.
-   * 
-   * @param config the DistributedSystem config properties to add LogWriter to
-   * @return early access to the DistributedSystem LogWriter
-   */
-  protected static LogWriter createLogWriter(Properties config) { // TODO:LOG:CONVERT: this is being used for ExpectedExceptions
-    Properties nonDefault = config;
-    if (nonDefault == null) {
-      nonDefault = new Properties();
-    }
-    addHydraProperties(nonDefault);
-    
-    DistributionConfig dc = new DistributionConfigImpl(nonDefault);
-    LogWriter logger = LogWriterFactory.createLogWriterLogger(
-        false/*isLoner*/, false/*isSecurityLog*/, dc, 
-        false);        
-    
-    // if config was non-null, then these will be added to it...
-    nonDefault.put(DistributionConfig.LOG_WRITER_NAME, logger);
-    
-    return logger;
-  }
-  
-  /**
-   * Fetches the GemFireDescription for this test and adds its 
-   * DistributedSystem properties to the provided props parameter.
-   * 
-   * @param config the properties to add hydra's test properties to
-   */
-  protected static void addHydraProperties(Properties config) {
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    for (Iterator iter = p.entrySet().iterator();
-        iter.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      String key = (String) entry.getKey();
-      String value = (String) entry.getValue();
-      if (config.getProperty(key) == null) {
-        config.setProperty(key, value);
-      }
-    }
-  }
-  
-  ////////////////////////  Constructors  ////////////////////////
-
   /**
    * Creates a new <code>DistributedTestCase</code> test with the
    * given name.
    */
-  public DistributedTestCase(String name) {
+  public DistributedTestCase(final String name) {
     super(name);
     DUnitLauncher.launchIfNeeded();
   }
-
-  ///////////////////////  Instance Methods  ///////////////////////
-
 
   protected Class getTestClass() {
     Class clazz = getClass();
@@ -412,44 +136,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     return clazz;
   }
   
-  
-  /**
-   * This finds the log level configured for the test run.  It should be used
-   * when creating a new distributed system if you want to specify a log level.
-   * @return the dunit log-level setting
-   */
-  public static String getDUnitLogLevel() {
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    String result = p.getProperty(DistributionConfig.LOG_LEVEL_NAME);
-    if (result == null) {
-      result = ManagerLogWriter.levelToString(DistributionConfig.DEFAULT_LOG_LEVEL);
-    }
-    return result;
-  }
-
-  public final static Properties getAllDistributedSystemProperties(Properties props) {
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    
-    // our tests do not expect auto-reconnect to be on by default
-    if (!p.contains(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME)) {
-      p.put(DistributionConfig.DISABLE_AUTO_RECONNECT_NAME, "true");
-    }
-
-    for (Iterator iter = props.entrySet().iterator();
-    iter.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      String key = (String) entry.getKey();
-      Object value = entry.getValue();
-      p.put(key, value);
-    }
-    return p;
-  }
-
-  public void setSystem(Properties props, DistributedSystem ds) {
+  public void setSystem(final Properties props, final DistributedSystem ds) {
     system = (InternalDistributedSystem)ds;
     lastSystemProperties = props;
     lastSystemCreatedInTest = getTestClass();
   }
+  
   /**
    * Returns this VM's connection to the distributed system.  If
    * necessary, the connection will be lazily created using the given
@@ -461,14 +153,14 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(Properties props) {
+  public /*final*/ InternalDistributedSystem getSystem(final Properties props) {
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
     }
     if (system == null || !system.isConnected()) {
       // Figure out our distributed system properties
-      Properties p = getAllDistributedSystemProperties(props);
+      Properties p = DistributedTestSupport.getAllDistributedSystemProperties(props);
       lastSystemCreatedInTest = getTestClass();
       if (logPerTest) {
         String testMethod = getTestName();
@@ -485,10 +177,10 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     } else {
       boolean needNewSystem = false;
       if(!getTestClass().equals(lastSystemCreatedInTest)) {
-        Properties newProps = getAllDistributedSystemProperties(props);
+        Properties newProps = DistributedTestSupport.getAllDistributedSystemProperties(props);
         needNewSystem = !newProps.equals(lastSystemProperties);
         if(needNewSystem) {
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "Test class has changed and the new DS properties are not an exact match. "
                   + "Forcing DS disconnect. Old props = "
                   + lastSystemProperties + "new props=" + newProps);
@@ -502,7 +194,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
           String value = (String) entry.getValue();
           if (!value.equals(activeProps.getProperty(key))) {
             needNewSystem = true;
-            getLogWriter().info("Forcing DS disconnect. For property " + key
+            LogWriterSupport.getLogWriter().info("Forcing DS disconnect. For property " + key
                                 + " old value = " + activeProps.getProperty(key)
                                 + " new value = " + value);
             break;
@@ -512,57 +204,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       if(needNewSystem) {
         // the current system does not meet our needs to disconnect and
         // call recursively to get a new system.
-        getLogWriter().info("Disconnecting from current DS in order to make a new one");
+        LogWriterSupport.getLogWriter().info("Disconnecting from current DS in order to make a new one");
         disconnectFromDS();
         getSystem(props);
       }
     }
     return system;
-  }
-
-
-  /**
-   * Crash the cache in the given VM in such a way that it immediately stops communicating with
-   * peers.  This forces the VM's membership manager to throw a ForcedDisconnectException by
-   * forcibly terminating the JGroups protocol stack with a fake EXIT event.<p>
-   * 
-   * NOTE: if you use this method be sure that you clean up the VM before the end of your
-   * test with disconnectFromDS() or disconnectAllFromDS().
-   */
-  public boolean crashDistributedSystem(VM vm) {
-    return (Boolean)vm.invoke(new SerializableCallable("crash distributed system") {
-      public Object call() throws Exception {
-        DistributedSystem msys = InternalDistributedSystem.getAnyInstance();
-        crashDistributedSystem(msys);
-        return true;
-      }
-    });
-  }
-  
-  /**
-   * Crash the cache in the given VM in such a way that it immediately stops communicating with
-   * peers.  This forces the VM's membership manager to throw a ForcedDisconnectException by
-   * forcibly terminating the JGroups protocol stack with a fake EXIT event.<p>
-   * 
-   * NOTE: if you use this method be sure that you clean up the VM before the end of your
-   * test with disconnectFromDS() or disconnectAllFromDS().
-   */
-  public void crashDistributedSystem(final DistributedSystem msys) {
-    MembershipManagerHelper.crashDistributedSystem(msys);
-    MembershipManagerHelper.inhibitForcedDisconnectLogging(false);
-    WaitCriterion wc = new WaitCriterion() {
-      public boolean done() {
-        return !msys.isConnected();
-      }
-      public String description() {
-        return "waiting for distributed system to finish disconnecting: " + msys;
-      }
-    };
-//    try {
-      waitForCriterion(wc, 10000, 1000, true);
-//    } finally {
-//      dumpMyThreads(getLogWriter());
-//    }
   }
 
   private String getDefaultDiskStoreName() {
@@ -667,12 +314,13 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     System.out.println("Previously run tests: " + testHistory);
   }
 
-  public static void perVMSetUp(String name, String defaultDiskStoreName) {
+  public static void perVMSetUp(final String name, final String defaultDiskStoreName) {
     setTestName(name);
     GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
   }
-  public static void setTestName(String name) {
+  
+  private static void setTestName(final String name) {
     testName = name;
   }
   
@@ -711,7 +359,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   protected void realTearDown() throws Exception {
     if (logPerTest) {
       disconnectFromDS();
-      invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
+      Invoke.invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
     }
     cleanupAllVms();
   }
@@ -728,19 +376,17 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   protected void tearDownAfter() throws Exception {
   }
 
-  public static void cleanupAllVms()
-  {
+  public static void cleanupAllVms() {
     cleanupThisVM();
-    invokeInEveryVM(DistributedTestCase.class, "cleanupThisVM");
-    invokeInLocator(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(()->cleanupThisVM());
+    Invoke.invokeInLocator(new SerializableRunnable() {
       public void run() {
         DistributionMessageObserver.setInstance(null);
-        unregisterInstantiatorsInThisVM();
+        DistributedTestSupport.unregisterInstantiatorsInThisVM();
       }
     });
     DUnitLauncher.closeAndCheckForSuspects();
   }
-
 
   private static void cleanupThisVM() {
     closeCache();
@@ -761,7 +407,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     InternalClientMembership.unregisterAllListeners();
     ClientStatsManager.cleanupForTests();
     ClientServerTestCase.AUTO_LOAD_BALANCE = false;
-    unregisterInstantiatorsInThisVM();
+    DistributedTestSupport.unregisterInstantiatorsInThisVM();
     DistributionMessageObserver.setInstance(null);
     QueryObserverHolder.reset();
     DiskStoreObserver.setInstance(null);
@@ -782,8 +428,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
   }
   
-  protected static final void destroyRegions(Cache cache)
-      throws InternalGemFireError, Error, VirtualMachineError {
+  protected static final void destroyRegions(final Cache cache) {
     if (cache != null && !cache.isClosed()) {
       //try to destroy the root regions first so that
       //we clean up any persistent files.
@@ -802,48 +447,15 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
           throw e;
         }
         catch (Throwable t) {
-          getLogWriter().error(t);
+          LogWriterSupport.getLogWriter().error(t);
         }
       }
     }
   }
   
-  
-  public static void unregisterAllDataSerializersFromAllVms()
-  {
-    unregisterDataSerializerInThisVM();
-    invokeInEveryVM(new SerializableRunnable() {
-      public void run() {
-        unregisterDataSerializerInThisVM();
-      }
-    });
-    invokeInLocator(new SerializableRunnable() {
-      public void run() {
-        unregisterDataSerializerInThisVM();
-      }
-    });
-  }
-
-  public static void unregisterInstantiatorsInThisVM() {
-    // unregister all the instantiators
-    InternalInstantiator.reinitialize();
-    assertEquals(0, InternalInstantiator.getInstantiators().length);
-  }
-  
-  public static void unregisterDataSerializerInThisVM()
-  {
-    DataSerializerPropogationDUnitTest.successfullyLoadedTestDataSerializer = false;
-    // unregister all the Dataserializers
-    InternalDataSerializer.reinitialize();
-    // ensure that all are unregistered
-    assertEquals(0, InternalDataSerializer.getSerializers().length);
-  }
-
-
-  protected static void disconnectAllFromDS() {
+  public static void disconnectAllFromDS() {
     disconnectFromDS();
-    invokeInEveryVM(DistributedTestCase.class,
-                    "disconnectFromDS");
+    Invoke.invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
   }
 
   /**
@@ -864,433 +476,22 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       }
       try {
         ds.disconnect();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         // ignore
       }
     }
     
-    {
-      AdminDistributedSystemImpl ads = 
-          AdminDistributedSystemImpl.getConnectedInstance();
-      if (ads != null) {// && ads.isConnected()) {
-        ads.disconnect();
-      }
+    AdminDistributedSystemImpl ads = AdminDistributedSystemImpl.getConnectedInstance();
+    if (ads != null) {// && ads.isConnected()) {
+      ads.disconnect();
     }
   }
 
-  /**
-   * Strip the package off and gives just the class name.
-   * Needed because of Windows file name limits.
-   */
-  private String getShortClassName() {
-    String result = this.getClass().getName();
-    int idx = result.lastIndexOf('.');
-    if (idx != -1) {
-      result = result.substring(idx+1);
-    }
-    return result;
-  }
-  
-  /** get the host name to use for a server cache in client/server dunit
-   * testing
-   * @param host
-   * @return the host name
-   */
-  public static String getServerHostName(Host host) {
-    return System.getProperty("gemfire.server-bind-address") != null?
-        System.getProperty("gemfire.server-bind-address")
-        : host.getHostName();
-  }
-
-  /** get the IP literal name for the current host, use this instead of  
-   * "localhost" to avoid IPv6 name resolution bugs in the JDK/machine config.
-   * @return an ip literal, this method honors java.net.preferIPvAddresses
-   */
-  public static String getIPLiteral() {
-    try {
-      return SocketCreator.getLocalHost().getHostAddress();
-    } catch (UnknownHostException e) {
-      throw new Error("problem determining host IP address", e);
-    }
-  }
- 
- 
-  /**
-   * Get the port that the standard dunit locator is listening on.
-   * @return
-   */
-  public static int getDUnitLocatorPort() {
-    return DUnitEnv.get().getLocatorPort();
-  }
-    
-  
   /**
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.
    */
   public String getUniqueName() {
-    return getShortClassName() + "_" + this.getName();
+    return getClass().getSimpleName() + "_" + getName();
   }
-
-  /**
-   * Returns a <code>LogWriter</code> for logging information
-   * @deprecated Use a static logger from the log4j2 LogService.getLogger instead.
-   */
-  @Deprecated
-  public static InternalLogWriter getLogWriter() {
-    return oldLogger;
-  }
-
-  /**
-   * Helper method that causes this test to fail because of the given
-   * exception.
-   * @deprecated Use {@link Assert#fail(String,Throwable)} instead
-   */
-  public static void fail(String message, Throwable ex) {
-    Assert.fail(message, ex);
-  }
-
-  // utility methods
-
-  /** pause for a default interval */
-  protected void pause() {
-    pause(250);
-  }
-
-  /**
-   * Use of this function indicates a place in the tests tree where t
-   * he use of Thread.sleep() is
-   * highly questionable.
-   * <p>
-   * Some places in the system, especially those that test expirations and other
-   * timeouts, have a very good reason to call {@link Thread#sleep(long)}.  The
-   * <em>other</em> places are marked by the use of this method.
-   * 
-   * @param ms
-   */
-  static public final void staticPause(int ms) {
-//    getLogWriter().info("FIXME: Pausing for " + ms + " ms..."/*, new Exception()*/);
-    final long target = System.currentTimeMillis() + ms;
-    try {
-      for (;;) {
-        long msLeft = target - System.currentTimeMillis();
-        if (msLeft <= 0) {
-          break;
-        }
-        Thread.sleep(msLeft);
-      }
-    }
-    catch (InterruptedException e) {
-      Assert.fail("interrupted", e);
-    }
-    
-  }
-  
-  /**
-   * Blocks until the clock used for expiration moves forward.
-   * @return the last time stamp observed
-   */
-  public static final long waitForExpiryClockToChange(LocalRegion lr) {
-    return waitForExpiryClockToChange(lr, lr.cacheTimeMillis());
-  }
-  /**
-   * Blocks until the clock used for expiration moves forward.
-   * @param baseTime the timestamp that the clock must exceed
-   * @return the last time stamp observed
-   */
-  public static final long waitForExpiryClockToChange(LocalRegion lr, final long baseTime) {
-    long nowTime;
-    do {
-      Thread.yield();
-      nowTime = lr.cacheTimeMillis();
-    } while ((nowTime - baseTime) <= 0L);
-    return nowTime;
-  }
-  
-  /** pause for specified ms interval
-   * Make sure system clock has advanced by the specified number of millis before
-   * returning.
-   */
-  public static final void pause(int ms) {
-    LogWriter log = getLogWriter();
-    if (ms >= 1000 || log.fineEnabled()) { // check for fine but log at info
-      getLogWriter().info("Pausing for " + ms + " ms..."/*, new Exception()*/);
-    }
-    final long target = System.currentTimeMillis() + ms;
-    try {
-      for (;;) {
-        long msLeft = target - System.currentTimeMillis();
-        if (msLeft <= 0) {
-          break;
-        }
-        Thread.sleep(msLeft);
-      }
-    }
-    catch (InterruptedException e) {
-      Assert.fail("interrupted", e);
-    }
-  }
-  
-  public interface WaitCriterion {
-    public boolean done();
-    public String description();
-  }
-  
-  public interface WaitCriterion2 extends WaitCriterion {
-    /**
-     * If this method returns true then quit waiting even if we are not done.
-     * This allows a wait to fail early.
-     */
-    public boolean stopWaiting();
-  }
-
-  /**
-   * Wait until given criterion is met
-   * @param ev criterion to wait on
-   * @param ms total time to wait, in milliseconds
-   * @param interval pause interval between waits
-   * @param throwOnTimeout if false, don't generate an error
-   * @deprecated Use {@link Awaitility} instead.
-   */
-  @Deprecated
-  static public void waitForCriterion(WaitCriterion ev, long ms, 
-      long interval, boolean throwOnTimeout) {
-    long waitThisTime = Jitter.jitterInterval(interval);
-    final long tilt = System.currentTimeMillis() + ms;
-    for (;;) {
-//      getLogWriter().info("Testing to see if event has occurred: " + ev.description());
-      if (ev.done()) {
-        return; // success
-      }
-      if (ev instanceof WaitCriterion2) {
-        WaitCriterion2 ev2 = (WaitCriterion2)ev;
-        if (ev2.stopWaiting()) {
-          if (throwOnTimeout) {
-            fail("stopWaiting returned true: " + ev.description());
-          }
-          return;
-        }
-      }
-
-      // Calculate time left
-      long timeLeft = tilt - System.currentTimeMillis();
-      if (timeLeft <= 0) {
-        if (!throwOnTimeout) {
-          return; // not an error, but we're done
-        }
-        fail("Event never occurred after " + ms + " ms: " + ev.description());
-      }
-      
-      if (waitThisTime > timeLeft) {
-        waitThisTime = timeLeft;
-      }
-      
-      // Wait a little bit
-      Thread.yield();
-      try {
-//        getLogWriter().info("waiting " + waitThisTime + "ms for " + ev.description());
-        Thread.sleep(waitThisTime);
-      } catch (InterruptedException e) {
-        fail("interrupted");
-      }
-    }
-  }
-
-  /**
-   * Wait on a mutex.  This is done in a loop in order to address the
-   * "spurious wakeup" "feature" in Java.
-   * @param ev condition to test
-   * @param mutex object to lock and wait on
-   * @param ms total amount of time to wait
-   * @param interval interval to pause for the wait
-   * @param throwOnTimeout if false, no error is thrown.
-   */
-  static public void waitMutex(WaitCriterion ev, Object mutex, long ms, 
-      long interval, boolean throwOnTimeout) {
-    final long tilt = System.currentTimeMillis() + ms;
-    long waitThisTime = Jitter.jitterInterval(interval);
-    synchronized (mutex) {
-      for (;;) {
-        if (ev.done()) {
-          break;
-        }
-        
-        long timeLeft = tilt - System.currentTimeMillis();
-        if (timeLeft <= 0) {
-          if (!throwOnTimeout) {
-            return; // not an error, but we're done
-          }
-          fail("Event never occurred after " + ms + " ms: " + ev.description());
-        }
-        
-        if (waitThisTime > timeLeft) {
-          waitThisTime = timeLeft;
-        }
-        
-        try {
-          mutex.wait(waitThisTime);
-        } catch (InterruptedException e) {
-          fail("interrupted");
-        }
-      } // for
-    } // synchronized
-  }
-
-  /**
-   * Wait for a thread to join
-   * @param t thread to wait on
-   * @param ms maximum time to wait
-   * @throws AssertionError if the thread does not terminate
-   */
-  static public void join(Thread t, long ms, LogWriter logger) {
-    final long tilt = System.currentTimeMillis() + ms;
-    final long incrementalWait = Jitter.jitterInterval(ms);
-    final long start = System.currentTimeMillis();
-    for (;;) {
-      // I really do *not* understand why this check is necessary
-      // but it is, at least with JDK 1.6.  According to the source code
-      // and the javadocs, one would think that join() would exit immediately
-      // if the thread is dead.  However, I can tell you from experimentation
-      // that this is not the case. :-(  djp 2008-12-08
-      if (!t.isAlive()) {
-        break;
-      }
-      try {
-        t.join(incrementalWait);
-      } catch (InterruptedException e) {
-        fail("interrupted");
-      }
-      if (System.currentTimeMillis() >= tilt) {
-        break;
-      }
-    } // for
-    if (logger == null) {
-      logger = new LocalLogWriter(LogWriterImpl.INFO_LEVEL, System.out);
-    }
-    if (t.isAlive()) {
-      logger.info("HUNG THREAD");
-      dumpStackTrace(t, t.getStackTrace(), logger);
-      dumpMyThreads(logger);
-      t.interrupt(); // We're in trouble!
-      fail("Thread did not terminate after " + ms + " ms: " + t);
-//      getLogWriter().warning("Thread did not terminate" 
-//          /* , new Exception()*/
-//          );
-    }
-    long elapsedMs = (System.currentTimeMillis() - start);
-    if (elapsedMs > 0) {
-      String msg = "Thread " + t + " took " 
-        + elapsedMs
-        + " ms to exit.";
-      logger.info(msg);
-    }
-  }
-
-  public static void dumpStackTrace(Thread t, StackTraceElement[] stack, LogWriter logger) {
-    StringBuilder msg = new StringBuilder();
-    msg.append("Thread=<")
-      .append(t)
-      .append("> stackDump:\n");
-    for (int i=0; i < stack.length; i++) {
-      msg.append("\t")
-        .append(stack[i])
-        .append("\n");
-    }
-    logger.info(msg.toString());
-  }
-  /**
-   * Dump all thread stacks
-   */
-  public static void dumpMyThreads(LogWriter logger) {
-    OSProcess.printStacks(0, false);
-  }
-  
-  /**
-   * @deprecated Use {@link IgnoredException} instead.
-   */
-  @Deprecated
-  public static class ExpectedException extends IgnoredException {
-
-    private final IgnoredException wrappedInstance;
-    
-    public ExpectedException(final IgnoredException wrappedInstance) {
-      super(wrappedInstance.errorString(), wrappedInstance.vm());
-      this.wrappedInstance = wrappedInstance;
-    }
-    
-    public ExpectedException(final String exception) {
-      this(exception, null);
-    }
-    
-    private ExpectedException(final String exception, final VM vm) {
-      super(exception, vm);
-      this.wrappedInstance = new IgnoredException(exception);
-    }
-    
-    public String getAddMessage() {
-      return this.wrappedInstance.getAddMessage();
-    }
-    
-    public String getRemoveMessage() {
-      return this.wrappedInstance.getRemoveMessage();
-    }
-    
-    public void remove() {
-      this.wrappedInstance.remove();
-    }
-  }
-  
-  /**
-   * Log in all VMs, in both the test logger and the GemFire logger the
-   * expected exception string to prevent grep logs from complaining. The
-   * expected string is used by the GrepLogs utility and so can contain
-   * regular expression characters.
-   * 
-   * If you do not remove the expected exception, it will be removed at the
-   * end of your test case automatically.
-   * 
-   * @since 5.7bugfix
-   * @param exception
-   *          the exception string to expect
-   * @return an ExpectedException instance for removal
-   * @deprecated Use {@link IgnoredException#addExpectedException(String)} instead
-   */
-  public static ExpectedException addExpectedException(final String exception) {
-    return new ExpectedException(IgnoredException.addExpectedException(exception));
-  }
-
-  /**
-   * Log in all VMs, in both the test logger and the GemFire logger the
-   * expected exception string to prevent grep logs from complaining. The
-   * expected string is used by the GrepLogs utility and so can contain
-   * regular expression characters.
-   * 
-   * @since 5.7bugfix
-   * @param exception
-   *          the exception string to expect
-   * @param v
-   *          the VM on which to log the expected exception or null for all VMs
-   * @return an ExpectedException instance for removal purposes
-   * @deprecated Use {@link IgnoredException#addExpectedException(String,VM)} instead
-   */
-  public static IgnoredException addExpectedException(final String exception, final VM v) {
-    return new ExpectedException(IgnoredException.addExpectedException(exception, v));
-  }
-
-  /** 
-   * delete locator state files.  Use this after getting a random port
-   * to ensure that an old locator state file isn't picked up by the
-   * new locator you're starting.
-   * @param ports
-   */
-  public void deleteLocatorStateFile(int... ports) {
-    for (int i=0; i<ports.length; i++) {
-      File stateFile = new File("locator"+ports[i]+"view.dat");
-      if (stateFile.exists()) {
-        stateFile.delete();
-      }
-    }
-  }
-  
 }

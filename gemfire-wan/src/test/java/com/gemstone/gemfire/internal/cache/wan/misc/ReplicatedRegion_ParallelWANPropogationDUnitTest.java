@@ -40,10 +40,12 @@ import com.gemstone.gemfire.internal.cache.PrimaryBucketException;
 import com.gemstone.gemfire.internal.cache.PutAllPartialResultException;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.ExpectedException;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBase{
 
@@ -154,7 +156,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       }
 */    }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
 
@@ -198,7 +200,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       }
 */    }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
 
@@ -245,7 +247,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
      */ 
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -308,7 +310,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
 */      
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -379,7 +381,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
         testName + "_RR", 1000});
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -434,7 +436,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
         testName + "_RR", 1000 });
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -489,7 +491,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
         testName + "_RR", 1000 });
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -598,7 +600,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       }
 */    }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -676,7 +678,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       }*/
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -823,7 +825,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       }*/
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
 
   }
@@ -881,7 +883,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
         testName + "_RR", 1000 });
     }
     catch (Exception e) {
-      fail("Unexpected exception", e);
+      Assert.fail("Unexpected exception", e);
     }
   }
   
@@ -936,14 +938,14 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       AsyncInvocation inv1 = vm4.invokeAsync(
           ReplicatedRegion_ParallelWANPropogationDUnitTest.class, "doPuts0", new Object[] {
               testName + "_RR", 1000 });
-      pause(1000);
+      Wait.pause(1000);
       AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "killSender");
       try {
         inv1.join();
         inv2.join();
       }
       catch (Exception e) {
-        fail("UnExpected Exception", e);
+        Assert.fail("UnExpected Exception", e);
       }
 /*    }
     finally {
@@ -952,7 +954,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
 
     Integer size = (Integer)vm4.invoke(WANTestBase.class,
         "getQueueContentSize", new Object[] { "ln" });
-    getLogWriter().info("The size of the queue is in vm4 " + size);
+    LogWriterSupport.getLogWriter().info("The size of the queue is in vm4 " + size);
     
 
     vm4.invoke(WANTestBase.class,
@@ -960,7 +962,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
     
     size = (Integer)vm4.invoke(WANTestBase.class,
         "getQueueContentSize", new Object[] { "ln" });
-    getLogWriter().info("The size of the queue is in vm4 " + size);
+    LogWriterSupport.getLogWriter().info("The size of the queue is in vm4 " + size);
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 1000 });
@@ -1047,7 +1049,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
         inv4.join();
       }
       catch (Exception e) {
-        fail("UnExpected Exception", e);
+        Assert.fail("UnExpected Exception", e);
       }
     }/*
     finally {
@@ -1065,16 +1067,16 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
   }
   
   public static void doPuts0(String regionName, int numPuts) {
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
 
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        getLogWriter().info("Put : key : " + i);
+        LogWriterSupport.getLogWriter().info("Put : key : " + i);
         r.put(i, "0_" + i);
       }
     } finally {
@@ -1084,16 +1086,16 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
   }
   
   public static void doPuts1(String regionName, int numPuts){
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
 
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        getLogWriter().info("Put : key : " + i);
+        LogWriterSupport.getLogWriter().info("Put : key : " + i);
         r.put(i, "1_" + i);
       }
     } finally {
@@ -1103,15 +1105,15 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
   }
   
   public static void doPuts2(String regionName, int numPuts){
-    ExpectedException exp = addExpectedException(ForceReattemptException.class
+    IgnoredException exp = IgnoredException.addIgnoredException(ForceReattemptException.class
         .getName());
-    ExpectedException exp1 = addExpectedException(CacheClosedException.class
+    IgnoredException exp1 = IgnoredException.addIgnoredException(CacheClosedException.class
         .getName());
     try {
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        getLogWriter().info("Put : key : " + i);
+        LogWriterSupport.getLogWriter().info("Put : key : " + i);
         r.put(i, "2_" + i);
       }
     } finally {

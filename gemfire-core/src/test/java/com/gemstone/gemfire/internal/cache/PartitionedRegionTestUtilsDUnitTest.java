@@ -38,6 +38,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -91,7 +92,7 @@ public class PartitionedRegionTestUtilsDUnitTest extends
         GsRandom rand = new GsRandom(123);
         // Assert that its empty
         for(int i=0; i<5; i++) {
-          getLogWriter().info("Invocation " + i + " of getSomeKeys");
+          LogWriterSupport.getLogWriter().info("Invocation " + i + " of getSomeKeys");
           try {
             Set s = null;
             s = pr.getSomeKeys(rand);
@@ -111,17 +112,17 @@ public class PartitionedRegionTestUtilsDUnitTest extends
         
         // Assert not empty and has value in an accepable range
         for(int i=0; i<5; i++) {
-          getLogWriter().info("Invocation " + i + " of getSomeKeys");
+          LogWriterSupport.getLogWriter().info("Invocation " + i + " of getSomeKeys");
           try {
             Set s = null;
             s = pr.getSomeKeys(rand);
             assertNotNull(s);
             assertFalse(s.isEmpty());
             Integer val;
-            getLogWriter().info("Invocation " + i + " got " + s.size() + " keys");
+            LogWriterSupport.getLogWriter().info("Invocation " + i + " got " + s.size() + " keys");
             for (Iterator it = s.iterator(); it.hasNext(); ) {
               Object key = it.next();
-              getLogWriter().info("Key: " + key);
+              LogWriterSupport.getLogWriter().info("Key: " + key);
               val = (Integer) pr.get(key);
               assertNotNull(val);
               assertTrue(val.intValue() >= 0);

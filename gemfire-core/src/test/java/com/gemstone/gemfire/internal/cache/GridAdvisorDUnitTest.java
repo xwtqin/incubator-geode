@@ -36,6 +36,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -79,14 +81,14 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
     final Keeper bsKeeper4 = freeTCPPorts.get(5);
     final int bsPort4 = bsKeeper4.getPort();
 
-    final String host0 = getServerHostName(host); 
+    final String host0 = NetworkSupport.getServerHostName(host); 
     final String locators =   host0 + "[" + port1 + "]" + "," 
                             + host0 + "[" + port2 + "]";
 
     final Properties dsProps = new Properties();
     dsProps.setProperty("locators", locators);
     dsProps.setProperty("mcast-port", "0");
-    dsProps.setProperty("log-level", getDUnitLogLevel());
+    dsProps.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
     dsProps.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     
     keeper1.release();
@@ -124,7 +126,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             Properties props = new Properties();
             props.setProperty("mcast-port", "0");
             props.setProperty("locators", locators);
-            dsProps.setProperty("log-level", getDUnitLogLevel());
+            dsProps.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
             CacheFactory.create(DistributedSystem.connect(props));
           }
         };
@@ -284,7 +286,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             DistributionAdvisee advisee = (DistributionAdvisee)bslist.get(i);
             CacheServerAdvisor bsa = (CacheServerAdvisor)advisee.getDistributionAdvisor();
             List others = bsa.fetchBridgeServers();
-            getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
+            LogWriterSupport.getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
             assertEquals(3, others.size());
             others = bsa.fetchControllers();
             assertEquals(2, others.size());
@@ -312,7 +314,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             DistributionAdvisee advisee = (DistributionAdvisee)bslist.get(i);
             CacheServerAdvisor bsa = (CacheServerAdvisor)advisee.getDistributionAdvisor();
             List others = bsa.fetchBridgeServers();
-            getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
+            LogWriterSupport.getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
             assertEquals(3, others.size());
             others = bsa.fetchControllers();
             assertEquals(2, others.size());
@@ -588,14 +590,14 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
     final Keeper bsKeeper4 = freeTCPPorts.get(5);
     final int bsPort4 = bsKeeper4.getPort();
 
-    final String host0 = getServerHostName(host); 
+    final String host0 = NetworkSupport.getServerHostName(host); 
     final String locators =   host0 + "[" + port1 + "]" + "," 
                             + host0 + "[" + port2 + "]";
 
     final Properties dsProps = new Properties();
     dsProps.setProperty("locators", locators);
     dsProps.setProperty("mcast-port", "0");
-    dsProps.setProperty("log-level", getDUnitLogLevel());
+    dsProps.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
     dsProps.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     
     keeper1.release();
@@ -633,7 +635,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
         props.setProperty("mcast-port", "0");
         props.setProperty("locators", locators);
         props.setProperty("groups", "bs1Group1, bs1Group2");
-        props.setProperty("log-level", getDUnitLogLevel());
+        props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
         CacheFactory.create(DistributedSystem.connect(props));
       }
     });
@@ -643,7 +645,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
         props.setProperty("mcast-port", "0");
         props.setProperty("locators", locators);
         props.setProperty("groups", "bs2Group1, bs2Group2");
-        props.setProperty("log-level", getDUnitLogLevel());
+        props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
         CacheFactory.create(DistributedSystem.connect(props));
       }
     });
@@ -798,7 +800,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             DistributionAdvisee advisee = (DistributionAdvisee)bslist.get(i);
             CacheServerAdvisor bsa = (CacheServerAdvisor)advisee.getDistributionAdvisor();
             List others = bsa.fetchBridgeServers();
-            getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
+            LogWriterSupport.getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
             assertEquals(3, others.size());
             others = bsa.fetchControllers();
             assertEquals(2, others.size());
@@ -826,7 +828,7 @@ public class GridAdvisorDUnitTest extends DistributedTestCase {
             DistributionAdvisee advisee = (DistributionAdvisee)bslist.get(i);
             CacheServerAdvisor bsa = (CacheServerAdvisor)advisee.getDistributionAdvisor();
             List others = bsa.fetchBridgeServers();
-            getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
+            LogWriterSupport.getLogWriter().info("found these bridgeservers in " + advisee + ": " + others);
             assertEquals(3, others.size());
             others = bsa.fetchControllers();
             assertEquals(2, others.size());

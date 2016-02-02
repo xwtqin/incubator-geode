@@ -30,7 +30,10 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 
@@ -165,7 +168,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
     createClientCacheWithDefaultMessageTrackingTimeout(
-        getServerHostName(server1.getHost()), port1.intValue(), port2
+        NetworkSupport.getServerHostName(server1.getHost()), port1.intValue(), port2
         .intValue(), port3.intValue());
     assertEquals(PoolFactory.DEFAULT_SUBSCRIPTION_MESSAGE_TRACKING_TIMEOUT,
                  pool.getSubscriptionMessageTrackingTimeout());
@@ -177,14 +180,14 @@ public class Bug36995DUnitTest extends DistributedTestCase
   public void testBug36995_UserSpecified()
   {
     //work around GEODE-507
-    IgnoredException.addExpectedException("Connection reset");
+    IgnoredException.addIgnoredException("Connection reset");
     Integer port1 = ((Integer)server1.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
     Integer port2 = ((Integer)server2.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
-    createClientCache(getServerHostName(server1.getHost()),
+    createClientCache(NetworkSupport.getServerHostName(server1.getHost()),
         port1.intValue(), port2.intValue(), port3.intValue());
     assertEquals(54321, pool.getSubscriptionMessageTrackingTimeout());
   }
@@ -200,7 +203,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
         "createServerCache"));
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
-    createClientCache(getServerHostName(server1.getHost()),
+    createClientCache(NetworkSupport.getServerHostName(server1.getHost()),
         port1.intValue(), port2.intValue(), port3.intValue());
     verifyDeadAndLiveServers(0, 3);
     server2.invoke(Bug36995DUnitTest.class, "stopServer");
@@ -233,7 +236,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 3 * 60 * 1000, 1000, true);
     
     // we no longer verify dead servers; just live
 //     while (proxy.getDeadServers().size() != expectedDeadServers) { // wait

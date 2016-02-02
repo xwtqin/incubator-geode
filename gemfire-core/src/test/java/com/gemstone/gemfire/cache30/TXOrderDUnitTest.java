@@ -52,6 +52,7 @@ import com.gemstone.gemfire.cache.util.TransactionListenerAdapter;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -186,7 +187,7 @@ public class TXOrderDUnitTest extends CacheTestCase {
         af.addCacheListener(cl1);
         CacheLoader cl = new CacheLoader() {
           public Object load(LoaderHelper helper) throws CacheLoaderException {
-            getLogWriter().info("Loading value:"+helper.getKey()+"_value");
+            LogWriterSupport.getLogWriter().info("Loading value:"+helper.getKey()+"_value");
             return helper.getKey()+"_value";
           }
           public void close() {
@@ -205,7 +206,7 @@ public class TXOrderDUnitTest extends CacheTestCase {
         af.setScope(Scope.DISTRIBUTED_ACK);
         CacheListener cl1 = new CacheListenerAdapter() {
           public void afterCreate(EntryEvent e) {
-            getLogWriter().info("op:"+e.getOperation().toString());
+            LogWriterSupport.getLogWriter().info("op:"+e.getOperation().toString());
             assertTrue(!e.getOperation().isLocalLoad());
           }
         };

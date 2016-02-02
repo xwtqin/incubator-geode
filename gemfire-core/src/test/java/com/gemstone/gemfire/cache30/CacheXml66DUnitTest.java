@@ -355,7 +355,7 @@ public class CacheXml66DUnitTest extends CacheXml65DUnitTest{
     CacheTransactionManagerCreation txMgrCreation = new CacheTransactionManagerCreation();
     txMgrCreation.setWriter(new TestTransactionWriter());
     cc.addCacheTransactionManagerCreation(txMgrCreation);
-    IgnoredException expectedException = IgnoredException.addExpectedException(LocalizedStrings.TXManager_NO_WRITER_ON_CLIENT.toLocalizedString());
+    IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.TXManager_NO_WRITER_ON_CLIENT.toLocalizedString());
     try {
       testXml(cc);
       fail("expected exception not thrown");

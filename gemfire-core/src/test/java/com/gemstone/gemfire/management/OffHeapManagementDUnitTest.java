@@ -44,6 +44,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the off-heap additions to the RegionMXBean and MemberMXBean JMX interfaces.
@@ -927,7 +929,7 @@ public class OffHeapManagementDUnitTest extends CacheTestCase {
     vm.invoke(new SerializableRunnable() {
       @Override
       public void run() {
-        waitForCriterion(new WaitCriterion() {          
+        Wait.waitForCriterion(new WaitCriterion() {          
           @Override
           public boolean done() {
             return (notificationListener.getNotificationSize() > 0);

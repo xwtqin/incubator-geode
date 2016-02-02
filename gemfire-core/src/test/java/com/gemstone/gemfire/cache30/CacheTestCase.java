@@ -58,7 +58,11 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * The abstract superclass of tests that require the creation of a
@@ -260,7 +264,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
       final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
       if (gfCache != null && !gfCache.isClosed()
           && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public boolean done() {
             return gfCache.isClosed();
@@ -276,7 +280,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         createCache(client, cf);
       }
       if (client && cache != null) {
-        IgnoredException.addExpectedException("java.net.ConnectException");
+        IgnoredException.addIgnoredException("java.net.ConnectException");
       }
       return cache;
     }
@@ -293,7 +297,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
       final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
       if (gfCache != null && !gfCache.isClosed()
           && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public boolean done() {
             return gfCache.isClosed();
@@ -310,7 +314,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         cache = (Cache)factory.create();
       }
       if (cache != null) {
-        IgnoredException.addExpectedException("java.net.ConnectException");
+        IgnoredException.addIgnoredException("java.net.ConnectException");
       }
       return (ClientCache)cache;
     }
@@ -379,7 +383,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /** Closed the cache in all VMs. */
   protected void closeAllCache() {
     closeCache();
-    invokeInEveryVM(CacheTestCase.class, "closeCache");
+    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
 
   @Override
@@ -413,7 +417,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         try {
           cleanDiskDirs();
         } catch(Exception e) {
-          getLogWriter().error("Error cleaning disk dirs", e);
+          LogWriterSupport.getLogWriter().error("Error cleaning disk dirs", e);
         }
       }
     }

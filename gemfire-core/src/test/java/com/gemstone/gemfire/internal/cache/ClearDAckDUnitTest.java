@@ -38,6 +38,8 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -71,7 +73,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0ID = (DistributedMember)vm0.invoke(ClearDAckDUnitTest.class, "createCacheVM0");
       vm1ID = (DistributedMember)vm1.invoke(ClearDAckDUnitTest.class, "createCacheVM1");
-      getLogWriter().info("Cache created in successfully");
+      LogWriterSupport.getLogWriter().info("Cache created in successfully");
     }
     
     public void tearDown2(){
@@ -84,7 +86,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
         vm1.invoke(ClearDAckDUnitTest.class, "closeCache");
         vm2.invoke(ClearDAckDUnitTest.class, "closeCache");
         cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static long getRegionVersion(DistributedMember memberID) {
@@ -102,7 +104,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
         try{
             //            props.setProperty("mcast-port", "1234");
             //            ds = DistributedSystem.connect(props);
-            getLogWriter().info("I am vm0");
+            LogWriterSupport.getLogWriter().info("I am vm0");
             ds = (new ClearDAckDUnitTest("temp")).getSystem(props);
             cache = CacheFactory.create(ds);
             
@@ -116,7 +118,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
             RegionAttributes attr = factory.create();
             
             region = cache.createRegion("map", attr);
-            getLogWriter().info("vm0 map region: " + region);
+            LogWriterSupport.getLogWriter().info("vm0 map region: " + region);
             paperWork = cache.createRegion("paperWork", attr);
             return cache.getDistributedSystem().getDistributedMember();
         } catch (CacheException ex){
@@ -127,7 +129,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
         try{
             //   props.setProperty("mcast-port", "1234");
             //   ds = DistributedSystem.connect(props);
-            getLogWriter().info("I am vm1");
+            LogWriterSupport.getLogWriter().info("I am vm1");
             ds = (new ClearDAckDUnitTest("temp")).getSystem(props);
             //DistributedSystem.setThreadsSocketPolicy(false);
             CacheObserverImpl observer = new CacheObserverImpl();
@@ -143,7 +145,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
             RegionAttributes attr = factory.create();
             
             region = cache.createRegion("map", attr);
-            getLogWriter().info("vm1 map region: " + region);
+            LogWriterSupport.getLogWriter().info("vm1 map region: " + region);
             paperWork = cache.createRegion("paperWork", attr);
             return cache.getDistributedSystem().getDistributedMember();
             
@@ -156,7 +158,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
       try{
           //   props.setProperty("mcast-port", "1234");
           //   ds = DistributedSystem.connect(props);
-          getLogWriter().info("I am vm2");
+          LogWriterSupport.getLogWriter().info("I am vm2");
           ds = (new ClearDAckDUnitTest("temp")).getSystem(props);
           //DistributedSystem.setThreadsSocketPolicy(false);
           CacheObserverImpl observer = new CacheObserverImpl();
@@ -172,7 +174,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
           RegionAttributes attr = factory.create();
           
           region = cache.createRegion("map", attr);
-          getLogWriter().info("vm2 map region: " + region);
+          LogWriterSupport.getLogWriter().info("vm2 map region: " + region);
           paperWork = cache.createRegion("paperWork", attr);
           
           region.put("vm2Key", "vm2Value");
@@ -207,14 +209,14 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
             vm0.invoke(ClearDAckDUnitTest.class, "putMethod", objArr);
             
         }
-        getLogWriter().info("Did all puts successfully");
+        LogWriterSupport.getLogWriter().info("Did all puts successfully");
         
         long regionVersion = (Long)vm1.invoke(ClearDAckDUnitTest.class, "getRegionVersion", new Object[]{vm0ID});
         
         vm0.invoke(ClearDAckDUnitTest.class,"clearMethod");
         
         boolean flag = vm1.invokeBoolean(ClearDAckDUnitTest.class,"getVM1Flag");
-        getLogWriter().fine("Flag in VM1="+ flag);
+        LogWriterSupport.getLogWriter().fine("Flag in VM1="+ flag);
         
         assertTrue(flag);
         
@@ -226,7 +228,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
         vm2.invoke(ClearDAckDUnitTest.class, "createCacheVM2AndLocalClear");
         
         flag = vm1.invokeBoolean(ClearDAckDUnitTest.class,"getVM1Flag");
-        getLogWriter().fine("Flag in VM1="+ flag);
+        LogWriterSupport.getLogWriter().fine("Flag in VM1="+ flag);
         assertFalse(flag);
         
     }//end of test case
@@ -255,7 +257,7 @@ public class ClearDAckDUnitTest extends DistributedTestCase {
             long end = System.currentTimeMillis();
             
             long diff = end - start;
-            getLogWriter().info("Clear Thread proceeded before receiving the ack message in (milli seconds): "+diff);
+            LogWriterSupport.getLogWriter().info("Clear Thread proceeded before receiving the ack message in (milli seconds): "+diff);
               
         }catch (Exception e){
             e.printStackTrace();

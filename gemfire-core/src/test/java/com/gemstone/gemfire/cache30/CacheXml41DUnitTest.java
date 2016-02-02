@@ -163,7 +163,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
   {
     setXmlFile(findFile("unknownNamedAttributes.xml"));
 
-    IgnoredException expectedException = IgnoredException.addExpectedException(LocalizedStrings.RegionAttributesCreation_CANNOT_REFERENCE_NONEXISTING_REGION_ATTRIBUTES_NAMED_0.toLocalizedString());
+    IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.RegionAttributesCreation_CANNOT_REFERENCE_NONEXISTING_REGION_ATTRIBUTES_NAMED_0.toLocalizedString());
     try {
       getCache();
       fail("Should have thrown an IllegalStateException");
@@ -199,7 +199,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
 
     setXmlFile(findFile("sameRootRegion.xml"));
 
-    IgnoredException expectedException = IgnoredException.addExpectedException("While reading Cache XML file");
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       getCache();
       fail("Should have thrown a CacheXmlException");
@@ -243,7 +243,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
 
     setXmlFile(findFile("sameSubregion.xml"));
 
-    IgnoredException expectedException = IgnoredException.addExpectedException("While reading Cache XML file");
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       getCache();
       fail("Should have thrown a CacheXmlException");

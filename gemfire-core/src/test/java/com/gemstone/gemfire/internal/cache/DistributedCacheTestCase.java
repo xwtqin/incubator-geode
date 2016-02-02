@@ -33,6 +33,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -229,7 +230,7 @@ public abstract class DistributedCacheTestCase
 
     Region newRegion =
       root.createSubregion(name, factory.create());
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
       "Created Region '" + newRegion.getFullPath() + "'");
   }
 
@@ -301,7 +302,7 @@ public abstract class DistributedCacheTestCase
                              factory.create());
     sub.create(entryName, null);
 
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
       "Defined Entry named '" + entryName + "' in region '" +
       sub.getFullPath() +"'");
   }
@@ -328,7 +329,7 @@ public abstract class DistributedCacheTestCase
 
     sub.put(entryName, value);
 
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
       "Put value " + value + " in entry " + entryName + " in region '" +
       region.getFullPath() +"'");
   }
@@ -377,7 +378,7 @@ public abstract class DistributedCacheTestCase
 
     sub.put(entryName, value);
 
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
       "Replaced value " + value + "in entry " + entryName + " in region '" +
       region.getFullPath() +"'");
   }
@@ -466,7 +467,7 @@ public abstract class DistributedCacheTestCase
     Host host = Host.getHost(0);
     int vmCount = host.getVMCount();
     for (int i=0; i<vmCount; i++) {
-      getLogWriter().info("Invoking " + methodName + "on VM#" + i);
+      LogWriterSupport.getLogWriter().info("Invoking " + methodName + "on VM#" + i);
       host.getVM(i).invoke(this.getClass(), methodName, args);
     }
   }

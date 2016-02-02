@@ -26,6 +26,8 @@ import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class CompositeTypeTestDUnitTest extends ManagementTestBase {
 
@@ -117,7 +119,7 @@ public class CompositeTypeTestDUnitTest extends ManagementTestBase {
         try {
           final ObjectName objectName = new ObjectName("GemFire:service=custom,type=composite,member="+memberID);
           
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
             public String description() {
               return "Waiting for Composite Type MBean";
             }

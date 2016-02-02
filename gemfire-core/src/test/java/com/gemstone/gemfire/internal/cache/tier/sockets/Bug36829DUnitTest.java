@@ -30,6 +30,7 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class Bug36829DUnitTest extends DistributedTestCase {
@@ -67,7 +68,7 @@ public class Bug36829DUnitTest extends DistributedTestCase {
 
     this.ClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(getServerHostName(ClientVM.getHost()), PORT, true, 0),
+            getClientPool(NetworkSupport.getServerHostName(ClientVM.getHost()), PORT, true, 0),
             regionName,
             getClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });

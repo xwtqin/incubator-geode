@@ -33,8 +33,11 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 
 /**
@@ -164,7 +167,7 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
         
         props.setProperty(DistributionConfig.LOCATORS_NAME, "");
-        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
 
         InetAddress bindAddr = null;
         try {
@@ -226,8 +229,8 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         LocatorMXBean bean = service.getLocalLocatorMXBean();
         assertNotNull(bean);
         assertEquals(locPort, bean.getPort());
-        getLogWriter().info("Log of Locator" + bean.viewLog());
-        getLogWriter().info("BindAddress" + bean.getBindAddress());
+        LogWriterSupport.getLogWriter().info("Log of Locator" + bean.viewLog());
+        LogWriterSupport.getLogWriter().info("BindAddress" + bean.getBindAddress());
         assertEquals(isPeer, bean.isPeerLocator());
         return null;
       }
@@ -252,8 +255,8 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         LocatorMXBean bean = MBeanUtil.getLocatorMbeanProxy(member);
         assertNotNull(bean);
 
-        getLogWriter().info("Log of Locator" + bean.viewLog());
-        getLogWriter().info("BindAddress" + bean.getBindAddress());
+        LogWriterSupport.getLogWriter().info("Log of Locator" + bean.viewLog());
+        LogWriterSupport.getLogWriter().info("BindAddress" + bean.getBindAddress());
 
         return null;
       }
@@ -279,7 +282,7 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         final LocatorMXBean bean = service.getLocalLocatorMXBean();
         assertNotNull(bean);
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public String description() {
             return "Waiting for the managers List";
@@ -318,7 +321,7 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         final LocatorMXBean bean = service.getLocalLocatorMXBean();
         assertNotNull(bean);
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public String description() {
             return "Waiting for the Willing managers List";

@@ -60,6 +60,8 @@ import com.gemstone.gemfire.internal.cache.partitioned.QueryMessage;
 import com.gemstone.gemfire.pdx.JSONFormatter;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -942,8 +944,8 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
-        cf.addPoolServer(getServerHostName(server2.getHost()), port2);
+        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkSupport.getServerHostName(server2.getHost()), port2);
         ClientCache cache = getClientCache(cf);
 
         Region region = cache.createClientRegionFactory(
@@ -981,12 +983,12 @@ public class PartitionedRegionQueryDUnitTest extends CacheTestCase {
     SerializableRunnable closeCache = new CacheSerializableRunnable(
         "Close Client") {
       public void run2() throws CacheException {
-        getLogWriter().info("### Close Client. ###");
+        LogWriterSupport.getLogWriter().info("### Close Client. ###");
         try {
           closeCache();
           disconnectFromDS();
         } catch (Exception ex) {
-          getLogWriter().info("### Failed to get close client. ###");
+          LogWriterSupport.getLogWriter().info("### Failed to get close client. ###");
         }
       }
     };

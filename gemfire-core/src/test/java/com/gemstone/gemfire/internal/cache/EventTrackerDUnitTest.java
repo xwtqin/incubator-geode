@@ -42,8 +42,10 @@ import com.gemstone.gemfire.internal.cache.EventTracker.BulkOpHolder;
 import com.gemstone.gemfire.internal.cache.ha.ThreadIdentifier;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * Tests <code>EventTracker</code> management.
@@ -163,7 +165,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
     // Create Create Region in the client
     final int port = serverVM.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = getServerHostName(host);
+    final String hostName = NetworkSupport.getServerHostName(host);
     clientVM.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();
@@ -236,7 +238,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
     // Create Create Region in the client
     final int port = serverVM.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = getServerHostName(host);
+    final String hostName = NetworkSupport.getServerHostName(host);
     clientVM.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();
@@ -267,7 +269,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
         
         // Pause for the message tracking timeout
         int waitTime = Integer.parseInt(MESSAGE_TRACKING_TIMEOUT) * 3;
-        pause(waitTime);
+        Wait.pause(waitTime);
     
         // Verify the server no longer contains an entry
         eventState = region.getEventState();
@@ -314,7 +316,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
  // Create Create Region in the client
     final int port = vm0.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = getServerHostName(host);
+    final String hostName = NetworkSupport.getServerHostName(host);
     vm2.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();

@@ -82,11 +82,17 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the Heap Memory thresholds of {@link ResourceManager}
@@ -131,14 +137,14 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    invokeInEveryVM(this.setHeapMemoryMonitorTestMode);
-    IgnoredException.addExpectedException(expectedEx);
-    IgnoredException.addExpectedException(expectedBelow);
+    Invoke.invokeInEveryVM(this.setHeapMemoryMonitorTestMode);
+    IgnoredException.addIgnoredException(expectedEx);
+    IgnoredException.addIgnoredException(expectedBelow);
   }
 
   @Override
   public void tearDown2() throws Exception {
-    invokeInEveryVM(resetResourceManager);
+    Invoke.invokeInEveryVM(resetResourceManager);
     super.tearDown2();
   }
 
@@ -265,7 +271,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             return dr.getMemoryThresholdReachedMembers().size() == 0;
           }
         };
-        waitForCriterion(wc, 30000, 10, true);
+        Wait.waitForCriterion(wc, 30000, 10, true);
         return null;
       }
     });
@@ -476,7 +482,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
     verifyListenerValue(server1, MemoryState.EVICTION, 2, true);
     verifyListenerValue(server1, MemoryState.NORMAL, 1, true);
     
-    this.getLogWriter().info("before NORMAL->CRITICAL->NORMAL");
+    LogWriterSupport.getLogWriter().info("before NORMAL->CRITICAL->NORMAL");
     //NORMAL -> EVICTION -> NORMAL
     server2.invoke(new SerializableCallable("NORMAL->CRITICAL->NORMAL") {
       public Object call() throws Exception {
@@ -486,7 +492,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         return null;
       }
     });
-    this.getLogWriter().info("after NORMAL->CRITICAL->NORMAL");
+    LogWriterSupport.getLogWriter().info("after NORMAL->CRITICAL->NORMAL");
 
     verifyListenerValue(server2, MemoryState.CRITICAL, 2, true);
     verifyListenerValue(server2, MemoryState.EVICTION, 3, true);
@@ -648,7 +654,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             return keyFoundOnSickMember && caughtException;
           }
         };
-        waitForCriterion(wc, 30000, 10, true);
+        Wait.waitForCriterion(wc, 30000, 10, true);
         return null;
       }
     });
@@ -663,7 +669,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
       server1.invoke(new SerializableCallable("local destroy sick member") {
         public Object call() throws Exception {
           Region r = getRootRegion().getSubregion(regionName);
-          getLogWriter().info("PRLocalDestroy");
+          LogWriterSupport.getLogWriter().info("PRLocalDestroy");
           r.localDestroyRegion();
           return null;
         }
@@ -701,7 +707,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             return done;
           }
         };
-        waitForCriterion(wc, 30000, 10, true);
+        Wait.waitForCriterion(wc, 30000, 10, true);
         return null;
       }
     });
@@ -816,7 +822,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
   }
 
   public void testDRFunctionExecutionRejection() throws Exception {
-    IgnoredException.addExpectedException("LowMemoryException");
+    IgnoredException.addIgnoredException("LowMemoryException");
     final Host host = Host.getHost(0);
     final VM server1 = host.getVM(0);
     final VM server2 = host.getVM(1);
@@ -834,7 +840,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
     
     final RejectFunction function = new RejectFunction();
     final RejectFunction function2 = new RejectFunction("noRejFunc", false);
-    invokeInEveryVM(new SerializableCallable("register function") {
+    Invoke.invokeInEveryVM(new SerializableCallable("register function") {
       public Object call() throws Exception {
         FunctionService.registerFunction(function);
         FunctionService.registerFunction(function2);
@@ -930,7 +936,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
 
   // this test is DISABLED due to intermittent failures.  See bug #52222
   public void disabledtestPRFunctionExecutionRejection() throws Exception {
-    IgnoredException.addExpectedException("LowMemoryException");
+    IgnoredException.addIgnoredException("LowMemoryException");
     final Host host = Host.getHost(0);
     final VM accessor = host.getVM(0);
     final VM server1 = host.getVM(1);
@@ -963,7 +969,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
     
     final RejectFunction function = new RejectFunction();
     final RejectFunction function2 = new RejectFunction("noRejFunc", false);
-    invokeInEveryVM(new SerializableCallable("register function") {
+    Invoke.invokeInEveryVM(new SerializableCallable("register function") {
       public Object call() throws Exception {
         FunctionService.registerFunction(function);
         FunctionService.registerFunction(function2);
@@ -1143,7 +1149,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
     
     final RejectFunction function = new RejectFunction();
     final RejectFunction function2 = new RejectFunction("noRejFunc", false);
-    invokeInEveryVM(new SerializableCallable("register function") {
+    Invoke.invokeInEveryVM(new SerializableCallable("register function") {
       public Object call() throws Exception {
         FunctionService.registerFunction(function);
         FunctionService.registerFunction(function2);
@@ -1282,7 +1288,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         getCache();
 
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(getServerHostName(server.getHost()), serverPort);
+        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), serverPort);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1353,7 +1359,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));
           }
         } catch (LowMemoryException low) {
-          getLogWriter().info("Caught LowMemoryException", low);
+          LogWriterSupport.getLogWriter().info("Caught LowMemoryException", low);
           if (!catchLowMemoryException) {
             Assert.fail("Unexpected exception: ", low);
           }
@@ -1537,7 +1543,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             throw new IllegalStateException("Unknown memory state");
         }
         if (useWaitCriterion) {
-          waitForCriterion(wc, 30000, 10, true);
+          Wait.waitForCriterion(wc, 30000, 10, true);
         }
         return null;
       }
@@ -1557,7 +1563,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             return numberOfProfiles == ra.adviseGeneric().size();
           }
         };
-        waitForCriterion(wc, 30000, 10, true);
+        Wait.waitForCriterion(wc, 30000, 10, true);
         return null;
       }
     });
@@ -1572,7 +1578,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
 
   protected Properties getServerProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
     return p;
   }
 
@@ -1659,7 +1665,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
       }
     };
     final String tenuredPoolName = HeapMemoryMonitor.getTenuredMemoryPoolMXBean().getName();
-    getLogWriter().info("TenuredPoolName:"+tenuredPoolName);
+    LogWriterSupport.getLogWriter().info("TenuredPoolName:"+tenuredPoolName);
     final List list = internalSystem.getStatsList();
     assertFalse(list.isEmpty());
     
@@ -1669,10 +1675,10 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         int i=0;
         synchronized (list) {
           for (Object o : list) {
-            getLogWriter().info("List:"+(++i)+":"+o);
+            LogWriterSupport.getLogWriter().info("List:"+(++i)+":"+o);
             if (o instanceof StatisticsImpl) {
               StatisticsImpl si = (StatisticsImpl)o;
-              getLogWriter().info("stat:"+si.getTextId());
+              LogWriterSupport.getLogWriter().info("stat:"+si.getTextId());
               if (si.getTextId().contains(tenuredPoolName)) {
                 sampler.addLocalStatListener(l, si, "currentUsedMemory");
                 return true;
@@ -1686,7 +1692,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         return "Waiting for " + tenuredPoolName + " statistics to be added to create listener for";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 5000, 10, true);
+    Wait.waitForCriterion(wc, 5000, 10, true);
     
     assertTrue("expected at least one stat listener, found " +
         sampler.getLocalListeners().size(),

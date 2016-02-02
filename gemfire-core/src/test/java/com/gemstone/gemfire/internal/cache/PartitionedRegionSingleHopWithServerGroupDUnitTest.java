@@ -42,11 +42,16 @@ import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,7 +122,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     member1 = host.getVM(1);
     member2 = host.getVM(2);
     member3 = host.getVM(3);
-    IgnoredException.addExpectedException("java.net.SocketException");
+    IgnoredException.addIgnoredException("java.net.SocketException");
   }
   
   public void tearDown2() throws Exception {
@@ -136,7 +141,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       member1 = null;
       member2 = null;
       member3 = null;
-      invokeInEveryVM(new SerializableRunnable() { public void run() {
+      Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() {
         cache = null;
         orderRegion = null;
         orderRegion2 = null;
@@ -151,7 +156,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
 
     }
     finally {
-      unregisterAllDataSerializersFromAllVms();
+      DistributedTestSupport.unregisterAllDataSerializersFromAllVms();
     }
   }
 
@@ -171,7 +176,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
 
   public void test_SingleHopWith2ServerGroup() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -205,7 +210,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
 
   public void test_SingleHopWith2ServerGroup2() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -239,7 +244,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWith2ServerGroup2WithoutSystemProperty() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -268,7 +273,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
 
   public void test_SingleHopWithServerGroupAccessor() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -301,7 +306,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupOneServerInTwoGroups() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -340,7 +345,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupWithOneDefaultServer() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -373,7 +378,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupClientServerGroupNull() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -406,7 +411,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupTwoClientServerGroup() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -453,7 +458,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupTwoClientServerGroup2() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -497,7 +502,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroupTwoClientOneWithOneWithoutServerGroup() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -536,7 +541,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   
   public void test_SingleHopWithServerGroup2ClientInOneVMServerGroup() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -580,7 +585,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
 
   public void test_SingleHopWithServerGroupColocatedRegionsInDifferentGroup() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = getServerHostName(member3.getHost());
+    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -628,7 +633,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       }
     };
     
-    DistributedTestCase.waitForCriterion(wc, 60000, 1000, true);
+    Wait.waitForCriterion(wc, 60000, 1000, true);
     
     if (numRegions != 0) {
       assertTrue(regionMetaData.containsKey(region.getFullPath()));
@@ -669,7 +674,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       }
     };
 
-    DistributedTestCase.waitForCriterion(wc, 120000, 1000, true);
+    Wait.waitForCriterion(wc, 120000, 1000, true);
     
     assertTrue(regionMetaData.containsKey(region.getFullPath()));
     ClientPartitionAdvisor prMetaData = regionMetaData.get(region
@@ -749,7 +754,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
       }
     };
     
-    DistributedTestCase.waitForCriterion(wc, 120000, 1000, true);
+    Wait.waitForCriterion(wc, 120000, 1000, true);
     
     if (numRegions != 0) {
       assertTrue(regionMetaData.containsKey(region.getFullPath()));
@@ -821,7 +826,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -834,7 +839,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -847,7 +852,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -860,7 +865,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     return port;
@@ -907,7 +912,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -920,7 +925,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -933,7 +938,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -946,7 +951,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     return port;
@@ -993,7 +998,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1006,7 +1011,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1019,7 +1024,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1032,7 +1037,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     
@@ -1045,7 +1050,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     region2 = cache.createRegion(PR_NAME2, attr.create());
     assertNotNull(region2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region " + PR_NAME2 + " created Successfully :"
             + region2.toString());
 
@@ -1058,7 +1063,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     customerRegion2 = cache.createRegion(CUSTOMER2, attr.create());
     assertNotNull(customerRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region CUSTOMER2 created Successfully :"
             + customerRegion2.toString());
 
@@ -1071,7 +1076,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     orderRegion2 = cache.createRegion(ORDER2, attr.create());
     assertNotNull(orderRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region ORDER2 created Successfully :"
             + orderRegion2.toString());
 
@@ -1084,7 +1089,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     shipmentRegion2 = cache.createRegion(SHIPMENT2, attr.create());
     assertNotNull(shipmentRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region SHIPMENT2 created Successfully :"
             + shipmentRegion2.toString());
     
@@ -1187,7 +1192,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(PR_NAME, attrs);
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1196,7 +1201,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     customerRegion = cache.createRegion("CUSTOMER", attrs);
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1205,7 +1210,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     orderRegion = cache.createRegion("ORDER", attrs);
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1214,7 +1219,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     shipmentRegion = cache.createRegion("SHIPMENT", attrs);
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
   }
@@ -1226,7 +1231,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(PR_NAME, attrs);
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1235,7 +1240,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     customerRegion = cache.createRegion("CUSTOMER", attrs);
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1244,7 +1249,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     orderRegion = cache.createRegion("ORDER", attrs);
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1253,7 +1258,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     shipmentRegion = cache.createRegion("SHIPMENT", attrs);
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     
@@ -1264,7 +1269,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     region2 = cache.createRegion(PR_NAME2, attrs);
     assertNotNull(region2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region " + PR_NAME2 + " created Successfully :"
             + region2.toString());
 
@@ -1273,7 +1278,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     customerRegion2 = cache.createRegion(CUSTOMER2, attrs);
     assertNotNull(customerRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region CUSTOMER2 created Successfully :"
             + customerRegion2.toString());
 
@@ -1282,7 +1287,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     orderRegion2 = cache.createRegion(ORDER2, attrs);
     assertNotNull(orderRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region ORDER2 created Successfully :"
             + orderRegion2.toString());
 
@@ -1291,7 +1296,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     shipmentRegion2 = cache.createRegion(SHIPMENT2, attrs);
     assertNotNull(shipmentRegion2);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region SHIPMENT2 created Successfully :"
             + shipmentRegion2.toString());
   }
@@ -1303,7 +1308,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(PR_NAME, attrs);
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1312,7 +1317,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     customerRegion = cache.createRegion("CUSTOMER", attrs);
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1321,7 +1326,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     orderRegion = cache.createRegion("ORDER", attrs);
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1330,7 +1335,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attrs = factory.create();
     shipmentRegion = cache.createRegion("SHIPMENT", attrs);
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Distributed Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     
@@ -1362,7 +1367,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     region = cache.createRegion(PR_NAME, attr.create());
 
     assertNotNull(region);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1375,7 +1380,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1387,7 +1392,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1399,7 +1404,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     attr.setPartitionAttributes(paf.create());
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    getLogWriter().info(
+    LogWriterSupport.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     return port;

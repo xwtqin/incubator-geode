@@ -31,6 +31,7 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 
 public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServerTestBase{
   /**
@@ -66,7 +67,7 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
     
     isByName = new Boolean(true);
     toRegister = new Boolean(true);
-    getLogWriter()
+    LogWriterSupport.getLogWriter()
         .info(
             "PRClientServerFunctionExecutionNoAckDUnitTest#testServerFunctionExecution_NoAck : Starting test");
     client.invoke(PRClientServerFunctionExecutionNoAckDUnitTest.class,
@@ -84,7 +85,7 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
     registerFunctionAtServer(functionAck);
     toRegister = new Boolean(false);
     isByName = new Boolean(true);
-    getLogWriter()
+    LogWriterSupport.getLogWriter()
         .info(
             "PRClientServerFunctionExecutionNoAckDUnitTest#testServerFunctionExecution_NoAck : Starting test");
     client.invoke(PRClientServerFunctionExecutionNoAckDUnitTest.class,
@@ -94,7 +95,7 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
   }
   
   private void createScenario() {
-    getLogWriter()
+    LogWriterSupport.getLogWriter()
         .info(
             "PRClientServerFFunctionExecutionDUnitTest#createScenario : creating scenario");
     createClientServerScenarionWithoutRegion();
@@ -117,11 +118,11 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
       for(int i=0;i< NUM_ITERATION;i++)
         execute(member, Boolean.TRUE, functionNoAck, isByName, toRegister);
       t.stop();
-      getLogWriter().info("Time taken to execute boolean based" + NUM_ITERATION + "NoAck functions :" + t.getTimeInMs());      
+      LogWriterSupport.getLogWriter().info("Time taken to execute boolean based" + NUM_ITERATION + "NoAck functions :" + t.getTimeInMs());      
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation");
     }
         
@@ -135,11 +136,11 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
       for(int i=0;i< NUM_ITERATION;i++)
         execute(member, testKeysSet, functionNoAck, isByName, toRegister);
       t.stop();
-      getLogWriter().info("Time taken to execute setbased" + NUM_ITERATION + "NoAck functions :" + t.getTimeInMs());     
+      LogWriterSupport.getLogWriter().info("Time taken to execute setbased" + NUM_ITERATION + "NoAck functions :" + t.getTimeInMs());     
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operationssssss");
     }
     if(toRegister.booleanValue()){
@@ -158,11 +159,11 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
         timeinms += t.getTimeInMs();
         assertEquals(Boolean.TRUE, ((List)rc.getResult()).get(0));
       }
-      getLogWriter().info("Time taken to execute boolean based" + NUM_ITERATION + "haveResults functions :" + timeinms);      
+      LogWriterSupport.getLogWriter().info("Time taken to execute boolean based" + NUM_ITERATION + "haveResults functions :" + timeinms);      
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation");
     }
         
@@ -184,11 +185,11 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
         }
         
       }
-      getLogWriter().info("Time taken to execute setbased" + NUM_ITERATION + "haveResults functions :" + timeinms);     
+      LogWriterSupport.getLogWriter().info("Time taken to execute setbased" + NUM_ITERATION + "haveResults functions :" + timeinms);     
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operationssssss");
     }    
   }
@@ -211,7 +212,7 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation allserver   ");
     }
 
@@ -224,7 +225,7 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      getLogWriter().info("Exception : ", ex);
+      LogWriterSupport.getLogWriter().info("Exception : ", ex);
       fail("Test failed after the execute operation");
     }
   }
@@ -234,15 +235,15 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
       throws Exception {
     if (isByName.booleanValue()) {// by name
       if(toRegister.booleanValue()){
-        getLogWriter().info("The function name to execute : " + function.getId());
+        LogWriterSupport.getLogWriter().info("The function name to execute : " + function.getId());
         Execution me = member.withArgs(args);
-        getLogWriter().info("The args passed  : " + args);
+        LogWriterSupport.getLogWriter().info("The args passed  : " + args);
         return me.execute(function.getId());
       }
       else {
-        getLogWriter().info("The function name to execute : (without Register) " + function.getId());
+        LogWriterSupport.getLogWriter().info("The function name to execute : (without Register) " + function.getId());
         Execution me = member.withArgs(args);
-        getLogWriter().info("The args passed  : " + args);
+        LogWriterSupport.getLogWriter().info("The args passed  : " + args);
         return me.execute(function.getId(), function.hasResult(),function.isHA(),function.optimizeForWrite());
       }
     }

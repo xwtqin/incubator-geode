@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 
 public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
@@ -105,7 +106,7 @@ public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
       testName + "_RR", 2 });
   
   
-    pause(5000);
+    Wait.pause(5000);
     vm4.invoke(WANTestBase.class, "verifyQueueSize",
         new Object[] { "ln", 0 });
     vm6.invoke(WANTestBase.class, "verifyQueueSize",
@@ -209,7 +210,7 @@ public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
         testName + "_RR", 3 });
     
     
-    pause(5000);
+    Wait.pause(5000);
     vm6.invoke(WANTestBase.class, "verifyQueueSize",
         new Object[] { "ln", 0 });
     vm7.invoke(WANTestBase.class, "verifyQueueSize",
@@ -332,7 +333,7 @@ public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm5.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName + "_RR",
       keyValues });
     
-    pause(2000);
+    Wait.pause(2000);
     vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 3 });
     vm6.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
@@ -340,7 +341,7 @@ public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 3 });
     
-    pause(5000);
+    Wait.pause(5000);
     vm6.invoke(WANTestBase.class, "verifyQueueSize",
         new Object[] { "ln1", 0 });
     vm7.invoke(WANTestBase.class, "verifyQueueSize",
@@ -475,7 +476,7 @@ public class SerialWANPropagationLoopBackDUnitTest extends WANTestBase {
     vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_RR", 1 });
     
-    pause(5000);
+    Wait.pause(5000);
     vm3.invoke(WANTestBase.class, "verifyQueueSize",
         new Object[] { "ln1", 0 });
     vm4.invoke(WANTestBase.class, "verifyQueueSize",

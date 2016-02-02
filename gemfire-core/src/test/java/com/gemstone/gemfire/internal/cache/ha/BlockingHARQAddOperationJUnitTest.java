@@ -31,7 +31,8 @@ import org.junit.experimental.categories.Category;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.internal.cache.Conflatable;
 import com.gemstone.gemfire.internal.cache.EventID;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
 /**
@@ -152,7 +153,7 @@ public class BlockingHARQAddOperationJUnitTest extends
     };
 
     takeThread.start();
-    DistributedTestCase.staticPause(20 * 1000);
+    Wait.staticPause(20 * 1000);
     if (!takeThread.isAlive()) {
       fail("take() thread died ");
     }
@@ -160,7 +161,7 @@ public class BlockingHARQAddOperationJUnitTest extends
     ConflatableObject c1 = new ConflatableObject(KEY1, VALUE1, id1,
         conflationEnabled, "region1");
     rq.put(c1);
-    DistributedTestCase.join(takeThread, 20 * 1000, null);
+    Threads.join(takeThread, 20 * 1000, null);
     assertEquals(1, takenObjects.size());
     Conflatable obj = (Conflatable)takenObjects.get(0);
     assertNotNull(obj);
@@ -220,7 +221,7 @@ public class BlockingHARQAddOperationJUnitTest extends
       rq.put(c);
     }
     for (int i = 0; i < totalTakeThreads; i++) {
-      DistributedTestCase.join(takeThreads[i], 20 * 1000, null);
+      Threads.join(takeThreads[i], 20 * 1000, null);
     }
 
     assertEquals(totalTakeThreads, takenObjects.size());

@@ -41,7 +41,9 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 
 public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
@@ -107,15 +109,15 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     
     vm6.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
       1000 });
-    pause(5000);
+    Wait.pause(5000);
     HashMap primarySenderUpdates = (HashMap)vm4.invoke(WANTestBase.class, "checkQueue");
     HashMap secondarySenderUpdates = (HashMap)vm5.invoke(WANTestBase.class, "checkQueue");
     assertEquals(primarySenderUpdates, secondarySenderUpdates);
     
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln"});
-    pause(2000);
+    Wait.pause(2000);
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
-    pause(2000);
+    Wait.pause(2000);
     // We should wait till primarySenderUpdates and secondarySenderUpdates become same
     // If in 300000ms they don't then throw error.
     primarySenderUpdates = (HashMap)vm4.invoke(WANTestBase.class, "checkQueue");
@@ -126,7 +128,7 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
 //    assertEquals(primarySenderUpdates, secondarySenderUpdates);
     
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln"});
-    pause(5000);
+    Wait.pause(5000);
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
       testName + "_RR", 1000 });
     primarySenderUpdates = (HashMap)vm4.invoke(WANTestBase.class, "checkQueue");
@@ -139,7 +141,7 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     }
     assertEquals(primarySenderUpdates.get("Destroy"), receiverUpdates.get("Create"));
     
-    pause(5000);
+    Wait.pause(5000);
     // We expect that after this much time secondary would have got batchremoval message
     // removing all the keys.
     secondarySenderUpdates = (HashMap)vm5.invoke(WANTestBase.class, "checkQueue");
@@ -192,22 +194,22 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     
     vm6.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
       1000 });
-    pause(5000);
+    Wait.pause(5000);
     HashMap primarySenderUpdates = (HashMap)vm4.invoke(WANTestBase.class, "checkQueue");
     HashMap secondarySenderUpdates = (HashMap)vm5.invoke(WANTestBase.class, "checkQueue");
     vm5.invoke(WANTestBase.class,
         "checkQueueOnSecondary", new Object[] { primarySenderUpdates });
     
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln"});
-    pause(4000);
+    Wait.pause(4000);
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln"});
-    pause(15000);
+    Wait.pause(15000);
     primarySenderUpdates = (HashMap)vm4.invoke(WANTestBase.class, "checkQueue");
     secondarySenderUpdates = (HashMap)vm5.invoke(WANTestBase.class, "checkQueue");
     assertEquals(primarySenderUpdates, secondarySenderUpdates);
     
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln"});
-    pause(5000);
+    Wait.pause(5000);
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
       testName + "_PR", 1000 });
   }
@@ -254,7 +256,7 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     fact.addGatewayTransportFilter(myStreamfilter1);
     GatewayTransportFilter myStreamfilter2 = new MyGatewayTransportFilter2();
     fact.addGatewayTransportFilter(myStreamfilter2);
-    final ExpectedException exTKSender = addExpectedException("Could not connect");
+    final IgnoredException exTKSender = IgnoredException.addIgnoredException("Could not connect");
     try {
       GatewaySender sender1 = fact.create("TKSender", 2);
 
@@ -310,7 +312,7 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     fact.addGatewayTransportFilter(myStreamfilter1);
     GatewayTransportFilter myStreamfilter2 = new MyGatewayTransportFilter2();
     fact.addGatewayTransportFilter(myStreamfilter2);
-    final ExpectedException exp = addExpectedException("Could not connect");
+    final IgnoredException exp = IgnoredException.addIgnoredException("Could not connect");
     try {
       GatewaySender sender1 = fact.create("TKSender", 2);
 

@@ -25,8 +25,12 @@ import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.parallel.ConcurrentParallelGatewaySenderEventProcessor;
 import com.gemstone.gemfire.internal.cache.wan.parallel.ConcurrentParallelGatewaySenderQueue;
 import com.gemstone.gemfire.internal.cache.wan.parallel.ParallelGatewaySenderQueue;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import java.util.Set;
 
@@ -41,7 +45,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
   }
   
   public void testSameSenderWithNonColocatedRegions() throws Exception {
-    addExpectedException("cannot have the same parallel");
+    IgnoredException.addIgnoredException("cannot have the same parallel");
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -58,7 +62,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
       if (!(e.getCause() instanceof IllegalStateException)
           || !(e.getCause().getMessage()
               .contains("cannot have the same parallel gateway sender id"))) {
-        fail("Expected IllegalStateException", e);
+        Assert.fail("Expected IllegalStateException", e);
       }
     }
   }
@@ -283,7 +287,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
@@ -339,7 +343,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName+"PR1", 3000 });
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName+"PR2", 5000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -348,7 +352,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -356,7 +360,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
    //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -368,7 +372,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
       testName+"PR1", "ln", 1, 100, isOffHeap() });
@@ -408,7 +412,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -417,14 +421,14 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -459,7 +463,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
         WaitCriterion wc = new WaitCriterion() {
           public boolean done() {
             if (bucket.keySet().size() == 0) {
-              getLogWriter().info("Bucket " + bucket.getId() + " is empty");
+              LogWriterSupport.getLogWriter().info("Bucket " + bucket.getId() + " is empty");
               return true;
             }
             return false;
@@ -470,7 +474,7 @@ public class CommonParallelGatewaySenderDUnitTest extends WANTestBase {
               + bucket.keySet().size() + " This bucket isPrimary: " + bucket.getBucketAdvisor().isPrimary() + " KEYSET: " + bucket.keySet();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 180000, 50, true);
+        Wait.waitForCriterion(wc, 180000, 50, true);
       
       }//for loop ends
     }

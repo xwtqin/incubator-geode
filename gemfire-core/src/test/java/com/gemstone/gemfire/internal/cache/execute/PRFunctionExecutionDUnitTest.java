@@ -68,12 +68,15 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class PRFunctionExecutionDUnitTest extends
     PartitionedRegionDUnitTestCase {
@@ -752,7 +755,7 @@ public class PRFunctionExecutionDUnitTest extends
   }
   
   public void testLocalMultiKeyExecution_BucketMoved() throws Exception {
-    IgnoredException.addExpectedException("BucketMovedException");
+    IgnoredException.addIgnoredException("BucketMovedException");
     final String rName = getUniqueName();
     Host host = Host.getHost(0);
     final VM datastore0 = host.getVM(0);
@@ -982,7 +985,7 @@ public class PRFunctionExecutionDUnitTest extends
             return excuse;
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 3000, 200, false);
+        Wait.waitForCriterion(wc, 3000, 200, false);
         long endTime = System.currentTimeMillis();
         getCache().getLogger().fine(
             "Time wait for Cache Close = " + (endTime - startTime));
@@ -992,7 +995,7 @@ public class PRFunctionExecutionDUnitTest extends
     });
     assertEquals(Boolean.TRUE, o);
 
-    DistributedTestCase.join(async[0], 60 * 1000, getLogWriter());
+    Threads.join(async[0], 60 * 1000, LogWriterSupport.getLogWriter());
 
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
@@ -1080,7 +1083,7 @@ public class PRFunctionExecutionDUnitTest extends
             return excuse;
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 3000, 200, false);
+        Wait.waitForCriterion(wc, 3000, 200, false);
         long endTime = System.currentTimeMillis();
         getCache().getLogger().fine(
             "Time wait for Cache Close = " + (endTime - startTime));
@@ -1090,7 +1093,7 @@ public class PRFunctionExecutionDUnitTest extends
     });
     assertEquals(Boolean.TRUE, o);
 
-    DistributedTestCase.join(async[0], 60 * 1000, getLogWriter());
+    Threads.join(async[0], 60 * 1000, LogWriterSupport.getLogWriter());
 
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
@@ -1587,7 +1590,7 @@ public class PRFunctionExecutionDUnitTest extends
         }
         catch (Exception expected) {
           // No data should cause exec to throw
-          getLogWriter().warning("Exception Occured : "+ expected.getMessage());
+          LogWriterSupport.getLogWriter().warning("Exception Occured : "+ expected.getMessage());
           // boolean expectedStr = expected.getMessage().startsWith("No target
           // node was found for routingKey");
           // assertTrue("Unexpected exception: " + expected, expectedStr);
@@ -2244,7 +2247,7 @@ public class PRFunctionExecutionDUnitTest extends
         ResultCollector rc1 = dataSet.withArgs(Boolean.TRUE)
             .execute(function.getId());
         List l = ((List)rc1.getResult());
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2429,7 +2432,7 @@ public class PRFunctionExecutionDUnitTest extends
               }
             });
         List l = ((List)rc1.getResult());
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2534,7 +2537,7 @@ public class PRFunctionExecutionDUnitTest extends
               }
             });
         List l = ((List)rc1.getResult());
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2609,7 +2612,7 @@ public class PRFunctionExecutionDUnitTest extends
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
-          getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
+          LogWriterSupport.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
         }
         
         Function function = new TestFunction(true,TestFunction.TEST_FUNCTION3);
@@ -2720,7 +2723,7 @@ public class PRFunctionExecutionDUnitTest extends
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
-          getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
+          LogWriterSupport.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
         }
 
         PartitionedRegion partitionedregion = (PartitionedRegion)getCache().getRegion(rName2);
@@ -2742,7 +2745,7 @@ public class PRFunctionExecutionDUnitTest extends
                   "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                   e);
             }
-            getLogWriter().fine("Order :- { " + orderId + " : " + order + " }");
+            LogWriterSupport.getLogWriter().fine("Order :- { " + orderId + " : " + order + " }");
           }
         }
                 
@@ -3051,7 +3054,7 @@ public class PRFunctionExecutionDUnitTest extends
       ds.disconnect();
     }
     catch (Exception e) {
-      getLogWriter().info("Exception Occured : " + e.getMessage());
+      LogWriterSupport.getLogWriter().info("Exception Occured : " + e.getMessage());
       e.printStackTrace();
       Assert.fail("Test failed", e);
     }

@@ -23,6 +23,8 @@ import java.util.Map;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase.MyGatewayEventFilter;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ParallelWANStatsDUnitTest extends WANTestBase{
   
@@ -73,7 +75,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    pause(3000);
+    Wait.pause(3000);
 
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
@@ -85,7 +87,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName, null, 1, 100, isOffHeap() });
 
-    pause(2000);
+    Wait.pause(2000);
     
     final Map keyValues = new HashMap();
     final Map updateKeyValues = new HashMap();
@@ -278,7 +280,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
         1000 });
 
-    pause(10000);
+    Wait.pause(10000);
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName + "_PR", 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
@@ -349,7 +351,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
 
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { testName + "_PR", 10000 });
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     inv1.join();
     inv2.join();
@@ -385,7 +387,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
    * @throws Exception
    */
   public void  testParallePropagationWithRemoteRegionDestroy() throws Exception {
-    addExpectedException("RegionDestroyedException");
+    IgnoredException.addIgnoredException("RegionDestroyedException");
     Integer lnPort = (Integer)vm0.invoke(WANTestBase.class,
         "createFirstLocatorWithDSId", new Object[] { 1 });
     Integer nyPort = (Integer)vm1.invoke(WANTestBase.class,
@@ -556,7 +558,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    pause(3000);
+    Wait.pause(3000);
 
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
@@ -566,7 +568,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName, null, 1, 100, isOffHeap() });
 
-    pause(2000);
+    Wait.pause(2000);
     
     final Map keyValues = new HashMap();
     final Map updateKeyValues = new HashMap();

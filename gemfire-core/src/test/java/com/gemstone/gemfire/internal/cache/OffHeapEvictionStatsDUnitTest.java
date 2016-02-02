@@ -22,6 +22,8 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -47,7 +49,7 @@ public class OffHeapEvictionStatsDUnitTest extends EvictionStatsDUnitTest {
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
+    Invoke.invokeInEveryVM(checkOrphans);
     try {
       checkOrphans.run();
     } finally {
@@ -72,11 +74,11 @@ public class OffHeapEvictionStatsDUnitTest extends EvictionStatsDUnitTest {
       ds = getSystem(getDistributedSystemProperties());
       cache = CacheFactory.create(ds);
       assertNotNull(cache);
-      getLogWriter().info("cache= " + cache);
-      getLogWriter().info("cache closed= " + cache.isClosed());
+      LogWriterSupport.getLogWriter().info("cache= " + cache);
+      LogWriterSupport.getLogWriter().info("cache closed= " + cache.isClosed());
       cache.getResourceManager().setEvictionOffHeapPercentage(20);
-      getLogWriter().info("eviction= "+cache.getResourceManager().getEvictionOffHeapPercentage());
-      getLogWriter().info("critical= "+cache.getResourceManager().getCriticalOffHeapPercentage());
+      LogWriterSupport.getLogWriter().info("eviction= "+cache.getResourceManager().getEvictionOffHeapPercentage());
+      LogWriterSupport.getLogWriter().info("critical= "+cache.getResourceManager().getCriticalOffHeapPercentage());
     }
     catch (Exception e) {
       Assert.fail("Failed while creating the cache", e);

@@ -40,10 +40,13 @@ import com.gemstone.gemfire.management.internal.cli.CliUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing client IDs
@@ -107,8 +110,8 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
     helper.startManagingNode(managingNode);
     int port = (Integer) createServerCache(server);
     DistributedMember serverMember = helper.getMember(server);
-    createClientCache(client, getServerHostName(server.getHost()), port);
-    createClientCache(client2, getServerHostName(server.getHost()), port);
+    createClientCache(client, NetworkSupport.getServerHostName(server.getHost()), port);
+    createClientCache(client2, NetworkSupport.getServerHostName(server.getHost()), port);
     put(client);
     put(client2);
     verifyClientIds(managingNode, serverMember, port);
@@ -230,7 +233,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
                   }
                 } 
               }catch (Exception e) {                 
-                getLogWriter().info("exception occured " + e.getMessage() + CliUtil.stackTraceAsString((Throwable)e));
+                LogWriterSupport.getLogWriter().info("exception occured " + e.getMessage() + CliUtil.stackTraceAsString((Throwable)e));
               }
               return false;
             }
@@ -239,12 +242,12 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
               return "wait for getNumOfClients bean to complete and get results";
             }
           };
-          waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);          
+          Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 3000, true);          
           
           //Now it is sure that bean would be available
           CacheServerMXBean bean = MBeanUtil.getCacheServerMbeanProxy(
               serverMember, serverPort);
-          getLogWriter().info("verifyClientIds = " + bean.getClientIds().length);
+          LogWriterSupport.getLogWriter().info("verifyClientIds = " + bean.getClientIds().length);
           assertEquals(true, bean.getClientIds().length > 0 ? true : false);
         } catch (Exception e) {
           fail("Error while verifying cache server from remote member " + e);

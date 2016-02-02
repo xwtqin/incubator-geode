@@ -45,6 +45,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -136,8 +138,8 @@ public class TransactionTimeOutDUnitTest extends DistributedTestCase {
     AsyncInvocation async1 = vm0.invokeAsync(TransactionTimeOutDUnitTest.class, "runTest1");
     AsyncInvocation async2 =vm0.invokeAsync(TransactionTimeOutDUnitTest.class, "runTest2");
     
-    DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
-    DistributedTestCase.join(async2, 30 * 1000, getLogWriter());
+    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
     if(async1.exceptionOccurred()){
       Assert.fail("async1 failed", async1.getException());
     }
@@ -214,7 +216,7 @@ public class TransactionTimeOutDUnitTest extends DistributedTestCase {
       return;
     }
     catch (Exception e) {
-      getLogWriter().fine("Exception caught " + e);
+      LogWriterSupport.getLogWriter().fine("Exception caught " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
@@ -240,7 +242,7 @@ public class TransactionTimeOutDUnitTest extends DistributedTestCase {
       return;
     }
     catch (Exception e) {
-      getLogWriter().fine("Exception caught " + e);
+      LogWriterSupport.getLogWriter().fine("Exception caught " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
@@ -493,7 +495,7 @@ public class TransactionTimeOutDUnitTest extends DistributedTestCase {
       //
       //    sb.append(lineSep);
     }
-    getLogWriter().fine("***********\n " + sb);
+    LogWriterSupport.getLogWriter().fine("***********\n " + sb);
     return sb.toString();
   }
 }

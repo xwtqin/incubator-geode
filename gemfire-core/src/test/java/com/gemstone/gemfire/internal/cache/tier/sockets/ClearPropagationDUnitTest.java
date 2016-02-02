@@ -39,6 +39,8 @@ import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.client.*;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
@@ -104,9 +106,9 @@ public class ClearPropagationDUnitTest extends DistributedTestCase
         "createServerCache")).intValue();
 
     client1.invoke(ClearPropagationDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(server1.getHost()), new Integer(PORT1), new Integer(PORT2) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1), new Integer(PORT2) });
     client2.invoke(ClearPropagationDUnitTest.class, "createClientCache",
-        new Object[] { getServerHostName(server1.getHost()), new Integer(PORT1), new Integer(PORT2) });
+        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1), new Integer(PORT2) });
 
     CacheObserverHolder.setInstance(new CacheObserverAdapter());
 
@@ -161,7 +163,7 @@ public class ClearPropagationDUnitTest extends DistributedTestCase
 
     client1.invoke(ClearPropagationDUnitTest.class,
         "acquireConnectionsAndClear",
-        new Object[] { getServerHostName(client1.getHost())});
+        new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
 
     client1.invoke(checkSizeRegion(2, false/*Do not Block*/));
     client2.invoke(checkSizeRegion(0, true /* block*/));
@@ -212,7 +214,7 @@ public class ClearPropagationDUnitTest extends DistributedTestCase
 
     client1.invoke(ClearPropagationDUnitTest.class,
       "acquireConnectionsAndDestroyRegion",
-      new Object[] { getServerHostName(client1.getHost())});
+      new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
 
     client1.invoke(checkSizeRegion(2, false/*Do not Block*/));
     client2.invoke(checkDestroyRegion(true /* block*/));
@@ -264,7 +266,7 @@ public class ClearPropagationDUnitTest extends DistributedTestCase
       {
         Region region = cache.getRegion(Region.SEPARATOR + REGION_NAME);
         assertNotNull(region);
-        getLogWriter().info("Size of the region " + region.size());
+        LogWriterSupport.getLogWriter().info("Size of the region " + region.size());
 
         if (toBlock) {
           synchronized (ClearPropagationDUnitTest.class) {

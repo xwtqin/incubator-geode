@@ -45,8 +45,11 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.Token;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author dsmith
@@ -259,7 +262,7 @@ public class ForceInvalidateEvictionDUnitTest extends CacheTestCase {
         Region region = cache.getRegion(name);
         final MyListener listener = (MyListener) region.getAttributes().getCacheListeners()[0];
         if(invalidated) {
-          waitForCriterion(new WaitCriterion() {
+          Wait.waitForCriterion(new WaitCriterion() {
 
             public String description() {
               return "Didn't receive invalidate after 30 seconds";
@@ -285,7 +288,7 @@ public class ForceInvalidateEvictionDUnitTest extends CacheTestCase {
         Cache cache = getCache();
         final LocalRegion region = (LocalRegion) cache.getRegion(name);
         
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           
           public boolean done() {
             Object value  = null;
@@ -342,7 +345,7 @@ public class ForceInvalidateEvictionDUnitTest extends CacheTestCase {
         Cache cache = getCache();
         
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(getServerHostName(host), port);
+        pf.addServer(NetworkSupport.getServerHostName(host), port);
         pf.setSubscriptionEnabled(true);
         pf.create(name);
         RegionFactory rf = new RegionFactory();

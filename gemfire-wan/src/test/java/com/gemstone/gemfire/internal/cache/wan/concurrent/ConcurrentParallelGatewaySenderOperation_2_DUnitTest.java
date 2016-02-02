@@ -21,9 +21,13 @@ import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache.wan.GatewaySender.OrderPolicy;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author skumar
@@ -39,10 +43,10 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
   
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("RegionDestroyedException");
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("RegionDestroyedException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
   }
   
   // to test that when userPR is locally destroyed, shadow Pr is also locally
@@ -100,7 +104,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
 
     vm4.invoke(() -> resumeSender("ln"));
 
-    pause(500); //paused if there is any element which is received on remote site
+    Wait.pause(500); //paused if there is any element which is received on remote site
 
     recreatePRDoPutsAndValidateRegionSizes(0, false);
 
@@ -132,7 +136,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
 
       if (putAsync.getException() != null
           && !(putAsync.getException() instanceof RegionDestroyedException)) {
-        fail("Expected RegionDestroyedException but got",
+        Assert.fail("Expected RegionDestroyedException but got",
             putAsync.getException());
       }
 
@@ -154,9 +158,9 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
   
   public void testParallelGatewaySender_SingleNode_UserPR_Destroy_NodeDown()
       throws Exception {
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
     Integer[] locatorPorts = createLNAndNYLocators();
     Integer lnPort = locatorPorts[0];
     Integer nyPort = locatorPorts[1];
@@ -172,7 +176,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       vm5.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
       vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
 
-      pause(200);
+      Wait.pause(200);
       AsyncInvocation localDestroyAsync = vm4.invokeAsync(WANTestBase.class,
           "destroyRegion", new Object[] { testName + "_PR" });
 
@@ -238,7 +242,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
     try {
       vm7.invoke(() -> createCache_INFINITE_MAXIMUM_SHUTDOWN_WAIT_TIME(lnPort));
 
-      getLogWriter().info("Created cache on local site");
+      LogWriterSupport.getLogWriter().info("Created cache on local site");
 
       vm7.invoke(() -> createConcurrentSender("ln1", 2, true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY));
       vm7.invoke(() -> createConcurrentSender("ln2", 3, true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY));
@@ -251,7 +255,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       String regionName = testName + "_PR";
       vm7.invoke(() -> createPartitionedRegion(regionName, "ln1,ln2,ln3", 1, 10, isOffHeap()));
 
-      getLogWriter().info("Created PRs on local site");
+      LogWriterSupport.getLogWriter().info("Created PRs on local site");
 
       vm4.invoke(() -> createPartitionedRegion(regionName, null, 1, 10, isOffHeap()));
       vm5.invoke(() -> createPartitionedRegion(regionName, null, 1, 10, isOffHeap()));
@@ -293,7 +297,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
 
       AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "doPuts",
           new Object[] { regionName, 10 });
-      pause(1000);
+      Wait.pause(1000);
       vm5.invoke(() -> localDestroyRegion(regionName));
 
       try {
@@ -339,7 +343,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "doPuts",
           new Object[] { regionName, 10 });
 
-      pause(1000);
+      Wait.pause(1000);
       vm5.invoke(WANTestBase.class, "localDestroyRegion",
           new Object[] { regionName });
 
@@ -376,13 +380,13 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       createAndStartSenderWithCustomerOrderShipmentRegion(vm4, lnPort, 5, true);
       createAndStartSenderWithCustomerOrderShipmentRegion(vm5, lnPort, 5, true);
 
-      getLogWriter().info("Created PRs on local site");
+      LogWriterSupport.getLogWriter().info("Created PRs on local site");
 
       vm2.invoke(() -> createCustomerOrderShipmentPartitionedRegion(null, null, 1, 100, isOffHeap()));
 
       AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class,
           "putcolocatedPartitionedRegion", new Object[] { 10 });
-      pause(1000);
+      Wait.pause(1000);
 
       try {
         vm5.invoke(() -> localDestroyRegion(customerRegionName));
@@ -393,7 +397,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       try {
         inv1.join();
       } catch (Exception e) {
-        fail("Unexpected exception", e);
+        Assert.fail("Unexpected exception", e);
       }
 
       validateRegionSizes(customerRegionName, 10, vm4, vm5, vm2);
@@ -414,7 +418,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       createAndStartSenderWithCustomerOrderShipmentRegion(vm4, lnPort, 6, true);
       createAndStartSenderWithCustomerOrderShipmentRegion(vm5, lnPort, 6, true);
 
-      getLogWriter().info("Created PRs on local site");
+      LogWriterSupport.getLogWriter().info("Created PRs on local site");
 
       vm2.invoke(WANTestBase.class,
           "createCustomerOrderShipmentPartitionedRegion", new Object[] { null,
@@ -422,7 +426,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
 
       AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class,
           "putcolocatedPartitionedRegion", new Object[] { 2000 });
-      pause(1000);
+      Wait.pause(1000);
 
       try {
         vm5.invoke(WANTestBase.class, "destroyRegion",
@@ -465,7 +469,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
             + max + " but actual entries: " + r.keySet().size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120000, 500, true);
+    Wait.waitForCriterion(wc, 120000, 500, true);
   }
 
   protected static void createCache_INFINITE_MAXIMUM_SHUTDOWN_WAIT_TIME(
@@ -482,7 +486,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       vm.invoke(() -> pauseSender("ln"));
     }
     vm.invoke(() -> createPartitionedRegion(testName + "_PR", "ln", 1, 10, isOffHeap()));
-    getLogWriter().info("Created PRs on local site");
+    LogWriterSupport.getLogWriter().info("Created PRs on local site");
   }
 
   protected void createReceiverAndDoPutsInPausedSender(int port) {

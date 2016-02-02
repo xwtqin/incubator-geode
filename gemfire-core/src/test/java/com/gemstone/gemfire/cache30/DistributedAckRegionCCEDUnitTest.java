@@ -67,6 +67,8 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author Bruce Schuchardt
@@ -401,8 +403,8 @@ public class DistributedAckRegionCCEDUnitTest extends DistributedAckRegionDUnitT
           return "waiting for GC to occur";
         }
       };
-      waitForCriterion(waitForGC, 20000, 1000, true);
-      pause(5000);
+      Wait.waitForCriterion(waitForGC, 20000, 1000, true);
+      Wait.pause(5000);
       long gcCount = CCRegion.getCachePerfStats().getTombstoneGCCount();
       assertTrue("expected a few GCs, but not " + (gcCount - initialCount), gcCount < (initialCount + 20));
     } catch (CacheException ex) {

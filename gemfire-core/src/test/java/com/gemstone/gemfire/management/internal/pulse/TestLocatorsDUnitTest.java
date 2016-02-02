@@ -19,6 +19,9 @@ package com.gemstone.gemfire.management.internal.pulse;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is for testing locators from MBean
@@ -63,7 +66,7 @@ public class TestLocatorsDUnitTest extends ManagementTestBase {
         return "wait for getNumOfLocatorFromMBean to complete and get results";
       }
     };
-    waitForCriterion(waitCriteria, 2 * 60 * 1000, 2000, true);    
+    Wait.waitForCriterion(waitCriteria, 2 * 60 * 1000, 2000, true);    
     final DistributedSystemMXBean bean = getManagementService().getDistributedSystemMXBean();
     assertNotNull(bean);    
     return bean.getLocatorCount();
@@ -73,7 +76,7 @@ public class TestLocatorsDUnitTest extends ManagementTestBase {
     initManagement(false);
     int locatorCount = ((Number) managingNode.invoke(
         TestLocatorsDUnitTest.class, "getNumOfLocatorFromMBean")).intValue();
-    getLogWriter().info("TestLocatorsDUnitTest locatorCount =" + locatorCount);
+    LogWriterSupport.getLogWriter().info("TestLocatorsDUnitTest locatorCount =" + locatorCount);
     assertEquals(1, locatorCount);
 
   }

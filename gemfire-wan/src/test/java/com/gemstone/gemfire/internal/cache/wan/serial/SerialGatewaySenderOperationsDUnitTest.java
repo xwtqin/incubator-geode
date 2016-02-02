@@ -34,6 +34,8 @@ import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -52,15 +54,15 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
 
   public void setUp() throws Exception {
     super.setUp();
-    addExpectedException("Broken pipe");
-    addExpectedException("Connection reset");
-    addExpectedException("Unexpected IOException");
-    addExpectedException("Connection refused");
-    addExpectedException("could not get remote locator information");
+    IgnoredException.addIgnoredException("Broken pipe");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("Unexpected IOException");
+    IgnoredException.addIgnoredException("Connection refused");
+    IgnoredException.addIgnoredException("could not get remote locator information");
     
     //Stopping the gateway closed the region,
     //which causes this exception to get logged
-    addExpectedException(RegionDestroyedException.class.getSimpleName());
+    IgnoredException.addIgnoredException(RegionDestroyedException.class.getSimpleName());
   }
 
   public void testSerialGatewaySenderOperationsWithoutStarting() {
@@ -173,7 +175,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
       fail("Interrupted the async invocation.");
     }
 
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     validateQueueContents(vm4, "ln", 0);
     validateQueueContents(vm5, "ln", 0);
@@ -313,7 +315,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm4.invoke(() -> WANTestBase.startSender( "ln" ));
     
     asyncPuts.getResult();
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         testName + "_RR", 300 ));
@@ -352,7 +354,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm4.invoke(() -> WANTestBase.doPuts( testName + "_RR",
         100 ));
     
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
 
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         testName + "_RR", 100 ));
@@ -387,7 +389,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
 
     vm5.invoke(() -> WANTestBase.doPuts( testName + "_RR",
         100 ));
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         testName + "_RR", 100 ));
   }
@@ -430,7 +432,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm2.invoke(() -> WANTestBase.createReceiver( nyPort ));
     vm2.invoke(() -> WANTestBase.createReplicatedRegion(
         testName + "_RR", null, isOffHeap() ));
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         testName + "_RR", 100 ));
     vm5.invoke(() -> WANTestBase.stopSender( "ln" ));
@@ -580,7 +582,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
       public void run() {
         InternalLocator inl = (InternalLocator)Locator.getLocator();
         ServerLocator servel = inl.getServerLocatorAdvisee();
-        getLogWriter().info("Server load map is " + servel.getLoadMap());
+        LogWriterSupport.getLogWriter().info("Server load map is " + servel.getLoadMap());
         assertTrue("expected an empty map but found " + servel.getLoadMap(),
             servel.getLoadMap().isEmpty());
         QueueConnectionRequest request = new QueueConnectionRequest(

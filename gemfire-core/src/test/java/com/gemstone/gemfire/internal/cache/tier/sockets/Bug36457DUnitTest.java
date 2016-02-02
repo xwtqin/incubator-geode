@@ -40,6 +40,8 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -163,9 +165,9 @@ public class Bug36457DUnitTest extends DistributedTestCase
     Integer port2 = ((Integer)server2.invoke(Bug36457DUnitTest.class,
         "createServerCache"));
     client1.invoke(Bug36457DUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(server1.getHost()), port1, port2 });
+        NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
     client2.invoke(Bug36457DUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(server1.getHost()), port1, port2 });
+        NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
     //set a cllabck so that we come to know that whether a failover is called or not
     // if failover is called means this bug is present.
     client2.invoke(Bug36457DUnitTest.class, "setClientServerObserver");
@@ -189,7 +191,7 @@ public class Bug36457DUnitTest extends DistributedTestCase
         .setInstance(new ClientServerObserverAdapter() {
           public void afterPrimaryIdentificationFromBackup(ServerLocation primaryEndpoint)
           {
-            getLogWriter().fine("TEST FAILED HERE YOGI ");
+            LogWriterSupport.getLogWriter().fine("TEST FAILED HERE YOGI ");
             isFaileoverHappened = true;
           }
         });

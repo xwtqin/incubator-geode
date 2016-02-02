@@ -27,7 +27,8 @@ import com.gemstone.gemfire.internal.cache.ColocationHelper;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase.ExpectedException;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 
 public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     WANTestBase {
@@ -41,7 +42,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
   public void setUp() throws Exception {
     super.setUp();
     //The restart tests log this string
-    addExpectedException("failed accepting client connection");
+    IgnoredException.addIgnoredException("failed accepting client connection");
   }
   
   public void testPartitionedRegionWithGatewaySenderPersistenceEnabled() throws IOException {
@@ -54,7 +55,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       GatewaySenderFactory fact = cache.createGatewaySenderFactory();
       fact.setPersistenceEnabled(true);
       fact.setParallel(true);
-      final ExpectedException ex = addExpectedException("Could not connect");
+      final IgnoredException ex = IgnoredException.addIgnoredException("Could not connect");
       try {
         GatewaySender sender1 = fact.create("NYSender", 2);
 
@@ -144,14 +145,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm3.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     
-    getLogWriter().info("Created remote receivers");
+    LogWriterSupport.getLogWriter().info("Created remote receivers");
     
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created local site cache");
+    LogWriterSupport.getLogWriter().info("Created local site cache");
 
     vm4.invoke(WANTestBase.class, "createSender", new Object[] { "ln", 2,
       true, 100, 10, false, true, null, true });
@@ -162,7 +163,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSender", new Object[] { "ln", 2,
       true, 100, 10, false, true, null, true });
   
-    getLogWriter().info("Created local site senders");
+    LogWriterSupport.getLogWriter().info("Created local site senders");
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName, "ln", 1, 100, isOffHeap() });
@@ -173,15 +174,15 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName, "ln", 1, 100, isOffHeap() });
 
-    getLogWriter().info("Created local site persistent PR");
+    LogWriterSupport.getLogWriter().info("Created local site persistent PR");
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    getLogWriter().info("Started sender on vm4");
+    LogWriterSupport.getLogWriter().info("Started sender on vm4");
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Started the senders");
+    LogWriterSupport.getLogWriter().info("Started the senders");
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
         testName, null, 1, 100, isOffHeap() });
@@ -233,7 +234,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
@@ -271,7 +272,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -280,7 +281,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -288,7 +289,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
    //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -300,7 +301,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
       testName, "ln", 1, 100, isOffHeap() });
@@ -321,7 +322,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -330,14 +331,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -382,7 +383,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -420,7 +421,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -429,7 +430,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -437,7 +438,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
    //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -449,7 +450,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
       testName, "ln", 1, 100, isOffHeap() });
@@ -470,7 +471,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -479,14 +480,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -527,7 +528,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, false });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -559,7 +560,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 300 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -568,7 +569,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -576,7 +577,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
   //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -588,7 +589,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -610,7 +611,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     vm4.invoke(WANTestBase.class, "unsetRemoveFromQueueOnException", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "unsetRemoveFromQueueOnException", new Object[] { "ln" });
@@ -624,7 +625,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
@@ -632,13 +633,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
 
 
-    getLogWriter().info("Creating the receiver.");
+    LogWriterSupport.getLogWriter().info("Creating the receiver.");
     //create receiver on remote site
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm3.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     //create PR on remote site
     
-    getLogWriter().info("Creating the partitioned region at receiver. ");
+    LogWriterSupport.getLogWriter().info("Creating the partitioned region at receiver. ");
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
       testName, null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -648,7 +649,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
-    getLogWriter().info("Doing some extra puts. ");
+    LogWriterSupport.getLogWriter().info("Doing some extra puts. ");
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsAfter300", new Object[] { testName, 1000 });
     //----------------------------------------------------------------------------------------------------
@@ -657,7 +658,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    getLogWriter().info("Validating the region size at the receiver end. ");
+    LogWriterSupport.getLogWriter().info("Validating the region size at the receiver end. ");
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
       testName, 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
@@ -701,7 +702,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -739,7 +740,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -748,7 +749,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -756,7 +757,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
    //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -768,7 +769,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -790,7 +791,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -799,14 +800,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -859,7 +860,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -897,7 +898,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -906,7 +907,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -914,7 +915,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
   //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -926,7 +927,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -948,7 +949,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -957,14 +958,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -1009,7 +1010,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -1047,7 +1048,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -1056,7 +1057,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1064,7 +1065,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
   //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -1076,7 +1077,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     // create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
@@ -1088,7 +1089,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
         new Object[] { testName, "ln", 1, 100, isOffHeap() });
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders in async mode. This will ensure that the 
     //node of shadow PR that went down last will come up first
@@ -1097,14 +1098,14 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -1124,7 +1125,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
    //do some extra puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 10000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
@@ -1157,7 +1158,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     // start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] {
         testName, 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
 
     // --------------------close and rebuild local site
     // -------------------------------------------------
@@ -1167,7 +1168,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
 
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
 
     // restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1175,7 +1176,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
 
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
 
 //    // create PR on local site
 //    vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
@@ -1212,7 +1213,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
 
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
 
     vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         testName, 1000 });
@@ -1261,7 +1262,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -1299,7 +1300,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
     //kill the senders
@@ -1308,7 +1309,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1316,7 +1317,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
     
     //create senders from disk store
@@ -1329,7 +1330,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     
     //start the senders. NOTE that the senders are not associated with partitioned region
@@ -1338,16 +1339,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Started the senders.");
+    LogWriterSupport.getLogWriter().info("Started the senders.");
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //----------------------------------------------------------------------------------------------------
     
@@ -1391,7 +1392,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     String diskStore4 = (String) vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, null, true });
 
-    getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
+    LogWriterSupport.getLogWriter().info("The DS are: " + diskStore1 + "," + diskStore2 + "," + diskStore3 + "," + diskStore4);
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
@@ -1429,7 +1430,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //kill the senders
     vm4.invoke(WANTestBase.class, "killSender", new Object[] {});
@@ -1437,7 +1438,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders. The local site has been brought down.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders. The local site has been brought down.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1445,7 +1446,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
   //create senders with disk store
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", 
@@ -1457,7 +1458,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSenderWithDiskStore", 
         new Object[] { "ln", 2, true, 100, 10, false, true, null, diskStore4, true });
     
-    getLogWriter().info("Created the senders back from the disk store.");
+    LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
@@ -1469,7 +1470,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
       testName, "ln", 1, 100, isOffHeap() });
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
     //start the senders
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1477,16 +1478,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Started the senders.");
+    LogWriterSupport.getLogWriter().info("Started the senders.");
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
       testName, 1000 });
@@ -1568,7 +1569,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //----------------- Close and rebuild local site -------------------------------------
     //kill the senders
@@ -1577,7 +1578,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    getLogWriter().info("Killed all the senders.");
+    LogWriterSupport.getLogWriter().info("Killed all the senders.");
     
     //restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1585,7 +1586,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     
-    getLogWriter().info("Created back the cache");
+    LogWriterSupport.getLogWriter().info("Created back the cache");
     
    //create back the senders
     vm4.invoke(WANTestBase.class, "createSender", new Object[] { "ln", 2,
@@ -1597,7 +1598,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "createSender", new Object[] { "ln", 2,
       true, 100, 10, false, false, null, true });
     
-    getLogWriter().info("Created the senders again");
+    LogWriterSupport.getLogWriter().info("Created the senders again");
     
     vm4.invoke(WANTestBase.class, "setRemoveFromQueueOnException", new Object[] { "ln", true });
     vm5.invoke(WANTestBase.class, "setRemoveFromQueueOnException", new Object[] { "ln", true });
@@ -1610,9 +1611,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invokeAsync(WANTestBase.class, "startSender", new Object[] { "ln" });
     
-    getLogWriter().info("Started the senders.");
+    LogWriterSupport.getLogWriter().info("Started the senders.");
     
-    getLogWriter().info("Waiting for senders running.");
+    LogWriterSupport.getLogWriter().info("Waiting for senders running.");
 
     //wait for senders running
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
@@ -1620,7 +1621,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    getLogWriter().info("All the senders are now running...");
+    LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
@@ -1642,13 +1643,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       fail();
     }
     
-    getLogWriter().info("Created back the partitioned regions");
+    LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
 
     //-------------------------------------------------------------------------------------------
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 3000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 3000 });
@@ -1710,7 +1711,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
-    getLogWriter().info("Completed puts in the region");
+    LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
       testName + "_PR", 1000 });

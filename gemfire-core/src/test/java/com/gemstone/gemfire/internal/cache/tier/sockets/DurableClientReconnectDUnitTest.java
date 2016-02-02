@@ -46,8 +46,12 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 
 /**      
@@ -106,10 +110,10 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     PORT2 =  ((Integer) server2.invoke(DurableClientReconnectDUnitTest.class, "createServerCache"));
     PORT3 =  ((Integer) server3.invoke(DurableClientReconnectDUnitTest.class, "createServerCache"));
     PORT4 =  ((Integer) server4.invoke(DurableClientReconnectDUnitTest.class, "createServerCache"));
-    SERVER1 = getServerHostName(host)+PORT1;
-    SERVER2 = getServerHostName(host)+PORT2;
-    SERVER3 = getServerHostName(host)+PORT3;
-    SERVER4 = getServerHostName(host)+PORT4;
+    SERVER1 = NetworkSupport.getServerHostName(host)+PORT1;
+    SERVER2 = NetworkSupport.getServerHostName(host)+PORT2;
+    SERVER3 = NetworkSupport.getServerHostName(host)+PORT3;
+    SERVER4 = NetworkSupport.getServerHostName(host)+PORT4;
     
     //CacheServerTestUtil.disableShufflingOfEndpoints();
     System.setProperty("gemfire.bridge.disableShufflingOfEndpoints", "false");
@@ -117,7 +121,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
   }
   public void testDurableReconnectSingleServer() throws Exception
   {
-    createCacheClientAndConnectToSingleServer(getServerHostName(Host.getHost(0)), 0);
+    createCacheClientAndConnectToSingleServer(NetworkSupport.getServerHostName(Host.getHost(0)), 0);
     List redundantServers = pool.getRedundantNames();    
     String primaryName = pool.getPrimaryName();
     assertTrue(redundantServers.isEmpty());
@@ -125,9 +129,9 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     
     //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
-    createCacheClientAndConnectToSingleServer(getServerHostName(Host.getHost(0)), 0);
+    createCacheClientAndConnectToSingleServer(NetworkSupport.getServerHostName(Host.getHost(0)), 0);
     List redundantServers2 = pool.getRedundantNames();
     String primaryName2 = pool.getPrimaryName();
     assertTrue(redundantServers2.isEmpty());
@@ -135,13 +139,13 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
   }
   public void testDurableReconnectSingleServerWithZeroConnPerServer() throws Exception
   {
-    createCacheClientAndConnectToSingleServerWithZeroConnPerServer(getServerHostName(Host.getHost(0)), 0);
+    createCacheClientAndConnectToSingleServerWithZeroConnPerServer(NetworkSupport.getServerHostName(Host.getHost(0)), 0);
     List redundantServers = pool.getRedundantNames();
     String primaryName = pool.getPrimaryName();
     assertTrue(redundantServers.isEmpty());
     closeCache(true);
     
-    createCacheClientAndConnectToSingleServerWithZeroConnPerServer(getServerHostName(Host.getHost(0)), 0);
+    createCacheClientAndConnectToSingleServerWithZeroConnPerServer(NetworkSupport.getServerHostName(Host.getHost(0)), 0);
     List redundantServers2 = pool.getRedundantNames();
     String primaryName2 = pool.getPrimaryName();
     assertTrue(redundantServers2.isEmpty());
@@ -157,7 +161,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     
     //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
     createCacheClient(0);
     List redundantServers2 = pool.getRedundantNames();
@@ -184,7 +188,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     
     //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
     createCacheClient();
     
@@ -213,7 +217,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     
     //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
     createCacheClient();
     
@@ -335,7 +339,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     String rServer2 = (String)serverArray[1];
 
     // can see sporadic socket closed exceptions
-    final IgnoredException expectedEx = IgnoredException.addExpectedException(
+    final IgnoredException expectedEx = IgnoredException.addIgnoredException(
         SocketException.class.getName());
 
     instance.closeServer(rServer1);    
@@ -378,51 +382,51 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     instance.determineAndVerfiyRedundantServers(redundantServers);
     instance.determineAndVerfiyNonRedundantServers(redundantServers);
     
-    getLogWriter().info("TEST - Durable client initialially has servers " + redundantServers);
+    LogWriterSupport.getLogWriter().info("TEST - Durable client initialially has servers " + redundantServers);
      
-    getLogWriter().info("TEST - Closing durable client for the first time");
+    LogWriterSupport.getLogWriter().info("TEST - Closing durable client for the first time");
     // Stop the durable client
     closeCache(true);
     
-    getLogWriter().info("TEST - Durable client closed for the first time");
+    LogWriterSupport.getLogWriter().info("TEST - Durable client closed for the first time");
     
     //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
-    getLogWriter().info("TEST - Creating the durable client with one fewer servers");
+    LogWriterSupport.getLogWriter().info("TEST - Creating the durable client with one fewer servers");
     //We recreate the durable client, but this
     //Time we won't have it create any queues
     createCacheClient(2, 20, false);
     
     HashSet redundantServers2 = new HashSet(pool.getRedundantNames());
     redundantServers2.add(pool.getPrimaryName());
-    getLogWriter().info("TEST - Durable client created again, now with servers " + redundantServers2);
+    LogWriterSupport.getLogWriter().info("TEST - Durable client created again, now with servers " + redundantServers2);
     Host host = Host.getHost(0);
     //Make sure we create client to server connections to all of the servers 
-    pool.acquireConnection(new ServerLocation(getServerHostName(host), PORT1.intValue()));
-    pool.acquireConnection(new ServerLocation(getServerHostName(host), PORT2.intValue()));
-    pool.acquireConnection(new ServerLocation(getServerHostName(host), PORT3.intValue()));
-    pool.acquireConnection(new ServerLocation(getServerHostName(host), PORT4.intValue()));
+    pool.acquireConnection(new ServerLocation(NetworkSupport.getServerHostName(host), PORT1.intValue()));
+    pool.acquireConnection(new ServerLocation(NetworkSupport.getServerHostName(host), PORT2.intValue()));
+    pool.acquireConnection(new ServerLocation(NetworkSupport.getServerHostName(host), PORT3.intValue()));
+    pool.acquireConnection(new ServerLocation(NetworkSupport.getServerHostName(host), PORT4.intValue()));
     
-    getLogWriter().info("TEST - All pool connections are now aquired");
+    LogWriterSupport.getLogWriter().info("TEST - All pool connections are now aquired");
     
     closeCache(true);
     
-    getLogWriter().info("TEST - closed durable client for the second time");
+    LogWriterSupport.getLogWriter().info("TEST - closed durable client for the second time");
     
   //Wait for server to cleanup client resources
     //temporary fix for bug 38345.
-    pause(2000);
+    Wait.pause(2000);
     
-    getLogWriter().info("TEST - creating durable client for the third time");
+    LogWriterSupport.getLogWriter().info("TEST - creating durable client for the third time");
     //Now we should connect to all of the servers we were originally connected to
     createCacheClient(2, 20);
     
     HashSet redundantServersAfterReconnect = new HashSet(pool.getRedundantNames());
     redundantServersAfterReconnect.add(pool.getPrimaryName());
     
-    getLogWriter().info("TEST - durable client created for the third time, now with servers " + redundantServersAfterReconnect);
+    LogWriterSupport.getLogWriter().info("TEST - durable client created for the third time, now with servers " + redundantServersAfterReconnect);
     
     instance.determineAndVerfiyRedundantServers(redundantServersAfterReconnect);
     instance.determineAndVerfiyNonRedundantServers(redundantServersAfterReconnect);
@@ -430,9 +434,9 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
     assertEquals(redundantServers, redundantServersAfterReconnect);
     
     //Now we wait to make sure the durable client expiration task isn't fired.
-    pause(25000);
+    Wait.pause(25000);
     
-    getLogWriter().info("TEST - Finished waiting for durable client expiration task");
+    LogWriterSupport.getLogWriter().info("TEST - Finished waiting for durable client expiration task");
     
     redundantServersAfterReconnect = new HashSet(pool.getRedundantNames());
     redundantServersAfterReconnect.add(pool.getPrimaryName());
@@ -565,7 +569,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 15 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 15 * 1000, 200, true);
   }
   
   protected static int getNumberOfClientProxies() {
@@ -599,10 +603,10 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
   protected PoolFactory getPoolFactory() {
     Host host = Host.getHost(0);
     PoolFactory factory = PoolManager.createFactory()
-    .addServer(getServerHostName(host), PORT1.intValue())
-    .addServer(getServerHostName(host), PORT2.intValue())
-    .addServer(getServerHostName(host), PORT3.intValue())
-    .addServer(getServerHostName(host), PORT4.intValue());
+    .addServer(NetworkSupport.getServerHostName(host), PORT1.intValue())
+    .addServer(NetworkSupport.getServerHostName(host), PORT2.intValue())
+    .addServer(NetworkSupport.getServerHostName(host), PORT3.intValue())
+    .addServer(NetworkSupport.getServerHostName(host), PORT4.intValue());
     return factory;
   }
   

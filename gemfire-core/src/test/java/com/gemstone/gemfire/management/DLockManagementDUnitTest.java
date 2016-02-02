@@ -29,8 +29,11 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class DLockManagementDUnitTest extends ManagementTestBase {
 
@@ -145,7 +148,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
           RegionMXBean bean = null;
           try {
 
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
 
               LockServiceMXBean bean = null;
 
@@ -199,7 +202,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
         assertNotNull(grantor);
 
-        getLogWriter().info("In identifyLockGrantor - grantor is " + grantor);
+        LogWriterSupport.getLogWriter().info("In identifyLockGrantor - grantor is " + grantor);
 
        
 
@@ -305,7 +308,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
         final String LOCK_OBJECT = "lockObject_" + vm.getPid();
 
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           DistributedLockService service = null;
 
           public String description() {
@@ -337,10 +340,10 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
         assertNotNull(bean);
         String[] listHeldLock = bean.listHeldLocks();
         assertEquals(listHeldLock.length, 1);
-        getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
+        LogWriterSupport.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
         Map<String, String> lockThreadMap = bean.listThreadsHoldingLock();
         assertEquals(lockThreadMap.size(), 1);
-        getLogWriter().info(
+        LogWriterSupport.getLogWriter().info(
             "List Of Lock Thread is  " + lockThreadMap.toString());
       }
     };
@@ -373,10 +376,10 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
           assertNotNull(bean);
           String[] listHeldLock = bean.listHeldLocks();
           assertEquals(listHeldLock.length, 1);
-          getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
+          LogWriterSupport.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
           Map<String, String> lockThreadMap = bean.listThreadsHoldingLock();
           assertEquals(lockThreadMap.size(), 1);
-          getLogWriter().info(
+          LogWriterSupport.getLogWriter().info(
               "List Of Lock Thread is  " + lockThreadMap.toString());
         }
 
@@ -432,7 +435,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
         final ManagementService service = getManagementService();
         if (expectedMembers == 0) {
           try {
-            waitForCriterion(new WaitCriterion() {
+            Wait.waitForCriterion(new WaitCriterion() {
 
               DistributedLockServiceMXBean bean = null;
 

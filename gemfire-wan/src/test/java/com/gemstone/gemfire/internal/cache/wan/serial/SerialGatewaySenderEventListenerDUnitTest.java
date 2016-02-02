@@ -28,7 +28,8 @@ import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.internal.cache.wan.MyGatewaySenderEventListener;
 import com.gemstone.gemfire.internal.cache.wan.MyGatewaySenderEventListener2;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author skumar
@@ -336,7 +337,7 @@ public class SerialGatewaySenderEventListenerDUnitTest extends WANTestBase {
           return "Waiting for all sites to get updated, the sizes are " + listenerMap.size() + " and " + map.size();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true); 
+      Wait.waitForCriterion(wc, 60000, 500, true); 
     }
   }
   
@@ -383,7 +384,7 @@ public class SerialGatewaySenderEventListenerDUnitTest extends WANTestBase {
               + listenerMap2.size() + " expected map size " + map.size();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 60000, 500, true); 
+      Wait.waitForCriterion(wc, 60000, 500, true); 
     }
   }
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.gemstone.gemfire.internal.cache.wan.AsyncEventQueueTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
 
@@ -69,7 +70,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
 
     vm4.invoke(AsyncEventQueueTestBase.class, "validateAsyncEventListener",
         new Object[] { "ln", 1000 });// primary sender
-    pause(2000);//give some time for system to become stable
+    Wait.pause(2000);//give some time for system to become stable
     
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueStats", new Object[] {
         "ln", 0, 1000, 1000, 1000 });
@@ -126,7 +127,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
         new Object[] { "ln1", 1000 });
     vm4.invoke(AsyncEventQueueTestBase.class, "validateAsyncEventListener",
         new Object[] { "ln2", 1000 });
-    pause(2000);//give some time for system to become stable
+    Wait.pause(2000);//give some time for system to become stable
 
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueStats", new Object[] {
         "ln1", 0, 1000, 1000, 1000 });
@@ -174,7 +175,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
     
     AsyncInvocation inv1 = vm5.invokeAsync(AsyncEventQueueTestBase.class, "doPuts",
         new Object[] { testName + "_RR", 10000 });
-    pause(2000);
+    Wait.pause(2000);
     AsyncInvocation inv2 = vm4.invokeAsync(AsyncEventQueueTestBase.class, "killAsyncEventQueue", new Object[] { "ln" });
     Boolean isKilled = Boolean.FALSE;
     try {
@@ -190,7 +191,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
     }
     inv1.join();
     inv2.join();
-    pause(2000);//give some time for system to become stable
+    Wait.pause(2000);//give some time for system to become stable
     vm5.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueStats_Failover", new Object[] {"ln", 10000});
   }
 
@@ -239,7 +240,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
     vm4.invoke(AsyncEventQueueTestBase.class, "validateAsyncEventListener",
         new Object[] { "ln", 1500 });
         
-    pause(2000);//give some time for system to become stable
+    Wait.pause(2000);//give some time for system to become stable
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueStats", new Object[] {"ln",
       0, 1500, 1500, 1500});
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueUnprocessedStats", new Object[] {"ln", 0});
@@ -278,7 +279,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
         .invoke(AsyncEventQueueTestBase.class, "pauseAsyncEventQueue",
             new Object[] { "ln" });
     //pause at least for the batchTimeInterval to make sure that the AsyncEventQueue is actually paused
-    pause(2000);
+    Wait.pause(2000);
 
     final Map keyValues = new HashMap();
     final Map updateKeyValues = new HashMap();
@@ -310,7 +311,7 @@ public class AsyncEventQueueStatsDUnitTest extends AsyncEventQueueTestBase {
     vm4.invoke(AsyncEventQueueTestBase.class, "validateAsyncEventListener",
         new Object[] { "ln", 1000 });
     
-    pause(2000);// give some time for system to become stable
+    Wait.pause(2000);// give some time for system to become stable
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueStats", new Object[] {
         "ln", 0, 2000, 2000, 1000 });
     vm4.invoke(AsyncEventQueueTestBase.class, "checkAsyncEventQueueConflatedStats",

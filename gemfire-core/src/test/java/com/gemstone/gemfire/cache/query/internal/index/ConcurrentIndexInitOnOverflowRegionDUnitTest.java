@@ -45,10 +45,13 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.Threads;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author shobhit
@@ -113,7 +116,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -166,7 +169,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
         Cache cache = PRQHelp.getCache();
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         // Create and hence initialize Index
         try {
@@ -181,9 +184,9 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
         .getLogger());
-    DistributedTestCase.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
         .getLogger());
   }
 
@@ -195,8 +198,8 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
     
-    IgnoredException.addExpectedException("Unexpected IOException:");
-    IgnoredException.addExpectedException("java.net.SocketException");
+    IgnoredException.addIgnoredException("Unexpected IOException:");
+    IgnoredException.addIgnoredException("java.net.SocketException");
 
     name = "PartionedPortfoliosPR";
     // Create Overflow Persistent Partition Region
@@ -233,7 +236,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -255,7 +258,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     
     final int port = vm0.invokeInt(ConcurrentIndexInitOnOverflowRegionDUnitTest.class,
     "getCacheServerPort");
-    final String host0 = getServerHostName(vm0.getHost());
+    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
 
     // Start changing the value in Region which should turn into a deadlock if
     // the fix is not there
@@ -309,7 +312,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
         Cache cache = PRQHelp.getCache();
 
         while (!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         // Create Indexes
         try {
@@ -324,9 +327,9 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    DistributedTestCase.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
         .getLogger());
-    DistributedTestCase.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
+    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
         .getLogger());
     
     vm0.invoke(new CacheSerializableRunnable("Set Test Hook") {
@@ -379,7 +382,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
         case 6: // processAction in IndexManager
           hooked = true;
           //wait untill some thread unhooks.
-          while (hooked) { pause(20); }
+          while (hooked) { Wait.pause(20); }
           break;
         default:
           break;
@@ -398,7 +401,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
         for (int i=0; i<100; i++) {
           if (i == 50) IndexManager.testHook = new LocalTestHook();
           region.put(i, new Portfolio(i));
-          if (i == 50) pause(20);
+          if (i == 50) Wait.pause(20);
         }
       }
     });
@@ -411,7 +414,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
         Region region = PRQHelp.getCache().getRegion(regionName);
         
         while(!hooked) {
-          pause(100);
+          Wait.pause(100);
         }
         if (hooked) {
           hooked = false;
@@ -432,7 +435,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // Kill asynch thread
-    DistributedTestCase.join(indexUpdateAsysnch, 20000, PRQHelp.getCache()
+    Threads.join(indexUpdateAsysnch, 20000, PRQHelp.getCache()
         .getLogger());
 
     //Verify region size which must be 50
@@ -454,8 +457,8 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
       switch (spot) {
       case 6: // Before Index update and after region entry lock.
         hooked = true;
-        getLogWriter().fine("IndexManagerTestHook is hooked.");
-        pause(10000);
+        LogWriterSupport.getLogWriter().fine("IndexManagerTestHook is hooked.");
+        Wait.pause(10000);
         hooked = false;
         break;
       default:
