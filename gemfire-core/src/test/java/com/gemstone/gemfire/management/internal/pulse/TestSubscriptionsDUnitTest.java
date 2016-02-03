@@ -83,8 +83,8 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
     client2 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     helper.closeCache(managingNode);
     helper.closeCache(server);
     helper.closeCache(client);

@@ -369,7 +369,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCliCommandTestBase() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         final File fileToDelete = new File(path);
@@ -382,7 +382,6 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
   }
 
   private void writeJarBytesToFile(File jarFile, byte[] jarBytes) throws IOException {

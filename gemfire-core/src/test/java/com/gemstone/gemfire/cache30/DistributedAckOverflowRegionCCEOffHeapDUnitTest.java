@@ -39,7 +39,7 @@ public class DistributedAckOverflowRegionCCEOffHeapDUnitTest extends Distributed
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -51,7 +51,6 @@ public class DistributedAckOverflowRegionCCEOffHeapDUnitTest extends Distributed
     };
     checkOrphans.run();
     Invoke.invokeInEveryVM(checkOrphans);
-    super.tearDown2();
   }
 
   @Override

@@ -2085,8 +2085,4 @@ public class GemfireDataCommandsDUnitTest extends CliCommandTestBase {
         "testRegionsViaMbeanAndFunctionsForPartRgn memSizeFromFunctionCall= " + memSizeFromFunctionCall);
     assertTrue(memSizeFromFunctionCall.equals(memSizeFromMbean));
   }
-
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

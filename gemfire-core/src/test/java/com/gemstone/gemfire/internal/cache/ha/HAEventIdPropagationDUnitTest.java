@@ -97,9 +97,9 @@ public class HAEventIdPropagationDUnitTest extends DistributedTestCase
   }
 
   /** close the caches* */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     client1.invoke(HAEventIdPropagationDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HAEventIdPropagationDUnitTest.class, "closeCache");

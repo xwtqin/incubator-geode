@@ -1363,14 +1363,12 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     }
   }
 
-  public void tearDown2() throws Exception
-  {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     // close the clients first
     closeCache();
     // then close the servers
     server1.invoke(ClientServerMiscDUnitTest.class, "closeCache");
-
   }
 
   public static void closeCache()

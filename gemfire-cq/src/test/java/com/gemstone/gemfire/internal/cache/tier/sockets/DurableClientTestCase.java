@@ -101,11 +101,12 @@ public class DurableClientTestCase extends DistributedTestCase {
     this.regionName = getName() + "_region";
     //Clients see this when the servers disconnect
     IgnoredException.addIgnoredException("Could not find any server");
-    testName = getName();
-    System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+ testName+"\n\n");
+    setTestMethodName(getName());
+    assertEquals(getName(), getTestMethodName());
+    System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+ getTestMethodName()+"\n\n");
   }
   
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     this.durableClientVM.invoke(CacheServerTestUtil.class, "closeCache");
     this.publisherClientVM.invoke(CacheServerTestUtil.class, "closeCache");
     this.server1VM.invoke(CacheServerTestUtil.class, "closeCache");

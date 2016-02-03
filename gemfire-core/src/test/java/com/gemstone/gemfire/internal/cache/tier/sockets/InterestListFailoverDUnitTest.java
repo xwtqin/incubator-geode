@@ -302,7 +302,7 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeAll();
   }
 

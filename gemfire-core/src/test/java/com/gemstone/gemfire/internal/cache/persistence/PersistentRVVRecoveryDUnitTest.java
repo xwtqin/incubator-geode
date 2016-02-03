@@ -85,8 +85,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownPersistentReplicatedTestBase() throws Exception {
     Invoke.invokeInEveryVM(PersistentRecoveryOrderDUnitTest.class, "resetAckWaitThreshold");
   }
   

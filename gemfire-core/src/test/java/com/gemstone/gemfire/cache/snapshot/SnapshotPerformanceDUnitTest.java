@@ -106,10 +106,6 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
     createCache();
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-  
   private void createCache() throws Exception {
     SerializableCallable setup = new SerializableCallable() {
       @Override

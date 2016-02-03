@@ -60,7 +60,7 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
     vm4.invoke(() ->checkQueueSize( "ln", (keyValues.size() + updateKeyValues.size()) ));
 
     vm2.invoke(() ->validateRegionSize(
-        testName, 0 ));
+        getTestMethodName(), 0 ));
 
     resumeSenders();
 
@@ -103,7 +103,7 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
         keyValues.put(j, i) ;
       }
       vm4.invoke(() ->putGivenKeyValue(
-        testName, keyValues ));
+        getTestMethodName(), keyValues ));
     }
     
     vm4.invoke(() ->enableConflation( "ln" ));
@@ -125,7 +125,7 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
     assertTrue("No events conflated in batch", (v4List.get(8) + v5List.get(8) + v6List.get(8) + v7List.get(8)) > 0);
     
     vm2.invoke(() ->validateRegionSize(
-      testName, 10 ));
+      getTestMethodName(), 10 ));
 
   }
   
@@ -155,12 +155,12 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
 
     vm4.invoke(() ->checkQueueSize( "ln", keyValues.size() + updateKeyValues.size() )); // creates aren't conflated
     
-    vm4.invoke(() ->putGivenKeyValue( testName, updateKeyValues ));
+    vm4.invoke(() ->putGivenKeyValue( getTestMethodName(), updateKeyValues ));
 
     vm4.invoke(() ->checkQueueSize( "ln", keyValues.size() + updateKeyValues.size() )); // creates aren't conflated
 
     vm2.invoke(() ->validateRegionSize(
-        testName, 0 ));
+        getTestMethodName(), 0 ));
 
     resumeSenders();
 
@@ -188,16 +188,16 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
       int key = (new Random()).nextInt(keyValues.size());
       updateKeyValues.put(key, key+"_updated");
     }
-    vm4.invoke(() ->putGivenKeyValue( testName, updateKeyValues ));
+    vm4.invoke(() ->putGivenKeyValue( getTestMethodName(), updateKeyValues ));
 
     vm4.invoke(() ->checkQueueSize( "ln", keyValues.size() + updateKeyValues.size() ));
 
-    vm4.invoke(() ->putGivenKeyValue( testName, updateKeyValues ));
+    vm4.invoke(() ->putGivenKeyValue( getTestMethodName(), updateKeyValues ));
 
     vm4.invoke(() ->checkQueueSize( "ln", keyValues.size() + updateKeyValues.size() ));
 
     vm2.invoke(() ->validateRegionSize(
-        testName, 0 ));
+        getTestMethodName(), 0 ));
 
     resumeSenders();
 
@@ -361,20 +361,20 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
 
   protected void createOrderShipmentOnReceivers() {
     vm2.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, null, 1, 8, isOffHeap() ));
+            getTestMethodName(), null, 1, 8, isOffHeap() ));
     vm3.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, null, 1, 8, isOffHeap() ));
+            getTestMethodName(), null, 1, 8, isOffHeap() ));
   }
 
   protected void createOrderShipmentOnSenders() {
     vm4.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, "ln", 0, 8, isOffHeap() ));
+            getTestMethodName(), "ln", 0, 8, isOffHeap() ));
     vm5.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, "ln", 0, 8, isOffHeap() ));
+            getTestMethodName(), "ln", 0, 8, isOffHeap() ));
     vm6.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, "ln", 0, 8, isOffHeap() ));
+            getTestMethodName(), "ln", 0, 8, isOffHeap() ));
     vm7.invoke(() ->createCustomerOrderShipmentPartitionedRegion(
-            testName, "ln", 0, 8, isOffHeap() ));
+            getTestMethodName(), "ln", 0, 8, isOffHeap() ));
   }
   
   protected Map updateKeyValues() {
@@ -383,7 +383,7 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
       updateKeyValues.put(i, i+"_updated");
     }
     
-    vm4.invoke(() ->putGivenKeyValue( testName, updateKeyValues ));
+    vm4.invoke(() ->putGivenKeyValue( getTestMethodName(), updateKeyValues ));
     return updateKeyValues;
   }
 
@@ -394,20 +394,20 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
     }
     
     
-    vm4.invoke(() ->putGivenKeyValue( testName, keyValues ));
+    vm4.invoke(() ->putGivenKeyValue( getTestMethodName(), keyValues ));
     return keyValues;
   }
 
   protected void validateReceiverRegionSize(final Map keyValues) {
     vm2.invoke(() ->validateRegionSize(
-        testName, keyValues.size() ));
+        getTestMethodName(), keyValues.size() ));
     vm3.invoke(() ->validateRegionSize(
-      testName, keyValues.size() ));
+      getTestMethodName(), keyValues.size() ));
     
     vm2.invoke(() ->validateRegionContents(
-        testName, keyValues ));
+        getTestMethodName(), keyValues ));
     vm3.invoke(() ->validateRegionContents(
-        testName, keyValues ));
+        getTestMethodName(), keyValues ));
   }
 
   protected void resumeSenders() {
@@ -419,9 +419,9 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
 
   protected void createReceiverPrs() {
     vm2.invoke(() ->createPartitionedRegion(
-        testName, null, 1, 8, isOffHeap() ));
+        getTestMethodName(), null, 1, 8, isOffHeap() ));
     vm3.invoke(() ->createPartitionedRegion(
-        testName, null, 1, 8, isOffHeap() ));
+        getTestMethodName(), null, 1, 8, isOffHeap() ));
   }
 
   protected void startPausedSenders() {
@@ -450,13 +450,13 @@ public class ParallelWANConflationDUnitTest extends WANTestBase {
 
   protected void createSenderPRs(int redundancy) {
     vm4.invoke(() ->createPartitionedRegion(
-        testName, "ln", redundancy, 8, isOffHeap() ));
+        getTestMethodName(), "ln", redundancy, 8, isOffHeap() ));
     vm5.invoke(() ->createPartitionedRegion(
-        testName, "ln", redundancy, 8, isOffHeap() ));
+        getTestMethodName(), "ln", redundancy, 8, isOffHeap() ));
     vm6.invoke(() ->createPartitionedRegion(
-        testName, "ln", redundancy, 8, isOffHeap() ));
+        getTestMethodName(), "ln", redundancy, 8, isOffHeap() ));
     vm7.invoke(() ->createPartitionedRegion(
-        testName, "ln", redundancy, 8, isOffHeap() ));
+        getTestMethodName(), "ln", redundancy, 8, isOffHeap() ));
   }
 
   protected void initialSetUp() {

@@ -65,7 +65,7 @@ public class Bug37805DUnitTest extends DistributedTestCase{
     CacheServerTestUtil.disableShufflingOfEndpoints();
   }
   
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     // Stop server 1
     this.server1VM.invoke(CacheServerTestUtil.class, "closeCache");
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();

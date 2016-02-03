@@ -88,18 +88,6 @@ public class EvictionTestBase extends CacheTestCase {
     dataStore4 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    /*
-     * dataStore1.invoke(EvictionTestBase.class, "destroyObjects", new Object[] {
-     * setEvictionOn, evictionAlgorithm, regionName, totalNoOfBuckets,
-     * evictionAction, evictorInterval });
-     * dataStore2.invoke(EvictionTestBase.class, "createPartitionedRegion", new
-     * Object[] { setEvictionOn, evictionAlgorithm, regionName,
-     * totalNoOfBuckets, evictionAction, evictorInterval });
-     */
-  }
-
   public void prepareScenario1(EvictionAlgorithm evictionAlgorithm,int maxEntries) {
     createCacheInAllVms();
     createPartitionedRegionInAllVMS(true, evictionAlgorithm, "PR1",

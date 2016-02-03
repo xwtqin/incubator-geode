@@ -1637,11 +1637,6 @@ public class PRClientServerRegionFunctionExecutionDUnitTest extends PRClientServ
     }
   }
   
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   /**
    * Attempt to do a client server function execution with an arg that fail deserialization
    * on the server. The client should see an exception instead of a hang if bug 43430 is fixed.

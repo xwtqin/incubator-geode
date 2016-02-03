@@ -71,7 +71,7 @@ public class Bug33359DUnitTest extends DistributedTestCase {
       LogWriterSupport.getLogWriter().fine("Cache created in successfully");
     }
     
-    public void tearDown2(){
+    public void preTearDown(){
         Host host = Host.getHost(0);
         VM vm0 = host.getVM(0);
         VM vm1 = host.getVM(1);

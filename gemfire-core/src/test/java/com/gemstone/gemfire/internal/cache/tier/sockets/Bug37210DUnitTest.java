@@ -123,9 +123,9 @@ public class Bug37210DUnitTest extends DistributedTestCase
    * @throws Exception
    *                 thrown if any problem occurs in closing cache
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     // close client
     client.invoke(Bug37210DUnitTest.class, "closeCache");
 

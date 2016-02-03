@@ -414,10 +414,10 @@ public class ReliableMessagingDUnitTest extends DistributedTestCase
     pool = p;
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     creationTime = 0;
-    super.tearDown2();   
+    super.preTearDown();   
     closeCache();
     server1.invoke(ReliableMessagingDUnitTest.class, "closeCache");
     server2.invoke(ReliableMessagingDUnitTest.class, "closeCache");

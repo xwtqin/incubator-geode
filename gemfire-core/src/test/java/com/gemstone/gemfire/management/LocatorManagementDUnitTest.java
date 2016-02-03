@@ -73,9 +73,9 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
     locator = managedNode1;
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     stopLocator(locator);
-    super.tearDown2();
+    super.preTearDown();
 
   }
 
@@ -177,7 +177,7 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         }
 
         try {
-          File logFile = new File(testName + "-locator" + port + ".log");
+          File logFile = new File(getTestMethodName() + "-locator" + port + ".log");
           Locator locator = Locator.startLocatorAndDS(port, logFile, bindAddr,
               props, isPeer, true, null);
         } catch (IOException ex) {

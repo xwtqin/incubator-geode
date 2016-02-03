@@ -45,8 +45,8 @@ public class TestServerDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
   }
 
   public static int getNumOfServersFromMBean() {

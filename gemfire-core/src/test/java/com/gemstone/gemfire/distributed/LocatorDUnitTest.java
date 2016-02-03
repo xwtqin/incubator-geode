@@ -98,7 +98,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  public void tearDown2() {
+  public void preTearDown() {
     if (Locator.hasLocator()) {
       Locator.getLocator().stop();
     }

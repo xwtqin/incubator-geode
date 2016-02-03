@@ -1078,7 +1078,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCliCommandTestBase() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         final File fileToDelete = new File(path);
@@ -1091,7 +1091,6 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
   }
 
   /**

@@ -488,9 +488,9 @@ public class EventIDVerificationDUnitTest extends DistributedTestCase
     assertEquals(eventId, ((RegionEventImpl)event).getEventId());
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     // close the clients first
     closeCache();
     // then close the servers

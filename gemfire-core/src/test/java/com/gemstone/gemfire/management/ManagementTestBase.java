@@ -124,8 +124,8 @@ public class ManagementTestBase extends DistributedTestCase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     closeAllCache();
     managementService = null;
 
@@ -217,7 +217,7 @@ public class ManagementTestBase extends DistributedTestCase {
 
   public Cache createCache(Properties props) {
     System.setProperty("dunitLogPerTest", "true");
-    props.setProperty(DistributionConfig.LOG_FILE_NAME,testName+"-.log");
+    props.setProperty(DistributionConfig.LOG_FILE_NAME,getTestMethodName()+"-.log");
     ds = (new ManagementTestBase("temp")).getSystem(props);
     cache = CacheFactory.create(ds);
     managementService = ManagementService.getManagementService(cache);
@@ -242,7 +242,7 @@ public class ManagementTestBase extends DistributedTestCase {
     }
     props.setProperty(DistributionConfig.ENABLE_TIME_STATISTICS_NAME, "true");
     props.setProperty(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
-    props.setProperty(DistributionConfig.LOG_FILE_NAME,testName+"-.log");
+    props.setProperty(DistributionConfig.LOG_FILE_NAME,getTestMethodName()+"-.log");
     ds = (new ManagementTestBase("temp")).getSystem(props);
     cache = CacheFactory.create(ds);
     managementService = ManagementService.getManagementService(cache);

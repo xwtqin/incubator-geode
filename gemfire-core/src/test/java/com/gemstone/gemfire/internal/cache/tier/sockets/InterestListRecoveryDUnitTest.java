@@ -482,7 +482,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
  }
 
   @Override
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // close the clients first
     server2.invoke(InterestListRecoveryDUnitTest.class, "closeCache");

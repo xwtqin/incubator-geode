@@ -81,8 +81,7 @@ public class MemberCommandsDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectFromDS();
     CliUtil.isGfshVM = true;
   }

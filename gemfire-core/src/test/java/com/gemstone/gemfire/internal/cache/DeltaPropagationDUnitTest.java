@@ -165,8 +165,8 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
     DeltaPropagationDUnitTest.resetAll();
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     DeltaPropagationDUnitTest.closeCache();
     VM2.invoke(DeltaPropagationDUnitTest.class, "closeCache");
     VM3.invoke(DeltaPropagationDUnitTest.class, "closeCache");

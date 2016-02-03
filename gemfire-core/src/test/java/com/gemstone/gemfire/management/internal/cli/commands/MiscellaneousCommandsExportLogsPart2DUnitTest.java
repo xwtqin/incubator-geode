@@ -141,9 +141,4 @@ public class MiscellaneousCommandsExportLogsPart2DUnitTest extends CliCommandTes
     }
     FileUtil.delete(new File("testExportLogsForLogLevelWithUPTOLOGLEVEL" + dir));
   }
-
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

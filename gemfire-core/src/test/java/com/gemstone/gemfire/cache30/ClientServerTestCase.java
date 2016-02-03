@@ -62,9 +62,13 @@ public class ClientServerTestCase extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
+    preTearDownClientServerTestCase();
     // this makes sure we don't leave anything for the next tests
     disconnectAllFromDS();
+  }
+  
+  protected void preTearDownClientServerTestCase() throws Exception {
   }
 
   public ClientServerTestCase(String name) {

@@ -132,10 +132,9 @@ public class ReconnectDUnitTest extends CacheTestCase
     return dsProperties;
   }
   
-  public void tearDown2() throws Exception
-  {
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     try {
-      super.tearDown2();
       Host.getHost(0).getVM(locatorVMNumber).invoke(new SerializableRunnable("stop locator") {
         public void run() {
           if (locator != null) {

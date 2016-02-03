@@ -83,7 +83,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     super(name);
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected void preTearDownCliCommandTestBase() throws Exception {
     deleteTestFiles();
     Invoke.invokeInEveryVM(new SerializableRunnable() {
 
@@ -96,7 +97,6 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
         }
       }
     });
-    super.tearDown2();
   }
 
   public void testDescribeConfig() throws ClassNotFoundException, IOException {

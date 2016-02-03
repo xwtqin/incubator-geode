@@ -90,9 +90,8 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
   private int numOfBuckets = 10;
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownPartitionedRegionDUnitTest() throws Exception {
     Invoke.invokeInEveryVM(QueryObserverHolder.class, "reset");
-    super.tearDown2();
   }
 
   /**

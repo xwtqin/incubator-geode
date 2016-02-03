@@ -125,9 +125,9 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
   /**
    * close the caches of the client and the servers
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     client1.invoke(OperationsPropagationDUnitTest.class, "closeCache");
     server1.invoke(OperationsPropagationDUnitTest.class, "closeCache");
     server2.invoke(OperationsPropagationDUnitTest.class, "closeCache");

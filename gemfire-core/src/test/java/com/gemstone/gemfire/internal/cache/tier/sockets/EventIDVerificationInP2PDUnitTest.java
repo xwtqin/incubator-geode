@@ -318,9 +318,9 @@ public class EventIDVerificationInP2PDUnitTest extends DistributedTestCase
     assertTrue(pass.booleanValue());   
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     closeCache();
     vm0.invoke(EventIDVerificationInP2PDUnitTest.class, "closeCache");
   }

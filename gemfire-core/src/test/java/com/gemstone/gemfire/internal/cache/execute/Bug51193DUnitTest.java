@@ -70,7 +70,7 @@ public class Bug51193DUnitTest extends DistributedTestCase {
     
   }
 
-  public void tearDown2() {
+  public void preTearDown() {
     closeCache();
     server0.invoke(Bug51193DUnitTest.class, "closeCache");
     client0.invoke(Bug51193DUnitTest.class, "closeCache");

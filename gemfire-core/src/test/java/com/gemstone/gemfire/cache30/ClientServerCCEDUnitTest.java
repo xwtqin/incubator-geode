@@ -68,7 +68,8 @@ public class ClientServerCCEDUnitTest extends CacheTestCase {
     HARegionQueue.setMessageSyncInterval(5);
   }
   
-  public void tearDown2() {
+  @Override
+  protected final void preTearDownCacheTestCase() {
     disconnectAllFromDS();
     HARegionQueue.setMessageSyncInterval(HARegionQueue.DEFAULT_MESSAGE_SYNC_INTERVAL);
   }

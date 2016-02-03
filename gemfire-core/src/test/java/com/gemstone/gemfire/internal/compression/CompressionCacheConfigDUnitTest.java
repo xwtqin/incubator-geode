@@ -67,11 +67,6 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
     super.setUp();
   }
   
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   /**
    * Asserts that a member is successfully initialized with a compressed region when
    * a compressor is included in the region attributes.

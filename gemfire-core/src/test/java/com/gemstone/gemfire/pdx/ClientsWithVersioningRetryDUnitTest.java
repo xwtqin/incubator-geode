@@ -92,15 +92,13 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     });
   }
   
-
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
-      @Override      public void run() {
+      @Override      
+      public void run() {
         System.setProperty("gemfire.bridge.disableShufflingOfEndpoints", "false");
       }
-      
     });
     for (IgnoredException ex: expectedExceptions) {
       ex.remove();

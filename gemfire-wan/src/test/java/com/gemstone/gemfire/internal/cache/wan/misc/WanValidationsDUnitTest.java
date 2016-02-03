@@ -80,10 +80,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
           new Object[] {"ln3", 2, false, 10, 100, false, false, null, true});
       
      vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", "ln1,ln2", isOffHeap() });
+        getTestMethodName() + "_RR", "ln1,ln2", isOffHeap() });
       
       vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", "ln2,ln3", isOffHeap() });
+        getTestMethodName() + "_RR", "ln2,ln3", isOffHeap() });
       fail("Expected IllegalStateException with incompatible gateway sender ids message");
     }
     catch (Exception e) {
@@ -126,10 +126,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
           true, 10, 100, false, false, null, false });
 
       vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-          testName + "_RR", "ln1", isOffHeap()  });
+          getTestMethodName() + "_RR", "ln1", isOffHeap()  });
 
       vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-          testName + "_RR", "ln1", isOffHeap()  });
+          getTestMethodName() + "_RR", "ln1", isOffHeap()  });
 
     }
     catch (Exception e) {
@@ -164,9 +164,9 @@ public class WanValidationsDUnitTest extends WANTestBase {
           new Object[] {"ln3", 2, false, 10, 100, false, false, null, true});
       
       vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-          testName + "_PR", "ln1,ln2", 1, 100, isOffHeap()  });
+          getTestMethodName() + "_PR", "ln1,ln2", 1, 100, isOffHeap()  });
       vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-          testName + "_PR", "ln2,ln3", 1, 100, isOffHeap()  });
+          getTestMethodName() + "_PR", "ln2,ln3", 1, 100, isOffHeap()  });
       fail("Expected IllegalStateException with incompatible gateway sender ids message");
     }
     catch (Exception e) {
@@ -191,10 +191,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
       vm4.invoke(WANTestBase.class,
           "createReplicatedRegionWithAsyncEventQueue", new Object[] {
-              testName + "_RR", "ln1", isOffHeap()  });
+              getTestMethodName() + "_RR", "ln1", isOffHeap()  });
       vm5.invoke(WANTestBase.class,
           "createReplicatedRegionWithAsyncEventQueue", new Object[] {
-              testName + "_RR", "ln2", isOffHeap()  });
+              getTestMethodName() + "_RR", "ln2", isOffHeap()  });
       fail("Expected IllegalStateException with incompatible gateway sender ids message");
     }
     catch (Exception e) {
@@ -234,9 +234,9 @@ public class WanValidationsDUnitTest extends WANTestBase {
           new Object[] {"ln3", 2, true, 10, 100, false, false, null, true});
 
       vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-          testName + "_PR", "ln1,ln2", 1, 100, isOffHeap()  });
+          getTestMethodName() + "_PR", "ln1,ln2", 1, 100, isOffHeap()  });
       vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-          testName + "_PR", "ln2,ln3", 1, 100, isOffHeap()  });
+          getTestMethodName() + "_PR", "ln2,ln3", 1, 100, isOffHeap()  });
       
       fail("Expected IllegalStateException with incompatible gateway sender ids message");
     }
@@ -271,10 +271,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
       
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR2", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR2", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
 
     }
     catch (Exception e) {
@@ -302,10 +302,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
       
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR1", null, "ln1_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR1", null, "ln1_Parallel", null, isOffHeap()  });
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR2", null, "ln1_Parallel,ln2_Parallel", testName + "_PR1", isOffHeap()  });
+              getTestMethodName() + "_PR2", null, "ln1_Parallel,ln2_Parallel", getTestMethodName() + "_PR1", isOffHeap()  });
       //now we support this
       //fail("Expected IllegalStateException with incompatible gateway sender ids in colocated regions");
     }
@@ -341,10 +341,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
       
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR1", null, "ln1_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR1", null, "ln1_Parallel", null, isOffHeap()  });
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR2", null, null, testName + "_PR1", isOffHeap()  });
+              getTestMethodName() + "_PR2", null, null, getTestMethodName() + "_PR1", isOffHeap()  });
       
     }
     catch (Exception e) {
@@ -373,10 +373,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR2", null, "ln1_Parallel", testName + "_PR1", isOffHeap()  });
+              getTestMethodName() + "_PR2", null, "ln1_Parallel", getTestMethodName() + "_PR1", isOffHeap()  });
 
     } catch (Exception e) {
       Assert.fail("The tests caught Exception.", e);
@@ -406,10 +406,10 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
+              getTestMethodName() + "_PR1", null, "ln1_Parallel,ln2_Parallel", null, isOffHeap()  });
       vm1.invoke(WANTestBase.class,
           "createPartitionedRegionWithSerialParallelSenderIds", new Object[] {
-              testName + "_PR2", null, "ln1_Parallel,ln2_Parallel,ln3_Parallel", testName + "_PR1", isOffHeap()  });
+              getTestMethodName() + "_PR2", null, "ln1_Parallel,ln2_Parallel,ln3_Parallel", getTestMethodName() + "_PR1", isOffHeap()  });
       //now we support this
       //fail("Expected IllegalStateException with incompatible gateway sender ids in colocated regions");
     } catch (Exception e) {
@@ -911,7 +911,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -924,22 +924,22 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
     
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
 
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
           10 });
       fail("Expected GatewaySenderConfigurationException : Sender Ids should match");
     }
@@ -971,22 +971,22 @@ public class WanValidationsDUnitTest extends WANTestBase {
         false, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
 
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
 
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
       fail("Expected GatewaySenderConfigurationException : AsyncEvent queue IDs should match");
     }
@@ -1007,7 +1007,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1020,33 +1020,33 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", null, isOffHeap() });
+      getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
     
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
     
     vm6.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
     
     vm7.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_RR", "ln"});
+      getTestMethodName() + "_RR", "ln"});
     
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         10});
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_RR", 10});
+        getTestMethodName() + "_RR", 10});
   }
   
   public void testBug50434_RR_SerialAsyncEventQueue_Pass() throws Exception {
@@ -1068,24 +1068,24 @@ public class WanValidationsDUnitTest extends WANTestBase {
         false, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-        testName + "_RR", null, isOffHeap() });
+        getTestMethodName() + "_RR", null, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
     vm6.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
     vm7.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_RR", "ln" });
+        new Object[] { getTestMethodName() + "_RR", "ln" });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
     vm4.invoke(WANTestBase.class, "validateAsyncEventListener", new Object[] {
@@ -1106,7 +1106,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_RR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_RR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1128,24 +1128,24 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
 
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         10});
       fail("Expected GatewaySenderConfigurationException : Sender Ids should match");
     }
@@ -1177,21 +1177,21 @@ public class WanValidationsDUnitTest extends WANTestBase {
         false, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
 
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         1000 });
       fail("Expected GatewaySenderConfigurationException : AsyncEvent queue IDs should match");
     }
@@ -1212,7 +1212,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1234,33 +1234,33 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm6.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm7.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         10});
 
     vm4.invoke(WANTestBase.class, "validateQueueContents", new Object[] { "ln",
       0});
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 10});
+        getTestMethodName() + "_PR", 10});
   }
   
   public void testBug50434_PR_SerialAsyncEventQueue_Pass() throws Exception {
@@ -1282,24 +1282,24 @@ public class WanValidationsDUnitTest extends WANTestBase {
         false, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 100, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm6.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm7.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         1000 });
 
     vm4.invoke(WANTestBase.class, "validateAsyncEventListener", new Object[] {
@@ -1320,7 +1320,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1335,23 +1335,23 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap()});
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
 
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     
     vm4.invoke(WANTestBase.class, "waitForSenderRunningState", new Object[] { "ln" });
     
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         10});
       fail("Expected GatewaySenderConfigurationException : Sender Ids should match");
     }
@@ -1383,21 +1383,21 @@ public class WanValidationsDUnitTest extends WANTestBase {
         true, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     
     try {
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         10});
       fail("Expected GatewaySenderConfigurationException : AsyncEvent queue IDs should match");
     }
@@ -1418,7 +1418,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1435,13 +1435,13 @@ public class WanValidationsDUnitTest extends WANTestBase {
       true, 100, 10, false, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap()});
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 10, isOffHeap()});
+      getTestMethodName() + "_PR", null, 1, 10, isOffHeap()});
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1449,19 +1449,19 @@ public class WanValidationsDUnitTest extends WANTestBase {
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     vm4.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm5.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm6.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     vm7.invoke(WANTestBase.class, "addSenderThroughAttributesMutator", new Object[] {
-      testName + "_PR", "ln"});
+      getTestMethodName() + "_PR", "ln"});
     
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         10});
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 10});
+        getTestMethodName() + "_PR", 10});
   }
   
   public void testBug50434_PR_ParallelAsyncEventQueue_Pass() throws Exception {
@@ -1483,24 +1483,24 @@ public class WanValidationsDUnitTest extends WANTestBase {
         true, 100, 100, false, false, null, false });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", null, 1, 10, isOffHeap() });
+        getTestMethodName() + "_PR", null, 1, 10, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm5.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm6.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     vm7.invoke(WANTestBase.class, "addAsyncEventQueueThroughAttributesMutator",
-        new Object[] { testName + "_PR", "ln" });
+        new Object[] { getTestMethodName() + "_PR", "ln" });
     
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         256 });
     
     vm4.invoke(WANTestBase.class, "waitForAsyncQueueToGetEmpty",
@@ -1545,7 +1545,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
       vm4.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
           true, 10, 100, false, false, null, false });
       vm4.invoke(WANTestBase.class, "createPartitionedRegionWithPersistence",
-          new Object[] { testName + "_PR", "ln1", 1, 100 });
+          new Object[] { getTestMethodName() + "_PR", "ln1", 1, 100 });
       fail("Expected GatewaySenderException with incompatible gateway sender ids and region");
     }
     catch (Exception e) {
@@ -1560,7 +1560,7 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     try {
       vm5.invoke(WANTestBase.class, "createPartitionedRegionWithPersistence",
-          new Object[] { testName + "_PR", "ln1", 1, 100 });
+          new Object[] { getTestMethodName() + "_PR", "ln1", 1, 100 });
       vm5.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
           true, 10, 100, false, false, null, false });
       fail("Expected GatewaySenderException with incompatible gateway sender ids and region");
@@ -1613,16 +1613,16 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm4.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ln", "lnAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ln", "lnAsync", isOffHeap() });
     vm5.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ln", "lnAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ln", "lnAsync", isOffHeap() });
     vm6.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ln", "lnAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ln", "lnAsync", isOffHeap() });
     vm7.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ln", "lnAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ln", "lnAsync", isOffHeap() });
     // ------------- END - CREATE CACHE, REGION ON LOCAL SITE -------------//
 
     // ------------- START - CREATE CACHE ON REMOTE SITE ---------------//
@@ -1644,14 +1644,14 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     vm2.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ny", "nyAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ny", "nyAsync", isOffHeap() });
     vm3.invoke(WANTestBase.class,
         "createReplicatedRegionWithSenderAndAsyncEventQueue", new Object[] {
-            testName + "_RR", "ny", "nyAsync", isOffHeap() });
+            getTestMethodName() + "_RR", "ny", "nyAsync", isOffHeap() });
 
     // ------------- END - CREATE CACHE, REGION ON REMOTE SITE -------------//
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_RR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
     // validate AsyncEventListener on local site
@@ -1666,9 +1666,9 @@ public class WanValidationsDUnitTest extends WANTestBase {
 
     // validate region size on remote site
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_RR", 1000 });
+        getTestMethodName() + "_RR", 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_RR", 1000 });
+        getTestMethodName() + "_RR", 1000 });
 
     // validate AsyncEventListener on remote site
     vm2.invoke(WANTestBase.class, "validateAsyncEventListener",

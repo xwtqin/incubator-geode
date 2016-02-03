@@ -84,7 +84,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
 //  }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     final SerializableRunnable checkOrphans = new SerializableRunnable() {
       @Override
       public void run() {
@@ -94,12 +94,7 @@ public class OutOfOffHeapMemoryDUnitTest extends CacheTestCase {
       }
     };
     Invoke.invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      Invoke.invokeInEveryVM(getClass(), "cleanup");
-      super.tearDown2();
-    }
+    checkOrphans.run();
   }
 
   @SuppressWarnings("unused") // invoked by reflection from tearDown2()

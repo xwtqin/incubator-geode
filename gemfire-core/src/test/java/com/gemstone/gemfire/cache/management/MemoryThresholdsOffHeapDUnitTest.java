@@ -116,9 +116,8 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
 
 
   @Override
-  public void tearDown2() throws Exception {
+  protected void preTearDownClientServerTestCase() throws Exception {
     Invoke.invokeInEveryVM(this.resetResourceManager);
-    super.tearDown2();
   }
 
   private SerializableCallable resetResourceManager = new SerializableCallable() {

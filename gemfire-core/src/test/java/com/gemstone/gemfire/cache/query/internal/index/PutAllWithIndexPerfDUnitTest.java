@@ -68,13 +68,9 @@ public class PutAllWithIndexPerfDUnitTest extends CacheTestCase {
     disconnectAllFromDS();
   }
 
-  public void tearDown2() throws Exception {
-    try {
-      super.tearDown2();
-    }
-    finally {
-      disconnectAllFromDS();
-    }
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
+    disconnectAllFromDS();
   }
 
   public void testPutAllWithIndexes() {

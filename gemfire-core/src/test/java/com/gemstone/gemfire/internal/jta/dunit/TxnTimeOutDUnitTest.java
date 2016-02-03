@@ -122,7 +122,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(TxnTimeOutDUnitTest.class, "init");
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  public void preTearDown() throws NamingException, SQLException {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     vm0.invoke(TxnTimeOutDUnitTest.class, "closeCache");

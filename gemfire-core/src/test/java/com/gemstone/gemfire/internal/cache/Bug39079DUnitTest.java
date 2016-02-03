@@ -177,12 +177,9 @@ public class Bug39079DUnitTest extends CacheTestCase {
     };
     return (CacheSerializableRunnable)createCache;
   }
-  
-  
 
- 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
 
     vm0.invoke(Bug39079DUnitTest.class, "ignorePreAllocate", new Object[] { Boolean.FALSE });

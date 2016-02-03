@@ -78,7 +78,8 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
     return bridgeServerPort;
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS(); // tests all expect to create a new ds
     // Reset the testObject numinstance for the next test.
     TestObject.numInstance = 0;

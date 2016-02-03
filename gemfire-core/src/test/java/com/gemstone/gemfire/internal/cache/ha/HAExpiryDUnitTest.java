@@ -96,9 +96,9 @@ public class HAExpiryDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     vm0.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm1.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm2.invoke(HAExpiryDUnitTest.class, "closeCache");

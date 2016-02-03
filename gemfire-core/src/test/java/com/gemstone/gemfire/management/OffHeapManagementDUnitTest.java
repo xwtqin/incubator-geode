@@ -153,7 +153,7 @@ public class OffHeapManagementDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Host.getHost(0).getVM(0).invoke(new SerializableRunnable() {
       @Override
       public void run() {

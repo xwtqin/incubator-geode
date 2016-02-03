@@ -125,18 +125,19 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     IgnoredException.addIgnoredException("java.net.SocketException");
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
+    // close the clients first
+    member0.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
+    member1.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
+    member2.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
+    member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
+    closeCache();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     try {
-
-      // close the clients first
-      member0.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
-      member1.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
-      member2.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
-      member3.invoke(PartitionedRegionSingleHopWithServerGroupDUnitTest.class, "closeCache");
-      closeCache();
-
-      super.tearDown2();
-
       member0 = null;
       member1 = null;
       member2 = null;

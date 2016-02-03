@@ -91,7 +91,7 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
     IgnoredException.addIgnoredException("Unexpected IOException");
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
 
     vm2.invoke(DurableClientQueueSizeDUnitTest.class, "closeCache");

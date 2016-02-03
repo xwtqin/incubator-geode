@@ -1228,9 +1228,4 @@ public class PRClientServerRegionFunctionExecutionSelectorNoSingleHopDUnitTest e
       return dataSet.withArgs(args).execute(function);
     }
   }
-
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
 }

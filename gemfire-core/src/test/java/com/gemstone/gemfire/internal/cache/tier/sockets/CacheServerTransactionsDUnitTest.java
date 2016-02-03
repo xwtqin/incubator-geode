@@ -843,9 +843,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     // close the clients first
     client1.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");
     client2.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");

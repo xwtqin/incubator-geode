@@ -92,15 +92,16 @@ public class PartitionedRegionDUnitTestCase extends CacheTestCase
    * Tear down a PartitionedRegionTestCase by cleaning up the existing cache (mainly
    * because we want to destroy any existing PartitionedRegions)
    */
-  public void tearDown2() throws Exception
-  {
-    try {
-      closeCache();
-      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
-    } finally {
-      super.tearDown2();
-    }
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
+    preTearDownPartitionedRegionDUnitTest();
+    closeCache();
+    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
+  
+  protected void preTearDownPartitionedRegionDUnitTest() throws Exception {
+  }
+  
   public static void caseSetUp() {
     DUnitLauncher.launchIfNeeded();
     // this makes sure we don't have any connection left over from previous tests

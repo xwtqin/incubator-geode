@@ -355,7 +355,7 @@ public class TxnManagerMultiThreadDUnitTest extends DistributedTestCase {
     }
   }//end of delRows
 
-  public void tearDown2() throws java.lang.Exception {
+  public void preTearDown() throws java.lang.Exception {
     VM vm0 = Host.getHost(0).getVM(0);
     //get tableName to pass to destroyTable
     String tableName = CacheUtils.getTableName();

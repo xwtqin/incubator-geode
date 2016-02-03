@@ -68,8 +68,7 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     DistributedRegion.TEST_HOOK_ADD_PROFILE = false;
   }
 

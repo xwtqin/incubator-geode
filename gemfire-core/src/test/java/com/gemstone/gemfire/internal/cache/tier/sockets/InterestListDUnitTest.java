@@ -1077,7 +1077,7 @@ public class InterestListDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // close the clients first
     vm1.invoke(InterestListDUnitTest.class, "closeCache");

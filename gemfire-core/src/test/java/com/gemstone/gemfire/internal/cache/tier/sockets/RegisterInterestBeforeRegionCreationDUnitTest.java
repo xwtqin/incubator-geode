@@ -105,9 +105,9 @@ public class RegisterInterestBeforeRegionCreationDUnitTest extends DistributedTe
    * close the cache on all the vms
    * @throws Exception
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     client1.invoke(RegisterInterestBeforeRegionCreationDUnitTest.class, "closeCache");
     client2.invoke(RegisterInterestBeforeRegionCreationDUnitTest.class, "closeCache");
     server1.invoke(RegisterInterestBeforeRegionCreationDUnitTest.class, "closeCache");

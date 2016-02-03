@@ -56,7 +56,7 @@ public class InterruptClientServerDUnitTest extends CacheTestCase {
   
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       
       @Override
@@ -65,7 +65,6 @@ public class InterruptClientServerDUnitTest extends CacheTestCase {
         return null;
       }
     });
-    super.tearDown2();
   }
   
   public void _testLoop() throws Throwable {

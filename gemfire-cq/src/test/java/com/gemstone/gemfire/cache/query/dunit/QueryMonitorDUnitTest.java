@@ -172,14 +172,13 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Host host = Host.getHost(0);
     disconnectFromDS();
     // shut down clients before servers
     for (int i=numServers; i<4; i++) {
       host.getVM(i).invoke(CacheTestCase.class, "disconnectFromDS");
     }
-    super.tearDown2();
   }
   
   public void createRegion(VM vm){

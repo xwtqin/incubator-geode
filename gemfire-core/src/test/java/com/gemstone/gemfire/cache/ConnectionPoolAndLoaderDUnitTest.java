@@ -52,7 +52,8 @@ public class ConnectionPoolAndLoaderDUnitTest  extends CacheTestCase {
     super.setUp();
   }
   
-  public void tearDown2() {
+  @Override
+  protected final void preTearDownCacheTestCase() {
     //TODO grid. This is a hack. The next dunit test to run after
     //this one is the ConnectionPoolAutoDUnit test. That ends up calling
     //getSystem() with no arguments and expects to get a system without

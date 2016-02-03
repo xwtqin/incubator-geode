@@ -70,9 +70,12 @@ public abstract class PersistentReplicatedTestBase extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     com.gemstone.gemfire.internal.FileUtil.delete(diskDir);
+    postTearDownPersistentReplicatedTestBase();
+  }
+  
+  protected void postTearDownPersistentReplicatedTestBase() throws Exception {
   }
 
   protected void waitForBlockedInitialization(VM vm) {

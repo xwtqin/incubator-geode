@@ -66,7 +66,7 @@ public class JarDeployerDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     JarDeployer jarDeployer = new JarDeployer();
     for (JarClassLoader jarClassLoader : jarDeployer.findJarClassLoaders()) {
       if (jarClassLoader.getJarName().startsWith("JarDeployerDUnit")) {
@@ -80,7 +80,6 @@ public class JarDeployerDUnitTest extends CacheTestCase {
     }
     disconnectAllFromDS();
     deleteSavedJarFiles();
-    super.tearDown2();
   }
   
   @Test

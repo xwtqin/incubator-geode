@@ -666,14 +666,17 @@ public class MemberFunctionExecutionDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     List<VM> members = new ArrayList<VM>(4);
     members.add(member1); members.add(member2); members.add(member3); members.add(member4);
     for (VM member: members) {
       member.invoke(MemberFunctionExecutionDUnitTest.class, "registerExpectedExceptions",
           new Object[] { Boolean.FALSE });
     }
-    super.tearDown2();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 }

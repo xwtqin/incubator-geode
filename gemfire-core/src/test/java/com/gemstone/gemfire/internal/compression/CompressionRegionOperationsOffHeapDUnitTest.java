@@ -31,8 +31,9 @@ public class CompressionRegionOperationsOffHeapDUnitTest extends
   public CompressionRegionOperationsOffHeapDUnitTest(String name) {
     super(name);
   }
+  
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCompressionRegionOperationsDUnitTest() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -43,11 +44,7 @@ public class CompressionRegionOperationsOffHeapDUnitTest extends
       }
     };
     Invoke.invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    checkOrphans.run();
   }
 
   @Override

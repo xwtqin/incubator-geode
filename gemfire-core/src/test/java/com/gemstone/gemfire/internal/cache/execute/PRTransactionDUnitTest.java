@@ -680,12 +680,9 @@ public class PRTransactionDUnitTest extends PRColocationDUnitTest {
   public void testColocatedPRWithPROnDifferentNode1() throws Throwable {
   }
   
-  public void tearDown2() throws Exception {
-    try {
-      Invoke.invokeInEveryVM(verifyNoTxState);
-    } finally {
-      super.tearDown2();
-    }
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
+    Invoke.invokeInEveryVM(verifyNoTxState);
   }
 
   SerializableCallable verifyNoTxState = new SerializableCallable() {

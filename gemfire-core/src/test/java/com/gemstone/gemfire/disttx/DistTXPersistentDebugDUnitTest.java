@@ -51,7 +51,7 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
@@ -60,7 +60,6 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
         return null;
       }
     }); 
-    super.tearDown2();
   }
   
   protected void createPesistentPR(Object[] attributes) {

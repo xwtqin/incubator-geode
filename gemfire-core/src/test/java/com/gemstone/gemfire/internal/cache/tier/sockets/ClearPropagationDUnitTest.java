@@ -476,7 +476,7 @@ public class ClearPropagationDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     //close client
     client1.invoke(ClearPropagationDUnitTest.class, "closeCache");

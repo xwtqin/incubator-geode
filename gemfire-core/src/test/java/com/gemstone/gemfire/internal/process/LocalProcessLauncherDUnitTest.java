@@ -50,7 +50,7 @@ public class LocalProcessLauncherDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
   }
   
   public void testExistingPidFileThrows() throws Exception {

@@ -434,10 +434,8 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
     });
   }    
   
-  
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     for (int i=0; i<4; i++) {
       Host.getHost(0).getVM(i).invoke(SharedConfigurationDUnitTest.locatorCleanup);
     }

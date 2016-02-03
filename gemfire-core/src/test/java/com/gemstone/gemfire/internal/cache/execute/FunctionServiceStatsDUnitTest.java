@@ -1361,11 +1361,4 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
     ArrayList commonAttributes = createCommonServerAttributes("TestPartitionedRegion", null, 0, 13, null);
     createClientServerScenarion(commonAttributes, 20, 20, 20);
   }
-  
-  // this tear down is geeting used in client server mode. this is making use of
-  // cache object for client server
-  //For P2P, i have added separate closeDistributedSystem method 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

@@ -59,8 +59,8 @@ public class TestRemoteClusterDUnitTest extends ManagementTestBase {
     super(name);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
 
   }
 
@@ -90,14 +90,14 @@ public class TestRemoteClusterDUnitTest extends ManagementTestBase {
         true, 100, 300, false, false, null, true });
 
     puneSender.invoke(WANTestBase.class, "createPartitionedRegion",
-        new Object[] { testName + "_PR", "pn", 1, 100, false });
+        new Object[] { getTestMethodName() + "_PR", "pn", 1, 100, false });
     managing.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName + "_PR", "pn", 1, 100, false });
+        getTestMethodName() + "_PR", "pn", 1, 100, false });
 
     nyReceiver.invoke(WANTestBase.class, "createReceiver",
         new Object[] { nyPort });
     nyReceiver.invoke(WANTestBase.class, "createPartitionedRegion",
-        new Object[] { testName + "_PR", null, 1, 100, false });
+        new Object[] { getTestMethodName() + "_PR", null, 1, 100, false });
 
     puneSender.invoke(WANTestBase.class, "startSender", new Object[] { "pn" });
     managing.invoke(WANTestBase.class, "startSender", new Object[] { "pn" });
@@ -108,8 +108,8 @@ public class TestRemoteClusterDUnitTest extends ManagementTestBase {
     managing.invoke(WANTestBase.class, "waitForSenderRunningState",
         new Object[] { "pn" });
 
-    checkSenderMBean(puneSender, testName + "_PR");
-    checkSenderMBean(managing, testName + "_PR");
+    checkSenderMBean(puneSender, getTestMethodName() + "_PR");
+    checkSenderMBean(managing, getTestMethodName() + "_PR");
 
     checkReceiverMBean(nyReceiver);
 

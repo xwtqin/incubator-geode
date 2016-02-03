@@ -42,19 +42,14 @@ public class PersistentPartitionedRegionWithTransactionDUnitTest extends Persist
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
-      
       public void run() {
         TXManagerImpl.ALLOW_PERSISTENT_TRANSACTIONS = false;
         System.setProperty(DiskStoreImpl.RECOVER_VALUES_SYNC_PROPERTY_NAME, "false");
       }
     });
-    
   }
-
-
 
   @Override
   public void setUp() throws Exception {

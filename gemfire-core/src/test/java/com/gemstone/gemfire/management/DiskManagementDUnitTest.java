@@ -92,8 +92,8 @@ public class DiskManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();    
+  public void preTearDown() throws Exception {
+    super.preTearDown();    
     com.gemstone.gemfire.internal.FileUtil.delete(diskDir);
   }
 

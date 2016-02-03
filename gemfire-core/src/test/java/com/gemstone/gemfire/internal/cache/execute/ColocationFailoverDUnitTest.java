@@ -471,14 +471,14 @@ public class ColocationFailoverDUnitTest extends DistributedTestCase {
     }
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         closeCache();
       }
     });
-    super.tearDown2();
+    super.preTearDown();
   }
 }
 

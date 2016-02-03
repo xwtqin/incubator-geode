@@ -149,8 +149,8 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     // close the clients first
     closeCache();
     client1.invoke(InstantiatorPropagationDUnitTest.class, "closeCache");

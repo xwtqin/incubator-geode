@@ -70,8 +70,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);

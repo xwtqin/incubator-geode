@@ -510,9 +510,9 @@ public class P2PDeltaPropagationDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     closeCache();
     server1.invoke(P2PDeltaPropagationDUnitTest.class, "closeCache");
     server2.invoke(P2PDeltaPropagationDUnitTest.class, "closeCache");

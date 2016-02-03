@@ -73,7 +73,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
       vm1.invoke(RemoveGlobalDUnitTest.class, "createCache");
     }
     
-    public void tearDown2(){
+    public void preTearDown(){
         vm0.invoke(RemoveGlobalDUnitTest.class, "resetFlag");
         vm1.invoke(RemoveGlobalDUnitTest.class, "resetFlag");
         vm0.invoke(RemoveGlobalDUnitTest.class, "closeCache");

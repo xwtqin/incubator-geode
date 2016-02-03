@@ -44,12 +44,11 @@ public class CqDataUsingPoolOptimizedExecuteDUnitTest extends CqDataUsingPoolDUn
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable("getSystem") {
       public void run() {
         CqServiceImpl.EXECUTE_QUERY_DURING_INIT = true;
       }
     });
-    super.tearDown2();
   }
 }

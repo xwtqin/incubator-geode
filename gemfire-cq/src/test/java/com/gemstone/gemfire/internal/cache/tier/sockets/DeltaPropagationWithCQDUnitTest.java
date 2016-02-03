@@ -104,8 +104,8 @@ public class DeltaPropagationWithCQDUnitTest extends DistributedTestCase {
     client2 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     server1.invoke(DeltaPropagationWithCQDUnitTest.class, "close");
     server2.invoke(DeltaPropagationWithCQDUnitTest.class, "close");
     client1.invoke(DeltaPropagationWithCQDUnitTest.class, "close");

@@ -36,7 +36,7 @@ public class ForceInvalidateOffHeapEvictionDUnitTest extends
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -47,11 +47,7 @@ public class ForceInvalidateOffHeapEvictionDUnitTest extends
       }
     };
     Invoke.invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    checkOrphans.run();
   }
 
   @Override

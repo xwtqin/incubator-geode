@@ -138,8 +138,8 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     IgnoredException.addIgnoredException("Failed to create index");
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     // Get the disk store name.
     GemFireCacheImpl cache = (GemFireCacheImpl)getCache();
     String diskStoreName = cache.getDefaultDiskStoreName();

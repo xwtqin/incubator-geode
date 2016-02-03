@@ -44,10 +44,10 @@ public class CommonParallelAsyncEventQueueDUnitTest extends AsyncEventQueueTestB
     vm4.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueue", new Object[] { "ln",
       true, 100, 100, false, false, null, false });
     vm4.invoke(AsyncEventQueueTestBase.class, "createPartitionedRegionWithAsyncEventQueue",
-        new Object[] { testName + "_PR1", "ln", isOffHeap()  });
+        new Object[] { getTestMethodName() + "_PR1", "ln", isOffHeap()  });
     try {
       vm4.invoke(AsyncEventQueueTestBase.class, "createPartitionedRegionWithAsyncEventQueue",
-          new Object[] { testName + "_PR2", "ln", isOffHeap()  });
+          new Object[] { getTestMethodName() + "_PR2", "ln", isOffHeap()  });
       fail("Expected IllegateStateException : cannot have the same parallel gateway sender");
     }
     catch (Exception e) {

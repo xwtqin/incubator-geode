@@ -624,10 +624,10 @@ public class RedundancyLevelTestBase extends DistributedTestCase
 //     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     try {
-      super.tearDown2();
+      super.preTearDown();
     
       if(!FailOverDetectionByCCU)
         ClientServerObserverHolder.setInstance(oldBo);   

@@ -255,7 +255,7 @@ public class MaxPoolSizeDUnitTest extends DistributedTestCase {
     vm0.invoke(MaxPoolSizeDUnitTest.class, "init", o);
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  public void preTearDown() throws NamingException, SQLException {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     try {

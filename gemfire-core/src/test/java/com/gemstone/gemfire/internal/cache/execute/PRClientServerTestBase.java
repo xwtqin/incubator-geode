@@ -734,8 +734,8 @@ public class PRClientServerTestBase extends CacheTestCase {
     }
   }  
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     closeCache();
     client.invoke(PRClientServerTestBase.class, "closeCache");
     server1.invoke(PRClientServerTestBase.class, "closeCache");

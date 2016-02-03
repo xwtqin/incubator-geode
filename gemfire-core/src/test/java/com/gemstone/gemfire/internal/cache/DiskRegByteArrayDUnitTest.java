@@ -89,8 +89,8 @@ public class DiskRegByteArrayDUnitTest extends CacheTestCase {
       vm1.invoke(DiskRegByteArrayDUnitTest.class, "createCacheForVM1");
      }
     
-    public void tearDown2() throws Exception {
-      super.tearDown2();
+    @Override
+    protected final void postTearDownCacheTestCase() throws Exception {
       cache = null;
       Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }

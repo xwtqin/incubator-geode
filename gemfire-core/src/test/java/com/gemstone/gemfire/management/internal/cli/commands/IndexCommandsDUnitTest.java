@@ -741,7 +741,7 @@ public class IndexCommandsDUnitTest extends CliCommandTestBase {
   }
 
   private void writeToLog(String text, String resultAsString) {
-    LogWriterSupport.getLogWriter().info(testName + "\n");
+    LogWriterSupport.getLogWriter().info(getTestMethodName() + "\n");
     LogWriterSupport.getLogWriter().info(resultAsString);
   }
 
@@ -811,10 +811,5 @@ public class IndexCommandsDUnitTest extends CliCommandTestBase {
         return parReg.put("GOOG", new Stock("GOOG", 540));
       }
     });
-  }
-
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
   }
 }

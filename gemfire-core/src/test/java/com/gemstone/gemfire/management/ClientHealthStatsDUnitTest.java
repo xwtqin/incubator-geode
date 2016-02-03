@@ -107,8 +107,8 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     IgnoredException.addIgnoredException("Connection reset");
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     reset();
     helper.closeCache(managingNode);
     helper.closeCache(client);
@@ -236,9 +236,9 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     props.setProperty(DistributionConfig.DURABLE_CLIENT_ID_NAME, "durable-"+clientNum);
     props.setProperty(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, "300000");
 
-    props.setProperty("log-file", testName+"_client_" + clientNum + ".log");
+    props.setProperty("log-file", getTestMethodName()+"_client_" + clientNum + ".log");
     props.setProperty("log-level", "info");
-    props.setProperty("statistic-archive-file", testName+"_client_" + clientNum
+    props.setProperty("statistic-archive-file", getTestMethodName()+"_client_" + clientNum
         + ".gfs");
     props.setProperty("statistic-sampling-enabled", "true");
 

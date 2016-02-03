@@ -68,9 +68,9 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
         new Object[] { nyPort });
 
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName + "_PR", "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName + "_PR", "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
 
@@ -80,7 +80,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName + "_PR", "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
 
     // set the CacheObserver to block the ShutdownAll
     SerializableRunnable waitAtShutdownAll = new SerializableRunnable() {
@@ -90,7 +90,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
         CacheObserverHolder.setInstance(new CacheObserverAdapter() {
           @Override
           public void beforeShutdownAll() {
-            final Region region = cache.getRegion(testName + "_PR");
+            final Region region = cache.getRegion(getTestMethodName() + "_PR");
             Wait.waitForCriterion(new WaitCriterion() {
               @Override
               public boolean done() {
@@ -110,7 +110,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     vm3.invoke(waitAtShutdownAll);
     
     AsyncInvocation vm4_future = vm4.invokeAsync(WANTestBase.class, "doPuts",
-        new Object[] { testName + "_PR", NUM_KEYS });
+        new Object[] { getTestMethodName() + "_PR", NUM_KEYS });
 
     // ShutdownAll will be suspended at observer, so puts will continue
     AsyncInvocation future = shutDownAllMembers(vm2, 2, MAX_WAIT);
@@ -121,15 +121,15 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     vm2.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     vm3.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     AsyncInvocation vm3_future = vm3.invokeAsync(WANTestBase.class,
-        "createPersistentPartitionedRegion", new Object[] { testName + "_PR",
+        "createPersistentPartitionedRegion", new Object[] { getTestMethodName() + "_PR",
             "ln", 1, 100, isOffHeap() });
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName + "_PR", "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
     vm3_future.join(MAX_WAIT);
 
     vm3.invoke(new SerializableRunnable() {
       public void run() {
-        final Region region = cache.getRegion(testName + "_PR");
+        final Region region = cache.getRegion(getTestMethodName() + "_PR");
         cache.getLogger().info(
             "vm1's region size before restart gatewayhub is " + region.size());
       }
@@ -141,7 +141,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     vm4_future.join(MAX_WAIT);
     vm4.invoke(new SerializableRunnable() {
       public void run() {
-        Region region = cache.getRegion(testName + "_PR");
+        Region region = cache.getRegion(getTestMethodName() + "_PR");
         assertEquals(NUM_KEYS, region.size());
       }
     });
@@ -149,7 +149,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     // verify the other side (vm1)'s entries received from gateway
     vm2.invoke(new SerializableRunnable() {
       public void run() {
-        final Region region = cache.getRegion(testName + "_PR");
+        final Region region = cache.getRegion(getTestMethodName() + "_PR");
 
         cache.getLogger().info(
             "vm1's region size after restart gatewayhub is " + region.size());

@@ -27,6 +27,8 @@ public class Invoke {
   /**
    * Invokes a <code>SerializableRunnable</code> in every VM that
    * DUnit knows about.
+   * <p>
+   * Apparently this does NOT include the controller VM.
    *
    * @see VM#invoke(Runnable)
    */
@@ -92,7 +94,7 @@ public class Invoke {
     return ret;
   }
 
-  public static void invokeInLocator(SerializableRunnable work) {
+  public static void invokeInLocator(SerializableRunnableIF work) {
     Host.getLocator().invoke(work);
   }
 

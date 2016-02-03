@@ -122,7 +122,7 @@ public class ConsoleDistributionManagerDUnitTest
         catch (Throwable ignore) {
         }
         try {
-          super.tearDown2();
+          super.preTearDown();
         } 
         catch (VirtualMachineError e) {
           SystemFailure.initiateFailure(e);
@@ -144,21 +144,17 @@ public class ConsoleDistributionManagerDUnitTest
     }
   }
   
-  public void tearDown2() throws Exception {    
-
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
+    this.agent.disconnect();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     try {
-
-      this.agent.disconnect();
-      super.tearDown2();
-
-      // Clean up "admin-only" distribution manager
       disconnectFromDS(); //make sure there's no ldm lying around
-
-    }
-    finally {
-
+    } finally {
       DistributionManager.isDedicatedAdminVM = false;
-
     }
   }
 

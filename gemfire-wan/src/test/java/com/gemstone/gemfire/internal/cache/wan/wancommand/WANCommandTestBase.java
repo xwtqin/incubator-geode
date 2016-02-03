@@ -86,7 +86,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static Integer createFirstLocatorWithDSId(int dsId) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
@@ -99,7 +99,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static Integer createFirstRemoteLocator(int dsId, int remoteLocPort) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
@@ -112,7 +112,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void createCache(Integer locPort){
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
@@ -121,7 +121,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void createCacheWithGroups(Integer locPort, String groups){
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
@@ -214,7 +214,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static int createAndStartReceiver(int locPort) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -238,7 +238,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static int createReceiver(int locPort) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -256,7 +256,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static int createReceiverWithGroup(int locPort, String groups) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -275,7 +275,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void startReceiver() {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     try {
       Set<GatewayReceiver> receivers = cache.getGatewayReceivers();
       for (GatewayReceiver receiver : receivers) {
@@ -288,7 +288,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void stopReceiver() {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Set<GatewayReceiver> receivers = cache.getGatewayReceivers();
     for (GatewayReceiver receiver : receivers) {
       receiver.stop();
@@ -296,7 +296,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static int createAndStartReceiverWithGroup(int locPort, String groups) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -444,7 +444,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   }
 
   public static void verifyReceiverState(boolean isRunning) {
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Set<GatewayReceiver> receivers = cache.getGatewayReceivers();
     for (GatewayReceiver receiver : receivers) {
       assertEquals(isRunning, receiver.isRunning());
@@ -455,7 +455,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
       int startPort, int endPort, String bindAddress, int maxTimeBetweenPings,
       int socketBufferSize, List<String> expectedGatewayTransportFilters) {
 
-    WANCommandTestBase test = new WANCommandTestBase(testName);
+    WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     Set<GatewayReceiver> receivers = cache.getGatewayReceivers();
     assertEquals("Number of receivers is incorrect", 1, receivers.size());
     for (GatewayReceiver receiver : receivers) {
@@ -491,8 +491,8 @@ public class WANCommandTestBase extends CliCommandTestBase{
     }
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     closeCache();
     vm0.invoke(WANCommandTestBase.class, "closeCache");
     vm1.invoke(WANCommandTestBase.class, "closeCache");

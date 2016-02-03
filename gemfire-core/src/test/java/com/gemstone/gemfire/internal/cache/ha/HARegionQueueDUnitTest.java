@@ -101,9 +101,9 @@ public class HARegionQueueDUnitTest extends DistributedTestCase
   /**
    * close the cache in tearDown
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     vm0.invoke(HARegionQueueDUnitTest.class, "closeCache");
     vm1.invoke(HARegionQueueDUnitTest.class, "closeCache");
     vm2.invoke(HARegionQueueDUnitTest.class, "closeCache");

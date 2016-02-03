@@ -169,8 +169,8 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
     disconnectAllFromDS();
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownRegionTestCase() throws Exception {
     DistributedTestCase.cleanupAllVms();
     CCRegion = null;
   }

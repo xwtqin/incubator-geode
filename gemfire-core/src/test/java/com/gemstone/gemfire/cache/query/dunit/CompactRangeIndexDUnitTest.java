@@ -168,7 +168,7 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
    
   }
   
-  public void tearDown2() throws Exception{
+  public void preTearDown() throws Exception{
     Thread.sleep(5000);
     removeHook();
     utils.closeServer(vm0);

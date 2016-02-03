@@ -668,12 +668,10 @@ public class IncrementalBackupDUnitTest extends CacheTestCase {
    * Removes backup directories (and all backup data).
    */
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     FileUtil.delete(getIncremental2Dir());
     FileUtil.delete(getIncrementalDir());
     FileUtil.delete(getBaselineDir());
-    
-    super.tearDown2();
   }
 
   /**

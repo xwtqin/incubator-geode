@@ -143,9 +143,8 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected void preTearDownClientServerTestCase() throws Exception {
     Invoke.invokeInEveryVM(resetResourceManager);
-    super.tearDown2();
   }
 
   public void testPRClientPutRejection() throws Exception {

@@ -108,9 +108,9 @@ public class HAClearDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     client1.invoke(HAClearDUnitTest.class, "closeCache");
     client2.invoke(HAClearDUnitTest.class, "closeCache");
     server1.invoke(HAClearDUnitTest.class, "closeCache");

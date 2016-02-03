@@ -111,18 +111,19 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
     member3 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
+    // close the clients first
+    member0.invoke(SingleHopStatsDUnitTest.class, "closeCache");
+    member1.invoke(SingleHopStatsDUnitTest.class, "closeCache");
+    member2.invoke(SingleHopStatsDUnitTest.class, "closeCache");
+    member3.invoke(SingleHopStatsDUnitTest.class, "closeCache");
+    closeCache();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     try {
-
-      // close the clients first
-      member0.invoke(SingleHopStatsDUnitTest.class, "closeCache");
-      member1.invoke(SingleHopStatsDUnitTest.class, "closeCache");
-      member2.invoke(SingleHopStatsDUnitTest.class, "closeCache");
-      member3.invoke(SingleHopStatsDUnitTest.class, "closeCache");
-      closeCache();
-
-      super.tearDown2();
-
       member0 = null;
       member1 = null;
       member2 = null;

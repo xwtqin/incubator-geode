@@ -236,9 +236,9 @@ public class RegionCloseDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-	super.tearDown2();
+	super.preTearDown();
     //close client
     client1.invoke(RegionCloseDUnitTest.class, "closeCache");
     //close server

@@ -64,7 +64,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {

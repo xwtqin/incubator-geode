@@ -118,18 +118,11 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     member3 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     try {
-      /* fixes GEODE-444, really close client cache first by using super.tearDown2();
-      // close the clients first
-      member0.invoke(PartitionedRegionSingleHopDUnitTest.class, "closeCache");
-      member1.invoke(PartitionedRegionSingleHopDUnitTest.class, "closeCache");
-      member2.invoke(PartitionedRegionSingleHopDUnitTest.class, "closeCache");
-      member3.invoke(PartitionedRegionSingleHopDUnitTest.class, "closeCache");
       closeCache();
-      */
-      super.tearDown2();
-
+      
       member0 = null;
       member1 = null;
       member2 = null;

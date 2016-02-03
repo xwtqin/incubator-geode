@@ -75,7 +75,7 @@ public class Bug51400DUnitTest extends DistributedTestCase {
 
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
 
     client0.invoke(Bug51400DUnitTest.class, "closeCache");

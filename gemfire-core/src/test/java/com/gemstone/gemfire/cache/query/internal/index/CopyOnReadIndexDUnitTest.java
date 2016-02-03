@@ -78,7 +78,8 @@ public class CopyOnReadIndexDUnitTest extends CacheTestCase {
     vm2 = host.getVM(2);
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
   

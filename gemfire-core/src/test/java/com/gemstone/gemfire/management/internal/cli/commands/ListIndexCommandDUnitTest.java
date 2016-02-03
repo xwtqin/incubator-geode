@@ -91,11 +91,6 @@ public class ListIndexCommandDUnitTest extends CliCommandTestBase {
     setupGemFire();
   }
 
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   protected Index createIndex(final String name, final String indexedExpression, final String fromClause) {
     return createIndex(name, IndexType.FUNCTIONAL, indexedExpression, fromClause);
   }

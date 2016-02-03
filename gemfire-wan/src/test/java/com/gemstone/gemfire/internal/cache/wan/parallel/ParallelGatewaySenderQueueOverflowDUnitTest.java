@@ -85,13 +85,13 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
         true, 10, 10, false, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -107,12 +107,12 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Wait.pause(1000);
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     int numEventPuts = 50;
-    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { testName, numEventPuts });
+    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { getTestMethodName(), numEventPuts });
     
     long numOvVm4 = (Long) vm4.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
     long numOvVm5 = (Long) vm5.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
@@ -140,8 +140,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
-    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
+    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
+    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
   }
   
   /**
@@ -173,13 +173,13 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
         true, 10, 10, false, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -195,12 +195,12 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Wait.pause(1000);
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     int numEventPuts = 50;
-    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { testName, numEventPuts });
+    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { getTestMethodName(), numEventPuts });
     
     long numOvVm4 = (Long) vm4.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
     long numOvVm5 = (Long) vm5.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
@@ -228,8 +228,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
-    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
+    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
+    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
   }
 
   /**
@@ -262,13 +262,13 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
         true, 20, 10, false, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -284,12 +284,12 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Wait.pause(1000);
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     int numEventPuts = 50;
-    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { testName, numEventPuts });
+    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { getTestMethodName(), numEventPuts });
     
     long numOvVm4 = (Long) vm4.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
     long numOvVm5 = (Long) vm5.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
@@ -323,8 +323,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
-    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 50 });
+    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
+    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 50 });
   }
 
   public void _testParallelSenderQueueNoEventsOverflow() throws Exception {
@@ -351,13 +351,13 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
         true, 10, 10, false, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -373,12 +373,12 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Wait.pause(1000);
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     int numEventPuts = 15;
-    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { testName, numEventPuts });
+    vm4.invoke(WANTestBase.class, "doHeavyPuts", new Object[] { getTestMethodName(), numEventPuts });
     
     long numOvVm4 = (Long) vm4.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
     long numOvVm5 = (Long) vm5.invoke(WANTestBase.class, "getNumberOfEntriesOverflownToDisk", new Object[] { "ln" });
@@ -406,8 +406,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     
-    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 15 });
-    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 15 });
+    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 15 });
+    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 15 });
   }
   
   /**
@@ -421,7 +421,7 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Integer remoteLocPort = (Integer)vm1.invoke(WANTestBase.class,
         "createFirstRemoteLocator", new Object[] { 2, localLocPort });
     
-    WANTestBase test = new WANTestBase(testName);
+    WANTestBase test = new WANTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + localLocPort + "]");
@@ -486,7 +486,7 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Integer remoteLocPort = (Integer)vm1.invoke(WANTestBase.class,
         "createFirstRemoteLocator", new Object[] { 2, localLocPort });
     
-    WANTestBase test = new WANTestBase(testName);
+    WANTestBase test = new WANTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + localLocPort + "]");

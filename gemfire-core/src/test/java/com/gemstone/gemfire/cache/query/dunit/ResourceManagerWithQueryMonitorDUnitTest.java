@@ -95,10 +95,9 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected void preTearDownClientServerTestCase() throws Exception {
     Invoke.invokeInEveryVM(resetQueryMonitor);
     Invoke.invokeInEveryVM(resetResourceManager);
-    super.tearDown2();
   }
 
   private SerializableCallable setHeapMemoryMonitorTestMode = new SerializableCallable() {

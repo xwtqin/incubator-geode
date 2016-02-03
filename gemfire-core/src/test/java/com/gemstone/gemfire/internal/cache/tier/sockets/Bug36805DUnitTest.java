@@ -133,9 +133,9 @@ public class Bug36805DUnitTest extends DistributedTestCase
     return new Integer(server1.getPort());
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     // close the clients first
     client1.invoke(Bug36805DUnitTest.class, "closeCache");
     client2.invoke(Bug36805DUnitTest.class, "closeCache");

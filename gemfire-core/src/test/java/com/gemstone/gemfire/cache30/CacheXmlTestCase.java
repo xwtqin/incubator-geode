@@ -49,9 +49,13 @@ public class CacheXmlTestCase extends CacheTestCase {
     disconnectAllFromDS();
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     this.xmlFile = null;    
-    super.tearDown2();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 

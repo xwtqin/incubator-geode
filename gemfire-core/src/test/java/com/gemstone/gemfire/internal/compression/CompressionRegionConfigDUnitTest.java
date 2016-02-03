@@ -76,11 +76,6 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
     super.setUp();
   }
   
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   /**
    * Sanity check using two peers sharing a replicated region.
    * @throws Exception

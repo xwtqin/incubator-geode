@@ -82,7 +82,7 @@ public class UnregisterInterestDUnitTest extends DistributedTestCase {
     client2.invoke(UnregisterInterestDUnitTest.class, "createClientCache", new Object[]{client2.getHost(), port});
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
     server0.invoke(UnregisterInterestDUnitTest.class, "closeCache");
     client1.invoke(UnregisterInterestDUnitTest.class, "closeCache");

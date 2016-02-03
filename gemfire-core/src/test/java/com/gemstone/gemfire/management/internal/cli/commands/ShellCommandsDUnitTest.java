@@ -67,7 +67,7 @@ public class ShellCommandsDUnitTest extends CliCommandTestBase {
     assertEquals(String.valueOf(jmxManagerPort), System.getProperty("gemfire.jmx-manager-port"));
     assertEquals("0", System.getProperty("gemfire.jmx-manager-http-port"));
 
-    final String pathname = (getClass().getSimpleName() + "_" + getTestName());
+    final String pathname = (getClass().getSimpleName() + "_" + getTestMethodName());
     final File workingDirectory = new File(pathname);
 
     workingDirectory.mkdir();

@@ -53,7 +53,7 @@ public class GemFireDeadlockDetectorDUnitTest extends CacheTestCase {
   
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 

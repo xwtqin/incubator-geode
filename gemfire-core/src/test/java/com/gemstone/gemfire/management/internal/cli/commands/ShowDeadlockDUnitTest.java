@@ -73,7 +73,7 @@ public class ShowDeadlockDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;
 

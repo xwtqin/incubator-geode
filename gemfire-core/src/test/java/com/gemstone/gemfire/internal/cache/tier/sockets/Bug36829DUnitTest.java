@@ -168,9 +168,9 @@ public class Bug36829DUnitTest extends DistributedTestCase {
     return properties;
   }
   
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();
   }
 }

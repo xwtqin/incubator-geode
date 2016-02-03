@@ -76,9 +76,9 @@ public class CliUtilDUnitTest extends CacheTestCase {
   
   private static final long serialVersionUID = 1L;
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     destroySetup();
-    super.tearDown2();
   }
   
   

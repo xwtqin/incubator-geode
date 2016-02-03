@@ -78,7 +78,7 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
 
   @SuppressWarnings("serial")
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCliCommandTestBase() throws Exception {
     Host.getHost(0).getVM(1).invoke(new SerializableRunnable() {
       public void run() {
         DistributionManager.isDedicatedAdminVM = false;
@@ -91,8 +91,6 @@ public class DeployCommandsDUnitTest extends CliCommandTestBase {
       }
     });
     deleteSavedJarFiles();
-
-    super.tearDown2();
   }
 
   @SuppressWarnings("serial")

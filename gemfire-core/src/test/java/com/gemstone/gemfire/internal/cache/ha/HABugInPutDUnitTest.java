@@ -104,9 +104,9 @@ public class HABugInPutDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-	super.tearDown2();
+	super.preTearDown();
     client1.invoke(HABugInPutDUnitTest.class, "closeCache");
     client2.invoke(HABugInPutDUnitTest.class, "closeCache");
     // close server

@@ -123,13 +123,12 @@ public class RemoteCQTransactionDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
 //    try { Thread.sleep(5000); } catch (InterruptedException e) { } // FOR MANUAL TESTING OF STATS - DON"T KEEP THIS
     try {
       Invoke.invokeInEveryVM(verifyNoTxState);
     } finally {
       closeAllCache();
-      super.tearDown2();
     }
   }
   

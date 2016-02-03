@@ -85,7 +85,7 @@ public class ClearGlobalDUnitTest extends DistributedTestCase
     LogWriterSupport.getLogWriter().fine("Cache created in successfully");
   }
 
-  public void tearDown2()
+  public void preTearDown()
   {        
     server1.invoke(ClearGlobalDUnitTest.class, "closeCache");
     resetClearCallBack();

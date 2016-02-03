@@ -48,8 +48,8 @@ public class DistributedSystemStatsDUnitTest extends ManagementTestBase{
     super.setUp();
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
   }
   
   public void testDistributedSystemStats() throws Exception {

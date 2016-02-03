@@ -58,8 +58,7 @@ public class Bug41091DUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
   

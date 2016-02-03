@@ -289,10 +289,10 @@ public class WanAutoDiscoveryDUnitTest extends WANTestBase {
     //Since to fix Bug#46289, we have moved call to initProxy in getConnection which will be called only when batch is getting dispatched.
     //So for locator discovery callback to work, its now expected that atleast try to send a batch so that proxy will be initialized
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
-      testName + "_RR", "ln", isOffHeap() });
+      getTestMethodName() + "_RR", "ln", isOffHeap() });
   
      vm2.invoke(WANTestBase.class, "doPuts",
-      new Object[] { testName + "_RR", 10});
+      new Object[] { getTestMethodName() + "_RR", 10});
 
     Integer nyLocPort2 = (Integer)vm3
         .invoke(WANTestBase.class, "createSecondRemoteLocator", new Object[] {

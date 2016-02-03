@@ -956,9 +956,9 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
   //////////////////////////////////////////////////////////////////////////////
   
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
 
-    super.tearDown2();
+    super.preTearDown();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

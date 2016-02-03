@@ -76,7 +76,8 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
     super(name);
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     for (int h = 0; h < Host.getHostCount(); h++) {
       Host host = Host.getHost(h);
       for (int v = 0; v < host.getVMCount(); v++) {
@@ -85,12 +86,9 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
               cleanup();
             }
           });
-          // already called in every VM in super.tearDown
-//        host.getVM(v).invoke(this.getClass(), "remoteTearDown");
       }
     }
     cleanup();
-    super.tearDown2();
   }
 
   /**

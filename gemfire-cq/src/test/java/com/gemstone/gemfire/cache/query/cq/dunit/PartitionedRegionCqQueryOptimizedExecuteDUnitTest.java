@@ -46,14 +46,13 @@ public class PartitionedRegionCqQueryOptimizedExecuteDUnitTest extends Partition
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable("getSystem") {
       public void run() {
         CqServiceImpl.EXECUTE_QUERY_DURING_INIT = true;
         CqServiceProvider.MAINTAIN_KEYS = true;
       }
     });
-    super.tearDown2();
   }
   
   public void testCqExecuteWithoutQueryExecution() throws Exception {

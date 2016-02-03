@@ -590,7 +590,7 @@ public class DeltaToRegionRelationCQRegistrationDUnitTest extends DistributedTes
     return new Integer(p.getPrimaryPort());
   }
   
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // donot do any thing as we handling closing cache in test case
   }

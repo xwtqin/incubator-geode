@@ -294,7 +294,8 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    * @throws Exception -
    *           thrown if any problem occurs in closing client and server caches.
    */
-  public void tearDown2() throws Exception
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception
   {
     // close client
     client.invoke(Bug36853EventsExpiryDUnitTest.class, "closeCache");

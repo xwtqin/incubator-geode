@@ -75,11 +75,6 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     IgnoredException.addIgnoredException("Socket Closed");
   }
   
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-  
   public void testserverMultiKeyExecution_SocektTimeOut() {
     createScenario();
     Function function = new TestFunction(true,

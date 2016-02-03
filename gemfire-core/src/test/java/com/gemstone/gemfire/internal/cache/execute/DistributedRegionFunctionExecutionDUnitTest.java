@@ -99,7 +99,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     // this test creates a cache that is incompatible with CacheTestCase,
     // so we need to close it and null out the cache variable
     disconnectAllFromDS();

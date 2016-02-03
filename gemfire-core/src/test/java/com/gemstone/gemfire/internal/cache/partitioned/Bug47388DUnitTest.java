@@ -103,7 +103,7 @@ public class Bug47388DUnitTest extends DistributedTestCase {
 
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
 
     vm2.invoke(Bug47388DUnitTest.class, "closeCache");

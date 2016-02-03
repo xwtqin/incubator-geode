@@ -104,15 +104,10 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     IgnoredException.addIgnoredException("Socket input is shutdown");
   }
 
-  public void tearDown2() throws Exception {
-    try {
-      super.tearDown2();
-    }
-    finally {
-      disconnectAllFromDS();
-    }
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
+    disconnectAllFromDS();
   }
-
 
   public void createPool(VM vm, String poolName, String server, int port, boolean subscriptionEnabled) {
     createPool(vm, poolName, new String[]{server}, new int[]{port}, subscriptionEnabled);  

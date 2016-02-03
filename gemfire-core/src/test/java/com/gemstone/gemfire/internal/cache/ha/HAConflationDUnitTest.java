@@ -118,13 +118,11 @@ public class HAConflationDUnitTest extends CacheTestCase
 
   }
 
-  public void tearDown2() throws Exception
-  {
-	super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     client1.invoke(HAConflationDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HAConflationDUnitTest.class, "closeCache");
-
   }
   
   public static void closeCache()

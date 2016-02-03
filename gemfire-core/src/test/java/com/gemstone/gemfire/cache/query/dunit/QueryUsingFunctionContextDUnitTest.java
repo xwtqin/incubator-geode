@@ -135,9 +135,12 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(CacheTestCase.class, "disconnectFromDS");
-    super.tearDown2();
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(QueryObserverHolder.class, "reset");
     cache = null;
     Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });

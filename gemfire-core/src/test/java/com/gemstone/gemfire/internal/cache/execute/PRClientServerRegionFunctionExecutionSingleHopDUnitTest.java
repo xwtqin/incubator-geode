@@ -1215,12 +1215,5 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         return dataSet.withArgs(args).execute(function);
       }
     }
-    
-    @Override
-    public void tearDown2() throws Exception {
-      super.tearDown2();
-    }
-
-
   }
 

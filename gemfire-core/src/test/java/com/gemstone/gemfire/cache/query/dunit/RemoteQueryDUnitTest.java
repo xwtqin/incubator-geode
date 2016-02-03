@@ -79,13 +79,8 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    try {
-      super.tearDown2();
-    }
-    finally {
-      disconnectAllFromDS();
-    }
+  protected final void postTearDownCacheTestCase() throws Exception {
+    disconnectAllFromDS();
   }
 
   /**

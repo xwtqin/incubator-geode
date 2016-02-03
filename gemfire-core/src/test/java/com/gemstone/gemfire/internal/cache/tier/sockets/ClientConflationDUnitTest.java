@@ -528,7 +528,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   /**
    * close the cache in tearDown
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // close client
     closeCacheFeeder();

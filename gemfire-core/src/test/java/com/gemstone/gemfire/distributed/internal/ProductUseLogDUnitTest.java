@@ -101,7 +101,7 @@ public class ProductUseLogDUnitTest extends DistributedTestCase {
     return sb.toString();
   }
 
-  public void tearDown2() {
+  public void preTearDown() {
     disconnectAllFromDS();
   }
 }

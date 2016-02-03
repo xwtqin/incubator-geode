@@ -69,11 +69,6 @@ public class ListAndDescribeDiskStoreCommandsDUnitTest extends CliCommandTestBas
     setupGemFire();
   }
 
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   protected Peer createPeer(final Properties distributedSystemConfiguration, final VM vm) {
     return new Peer(distributedSystemConfiguration, vm);
   }

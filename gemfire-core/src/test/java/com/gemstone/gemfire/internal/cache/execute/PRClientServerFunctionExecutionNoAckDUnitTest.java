@@ -251,9 +251,4 @@ public class PRClientServerFunctionExecutionNoAckDUnitTest extends PRClientServe
       return member.withArgs(args).execute(function);
     }
   }
-
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
 }

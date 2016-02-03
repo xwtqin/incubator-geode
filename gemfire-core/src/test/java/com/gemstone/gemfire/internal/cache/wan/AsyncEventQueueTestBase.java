@@ -155,7 +155,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     if (Locator.hasLocator()) {
       Locator.getLocator().stop();
     }
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
@@ -169,7 +169,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static Integer createFirstRemoteLocator(int dsId, int remoteLocPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
@@ -727,7 +727,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   protected static void createCache(Integer locPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -737,7 +737,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void createCacheWithoutLocator(Integer mCastPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "" + mCastPort);
     InternalDistributedSystem ds = test.getSystem(props);
@@ -976,7 +976,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static int createReceiver(int locPort) {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
@@ -1571,8 +1571,8 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     }
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     cleanupVM();
     vm0.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
     vm1.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
@@ -1595,7 +1595,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       cache = null;
     }
     else {
-      AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+      AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
       if (test.isConnectedToDS()) {
         test.getSystem().disconnect();
       }
@@ -1603,7 +1603,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void shutdownLocator() {
-    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(testName);
+    AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     test.getSystem().disconnect();
   }
 

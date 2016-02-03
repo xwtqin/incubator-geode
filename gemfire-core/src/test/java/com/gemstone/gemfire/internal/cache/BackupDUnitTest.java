@@ -75,13 +75,12 @@ public class BackupDUnitTest extends PersistentPartitionedRegionTestBase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     StringBuilder failures = new StringBuilder();
     FileUtil.delete(getBackupDir(), failures);
     if (failures.length() > 0) {
       LogWriterSupport.getLogWriter().error(failures.toString());
     }
-    super.tearDown2();
   }
   
   public void testBackupPR() throws Throwable {

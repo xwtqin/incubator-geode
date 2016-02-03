@@ -21,7 +21,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.SystemFailure;
@@ -51,6 +53,7 @@ import com.gemstone.gemfire.internal.cache.tier.InternalClientMembership;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.management.internal.cli.LogWrapper;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
@@ -72,45 +75,15 @@ import junit.framework.TestCase;
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
 public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
+  private static final Logger logger = LogService.getLogger();
   
-  private static final LinkedHashSet<String> testHistory = new LinkedHashSet<String>();
+  private static final Set<String> testHistory = new LinkedHashSet<String>();
 
-  private static void setUpCreationStackGenerator() {
-    // the following is moved from InternalDistributedSystem to fix #51058
-    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
-    new CreationStackGenerator() {
-      @Override
-      public Throwable generateCreationStack(final DistributionConfig config) {
-        final StringBuilder sb = new StringBuilder();
-        final String[] validAttributeNames = config.getAttributeNames();
-        for (int i = 0; i < validAttributeNames.length; i++) {
-          final String attName = validAttributeNames[i];
-          final Object actualAtt = config.getAttributeObject(attName);
-          String actualAttStr = actualAtt.toString();
-          sb.append("  ");
-          sb.append(attName);
-          sb.append("=\"");
-          if (actualAtt.getClass().isArray()) {
-            actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
-          }
-          sb.append(actualAttStr);
-          sb.append("\"");
-          sb.append("\n");
-        }
-        return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
-      }
-    });
-  }
-  
-  private static void tearDownCreationStackGenerator() {
-    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
-  }
-  
   /** This VM's connection to the distributed system */
   public static InternalDistributedSystem system;
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
-  public static volatile String testName;
+  private static volatile String testMethodName;
   
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
@@ -128,18 +101,14 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     DUnitLauncher.launchIfNeeded();
   }
 
-  protected Class getTestClass() {
-    Class clazz = getClass();
-    while (clazz.getDeclaringClass() != null) {
-      clazz = clazz.getDeclaringClass();
-    }
-    return clazz;
-  }
+  //---------------------------------------------------------------------------
+  // methods for tests
+  //---------------------------------------------------------------------------
   
-  public void setSystem(final Properties props, final DistributedSystem ds) {
+  public final void setSystem(final Properties props, final DistributedSystem ds) { // TODO: override getDistributedSystemProperties and then delete
     system = (InternalDistributedSystem)ds;
     lastSystemProperties = props;
-    lastSystemCreatedInTest = getTestClass();
+    lastSystemCreatedInTest = getClass(); // used to be getDeclaringClass()
   }
   
   /**
@@ -153,7 +122,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) {
+  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -161,9 +130,9 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     if (system == null || !system.isConnected()) {
       // Figure out our distributed system properties
       Properties p = DistributedTestSupport.getAllDistributedSystemProperties(props);
-      lastSystemCreatedInTest = getTestClass();
+      lastSystemCreatedInTest = getClass(); // used to be getDeclaringClass()
       if (logPerTest) {
-        String testMethod = getTestName();
+        String testMethod = getTestMethodName();
         String testName = lastSystemCreatedInTest.getName() + '-' + testMethod;
         String oldLogFile = p.getProperty(DistributionConfig.LOG_FILE_NAME);
         p.put(DistributionConfig.LOG_FILE_NAME, 
@@ -176,7 +145,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       lastSystemProperties = p;
     } else {
       boolean needNewSystem = false;
-      if(!getTestClass().equals(lastSystemCreatedInTest)) {
+      if(!getClass().equals(lastSystemCreatedInTest)) { // used to be getDeclaringClass()
         Properties newProps = DistributedTestSupport.getAllDistributedSystemProperties(props);
         needNewSystem = !newProps.equals(lastSystemProperties);
         if(needNewSystem) {
@@ -212,11 +181,6 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     return system;
   }
 
-  private String getDefaultDiskStoreName() {
-    String vmid = System.getProperty("vmid");
-    return "DiskStore-"  + vmid + "-"+ getTestClass().getCanonicalName() + "." + getTestName();
-  }
-
   /**
    * Returns this VM's connection to the distributed system.  If
    * necessary, the connection will be lazily created using the
@@ -228,7 +192,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * @since 3.0
    */
   public final InternalDistributedSystem getSystem() {
-    return getSystem(this.getDistributedSystemProperties());
+    return getSystem(getDistributedSystemProperties());
   }
 
   /**
@@ -238,7 +202,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * @since 6.5
    */
   public final InternalDistributedSystem getLonerSystem() {
-    Properties props = this.getDistributedSystemProperties();
+    Properties props = getDistributedSystemProperties();
     props.put(DistributionConfig.MCAST_PORT_NAME, "0");
     props.put(DistributionConfig.LOCATORS_NAME, "");
     return getSystem(props);
@@ -250,7 +214,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Added specifically to test scenario of defect #47181.
    */
   public final InternalDistributedSystem getLonerSystemWithEnforceUniqueHost() {
-    Properties props = this.getDistributedSystemProperties();
+    Properties props = getDistributedSystemProperties();
     props.put(DistributionConfig.MCAST_PORT_NAME, "0");
     props.put(DistributionConfig.LOCATORS_NAME, "");
     props.put(DistributionConfig.ENFORCE_UNIQUE_HOST_NAME, "true");
@@ -279,190 +243,16 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     return new Properties();
   }
 
-  /**
-   * Sets up the test (noop).
-   */
-  @Override
-  public void setUp() throws Exception {
-    logTestHistory();
-    setUpCreationStackGenerator();
-    testName = getName();
-    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");
-    
-    if (testName != null) {
-      GemFireCacheImpl.setDefaultDiskStoreName(getDefaultDiskStoreName());
-      String baseDefaultDiskStoreName = getTestClass().getCanonicalName() + "." + getTestName();
-      for (int h = 0; h < Host.getHostCount(); h++) {
-        Host host = Host.getHost(h);
-        for (int v = 0; v < host.getVMCount(); v++) {
-          VM vm = host.getVM(v);
-          String vmDefaultDiskStoreName = "DiskStore-" + h + "-" + v + "-" + baseDefaultDiskStoreName;
-          vm.invoke(DistributedTestCase.class, "perVMSetUp", new Object[] {testName, vmDefaultDiskStoreName});
-        }
-      }
-    }
-    System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testName+"\n\n");
-  }
-
-  /**
-   * Write a message to the log about what tests have ran previously. This
-   * makes it easier to figure out if a previous test may have caused problems
-   */
-  private void logTestHistory() {
-    String classname = getClass().getSimpleName();
-    testHistory.add(classname);
-    System.out.println("Previously run tests: " + testHistory);
-  }
-
-  public static void perVMSetUp(final String name, final String defaultDiskStoreName) {
-    setTestName(name);
-    GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
-    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
-  }
-  
-  private static void setTestName(final String name) {
-    testName = name;
-  }
-  
-  public static String getTestName() {
-    return testName;
-  }
-
-  /**
-   * For logPerTest to work, we have to disconnect from the DS, but all
-   * subclasses do not call super.tearDown(). To prevent this scenario
-   * this method has been declared final. Subclasses must now override
-   * {@link #tearDown2()} instead.
-   * @throws Exception
-   */
-  @Override
-  public final void tearDown() throws Exception {
-    tearDownCreationStackGenerator();
-    tearDown2();
-    realTearDown();
-    tearDownAfter();
-  }
-
-  /**
-   * Tears down the test. This method is called by the final {@link #tearDown()} method and should be overridden to
-   * perform actual test cleanup and release resources used by the test.  The tasks executed by this method are
-   * performed before the DUnit test framework using Hydra cleans up the client VMs.
-   * <p/>
-   * @throws Exception if the tear down process and test cleanup fails.
-   * @see #tearDown
-   * @see #tearDownAfter()
-   */
-  // TODO rename this method to tearDownBefore and change the access modifier to protected!
-  public void tearDown2() throws Exception {
-  }
-
-  protected void realTearDown() throws Exception {
-    if (logPerTest) {
-      disconnectFromDS();
-      Invoke.invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
-    }
-    cleanupAllVms();
-  }
-  
-  /**
-   * Tears down the test.  Performs additional tear down tasks after the DUnit tests framework using Hydra cleans up
-   * the client VMs.  This method is called by the final {@link #tearDown()} method and should be overridden to perform
-   * post tear down activities.
-   * <p/>
-   * @throws Exception if the test tear down process fails.
-   * @see #tearDown()
-   * @see #tearDown2()
-   */
-  protected void tearDownAfter() throws Exception {
-  }
-
-  public static void cleanupAllVms() {
-    cleanupThisVM();
-    Invoke.invokeInEveryVM(()->cleanupThisVM());
-    Invoke.invokeInLocator(new SerializableRunnable() {
-      public void run() {
-        DistributionMessageObserver.setInstance(null);
-        DistributedTestSupport.unregisterInstantiatorsInThisVM();
-      }
-    });
-    DUnitLauncher.closeAndCheckForSuspects();
-  }
-
-  private static void cleanupThisVM() {
-    closeCache();
-    
-    SocketCreator.resolve_dns = true;
-    CacheCreation.clearThreadLocals();
-    System.getProperties().remove("gemfire.log-level");
-    System.getProperties().remove("jgroups.resolve_dns");
-    InitialImageOperation.slowImageProcessing = 0;
-    DistributionMessageObserver.setInstance(null);
-    QueryTestUtils.setCache(null);
-    CacheServerTestUtil.clearCacheReference();
-    RegionTestCase.preSnapshotRegion = null;
-    GlobalLockingDUnitTest.region_testBug32356 = null;
-    LogWrapper.close();
-    ClientProxyMembershipID.system = null;
-    MultiVMRegionTestCase.CCRegion = null;
-    InternalClientMembership.unregisterAllListeners();
-    ClientStatsManager.cleanupForTests();
-    ClientServerTestCase.AUTO_LOAD_BALANCE = false;
-    DistributedTestSupport.unregisterInstantiatorsInThisVM();
-    DistributionMessageObserver.setInstance(null);
-    QueryObserverHolder.reset();
-    DiskStoreObserver.setInstance(null);
-    System.getProperties().remove("gemfire.log-level");
-    System.getProperties().remove("jgroups.resolve_dns");
-    
-    if (InternalDistributedSystem.systemAttemptingReconnect != null) {
-      InternalDistributedSystem.systemAttemptingReconnect.stopReconnecting();
-    }
-    IgnoredException.removeAllExpectedExceptions();
-  }
-
-  private static void closeCache() {
-    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
-    if(cache != null && !cache.isClosed()) {
-      destroyRegions(cache);
-      cache.close();
-    }
-  }
-  
-  protected static final void destroyRegions(final Cache cache) {
-    if (cache != null && !cache.isClosed()) {
-      //try to destroy the root regions first so that
-      //we clean up any persistent files.
-      for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
-        Region root = (Region)itr.next();
-        //for colocated regions you can't locally destroy a partitioned
-        //region.
-        if(root.isDestroyed() || root instanceof HARegion || root instanceof PartitionedRegion) {
-          continue;
-        }
-        try {
-          root.localDestroyRegion("teardown");
-        }
-        catch (VirtualMachineError e) {
-          SystemFailure.initiateFailure(e);
-          throw e;
-        }
-        catch (Throwable t) {
-          LogWriterSupport.getLogWriter().error(t);
-        }
-      }
-    }
-  }
-  
   public static void disconnectAllFromDS() {
     disconnectFromDS();
-    Invoke.invokeInEveryVM(DistributedTestCase.class, "disconnectFromDS");
+    Invoke.invokeInEveryVM(()->disconnectFromDS());
   }
 
   /**
    * Disconnects this VM from the distributed system
    */
   public static void disconnectFromDS() {
-    testName = null;
+    setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {
       system.disconnect();
@@ -487,11 +277,252 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
   }
 
+  //---------------------------------------------------------------------------
+  // name methods
+  //---------------------------------------------------------------------------
+  
+  public static String getTestMethodName() {
+    return testMethodName;
+  }
+
+  public static void setTestMethodName(final String testMethodName) { // TODO: delete
+    DistributedTestCase.testMethodName = testMethodName;
+  }
+  
   /**
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.
    */
   public String getUniqueName() {
     return getClass().getSimpleName() + "_" + getName();
+  }
+
+  //---------------------------------------------------------------------------
+  // setup methods
+  //---------------------------------------------------------------------------
+  
+  /**
+   * Sets up the DistributedTestCase.
+   * <p>
+   * Do not override this method. Override {@link #preSetUp()} with work that
+   * needs to occur before setUp() or override {@link #postSetUp()} with work
+   * that needs to occur after setUp().
+   */
+  @Override
+  public void setUp() throws Exception {
+    preSetUp();
+    setUpDistributedTestCase();
+    postSetUp();
+  }
+  
+  /**
+   * Sets up DistributedTest in controller and remote VMs. This includes the
+   * defining the test name, setting the default disk store name, logging the 
+   * test history, and capturing a creation stack for detecting the source of
+   * incompatible DistributedSystem connections.
+   * <p>
+   * Do not override this method.
+   */
+  private final void setUpDistributedTestCase() {
+    final String testMethodName = getName();
+    logTestHistory();
+    
+    setUpVM(testMethodName, getDefaultDiskStoreName(0, -1));
+    
+    for (int hostIndex = 0; hostIndex < Host.getHostCount(); hostIndex++) {
+      Host host = Host.getHost(hostIndex);
+      for (int vmIndex = 0; vmIndex < host.getVMCount(); vmIndex++) {
+        final String vmDefaultDiskStoreName = getDefaultDiskStoreName(hostIndex, vmIndex);
+        host.getVM(vmIndex).invoke(()->setUpVM(testMethodName, vmDefaultDiskStoreName));
+      }
+    }
+    
+    logTestStart();
+  }
+
+  /**
+   * <code>preSetUp()</code> is invoked before {@link #setUpDistributedTestCase()}.
+   * <p>
+   * Override this as needed. Default implementation is empty.
+   */
+  protected void preSetUp() throws Exception {
+  }
+  
+  /**
+   * <code>postSetUp()</code> is invoked after {@link #setUpDistributedTestCase()}.
+   * <p>
+   * Override this as needed. Default implementation is empty.
+   */
+  protected void postSetUp() throws Exception {
+  }
+  
+  private String getDefaultDiskStoreName(final int hostIndex, final int vmIndex) {
+    return "DiskStore-" + String.valueOf(hostIndex) + "-" + String.valueOf(vmIndex) + "-" + getClass().getCanonicalName() + "." + getTestMethodName(); // used to be getDeclaringClass()
+  }
+  
+  private static void setUpVM(final String testMethodName, final String defaultDiskStoreName) {
+    setTestMethodName(testMethodName);
+    GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
+    System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
+    setUpCreationStackGenerator();
+  }
+
+  private void logTestStart() {
+    System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testMethodName+"\n\n");
+  }
+  
+  private static void setUpCreationStackGenerator() {
+    // the following is moved from InternalDistributedSystem to fix #51058
+    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
+    new CreationStackGenerator() {
+      @Override
+      public Throwable generateCreationStack(final DistributionConfig config) {
+        final StringBuilder sb = new StringBuilder();
+        final String[] validAttributeNames = config.getAttributeNames();
+        for (int i = 0; i < validAttributeNames.length; i++) {
+          final String attName = validAttributeNames[i];
+          final Object actualAtt = config.getAttributeObject(attName);
+          String actualAttStr = actualAtt.toString();
+          sb.append("  ");
+          sb.append(attName);
+          sb.append("=\"");
+          if (actualAtt.getClass().isArray()) {
+            actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
+          }
+          sb.append(actualAttStr);
+          sb.append("\"");
+          sb.append("\n");
+        }
+        return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
+      }
+    });
+  }
+  
+  /**
+   * Write a message to the log about what tests have ran previously. This
+   * makes it easier to figure out if a previous test may have caused problems
+   */
+  private void logTestHistory() {
+    String classname = getClass().getSimpleName();
+    testHistory.add(classname);
+    System.out.println("Previously run tests: " + testHistory);
+  }
+
+  //---------------------------------------------------------------------------
+  // teardown methods
+  //---------------------------------------------------------------------------
+
+  /**
+   * Tears down the DistributedTestCase.
+   * <p>
+   * Do not override this method. Override {@link #preTearDown()} with work that
+   * needs to occur before tearDown() or override {@link #postTearDown()} with work
+   * that needs to occur after tearDown().
+   */
+  @Override
+  public final void tearDown() throws Exception {
+    preTearDown();
+    tearDownDistributedTestCase();
+    postTearDown();
+  }
+
+  private final void tearDownDistributedTestCase() throws Exception {
+    Invoke.invokeInEveryVM(()->tearDownCreationStackGenerator());
+    if (logPerTest) {
+      disconnectFromDS();
+      Invoke.invokeInEveryVM(()->disconnectFromDS());
+    }
+    cleanupAllVms();
+  }
+  
+  /**
+   * <code>preTearDown()</code> is invoked before {@link #tearDownDistributedTestCase()}.
+   * <p>
+   * Override this as needed. Default implementation is empty.
+   */
+  protected void preTearDown() throws Exception {
+  }
+  
+  /**
+   * <code>postTearDown()</code> is invoked after {@link #tearDownDistributedTestCase()}.
+   * <p>
+   * Override this as needed. Default implementation is empty.
+   */
+  protected void postTearDown() throws Exception {
+  }
+  
+  public static void cleanupAllVms() { // TODO: make private
+    tearDownVM();
+    Invoke.invokeInEveryVM(()->tearDownVM());
+    Invoke.invokeInLocator(()->{
+      DistributionMessageObserver.setInstance(null);
+      DistributedTestSupport.unregisterInstantiatorsInThisVM();
+    });
+    DUnitLauncher.closeAndCheckForSuspects();
+  }
+
+  private static void tearDownVM() {
+    closeCache();
+
+    // keep alphabetized to detect duplicate lines
+    CacheCreation.clearThreadLocals();
+    CacheServerTestUtil.clearCacheReference();
+    ClientProxyMembershipID.system = null;
+    ClientServerTestCase.AUTO_LOAD_BALANCE = false;
+    ClientStatsManager.cleanupForTests();
+    DiskStoreObserver.setInstance(null);
+    DistributedTestSupport.unregisterInstantiatorsInThisVM();
+    DistributionMessageObserver.setInstance(null);
+    GlobalLockingDUnitTest.region_testBug32356 = null;
+    InitialImageOperation.slowImageProcessing = 0;
+    InternalClientMembership.unregisterAllListeners();
+    LogWrapper.close();
+    MultiVMRegionTestCase.CCRegion = null;
+    QueryObserverHolder.reset();
+    QueryTestUtils.setCache(null);
+    RegionTestCase.preSnapshotRegion = null;
+    SocketCreator.resolve_dns = true;
+
+    // clear system properties -- keep alphabetized
+    System.clearProperty("gemfire.log-level");
+    System.clearProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP);    
+    System.clearProperty("jgroups.resolve_dns");
+    
+    if (InternalDistributedSystem.systemAttemptingReconnect != null) {
+      InternalDistributedSystem.systemAttemptingReconnect.stopReconnecting();
+    }
+    
+    IgnoredException.removeAllExpectedExceptions();
+  }
+
+  private static void closeCache() {
+    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+    if (cache != null && !cache.isClosed()) {
+      destroyRegions(cache);
+      cache.close();
+    }
+  }
+  
+  protected static final void destroyRegions(final Cache cache) { // TODO: make private
+    if (cache != null && !cache.isClosed()) {
+      // try to destroy the root regions first so that we clean up any persistent files.
+      for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
+        Region root = (Region)itr.next();
+        String regionFullPath = root == null ? null : root.getFullPath();
+        // for colocated regions you can't locally destroy a partitioned region.
+        if(root.isDestroyed() || root instanceof HARegion || root instanceof PartitionedRegion) {
+          continue;
+        }
+        try {
+          root.localDestroyRegion("teardown");
+        } catch (Throwable t) {
+          logger.error("Failure during tearDown destroyRegions for " + regionFullPath, t);
+        }
+      }
+    }
+  }
+  
+  private static void tearDownCreationStackGenerator() {
+    InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
   }
 }

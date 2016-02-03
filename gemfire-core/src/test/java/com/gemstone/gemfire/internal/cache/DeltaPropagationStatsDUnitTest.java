@@ -94,8 +94,8 @@ public class DeltaPropagationStatsDUnitTest extends DistributedTestCase {
     vm3 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     lastKeyReceived = false;
     vm0.invoke(DeltaPropagationStatsDUnitTest.class, "resetLastKeyReceived");
     vm1.invoke(DeltaPropagationStatsDUnitTest.class, "resetLastKeyReceived");

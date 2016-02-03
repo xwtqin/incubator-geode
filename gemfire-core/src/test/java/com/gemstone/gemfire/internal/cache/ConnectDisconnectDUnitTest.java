@@ -111,13 +111,12 @@ public class ConnectDisconnectDUnitTest extends CacheTestCase {
     locatorPorts = ports;
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     if (locatorPorts != null) {
       DistributedSystemSupport.deleteLocatorStateFile(locatorPorts);
     }
   }
-  
 
   /**
    * This test creates 4 vms and starts a cache in each VM. If that doesn't hang, it destroys the DS in all

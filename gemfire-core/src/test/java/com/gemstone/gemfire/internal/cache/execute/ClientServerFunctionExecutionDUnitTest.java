@@ -949,8 +949,4 @@ public static void allServerExecution_SendException(Boolean isByName, Function f
       return member.withArgs(args).execute(function);
     }
   }
-  
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

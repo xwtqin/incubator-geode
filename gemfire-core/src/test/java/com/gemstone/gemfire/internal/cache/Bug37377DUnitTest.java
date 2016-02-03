@@ -96,13 +96,12 @@ public class Bug37377DUnitTest extends CacheTestCase
 
   }
 
-  public void tearDown2() throws Exception
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception
   {
 
     vm1.invoke(destroyRegion());
     vm0.invoke(destroyRegion());
-
-    super.tearDown2();
   }
 
   /**

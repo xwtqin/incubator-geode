@@ -490,7 +490,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // Close client cache first, then server caches
     client1.invoke(impl.getClass(), "closeCache");

@@ -67,7 +67,7 @@ public class Bug48879DUnitTest extends DistributedTestCase {
     createClientCache(host, new Integer[] {port0, port1}, Boolean.TRUE);
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
 
     vm0.invoke(Bug48879DUnitTest.class, "closeCache");

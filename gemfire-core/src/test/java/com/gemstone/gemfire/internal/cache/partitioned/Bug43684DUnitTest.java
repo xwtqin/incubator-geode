@@ -81,7 +81,7 @@ public class Bug43684DUnitTest extends DistributedTestCase {
     IgnoredException.addIgnoredException("Connection refused: connect");
   }
 
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     closeCache();
     client1.invoke(Bug43684DUnitTest.class, "closeCache");
     server1.invoke(Bug43684DUnitTest.class, "closeCache");

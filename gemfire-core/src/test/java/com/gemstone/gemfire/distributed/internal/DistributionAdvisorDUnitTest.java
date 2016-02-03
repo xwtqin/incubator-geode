@@ -82,9 +82,9 @@ public class DistributionAdvisorDUnitTest extends DistributedTestCase {
                     new DistributionAdvisor.Profile[profileList.size()]);
   }
     
-  public void tearDown2() throws Exception {
+  public void preTearDown() throws Exception {
     this.advisor.close();
-    super.tearDown2();
+    super.preTearDown();
   }
   
     

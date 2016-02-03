@@ -107,9 +107,9 @@ public class HADuplicateDUnitTest extends DistributedTestCase
     client2 = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     client1.invoke(HADuplicateDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HADuplicateDUnitTest.class, "reSetQRMslow");

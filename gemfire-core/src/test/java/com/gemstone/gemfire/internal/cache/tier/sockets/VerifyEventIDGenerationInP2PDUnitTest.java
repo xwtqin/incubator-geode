@@ -172,9 +172,9 @@ public class VerifyEventIDGenerationInP2PDUnitTest extends DistributedTestCase
     return new Boolean(temp);
   }
 
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
-    super.tearDown2();
+    super.preTearDown();
     closeCache();
     vm0.invoke(VerifyEventIDGenerationInP2PDUnitTest.class, "closeCache");
   }

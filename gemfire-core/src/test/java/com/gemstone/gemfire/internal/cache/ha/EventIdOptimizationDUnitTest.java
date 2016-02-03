@@ -510,7 +510,7 @@ public class EventIdOptimizationDUnitTest extends DistributedTestCase
   /**
    * Closes the caches on clients and servers
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     // close client
     client1.invoke(EventIdOptimizationDUnitTest.class, "closeCache");

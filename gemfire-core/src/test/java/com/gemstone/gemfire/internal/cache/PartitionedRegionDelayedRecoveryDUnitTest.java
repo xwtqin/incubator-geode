@@ -44,10 +44,8 @@ public class PartitionedRegionDelayedRecoveryDUnitTest extends CacheTestCase {
     super(name);
   }
   
-  
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);
@@ -55,7 +53,6 @@ public class PartitionedRegionDelayedRecoveryDUnitTest extends CacheTestCase {
     });
     InternalResourceManager.setResourceObserver(null);
   }
-
 
   public void testNoRecovery() throws Exception {
     Host host = Host.getHost(0);

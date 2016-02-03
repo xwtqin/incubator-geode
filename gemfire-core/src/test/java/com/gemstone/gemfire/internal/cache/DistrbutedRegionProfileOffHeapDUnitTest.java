@@ -40,7 +40,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -51,11 +51,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
       }
     };
     Invoke.invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    checkOrphans.run();
   }
 
   /**
@@ -64,7 +60,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
    * cause an exception and the region will not be created.
    */
   public void testPartitionedRegionProfileWithConflict() throws Exception {
-    final String regionName = getTestName() + "Region";
+    final String regionName = getTestMethodName() + "Region";
 
     Host.getHost(0).getVM(0).invoke(new CacheSerializableRunnable("createRegionNoException") {
       private static final long serialVersionUID = 1L;
@@ -119,8 +115,8 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
    * created.
    */
   public void testPartitionedRegionProfileWithoutConflict() throws Exception {
-    final String offHeapRegionName = getTestName() + "OffHeapRegion";
-    final String onHeapRegionName = getTestName() + "OnHeapRegion";
+    final String offHeapRegionName = getTestMethodName() + "OffHeapRegion";
+    final String onHeapRegionName = getTestMethodName() + "OnHeapRegion";
 
     for (int vmId = 0; vmId <= 1; vmId++) {
       Host.getHost(0).getVM(vmId).invoke(new CacheSerializableRunnable("createRegionNoException") {
@@ -157,7 +153,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
    * exception.
    */
   public void testPartitionedRegionProfileWithAccessor() throws Exception {
-    final String regionName = getTestName() + "Region";
+    final String regionName = getTestMethodName() + "Region";
 
     // Create a region using off-heap
     Host.getHost(0).getVM(0).invoke(new CacheSerializableRunnable("createRegionNoException") {
@@ -210,7 +206,7 @@ public class DistrbutedRegionProfileOffHeapDUnitTest extends CacheTestCase {
    * storage and the other being a proxy will not cause an exception.
    */
   public void testPartitionedRegionProfileWithProxy() throws Exception {
-    final String regionName = getTestName() + "Region";
+    final String regionName = getTestMethodName() + "Region";
 
     // Create a region using off-heap
     Host.getHost(0).getVM(0).invoke(new CacheSerializableRunnable("createRegionNoException") {

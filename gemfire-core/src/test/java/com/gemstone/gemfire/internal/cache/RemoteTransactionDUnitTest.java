@@ -152,12 +152,11 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     try {
       Invoke.invokeInEveryVM(verifyNoTxState);
     } finally {
       closeAllCache();
-      super.tearDown2();
     }
   }
   

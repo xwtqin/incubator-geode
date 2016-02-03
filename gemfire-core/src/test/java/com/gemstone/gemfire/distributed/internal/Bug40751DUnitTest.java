@@ -48,11 +48,9 @@ public class Bug40751DUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
-	
 	 
   public void testRR() {
     System.setProperty("p2p.nodirectBuffers", "true");

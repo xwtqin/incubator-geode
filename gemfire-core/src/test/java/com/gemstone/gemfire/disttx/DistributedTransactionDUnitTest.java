@@ -108,7 +108,8 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
     }); 
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
@@ -124,8 +125,6 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
         return null;
       }
     }); 
-    
-    super.tearDown2();
   }
   
   public DistributedTransactionDUnitTest(String name) {

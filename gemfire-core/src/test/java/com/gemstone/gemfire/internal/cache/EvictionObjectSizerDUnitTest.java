@@ -63,11 +63,6 @@ public class EvictionObjectSizerDUnitTest extends CacheTestCase {
     super.setUp();
   }
 
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   /**
    * Without object sizer
    */

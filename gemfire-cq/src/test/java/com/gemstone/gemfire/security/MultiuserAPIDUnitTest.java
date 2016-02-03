@@ -380,8 +380,8 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
     }
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  public void preTearDown() throws Exception {
+    super.preTearDown();
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

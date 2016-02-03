@@ -74,12 +74,10 @@ public class SlowRecDUnitTest extends CacheTestCase {
       super.setUp();
     }
   }
-  public void tearDown2() throws Exception {
-    try {
-      super.tearDown2();
-    } finally {
-      disconnectAllFromDS();
-    }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
+    disconnectAllFromDS();
   }
   
   //////////////////////  Test Methods  //////////////////////

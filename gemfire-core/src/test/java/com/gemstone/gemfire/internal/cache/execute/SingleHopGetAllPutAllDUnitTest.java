@@ -197,9 +197,4 @@ public class SingleHopGetAllPutAllDUnitTest extends PRClientServerTestBase{
       Assert.fail("Test failed after the putAll operation", e);
     }
   }
-  
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

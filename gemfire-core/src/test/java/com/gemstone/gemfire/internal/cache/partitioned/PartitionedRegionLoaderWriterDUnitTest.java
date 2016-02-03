@@ -225,9 +225,4 @@ public class PartitionedRegionLoaderWriterDUnitTest extends CacheTestCase {
     public CacheWriter2() {
     }
   }
-
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
 }

@@ -357,7 +357,7 @@ public class HABug36773DUnitTest extends DistributedTestCase
 
   }
   
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     //close client
     client1.invoke(HABug36773DUnitTest.class, "closeCache");

@@ -99,7 +99,7 @@ public class NewRegionAttributesDUnitTest extends DistributedTestCase
    * @throws Exception
    *           thrown if any problem occurs while closing the cache
    */
-  public void tearDown2() throws Exception
+  public void preTearDown() throws Exception
   {
     vm0.invoke(NewRegionAttributesDUnitTest.class, "closeCache");
     vm1.invoke(NewRegionAttributesDUnitTest.class, "closeCache");

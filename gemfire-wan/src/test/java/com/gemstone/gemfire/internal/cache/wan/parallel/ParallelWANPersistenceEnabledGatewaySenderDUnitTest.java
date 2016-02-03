@@ -106,13 +106,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
         true, 100, 10, false, true, null, true });
 
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -120,16 +120,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
 
   }
 
@@ -166,13 +166,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("Created local site senders");
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     LogWriterSupport.getLogWriter().info("Created local site persistent PR");
     
@@ -185,16 +185,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("Started the senders");
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
   }
   
   
@@ -238,19 +238,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -271,7 +271,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 3000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -304,13 +304,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -343,9 +343,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
   }
   
   /**
@@ -387,19 +387,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -420,7 +420,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 3000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -453,13 +453,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("Created the senders back from the disk store.");
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -492,9 +492,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
   }
   
   /**
@@ -532,13 +532,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -559,7 +559,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 300 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 300 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -593,13 +593,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -641,9 +641,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     LogWriterSupport.getLogWriter().info("Creating the partitioned region at receiver. ");
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm4.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
@@ -651,7 +651,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     LogWriterSupport.getLogWriter().info("Doing some extra puts. ");
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPutsAfter300", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPutsAfter300", new Object[] { getTestMethodName(), 1000 });
     //----------------------------------------------------------------------------------------------------
     vm4.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "resumeSender", new Object[] { "ln" });
@@ -660,9 +660,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     LogWriterSupport.getLogWriter().info("Validating the region size at the receiver end. ");
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
   }
   
   
@@ -706,19 +706,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -739,7 +739,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 3000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -773,13 +773,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -812,7 +812,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     //Dispatcher should be dispatching now. Do some more puts through async thread
-    AsyncInvocation async1 = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    AsyncInvocation async1 = vm4.invokeAsync(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
     try {
       async1.join();
     } catch (InterruptedException e) {
@@ -820,9 +820,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     }
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 3000 });
+      getTestMethodName(), 3000 });
   }
 
   /**
@@ -864,19 +864,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -897,7 +897,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { getTestMethodName(), 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -931,13 +931,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -970,9 +970,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-    testName, 1000 });
+    getTestMethodName(), 1000 });
   }
   
   /**
@@ -1014,19 +1014,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1047,7 +1047,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { getTestMethodName(), 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -1081,13 +1081,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     // create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
@@ -1110,28 +1110,28 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-    testName, 1000 });
+    getTestMethodName(), 1000 });
     
     vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm6.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm7.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     
    //do some extra puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { testName, 10000 });
+    vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] { getTestMethodName(), 10000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 10000 });
+      getTestMethodName(), 10000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-    testName, 10000 });
+    getTestMethodName(), 10000 });
   }
   
   public void testPersistentPR_Restart() {
@@ -1147,17 +1147,17 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
 
     // create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion",
-        new Object[] { testName, "ln", 1, 100, isOffHeap() });
+        new Object[] { getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     // start puts in region on local site
     vm4.invoke(WANTestBase.class, "doPutsWithKeyAsString", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
 
     // --------------------close and rebuild local site
@@ -1190,16 +1190,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
 
     // create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class,
-        "createPersistentPartitionedRegion", new Object[] { testName, "ln", 1,
+        "createPersistentPartitionedRegion", new Object[] { getTestMethodName(), "ln", 1,
             100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class,
-        "createPersistentPartitionedRegion", new Object[] { testName, "ln", 1,
+        "createPersistentPartitionedRegion", new Object[] { getTestMethodName(), "ln", 1,
             100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class,
-        "createPersistentPartitionedRegion", new Object[] { testName, "ln", 1,
+        "createPersistentPartitionedRegion", new Object[] { getTestMethodName(), "ln", 1,
             100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class,
-        "createPersistentPartitionedRegion", new Object[] { testName, "ln", 1,
+        "createPersistentPartitionedRegion", new Object[] { getTestMethodName(), "ln", 1,
             100, isOffHeap() });
 
     try {
@@ -1216,13 +1216,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
 
     vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm5.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm6.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
     vm7.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 1000 });
+        getTestMethodName(), 1000 });
   }
 
   /**
@@ -1266,19 +1266,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1299,7 +1299,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //--------------------close and rebuild local site -------------------------------------------------
@@ -1353,9 +1353,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //----------------------------------------------------------------------------------------------------
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
   }
   
   /**
@@ -1396,19 +1396,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create non persistent PR on local site
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1429,7 +1429,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //kill the senders
@@ -1462,13 +1462,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     LogWriterSupport.getLogWriter().info("Created back the partitioned regions");
     
@@ -1490,9 +1490,9 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     LogWriterSupport.getLogWriter().info("All the senders are now running...");
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 1000 });
+      getTestMethodName(), 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-    testName, 1000 });
+    getTestMethodName(), 1000 });
   }
 
 
@@ -1535,19 +1535,19 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
 
     //create PR on remote site
     vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, null, 1, 100, isOffHeap() });
+      getTestMethodName(), null, 1, 100, isOffHeap() });
     
     //create PR on local site
     vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     //start the senders on local site
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1568,7 +1568,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 3000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     //----------------- Close and rebuild local site -------------------------------------
@@ -1625,13 +1625,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     
     //create PR on local site
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv2 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv3 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     AsyncInvocation inv4 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-      testName, "ln", 1, 100, isOffHeap() });
+      getTestMethodName(), "ln", 1, 100, isOffHeap() });
     
     try {
       inv1.join();
@@ -1648,11 +1648,11 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     //-------------------------------------------------------------------------------------------
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 3000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 3000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
-    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 3000 });
-    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { testName, 3000 });
+    vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 3000 });
+    vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] { getTestMethodName(), 3000 });
   }
   
   /**
@@ -1691,18 +1691,18 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       true, 100, 10, false, true, null, true });
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 1, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegionAsAccessor", new Object[] {
-      testName + "_PR", "ln", 1, 100 });
+      getTestMethodName() + "_PR", "ln", 1, 100 });
     vm7.invoke(WANTestBase.class, "createPartitionedRegionAsAccessor", new Object[] {
-      testName + "_PR", "ln", 1, 100 });
+      getTestMethodName() + "_PR", "ln", 1, 100 });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 1, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 1, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1710,13 +1710,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     
     //start puts in region on local site
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR", 1000 });
     LogWriterSupport.getLogWriter().info("Completed puts in the region");
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName + "_PR", 1000 });
+      getTestMethodName() + "_PR", 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName + "_PR", 1000 });
+      getTestMethodName() + "_PR", 1000 });
   }
   
   /**
@@ -1751,13 +1751,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
         true, 100, 10, false, true, null, true });
 
       vm4.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
       vm5.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
       vm6.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
       vm7.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, "ln", 1, 100, isOffHeap() });
+        getTestMethodName(), "ln", 1, 100, isOffHeap() });
 
       vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
       vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -1765,16 +1765,16 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
       vm2.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
       vm3.invoke(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
-      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 113 });
+      vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 113 });
 
       vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 113 });
+        getTestMethodName(), 113 });
       vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 113 });
+        getTestMethodName(), 113 });
 
       //Bounce vm4, vm5, vm6, vm7 without the parallel queue
       vm4.invoke(WANTestBase.class, "closeCache", new Object [] {});
@@ -1793,13 +1793,13 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       vm7.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
 
       AsyncInvocation async4 = vm4.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
       AsyncInvocation async5 = vm5.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
       AsyncInvocation async6 = vm6.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
       AsyncInvocation async7 = vm7.invokeAsync(WANTestBase.class, "createPersistentPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
       async7.getResult(30 * 1000);
       async5.getResult(30 * 1000);
@@ -1809,7 +1809,7 @@ public class ParallelWANPersistenceEnabledGatewaySenderDUnitTest extends
       //This should succeed, because the region recovered even though
       //the queue was removed.
       vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-      testName, 113 });
+      getTestMethodName(), 113 });
     } finally {
       vm4.invoke(ParallelWANPersistenceEnabledGatewaySenderDUnitTest.class, "setIgnoreQueue" , new Object[] { false});
       vm5.invoke(ParallelWANPersistenceEnabledGatewaySenderDUnitTest.class, "setIgnoreQueue" , new Object[] { false});

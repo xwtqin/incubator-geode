@@ -60,7 +60,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() {
+  protected final void preTearDownCacheTestCase() {
     // this test creates client caches in some VMs and so
     // breaks the contract of CacheTestCase to hold caches in
     // that class's "cache" instance variable

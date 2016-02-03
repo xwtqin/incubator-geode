@@ -108,7 +108,8 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     REGION_NAME = testName + "_Region";
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDownCacheTestCase() throws Exception {
     P.invoke(GIIDeltaDUnitTest.class, "resetSlowGII");
     R.invoke(GIIDeltaDUnitTest.class, "resetSlowGII");
     P.invoke(InitialImageOperation.class, "resetAllGIITestHooks");
@@ -118,8 +119,10 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     changeForceFullGII(P, false, false);
     P = null;
     R = null;
-    super.tearDown2();
-    
+  }
+  
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     // clean up the test hook, which can be moved to CacheTestCase
     DistributedCacheOperation.SLOW_DISTRIBUTION_MS = 0;
     if (expectedEx != null) {

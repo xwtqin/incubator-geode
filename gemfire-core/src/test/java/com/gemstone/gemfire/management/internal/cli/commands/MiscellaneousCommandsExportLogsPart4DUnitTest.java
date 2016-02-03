@@ -52,11 +52,6 @@ public class MiscellaneousCommandsExportLogsPart4DUnitTest extends CliCommandTes
     return cache.getDistributedSystem().getDistributedMember().getId();
   }
 
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   void setupForExportLogs() {
     final VM vm1 = Host.getHost(0).getVM(1);
     createDefaultSetup(null);

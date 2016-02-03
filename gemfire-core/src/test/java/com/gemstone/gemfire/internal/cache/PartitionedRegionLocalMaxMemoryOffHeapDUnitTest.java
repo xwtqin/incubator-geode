@@ -39,7 +39,7 @@ public class PartitionedRegionLocalMaxMemoryOffHeapDUnitTest extends Partitioned
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownPartitionedRegionDUnitTest() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -50,11 +50,7 @@ public class PartitionedRegionLocalMaxMemoryOffHeapDUnitTest extends Partitioned
       }
     };
     Invoke.invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    checkOrphans.run();
   }
 
   @Override

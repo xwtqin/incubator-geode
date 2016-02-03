@@ -110,23 +110,14 @@ public abstract class RegionTestCase extends CacheTestCase {
     super(name);
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     cleanup();
     Invoke.invokeInEveryVM(getClass(), "cleanup");
-    /*for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-      for (int v = 0; v < host.getVMCount(); v++) {
-        host.getVM(v).invoke(new SerializableRunnable("Clean up") {
-            public void run() {
-              cleanup();
-            }
-          });
-// already called in every VM in super.tearDown
-// host.getVM(v).invoke(this.getClass(), "remoteTearDown");
-      }
-    }*/
-    super.tearDown2();
+    postTearDownRegionTestCase();
+  }
+  
+  protected void postTearDownRegionTestCase() throws Exception {
   }
   
   ////////  Helper methods

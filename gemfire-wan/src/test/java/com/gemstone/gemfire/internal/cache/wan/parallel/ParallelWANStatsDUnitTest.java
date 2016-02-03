@@ -62,13 +62,13 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
         true, 100, 10, true, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -83,9 +83,9 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     Wait.pause(2000);
     
@@ -95,7 +95,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       keyValues.put(i, i);
     }
     
-    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, keyValues });
+    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { getTestMethodName(), keyValues });
 
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size() });
 
@@ -141,27 +141,27 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       true, 100, 10, false, false, null, true });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
    
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         1000 });
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 1000 });
+        getTestMethodName() + "_PR", 1000 });
     
     
     ArrayList<Integer> v4List = (ArrayList<Integer>)vm4.invoke(
@@ -206,27 +206,27 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       true, 100, 10, false, false, null, true });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm6.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         1000 });
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 1000 });
+        getTestMethodName() + "_PR", 1000 });
     
     ArrayList<Integer> v4List = (ArrayList<Integer>)vm4.invoke(
         WANTestBase.class, "getSenderStats", new Object[] { "ln", 0 });
@@ -266,25 +266,25 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
         3, true, 100, 10, false, false, null, true });
   
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
     vm3.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln1,ln2", 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln1,ln2", 0, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln1" });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln2" });
 
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR",
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR",
         1000 });
 
     Wait.pause(10000);
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 1000 });
+        getTestMethodName() + "_PR", 1000 });
     vm3.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 1000 });
+        getTestMethodName() + "_PR", 1000 });
     
     ArrayList<Integer> v4Sender1List = (ArrayList<Integer>)vm4.invoke(
         WANTestBase.class, "getSenderStats", new Object[] { "ln1", 0 });
@@ -333,16 +333,16 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       true, 100, 10, false, false, null, true });
     
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", null, 0, 100, isOffHeap() });
+      getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-      testName + "_PR", "ln", 3, 100, isOffHeap() });
+      getTestMethodName() + "_PR", "ln", 3, 100, isOffHeap() });
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -350,14 +350,14 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
-        new Object[] { testName + "_PR", 10000 });
+        new Object[] { getTestMethodName() + "_PR", 10000 });
     Wait.pause(2000);
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     inv1.join();
     inv2.join();
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 10000 });
+        getTestMethodName() + "_PR", 10000 });
     
     ArrayList<Integer> v5List = (ArrayList<Integer>)vm5.invoke(
         WANTestBase.class, "getSenderStats", new Object[] { "ln", 0});
@@ -413,19 +413,19 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     true, 100, 10, false, false, null, true });
 
   vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-    testName + "_PR", null, 0, 100, isOffHeap() });
+    getTestMethodName() + "_PR", null, 0, 100, isOffHeap() });
   
   vm2.invoke(WANTestBase.class, "addCacheListenerAndDestroyRegion", new Object[] {
-    testName + "_PR"});
+    getTestMethodName() + "_PR"});
   
   vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-    testName + "_PR", "ln", 0, 100, isOffHeap() });
+    getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
   vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-    testName + "_PR", "ln", 0, 100, isOffHeap() });
+    getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
   vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-    testName + "_PR", "ln", 0, 100, isOffHeap() });
+    getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
   vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-    testName + "_PR", "ln", 0, 100, isOffHeap() });
+    getTestMethodName() + "_PR", "ln", 0, 100, isOffHeap() });
   
   vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
   vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -433,11 +433,11 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
   vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     //start puts in RR_1 in another thread
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName + "_PR", 20000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_PR", 20000 });
     
     //verify that all is well in local site. All the events should be present in local region
     vm4.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName + "_PR", 20000 });
+        getTestMethodName() + "_PR", 20000 });
     
     ArrayList<Integer> v4List = (ArrayList<Integer>)vm5.invoke(
         WANTestBase.class, "getSenderStats", new Object[] { "ln", -1});
@@ -481,13 +481,13 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       new MyGatewayEventFilter(), true });
   
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -495,12 +495,12 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm7.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
     
-    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { testName, 1000 });
+    vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName(), 1000 });
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 800 });
+        getTestMethodName(), 800 });
     
     ArrayList<Integer> v4List = (ArrayList<Integer>)vm4.invoke(
         WANTestBase.class, "getSenderStats", new Object[] { "ln", 0 });
@@ -545,13 +545,13 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
         true, 100, 10, true, false, null, true });
 
     vm4.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm5.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm6.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
     vm7.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, "ln", 0, 100, isOffHeap() });
+        getTestMethodName(), "ln", 0, 100, isOffHeap() });
 
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
@@ -566,7 +566,7 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
     vm7.invoke(WANTestBase.class, "pauseSender", new Object[] { "ln" });
 
     vm2.invoke(WANTestBase.class, "createPartitionedRegion", new Object[] {
-        testName, null, 1, 100, isOffHeap() });
+        getTestMethodName(), null, 1, 100, isOffHeap() });
 
     Wait.pause(2000);
     
@@ -576,24 +576,24 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
       keyValues.put(i, i);
     }
     
-    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, keyValues });
+    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { getTestMethodName(), keyValues });
 
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size() });
     for(int i=0;i<500;i++) {
       updateKeyValues.put(i, i+"_updated");
     }
     
-    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, updateKeyValues });
+    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { getTestMethodName(), updateKeyValues });
 
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size() + updateKeyValues.size() /*creates aren't conflated*/ });
     
     // Do the puts again. Since these are updates, the previous updates will be conflated.
-    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { testName, updateKeyValues });
+    vm4.invoke(WANTestBase.class, "putGivenKeyValue", new Object[] { getTestMethodName(), updateKeyValues });
 
     vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", keyValues.size() + updateKeyValues.size() /*creates aren't conflated*/ });
 
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, 0 });
+        getTestMethodName(), 0 });
 
     vm2.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {0, 0, 0});
     
@@ -604,10 +604,10 @@ public class ParallelWANStatsDUnitTest extends WANTestBase{
 
     keyValues.putAll(updateKeyValues);
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
-        testName, keyValues.size() });
+        getTestMethodName(), keyValues.size() });
     
     vm2.invoke(WANTestBase.class, "validateRegionContents", new Object[] {
-        testName, keyValues });
+        getTestMethodName(), keyValues });
     
     vm2.invoke(WANTestBase.class, "checkGatewayReceiverStats", new Object[] {0, 1500, 1000});
     

@@ -66,7 +66,7 @@ public class MiscellaneousCommandsDUnitTest extends CliCommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCliCommandTestBase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable("reset log level") {
       public void run() {
         if (cachedLogLevel != null) {

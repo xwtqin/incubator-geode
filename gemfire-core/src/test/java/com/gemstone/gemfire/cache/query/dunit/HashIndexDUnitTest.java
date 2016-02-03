@@ -124,7 +124,7 @@ public class HashIndexDUnitTest extends DistributedTestCase{
     });
   }
   
-  public void tearDown2() throws Exception{
+  public void preTearDown() throws Exception{
     Thread.sleep(5000);
     utils.closeServer(vm0);
   }
