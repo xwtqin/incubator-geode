@@ -324,16 +324,18 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Do not override this method.
    */
   private final void setUpDistributedTestCase() {
-    final String testMethodName = getName();
+    final String className = getClass().getCanonicalName();
+    final String methodName = getName();
+    
     logTestHistory();
     
-    setUpVM(testMethodName, getDefaultDiskStoreName(0, -1));
+    setUpVM(methodName, getDefaultDiskStoreName(0, -1, className, methodName));
     
     for (int hostIndex = 0; hostIndex < Host.getHostCount(); hostIndex++) {
       Host host = Host.getHost(hostIndex);
       for (int vmIndex = 0; vmIndex < host.getVMCount(); vmIndex++) {
-        final String vmDefaultDiskStoreName = getDefaultDiskStoreName(hostIndex, vmIndex);
-        host.getVM(vmIndex).invoke(()->setUpVM(testMethodName, vmDefaultDiskStoreName));
+        final String vmDefaultDiskStoreName = getDefaultDiskStoreName(hostIndex, vmIndex, className, methodName);
+        host.getVM(vmIndex).invoke(()->setUpVM(methodName, vmDefaultDiskStoreName));
       }
     }
     
@@ -356,12 +358,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   protected void postSetUp() throws Exception {
   }
   
-  private String getDefaultDiskStoreName(final int hostIndex, final int vmIndex) {
-    return "DiskStore-" + String.valueOf(hostIndex) + "-" + String.valueOf(vmIndex) + "-" + getClass().getCanonicalName() + "." + getTestMethodName(); // used to be getDeclaringClass()
+  private static String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
+    return "DiskStore-" + String.valueOf(hostIndex) + "-" + String.valueOf(vmIndex) + "-" + className + "." + methodName; // used to be getDeclaringClass()
   }
   
-  private static void setUpVM(final String testMethodName, final String defaultDiskStoreName) {
-    setTestMethodName(testMethodName);
+  private static void setUpVM(final String methodName, final String defaultDiskStoreName) {
+    setTestMethodName(methodName);
     GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
     setUpCreationStackGenerator();

@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.internal.cache.tier.sockets;
 
+import static com.gemstone.gemfire.test.dunit.DistributedTestSupport.*;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -168,7 +170,7 @@ public class InstantiatorPropagationDUnitTest extends DistributedTestCase {
   }
   
   public static void unregisterInstantiatorsInAllVMs() {
-    Invoke.invokeInEveryVM(DistributedTestCase.class, "unregisterInstantiatorsInThisVM");
+    Invoke.invokeInEveryVM(()->unregisterInstantiatorsInThisVM());
   }
 
   public static void verifyInstantiators(final int numOfInstantiators) {
