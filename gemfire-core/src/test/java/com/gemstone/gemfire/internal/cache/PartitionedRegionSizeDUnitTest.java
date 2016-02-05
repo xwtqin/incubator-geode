@@ -34,10 +34,10 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -120,7 +120,7 @@ public class PartitionedRegionSizeDUnitTest extends
       public void run2()
       {
         Cache cache = getCache();
-        final int oldLevel = setLogLevel(LogWriterSupport.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
+        final int oldLevel = setLogLevel(LogWriterUtils.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
         for (int j = 0; j < MAX_REGIONS; j++) {
           Region pr = cache.getRegion(Region.SEPARATOR + PR_PREFIX
               + "DistAckSync" + j);
@@ -130,7 +130,7 @@ public class PartitionedRegionSizeDUnitTest extends
             pr.put(key, value);
           }
         }
-        setLogLevel(LogWriterSupport.getLogWriter(), oldLevel);
+        setLogLevel(LogWriterUtils.getLogWriter(), oldLevel);
 
       }
     });
@@ -222,7 +222,7 @@ public class PartitionedRegionSizeDUnitTest extends
       public void run2()
       {
         Cache cache = getCache();
-        final int oldLevel = setLogLevel(LogWriterSupport.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
+        final int oldLevel = setLogLevel(LogWriterUtils.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
         for (int j = 0; j < MAX_REGIONS; j++) {
           Region pr = cache.getRegion(Region.SEPARATOR + PR_PREFIX
               + "DistAckASync" + j);
@@ -232,11 +232,11 @@ public class PartitionedRegionSizeDUnitTest extends
             pr.put(key, value);
           }
         }
-        setLogLevel(LogWriterSupport.getLogWriter(), oldLevel);
+        setLogLevel(LogWriterUtils.getLogWriter(), oldLevel);
       }
     });
 
-    Threads.join(async0, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async0, 30 * 1000);
 
 	if (async0.exceptionOccurred()) {
           Assert.fail("Exception during async0", async0.getException());
@@ -326,7 +326,7 @@ public class PartitionedRegionSizeDUnitTest extends
       public void run2()
       {
         Cache cache = getCache();
-        final int oldLevel = setLogLevel(LogWriterSupport.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
+        final int oldLevel = setLogLevel(LogWriterUtils.getLogWriter(), InternalLogWriter.WARNING_LEVEL);
         for (int j = 0; j < MAX_REGIONS; j++) {
           Region pr = cache.getRegion(Region.SEPARATOR + PR_PREFIX
               + "DistAckSyncChangingVMCount" + j);
@@ -336,7 +336,7 @@ public class PartitionedRegionSizeDUnitTest extends
             pr.put(key, value);
           }
         }
-        setLogLevel(LogWriterSupport.getLogWriter(), oldLevel);
+        setLogLevel(LogWriterUtils.getLogWriter(), oldLevel);
       }
     });
 

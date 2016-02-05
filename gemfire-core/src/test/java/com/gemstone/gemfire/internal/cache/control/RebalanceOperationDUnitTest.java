@@ -77,7 +77,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -1869,7 +1869,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           assertEquals(12, details.getCreatedBucketCount());
           assertEquals(1,details.getActualRedundantCopies());
           assertEquals(0,details.getLowRedundancyBucketCount());
-          LogWriterSupport.getLogWriter().info("details=" + details.getPartitionMemberInfo());
+          LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
           long afterSize = 0;
           for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
             assertEquals(8, memberDetails.getBucketCount());
@@ -2011,7 +2011,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         assertEquals(12, details.getCreatedBucketCount());
         assertEquals(1,details.getActualRedundantCopies());
         assertEquals(0,details.getLowRedundancyBucketCount());
-        LogWriterSupport.getLogWriter().info("details=" + details.getPartitionMemberInfo());
+        LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
         long afterSize = 0;
         for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
           assertEquals(8, memberDetails.getBucketCount());
@@ -2080,7 +2080,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           assertEquals(12, details.getCreatedBucketCount());
           assertEquals(1,details.getActualRedundantCopies());
           assertEquals(0,details.getLowRedundancyBucketCount());
-          LogWriterSupport.getLogWriter().info("details=" + details.getPartitionMemberInfo());
+          LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
           long afterSize = 0;
           for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
             assertEquals(6, memberDetails.getBucketCount());
@@ -2195,7 +2195,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         assertEquals(12, details.getCreatedBucketCount());
         assertEquals(1,details.getActualRedundantCopies());
         assertEquals(0,details.getLowRedundancyBucketCount());
-        LogWriterSupport.getLogWriter().info("details=" + details.getPartitionMemberInfo());
+        LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
         long afterSize = 0;
         for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
           assertEquals(8, memberDetails.getBucketCount());
@@ -2505,7 +2505,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     }
     cacheWriter.release();
    
-    LogWriterSupport.getLogWriter().info("starting wait for rebalance.  Will wait for " + MAX_WAIT + " seconds");
+    LogWriterUtils.getLogWriter().info("starting wait for rebalance.  Will wait for " + MAX_WAIT + " seconds");
     RebalanceResults results = rebalance.getResults(MAX_WAIT, TimeUnit.SECONDS);
     assertEquals(2, results.getTotalBucketCreatesCompleted());
     assertEquals(1, results.getTotalPrimaryTransfersCompleted());

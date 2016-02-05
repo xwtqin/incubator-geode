@@ -70,10 +70,10 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -995,7 +995,7 @@ public class PRFunctionExecutionDUnitTest extends
     });
     assertEquals(Boolean.TRUE, o);
 
-    Threads.join(async[0], 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 60 * 1000);
 
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
@@ -1093,7 +1093,7 @@ public class PRFunctionExecutionDUnitTest extends
     });
     assertEquals(Boolean.TRUE, o);
 
-    Threads.join(async[0], 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 60 * 1000);
 
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
@@ -1590,7 +1590,7 @@ public class PRFunctionExecutionDUnitTest extends
         }
         catch (Exception expected) {
           // No data should cause exec to throw
-          LogWriterSupport.getLogWriter().warning("Exception Occured : "+ expected.getMessage());
+          LogWriterUtils.getLogWriter().warning("Exception Occured : "+ expected.getMessage());
           // boolean expectedStr = expected.getMessage().startsWith("No target
           // node was found for routingKey");
           // assertTrue("Unexpected exception: " + expected, expectedStr);
@@ -2247,7 +2247,7 @@ public class PRFunctionExecutionDUnitTest extends
         ResultCollector rc1 = dataSet.withArgs(Boolean.TRUE)
             .execute(function.getId());
         List l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2432,7 +2432,7 @@ public class PRFunctionExecutionDUnitTest extends
               }
             });
         List l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2537,7 +2537,7 @@ public class PRFunctionExecutionDUnitTest extends
               }
             });
         List l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -2612,7 +2612,7 @@ public class PRFunctionExecutionDUnitTest extends
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
-          LogWriterSupport.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
+          LogWriterUtils.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
         }
         
         Function function = new TestFunction(true,TestFunction.TEST_FUNCTION3);
@@ -2723,7 +2723,7 @@ public class PRFunctionExecutionDUnitTest extends
                 "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
                 e);
           }
-          LogWriterSupport.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
+          LogWriterUtils.getLogWriter().fine("Customer :- { " + custid + " : " + customer + " }");
         }
 
         PartitionedRegion partitionedregion = (PartitionedRegion)getCache().getRegion(rName2);
@@ -2745,7 +2745,7 @@ public class PRFunctionExecutionDUnitTest extends
                   "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                   e);
             }
-            LogWriterSupport.getLogWriter().fine("Order :- { " + orderId + " : " + order + " }");
+            LogWriterUtils.getLogWriter().fine("Order :- { " + orderId + " : " + order + " }");
           }
         }
                 
@@ -3054,7 +3054,7 @@ public class PRFunctionExecutionDUnitTest extends
       ds.disconnect();
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception Occured : " + e.getMessage());
+      LogWriterUtils.getLogWriter().info("Exception Occured : " + e.getMessage());
       e.printStackTrace();
       Assert.fail("Test failed", e);
     }

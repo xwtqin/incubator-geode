@@ -49,9 +49,9 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.StoppableWaitCriterion;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -174,7 +174,8 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     }
     finally {
-      DistributedTestSupport.unregisterAllDataSerializersFromAllVms();
+      DataSerializerPropogationDUnitTest.successfullyLoadedTestDataSerializer = false;
+      DistributedTestUtils.unregisterAllDataSerializersFromAllVms();
     }
   }
 
@@ -415,7 +416,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
 
     // wait for client2 to come online
     Wait.pause(3000);
@@ -473,10 +474,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
 
     // wait for client2 to come online
     Wait.pause(2000);
@@ -505,10 +506,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
 
     // wait for client2 to come online
     Wait.pause(2000);
@@ -537,10 +538,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
 
     // wait for client2 to come online
     Wait.pause(2000);
@@ -594,10 +595,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
 
     // wait for client2 to come online
     Wait.pause(2000);
@@ -627,10 +628,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
     PORT2 = initServerCache(server2);
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "registerDSObject7");
@@ -697,11 +698,11 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
-    createClientCache(NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2));
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
+    createClientCache(NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2));
 
     // wait for client2 to come online
     Wait.pause(2000);
@@ -735,12 +736,12 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
     PORT1 = initServerCache(server1, 1);
     PORT2 = initServerCache(server2, 2);
 
-    createClientCache(NetworkSupport.getServerHostName(server1.getHost()),
+    createClientCache(NetworkUtils.getServerHostName(server1.getHost()),
         new Integer(PORT1));
 
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server2.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server2.getHost()), new Integer(PORT2) });
     setClientServerObserver1();
     client2
         .invoke(DataSerializerPropogationDUnitTest.class, "setClientServerObserver2");
@@ -763,10 +764,10 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
     client1.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(DataSerializerPropogationDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT2) });
+            NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT2) });
 
     // wait for client2 to come online
     Wait.pause(2000);

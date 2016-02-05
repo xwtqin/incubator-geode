@@ -36,7 +36,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.cache.client.*;
@@ -87,7 +87,7 @@ public class VerifyUpdatesFromNonInterestEndPointDUnitTest extends DistributedTe
     PORT2 =  ((Integer)vm1.invoke(VerifyUpdatesFromNonInterestEndPointDUnitTest.class, "createServerCache" )).intValue();
 
     vm2.invoke(VerifyUpdatesFromNonInterestEndPointDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1),new Integer(PORT2)});
+        new Object[] { NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1),new Integer(PORT2)});
 
 
   }

@@ -30,7 +30,7 @@ import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.internal.logging.LocalLogWriter;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -154,7 +154,7 @@ public class CollaborationJUnitTest {
 
     // let threadA release so that threadB gets lock
     this.flagTestBlocksUntilRelease = false;
-    Threads.join(threadA, 30 * 1000, null);
+    ThreadUtils.join(threadA, 30 * 1000);
     
     // make sure threadB is doing what it's supposed to do...
     ev = new WaitCriterion() {
@@ -171,7 +171,7 @@ public class CollaborationJUnitTest {
     // threadB must have lock now... let threadB release
     assertTrue(this.collaboration.hasCurrentTopic(threadB));
     this.flagTestBlocksUntilRelease = false;
-    Threads.join(threadB, 30 * 1000, null);
+    ThreadUtils.join(threadB, 30 * 1000);
 
     // collaboration should be free now    
     assertFalse(this.collaboration.hasCurrentTopic(threadA));
@@ -342,7 +342,7 @@ public class CollaborationJUnitTest {
     
     // release threadA
     this.threadAFlag_TestLateComerJoinsIn = false;
-    Threads.join(threadA, 30 * 1000, null);
+    ThreadUtils.join(threadA, 30 * 1000);
     assertFalse(this.collaboration.hasCurrentTopic(threadA));
     assertTrue(this.collaboration.hasCurrentTopic(threadB));
     assertFalse(this.collaboration.hasCurrentTopic(threadC));
@@ -352,7 +352,7 @@ public class CollaborationJUnitTest {
     
     // release threadB
     this.threadBFlag_TestLateComerJoinsIn = false;
-    Threads.join(threadB, 30 * 1000, null);
+    ThreadUtils.join(threadB, 30 * 1000);
     assertFalse(this.collaboration.hasCurrentTopic(threadB));
     assertFalse(this.collaboration.hasCurrentTopic(threadC));
     assertTrue(this.collaboration.hasCurrentTopic(threadD));
@@ -361,7 +361,7 @@ public class CollaborationJUnitTest {
     
     // release threadD
     this.threadDFlag_TestLateComerJoinsIn = false;
-    Threads.join(threadD, 30 * 1000, null);
+    ThreadUtils.join(threadD, 30 * 1000);
     ev = new WaitCriterion() {
       @Override
       public boolean done() {
@@ -380,7 +380,7 @@ public class CollaborationJUnitTest {
     
     // release threadC
     this.threadCFlag_TestLateComerJoinsIn = false;
-    Threads.join(threadC, 30 * 1000, null);
+    ThreadUtils.join(threadC, 30 * 1000);
     assertFalse(this.collaboration.hasCurrentTopic(threadC));
     assertFalse(this.collaboration.isCurrentTopic(topicA));
     assertFalse(this.collaboration.isCurrentTopic(topicB));
@@ -464,7 +464,7 @@ public class CollaborationJUnitTest {
     }
     
     for (int t = 0; t < threads.length; t++) {
-      Threads.join(threads[t], 30 * 1000, null);
+      ThreadUtils.join(threads[t], 30 * 1000);
     }
     
     // assert that all topics are acquired in order
@@ -579,7 +579,7 @@ public class CollaborationJUnitTest {
     // after starting thread, hasCurrentTopic(thread) returns true
     assertTrue(this.collaboration.hasCurrentTopic(thread));
     this.flagTestThreadHasCurrentTopic = false;
-    Threads.join(thread, 30 * 1000, null);
+    ThreadUtils.join(thread, 30 * 1000);
     
     // after thread finishes, hasCurrentTopic(thread) returns false
     assertTrue(!this.collaboration.hasCurrentTopic(thread));

@@ -24,10 +24,9 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -60,7 +59,7 @@ public class CqStateDUnitTest extends HelperTestCase {
     startCacheServer(serverA, ports[0], getAuthenticatedServerProperties());
     createReplicatedRegion(serverA, regionName, null);
 
-    final String host0 = NetworkSupport.getServerHostName(serverA.getHost());
+    final String host0 = NetworkUtils.getServerHostName(serverA.getHost());
     startClient(client, new VM[]{ serverA, serverB }, ports, 1, getClientProperties());
     createCQ(client, cqName, "select * from /"+ regionName, null);
     
@@ -70,7 +69,7 @@ public class CqStateDUnitTest extends HelperTestCase {
     startCacheServers(serverB);
     
     AsyncInvocation async = executeCQ(client, cqName);
-    Threads.join(async, 10000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async, 10000);
 
     Boolean clientRunning = (Boolean) client.invoke(new SerializableCallable() {
       @Override

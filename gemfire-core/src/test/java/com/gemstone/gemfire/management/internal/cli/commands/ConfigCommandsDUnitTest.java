@@ -38,7 +38,7 @@ import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -125,10 +125,10 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     List<String> jvmArgs = runtimeBean.getInputArguments();
 
-    LogWriterSupport.getLogWriter().info("#SB Actual JVM Args : ");
+    LogWriterUtils.getLogWriter().info("#SB Actual JVM Args : ");
 
     for (String jvmArg : jvmArgs) {
-      LogWriterSupport.getLogWriter().info("#SB JVM " + jvmArg);
+      LogWriterUtils.getLogWriter().info("#SB JVM " + jvmArg);
     }
 
     InternalDistributedSystem system = (InternalDistributedSystem) cache.getDistributedSystem();
@@ -142,7 +142,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     CommandResult cmdResult = executeCommand(command);
 
     String resultStr = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Hiding the defaults\n" + resultStr);
+    LogWriterUtils.getLogWriter().info("#SB Hiding the defaults\n" + resultStr);
 
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(true, resultStr.contains("G1"));
@@ -152,7 +152,7 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
 
     cmdResult = executeCommand(command + " --" + CliStrings.DESCRIBE_CONFIG__HIDE__DEFAULTS + "=false");
     resultStr = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB No hiding of defaults\n" + resultStr);
+    LogWriterUtils.getLogWriter().info("#SB No hiding of defaults\n" + resultStr);
 
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(true, resultStr.contains("is-server"));
@@ -281,8 +281,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "10");
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("Result\n");
-    LogWriterSupport.getLogWriter().info(resultString);
+    LogWriterUtils.getLogWriter().info("Result\n");
+    LogWriterUtils.getLogWriter().info(resultString);
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(LogWriterImpl.INFO_LEVEL, config.getLogLevel());
     assertEquals(50, config.getLogFileSizeLimit());
@@ -320,8 +320,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     CommandStringBuilder csb = new CommandStringBuilder(CliStrings.ALTER_RUNTIME_CONFIG);
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultAsString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultAsString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultAsString);
     assertEquals(true, cmdResult.getStatus().equals(Status.ERROR));
     assertTrue(resultAsString.contains(CliStrings.ALTER_RUNTIME_CONFIG__RELEVANT__OPTION__MESSAGE));
 
@@ -329,8 +329,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "2000000000");
     cmdResult = executeCommand(csb.getCommandString());
     resultAsString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultAsString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultAsString);
     assertEquals(true, cmdResult.getStatus().equals(Status.ERROR));
 
   }
@@ -365,8 +365,8 @@ public class ConfigCommandsDUnitTest extends CliCommandTestBase {
     csb.addOption(CliStrings.ALTER_RUNTIME_CONFIG__LOG__DISK__SPACE__LIMIT, "10");
     CommandResult cmdResult = executeCommand(csb.getCommandString());
     String resultString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultString);
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
     assertEquals(LogWriterImpl.INFO_LEVEL, config.getLogLevel());
     assertEquals(50, config.getLogFileSizeLimit());

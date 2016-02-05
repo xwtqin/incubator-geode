@@ -47,7 +47,7 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
 import com.gemstone.gemfire.internal.cache.lru.NewLRUClockHand;
 import com.gemstone.gemfire.internal.cache.persistence.UninterruptibleFileChannel;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -412,11 +412,11 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     }
 
     long startTime = System.currentTimeMillis();
-    Threads.join(thread1, 20 * 1000, null);
-    Threads.join(thread2, 20 * 1000, null);
-    Threads.join(thread3, 20 * 1000, null);
-    Threads.join(thread4, 20 * 1000, null);
-    Threads.join(thread5, 20 * 1000, null);
+    ThreadUtils.join(thread1, 20 * 1000);
+    ThreadUtils.join(thread2, 20 * 1000);
+    ThreadUtils.join(thread3, 20 * 1000);
+    ThreadUtils.join(thread4, 20 * 1000);
+    ThreadUtils.join(thread5, 20 * 1000);
     
     long interval = System.currentTimeMillis() - startTime;
     if (interval > 100000) {
@@ -522,11 +522,11 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
 
     long startTime = System.currentTimeMillis();
     finished = true;
-    Threads.join(thread1, 5 * 60 * 1000, null);
-    Threads.join(thread2, 5 * 60 * 1000, null);
-    Threads.join(thread3, 5 * 60 * 1000, null);
-    Threads.join(thread4, 5 * 60 * 1000, null);
-    Threads.join(thread5, 5 * 60 * 1000, null);
+    ThreadUtils.join(thread1, 5 * 60 * 1000);
+    ThreadUtils.join(thread2, 5 * 60 * 1000);
+    ThreadUtils.join(thread3, 5 * 60 * 1000);
+    ThreadUtils.join(thread4, 5 * 60 * 1000);
+    ThreadUtils.join(thread5, 5 * 60 * 1000);
     long interval = System.currentTimeMillis() - startTime;
     if (interval > 100000) {
       fail(" Test took too long in going to join, it should have exited before 100000 ms");
@@ -721,7 +721,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     oplogs = dsi.testHookGetAllOverflowOplogs();
     int retryCount = 20;
     while (oplogs.size() > 1 && retryCount > 0) {
-      Wait.staticPause(100);
+      Wait.pause(100);
       oplogs = dsi.testHookGetAllOverflowOplogs();
       retryCount--;
     }
@@ -1153,7 +1153,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
               public void beforeGoingToCompact()
               {
                 try {
-                  Threads.join(t1, 60 * 1000, null);
+                  ThreadUtils.join(t1, 60 * 1000);
                 }
                 catch (Exception ignore) {
                   logWriter.error("Exception occured", ignore);
@@ -1193,7 +1193,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     });
     testThread.start();
    // region.clear();
-    Threads.join(testThread, 40 * 1000, null);
+    ThreadUtils.join(testThread, 40 * 1000);
     assertFalse(failureCause, testFailed);
     assertFalse("Expected situation of max directory size violation happening and available space less than zero did not happen  ", exceptionOccured); // CC jade1d failure
 
@@ -1733,7 +1733,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     region.create("key1", "value1");
     try {
       cache.getLogger().info("waiting for clear to finish");
-      Threads.join(th, 30 * 1000, null);
+      ThreadUtils.join(th, 30 * 1000);
     }
     catch (Exception ie) {
       DiskRegionJUnitTest.this.exceptionOccured = true;
@@ -1783,7 +1783,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
           public void beforeDiskClear()
           {
             th.start();
-            Wait.staticPause(7 * 1000);
+            Wait.pause(7 * 1000);
             System.out.println("FIXME: this thread does not terminate--EVER!");
 //            try {
 //              DistributedTestCase.join(th, 7 * 1000, null);
@@ -1796,7 +1796,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
         });
     try {
       region.clear();
-      Threads.join(th, 30 * 1000, null);
+      ThreadUtils.join(th, 30 * 1000);
       assertFalse(this.failureCause, this.exceptionOccured);
       //We expect 1 entry to exist, because the clear was triggered before
       //the update
@@ -1843,7 +1843,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
          	LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = false;
             th.start();
             System.out.println("FIXME: this thread (2) does not terminate--EVER!");
-            Wait.staticPause(10 * 1000);
+            Wait.pause(10 * 1000);
 //            try {	
 //              DistributedTestCase.join(th, 10 * 1000, null);
 //            }
@@ -1855,7 +1855,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
         });
     try {
       region.clear();
-      Threads.join(th, 30 * 1000, null);
+      ThreadUtils.join(th, 30 * 1000);
       assertFalse(this.failureCause, this.exceptionOccured);
       //We expect 1 entry to exist, because the clear was triggered before
       //the update

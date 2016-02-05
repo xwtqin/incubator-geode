@@ -50,7 +50,7 @@ import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.beans.MemberMBean;
 import com.gemstone.gemfire.management.internal.beans.SequenceNumber;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -308,7 +308,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
                     null);
                 notificationListenerMap.put(objectName, listener);
               } catch (InstanceNotFoundException e) {
-                LogWriterSupport.getLogWriter().error(e);
+                LogWriterUtils.getLogWriter().error(e);
               }
             }
           }
@@ -387,9 +387,9 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           try {
             mbeanServer.removeNotificationListener(objectName, listener);
           } catch (ListenerNotFoundException e) {
-            LogWriterSupport.getLogWriter().error(e);
+            LogWriterUtils.getLogWriter().error(e);
           } catch (InstanceNotFoundException e) {
-            LogWriterSupport.getLogWriter().error(e);
+            LogWriterUtils.getLogWriter().error(e);
           }
         }
 
@@ -454,7 +454,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           try {
             mbeanServer.removeNotificationListener(objectName, listener);
           } catch (InstanceNotFoundException e) {
-            LogWriterSupport.getLogWriter().error(e);
+            LogWriterUtils.getLogWriter().error(e);
           } catch (ListenerNotFoundException e) {
             // TODO: apparently there is never a notification listener on any these mbeans at this point 
             // fix this test so it doesn't hit these unexpected exceptions -- getLogWriter().error(e);
@@ -484,7 +484,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
             } catch (ListenerNotFoundException e) {
               // Expected Exception Do nothing
             } catch (InstanceNotFoundException e) {
-              LogWriterSupport.getLogWriter().error(e);
+              LogWriterUtils.getLogWriter().error(e);
             }
           }
         }
@@ -733,10 +733,10 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           Iterator<DistributedMember> memberIt = otherMemberSet.iterator();
           while (memberIt.hasNext()) {
             DistributedMember member = memberIt.next();
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "JVM Metrics For Member " + member.getId() + ":"
                     + bean.showJVMMetrics(member.getId()));
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "OS Metrics For Member " + member.getId() + ":"
                     + bean.showOSMetrics(member.getId()));
           }
@@ -782,7 +782,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           DistributedSystemMXBean bean = service.getDistributedSystemMXBean();
           assertNotNull(service.getDistributedSystemMXBean());
           bean.shutDownAllMembers();
-          Wait.staticPause(2000);
+          Wait.pause(2000);
           assertEquals(
               cache.getDistributedSystem().getAllOtherMembers().size(), 1);
           return null;
@@ -809,7 +809,7 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
           waitForAllMembers(4);
           
           for(int i =0; i< bean.listMemberObjectNames().length ; i++){
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "ObjectNames Of the Mmeber" + bean.listMemberObjectNames()[i] );
           }
 

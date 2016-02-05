@@ -50,8 +50,8 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
   public class PRClientServerRegionFunctionExecutionSingleHopDUnitTest extends PRClientServerTestBase {
@@ -353,7 +353,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
       client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
           "verifyDeadAndLiveServers", new Object[] { new Integer(1),
               new Integer(2) });
-      Threads.join(async[0], 6 * 60 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(async[0], 6 * 60 * 1000);
       if (async[0].getException() != null) {
         Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
@@ -382,7 +382,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
       server3.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "startServerHA");
       server1.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "closeCacheHA");
       client.invoke(PRClientServerRegionFunctionExecutionSingleHopDUnitTest.class, "verifyDeadAndLiveServers",new Object[]{new Integer(1),new Integer(2)});
-      Threads.join(async[0],  5 * 60 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(async[0],  5 * 60 * 1000);
       if(async[0].getException() != null){
         Assert.fail("UnExpected Exception Occured : ", async[0].getException());
       }
@@ -486,7 +486,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         String excuse;
         public boolean done() {
           int sz = pool.getConnectedServerCount();
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Checking for the Live Servers : Expected  : " + expectedLiveServers
                   + " Available :" + sz);
           if (sz == expectedLiveServers.intValue()) {
@@ -536,7 +536,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         }
       }
       catch (Exception e) {
-        LogWriterSupport.getLogWriter().info("Got an exception : " + e.getMessage());
+        LogWriterUtils.getLogWriter().info("Got an exception : " + e.getMessage());
         assertTrue(e instanceof EOFException || e instanceof SocketException
             || e instanceof SocketTimeoutException
             || e instanceof ServerException || e instanceof IOException
@@ -557,7 +557,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
       ResultCollector rc1 = dataSet.withFilter(testKeysSet).withArgs(Boolean.TRUE).execute(
           function.getId());
       List l = ((List)rc1.getResult());
-      LogWriterSupport.getLogWriter().info("Result size : " + l.size());
+      LogWriterUtils.getLogWriter().info("Result size : " + l.size());
       return l;
     }
     
@@ -592,7 +592,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
       PartitionedRegion region = (PartitionedRegion)cache.getRegion(PartitionedRegionName);
       HashMap localBucket2RegionMap = (HashMap)region
       .getDataStore().getSizeLocally();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
       "Size of the " + PartitionedRegionName + " in this VM :- "
           + localBucket2RegionMap.size());
       Set entrySet = localBucket2RegionMap.entrySet();
@@ -620,8 +620,8 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         }
         ResultCollector rc1 = executeOnAll(dataSet, Boolean.TRUE,  function, isByName);
         List resultList = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info("Result size : " + resultList.size());
-        LogWriterSupport.getLogWriter().info("Result are SSSS : " + resultList);
+        LogWriterUtils.getLogWriter().info("Result size : " + resultList.size());
+        LogWriterUtils.getLogWriter().info("Result are SSSS : " + resultList);
         assertEquals(3, resultList.size());
 
 //        while (resultIterator.hasNext()) {
@@ -751,7 +751,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
               .iterator().next());
         }
         catch (Exception expected) {
-          LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Exception : " + expected.getMessage());
           expected.printStackTrace();
           fail("Test failed after the put operation");
         }
@@ -780,7 +780,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         List l = null;
         ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,  function, isByName);
         l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
+        LogWriterUtils.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
@@ -830,7 +830,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         ResultCollector rc1 = execute(dataSet, testKeysSet, Boolean.TRUE,
             function, isByName);
         l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
+        LogWriterUtils.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
@@ -866,7 +866,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        LogWriterSupport.getLogWriter().info("Exception : " , ex);
+        LogWriterUtils.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }
@@ -910,13 +910,13 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
           }
         });
         l = ((List)rc1.getResult());
-        LogWriterSupport.getLogWriter().info("Result size : " + l.size());
+        LogWriterUtils.getLogWriter().info("Result size : " + l.size());
         assertEquals(3, l.size());
         for (Iterator i = l.iterator(); i.hasNext();) {
           assertEquals(Boolean.TRUE, i.next());
         }
       }catch(Exception e){
-        LogWriterSupport.getLogWriter().info("Exception : " + e.getMessage());
+        LogWriterUtils.getLogWriter().info("Exception : " + e.getMessage());
         e.printStackTrace();
         fail("Test failed after the put operation");
         
@@ -1003,7 +1003,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         fail("Test failed after the put operation");
       } catch(FunctionException expected) {
         expected.printStackTrace();
-        LogWriterSupport.getLogWriter().info("Exception : " + expected.getMessage());
+        LogWriterUtils.getLogWriter().info("Exception : " + expected.getMessage());
         assertTrue(expected.getMessage().startsWith((LocalizedStrings.ExecuteFunction_CANNOT_0_RESULTS_HASRESULT_FALSE
             .toLocalizedString("return any"))));
       }
@@ -1061,7 +1061,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        LogWriterSupport.getLogWriter().info("Exception : " , ex);
+        LogWriterUtils.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }
@@ -1128,7 +1128,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
         });
       }
       catch (Exception expected) {
-        LogWriterSupport.getLogWriter().fine("Exception occured : " + expected.getMessage());
+        LogWriterUtils.getLogWriter().fine("Exception occured : " + expected.getMessage());
         assertTrue(expected.getMessage().contains(
             "No target node found for KEY = " + testKey)
             || expected.getMessage()
@@ -1190,7 +1190,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
       }catch (Exception ex) {
         ex.printStackTrace();
-        LogWriterSupport.getLogWriter().info("Exception : " , ex);
+        LogWriterUtils.getLogWriter().info("Exception : " , ex);
         Assert.fail("Test failed after the put operation",ex);
       }
     }

@@ -39,7 +39,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -271,9 +271,9 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
         public void run2() {
           Region region = getCache().getRegion("root/"+name);
   
-          LogWriterSupport.getLogWriter().info("t1 is invoking get("+objectName+")");
+          LogWriterUtils.getLogWriter().info("t1 is invoking get("+objectName+")");
           try {
-            LogWriterSupport.getLogWriter().info("t1 retrieved value " + region.get(objectName));
+            LogWriterUtils.getLogWriter().info("t1 retrieved value " + region.get(objectName));
             fail("first load should have triggered an exception");
           } catch (RuntimeException e) {
             if (!e.getMessage().contains(exceptionString)) {
@@ -288,7 +288,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
           final Object[] valueHolder = new Object[1];
   
           // wait for vm1 to cause the loader to be invoked
-          LogWriterSupport.getLogWriter().info("t2 is waiting for loader to be invoked by t1");
+          LogWriterUtils.getLogWriter().info("t2 is waiting for loader to be invoked by t1");
           try {
             loaderInvokedLatch.await(30, TimeUnit.SECONDS);
           } catch (InterruptedException e) {
@@ -327,7 +327,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
             fail("get() operation blocked for too long - test needs some work");
           }
           
-          LogWriterSupport.getLogWriter().info("t2 is invoking get("+objectName+")");
+          LogWriterUtils.getLogWriter().info("t2 is invoking get("+objectName+")");
           Object value = valueHolder[0];
           if (value instanceof RuntimeException) {
             if ( ((Exception)value).getMessage().contains(exceptionString) ) {
@@ -336,7 +336,7 @@ public class SearchAndLoadDUnitTest extends CacheTestCase {
               throw (RuntimeException)value;
             }
           } else {
-            LogWriterSupport.getLogWriter().info("t2 retrieved value " + value);
+            LogWriterUtils.getLogWriter().info("t2 retrieved value " + value);
             assertNotNull(value);
           }
         }

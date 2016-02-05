@@ -28,7 +28,7 @@ import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.Customer;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
@@ -107,21 +107,21 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
       public Object call() throws Exception {
         CacheTransactionManager mgr = cache.getCacheTransactionManager();
         mgr.setDistributed(true);
-        LogWriterSupport.getLogWriter().fine("SJ:TX BEGIN");
+        LogWriterUtils.getLogWriter().fine("SJ:TX BEGIN");
         mgr.begin();
         Region<CustId, Customer> prRegion = cache.getRegion(regionName);
 
         CustId custIdOne = new CustId(1);
         Customer customerOne = new Customer("name1", "addr1");
-        LogWriterSupport.getLogWriter().fine("SJ:TX PUT 1");
+        LogWriterUtils.getLogWriter().fine("SJ:TX PUT 1");
         prRegion.put(custIdOne, customerOne);
 
         CustId custIdTwo = new CustId(2);
         Customer customerTwo = new Customer("name2", "addr2");
-        LogWriterSupport.getLogWriter().fine("SJ:TX PUT 2");
+        LogWriterUtils.getLogWriter().fine("SJ:TX PUT 2");
         prRegion.put(custIdTwo, customerTwo);
 
-        LogWriterSupport.getLogWriter().fine("SJ:TX COMMIT");
+        LogWriterUtils.getLogWriter().fine("SJ:TX COMMIT");
         mgr.commit();
         return null;
       }

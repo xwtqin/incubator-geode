@@ -41,8 +41,8 @@ import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -105,9 +105,9 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
     PORT2 =  ((Integer)vm1.invoke(DestroyEntryPropagationDUnitTest.class, "createServerCache" )).intValue();
 
     vm2.invoke(DestroyEntryPropagationDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1),new Integer(PORT2)});
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1),new Integer(PORT2)});
     vm3.invoke(DestroyEntryPropagationDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1),new Integer(PORT2)});
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1),new Integer(PORT2)});
 
   }
 
@@ -301,10 +301,10 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
   {
     try {
       Iterator iter = cache.getCacheServers().iterator();
-      LogWriterSupport.getLogWriter().fine ("Asif: servers running = "+cache.getCacheServers().size());
+      LogWriterUtils.getLogWriter().fine ("Asif: servers running = "+cache.getCacheServers().size());
       if (iter.hasNext()) {
         CacheServer server = (CacheServer)iter.next();
-        LogWriterSupport.getLogWriter().fine("asif : server running on port="+server.getPort()+ " asked to kill serevre onport="+port);
+        LogWriterUtils.getLogWriter().fine("asif : server running on port="+server.getPort()+ " asked to kill serevre onport="+port);
          if(port.intValue() == server.getPort()){
          server.stop();
         }
@@ -452,7 +452,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
     factory.setPoolName(p.getName());
-    factory.setCacheListener(new CertifiableTestCacheListener(LogWriterSupport.getLogWriter()));
+    factory.setCacheListener(new CertifiableTestCacheListener(LogWriterUtils.getLogWriter()));
     RegionAttributes attrs = factory.create();
     cache.createRegion(REGION_NAME, attrs);
 
@@ -464,7 +464,7 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
     factory.setDataPolicy(DataPolicy.REPLICATE);
-    factory.setCacheListener(new CertifiableTestCacheListener(LogWriterSupport.getLogWriter()));
+    factory.setCacheListener(new CertifiableTestCacheListener(LogWriterUtils.getLogWriter()));
     RegionAttributes attrs = factory.create();
     cache.createRegion(REGION_NAME, attrs);
 

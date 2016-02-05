@@ -42,8 +42,8 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -121,7 +121,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     // create client 
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     //createClient(client, port, host0);
     String poolName = "testCQAndPartitionedRegion";
@@ -236,7 +236,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     // create client 
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName = "testPartitionedCqOnAccessorBridgeServer";
     createPool(client, poolName, host0, port);
@@ -330,7 +330,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     // creating an accessor vm with Bridge Server installed.
     createServer(server1);
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName = "testPartitionedCqOnSingleBridgeServer";
     createPool(client, poolName, host0, port);
@@ -430,7 +430,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     // create client 
     
     final int port = server2.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server2.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server2.getHost());
     
     String poolName = "testPRCqOnSingleBridgeServerUpdatesOriginatingAtAccessor";
     createPool(client, poolName, host0, port);
@@ -528,7 +528,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testPRCqWithInvalidatesOnBridgeServer";
     createPool(client, poolName, host0, port);
@@ -628,7 +628,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName = "testPRCqWithInvalidatesOnAccessorBridgeServer";
     createPool(client, poolName, host0, port);
@@ -729,7 +729,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName1 = "testPRCqWithUpdatesFromClients1";
     createPool(client, poolName1, host0, port);
@@ -838,7 +838,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     Wait.pause(2000);
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName1 = "testPRCqWithMultipleRegionsOnServer1";
     createPool(client, poolName1, host0, port);
@@ -984,7 +984,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     Wait.pause(2000);
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName1 = "testPRWithCQsAndProfileUpdates1";
     createPool(client, poolName1, host0, port);
@@ -1203,7 +1203,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     createServer(server2);
     
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     String poolName1 = "testEventsDuringQueryExecution";
     createPool(client, poolName1, host0, port);
@@ -1337,7 +1337,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     final int size = 100;
 
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCQsWithPutalls";
     createPool(client, poolName, new String[]{host0}, new int[]{port});
@@ -1431,7 +1431,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     final int size = 100;
 
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCQsWithPutalls";
     createPool(client, poolName, new String[]{host0}, new int[]{port});
@@ -1533,7 +1533,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     final int size = 100;
 
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCQsWithPutallsTx";
     createPool(client, poolName, new String[]{host0}, new int[]{port});
@@ -1655,7 +1655,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     final int size = 100;
 
     final int port = server1.invokeInt(PrCqUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCQsWithPutallsTx";
     createPool(client, poolName, new String[]{host0}, new int[]{port});
@@ -1808,7 +1808,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         "Create Cache Server") {
       public void run2() throws CacheException
       {
-          LogWriterSupport.getLogWriter().info("### Create Cache Server. ###");
+          LogWriterUtils.getLogWriter().info("### Create Cache Server. ###");
           //AttributesFactory factory = new AttributesFactory();
           //factory.setScope(Scope.DISTRIBUTED_ACK);
           //factory.setMirrorType(MirrorType.KEYS_VALUES);
@@ -1827,7 +1827,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
           //assertTrue(getSystem().getDistributionManager().getOtherDistributionManagerIds().size() > 0);
           for (int i = 0; i < regions.length; i++) {
             Region r = createRegion(regions[i], attr.create());
-            LogWriterSupport.getLogWriter().info("Server created the region: "+r);
+            LogWriterUtils.getLogWriter().info("Server created the region: "+r);
           }
 //          pause(2000);
           try {
@@ -1885,7 +1885,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         } 
         
         for (int i=0; i < servers.length; i++){
-          LogWriterSupport.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
+          LogWriterUtils.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
           cpf.addServer(servers[i], ports[i]);
         }
         
@@ -1906,8 +1906,8 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
     SerializableRunnable createQService =
       new CacheSerializableRunnable("Create Client") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Client. ###");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info("### Create Client. ###");
+        LogWriterUtils.getLogWriter().info(
             "Will connect to server at por: " + serverPorts[0] + " and at host : "
              + serverHost);
         //Region region1 = null;
@@ -1930,7 +1930,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         
         for (int i=0; i < regions.length; i++) {        
           Region clientRegion = createRegion(regions[i], regionFactory.createRegionAttributes());
-          LogWriterSupport.getLogWriter().info("### Successfully Created Region on Client :" + clientRegion);
+          LogWriterUtils.getLogWriter().info("### Successfully Created Region on Client :" + clientRegion);
           //region1.getAttributesMutator().setCacheListener(new CqListener());
         }
       }
@@ -1946,7 +1946,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         //getLogWriter().info("### DEBUG CREATE CQ START ####");
         //pause(20 * 1000);
         
-        LogWriterSupport.getLogWriter().info("### Create CQ. ###" + cqName);
+        LogWriterUtils.getLogWriter().info("### Create CQ. ###" + cqName);
         // Get CQ Service.
         QueryService cqService = null;
         try {
@@ -1957,7 +1957,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         }
         // Create CQ Attributes.
         CqAttributesFactory cqf = new CqAttributesFactory();
-        CqListener[] cqListeners = {new CqQueryTestListener(LogWriterSupport.getLogWriter())};
+        CqListener[] cqListeners = {new CqQueryTestListener(LogWriterUtils.getLogWriter())};
         ((CqQueryTestListener)cqListeners[0]).cqName = cqName;
         
         cqf.initCqListeners(cqListeners);
@@ -1967,11 +1967,11 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         try {
           CqQuery cq1 = cqService.newCq(cqName, queryStr, cqa);
           assertTrue("newCq() state mismatch", cq1.getState().isStopped());
-          LogWriterSupport.getLogWriter().info("Created a new CqQuery : "+cq1);
+          LogWriterUtils.getLogWriter().info("Created a new CqQuery : "+cq1);
         } catch (Exception ex){
           AssertionError err = new AssertionError("Failed to create CQ " + cqName + " . ");
           err.initCause(ex);
-          LogWriterSupport.getLogWriter().info("CqService is :" + cqService, err);
+          LogWriterUtils.getLogWriter().info("CqService is :" + cqService, err);
           throw err;
         }
       }
@@ -1991,7 +1991,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
         for (int i = 1; i <= size; i++) {
           region1.put(KEY+i, new Portfolio(i));
         }
-        LogWriterSupport.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
+        LogWriterUtils.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
       }
     });
   }
@@ -2005,7 +2005,7 @@ public class PrCqUsingPoolDUnitTest extends CacheTestCase {
           m.put(KEY+i, new Portfolio(i));
         }
         region1.putAll(m);
-        LogWriterSupport.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
+        LogWriterUtils.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
       }
     });
   }

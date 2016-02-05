@@ -28,7 +28,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -323,7 +323,7 @@ public class WANManagementDUnitTest extends ManagementTestBase {
           DistributedSystemMXBean dsBean = service.getDistributedSystemMXBean();
           Map<String, Boolean> dsMap = dsBean.viewRemoteClusterStatus();
           
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "<ExpectedString> Ds Map is: " + dsMap
                   + "</ExpectedString> ");
           

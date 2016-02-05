@@ -63,12 +63,12 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -166,18 +166,18 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     AsyncInvocation asyInvk0 = vm0.invokeAsync(createIndexThrougXML("vm0testCreateIndexThroughXML", name, fileName));
     
     AsyncInvocation asyInvk1 = vm1.invokeAsync(createIndexThrougXML("vm1testCreateIndexThroughXML", name, fileName));
     
-    Threads.join(asyInvk1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk1, 30 * 1000);
     if (asyInvk1.exceptionOccurred()) {
       Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -233,7 +233,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     vm0.invoke(createIndexThrougXML("vm0testCreateIndexWhileDoingGII", name, fileName));
@@ -288,7 +288,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     vm0.invoke(createIndexThrougXML("vm0testRRegionCreateIndexWhileDoingGII", repRegName, fileName));
@@ -336,7 +336,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     vm0.invoke(createIndexThrougXML("vm0testPersistentPRRegion", persistentRegName, fileName));
@@ -401,7 +401,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### in testCreateIndexWhileDoingGIIWithEmptyPRRegion.");
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### in testCreateIndexWhileDoingGIIWithEmptyPRRegion.");
     
 
     vm0.invoke(createIndexThrougXML("vm0testGIIWithEmptyPRRegion", name, fileName));
@@ -438,12 +438,12 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     AsyncInvocation asyInvk0 = vm0.invokeAsync(createIndexThrougXML("vm0testAsyncIndexWhileDoingGII", name, fileName));
     
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -456,14 +456,14 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     
     vm0.invoke(prIndexCreationCheck(name, statusIndex, 50));
 
-    Threads.join(asyInvk1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk1, 30 * 1000);
     if (asyInvk1.exceptionOccurred()) {
       Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
     
     vm1.invoke(prIndexCreationCheck(name, statusIndex, 50));
 
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -484,7 +484,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     vm0.invoke(createIndexThrougXML("vm0testIndexCompareQResults", name, fileName));
@@ -547,11 +547,11 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     AsyncInvocation asyInvk0 = vm0.invokeAsync(createIndexThrougXML("vm0testCreateAsyncIndexGIIAndQuery", name, fileName));
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -563,11 +563,11 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     AsyncInvocation asyInvk1 = vm1.invokeAsync(createIndexThrougXML("vm1testCreateAsyncIndexGIIAndQuery", name, fileName));
  
     
-    Threads.join(asyInvk1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());  
+    ThreadUtils.join(asyInvk1, 30 * 1000);  
     if (asyInvk1.exceptionOccurred()) {
       Assert.fail("asyInvk1 failed", asyInvk1.getException());
     }
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -597,7 +597,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
     vm0.invoke(createIndexThrougXML("vm0testAsyncIndexAndCompareQResults", name, fileName));
@@ -616,7 +616,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     vm1.invoke(setTestHook());    
     vm1.invoke(createIndexThrougXML("vm1testAsyncIndexAndCompareQResults", name, fileName));
     
-    Threads.join(asyInvk0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyInvk0, 30 * 1000);
     if (asyInvk0.exceptionOccurred()) {
       Assert.fail("asyInvk0 failed", asyInvk0.getException());
     }
@@ -640,7 +640,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     VM vm1 = host.getVM(1);
     final String fileName = "IndexCreation.xml";
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     //create index using xml
     vm0.invoke(createIndexThrougXML("vm0testIndexCreationForReplicatedPersistentOverFlowRegionOnRestart", persistentOverFlowRegName, fileName));
@@ -887,7 +887,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
             }
 
             // compare.
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Execute query : \n queryStr with index: " + s[0]  + " \n queryStr without index: " + s[1]);
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Execute query : \n queryStr with index: " + s[0]  + " \n queryStr without index: " + s[1]);
             ssORrs.CompareQueryResultsWithoutAndWithIndexes(sr, 1, s);
           }
         }
@@ -947,7 +947,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     new Exception("TEST DEBUG###" + diskStoreId).printStackTrace();
     if (system == null || !system.isConnected()) {
       // Figure out our distributed system properties
-      Properties p = DistributedTestSupport.getAllDistributedSystemProperties(getDistributedSystemProperties());
+      Properties p = DistributedTestUtils.getAllDistributedSystemProperties(getDistributedSystemProperties());
       system = (InternalDistributedSystem)DistributedSystem.connect(p);
     } 
     return system;

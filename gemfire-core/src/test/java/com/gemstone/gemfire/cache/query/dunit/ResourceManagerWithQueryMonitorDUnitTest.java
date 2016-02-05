@@ -66,14 +66,13 @@ import com.gemstone.gemfire.internal.cache.control.ResourceListener;
 import com.gemstone.gemfire.internal.cache.control.TestMemoryThresholdListener;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCase {
@@ -727,7 +726,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
     //unless otherwise configured
     releaseHook(server);
     
-    Threads.join(queryExecution, 60000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(queryExecution, 60000);
     //Make sure no exceptions were thrown during query testing
     try {
       assertEquals(0, queryExecution.getResult());
@@ -1024,7 +1023,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
         getSystem(props);
         
         final ClientCacheFactory ccf = new ClientCacheFactory(props);
-        ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
+        ccf.addPoolServer(NetworkUtils.getServerHostName(server.getHost()), port);
         ClientCache cache = (ClientCache)getClientCache(ccf);
       }
     });
@@ -1039,7 +1038,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
         getSystem(props);
         
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), port);
+        pf.addServer(NetworkUtils.getServerHostName(server.getHost()), port);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1061,7 +1060,7 @@ public class ResourceManagerWithQueryMonitorDUnitTest extends ClientServerTestCa
 
   protected Properties getServerProperties(boolean disableQueryMonitorForMemory, int queryTimeout) {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     return p;
   }
   

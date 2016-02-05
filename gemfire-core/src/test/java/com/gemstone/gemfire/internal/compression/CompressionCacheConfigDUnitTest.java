@@ -27,7 +27,7 @@ import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -134,15 +134,15 @@ public class CompressionCacheConfigDUnitTest extends CacheTestCase {
           disconnectFromDS();
           Properties props = new Properties();
           props.setProperty("cache-xml-file",cacheXml);
-          LogWriterSupport.getLogWriter().info("<ExpectedException action=add>ClassNotFoundException</ExpectedException>");
+          LogWriterUtils.getLogWriter().info("<ExpectedException action=add>ClassNotFoundException</ExpectedException>");
           getSystem(props);
           assertNotNull(getCache());
           return Boolean.TRUE;
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Could not create the cache", e);
+          LogWriterUtils.getLogWriter().error("Could not create the cache", e);
           return Boolean.FALSE;
         } finally {
-          LogWriterSupport.getLogWriter().info("<ExpectedException action=remove>ClassNotFoundException</ExpectedException>");
+          LogWriterUtils.getLogWriter().info("<ExpectedException action=remove>ClassNotFoundException</ExpectedException>");
         }
       }      
     });

@@ -19,7 +19,7 @@ package com.gemstone.gemfire.internal.cache.wan.serial;
 
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
@@ -217,8 +217,8 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
             100, 10, false, true, null, null, true });
 
-    LogWriterSupport.getLogWriter().info("The first ds is " + firstDStore);
-    LogWriterSupport.getLogWriter().info("The first ds is " + secondDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + firstDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + secondDStore);
 
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", null, isOffHeap() });
@@ -243,7 +243,7 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
 
     // verify if the queue has all the events
     // vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", 1000
@@ -262,24 +262,24 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm6.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm7.invoke(WANTestBase.class, "killSender", new Object[] {});
     
-    LogWriterSupport.getLogWriter().info("Killed all the sender. ");
+    LogWriterUtils.getLogWriter().info("Killed all the sender. ");
     // restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm4.invoke(WANTestBase.class, "createSenderWithDiskStore", new Object[] {
         "ln", 2, false, 100, 10, false, true, null,
         firstDStore, true });
-    LogWriterSupport.getLogWriter().info("Creted the sender.... in vm4 ");
+    LogWriterUtils.getLogWriter().info("Creted the sender.... in vm4 ");
     vm5.invoke(WANTestBase.class, "createSenderWithDiskStore", new Object[] {
         "ln", 2, false, 100, 10, false, true, null,
         secondDStore, true });
-    LogWriterSupport.getLogWriter().info("Creted the sender.... in vm5 ");
+    LogWriterUtils.getLogWriter().info("Creted the sender.... in vm5 ");
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "startSender",
         new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 4");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 4");
 
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 5");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 5");
     try {
       inv1.join();
     } catch (InterruptedException e) {
@@ -322,8 +322,8 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
             100, 10, false, true, null, null, true  });
 
-    LogWriterSupport.getLogWriter().info("The first ds is " + firstDStore);
-    LogWriterSupport.getLogWriter().info("The first ds is " + secondDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + firstDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + secondDStore);
 
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", null, isOffHeap() });
@@ -348,13 +348,13 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
 
     // kill the vm
     vm4.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm5.invoke(WANTestBase.class, "killSender", new Object[] {});
 
-    LogWriterSupport.getLogWriter().info("Killed the sender. ");
+    LogWriterUtils.getLogWriter().info("Killed the sender. ");
     // restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -362,11 +362,11 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class,
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
       100, 10, false, true, null, firstDStore, true  });
-    LogWriterSupport.getLogWriter().info("Created the sender.... in vm4 ");
+    LogWriterUtils.getLogWriter().info("Created the sender.... in vm4 ");
     vm5.invoke(WANTestBase.class,
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
             100, 10, false, true, null, secondDStore, true  });
-    LogWriterSupport.getLogWriter().info("Created the sender.... in vm5 ");
+    LogWriterUtils.getLogWriter().info("Created the sender.... in vm5 ");
     
     vm4.invoke(WANTestBase.class, "createPersistentReplicatedRegion", new Object[] {
       getTestMethodName() + "_RR", "ln", isOffHeap() });
@@ -376,10 +376,10 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
   
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "startSender",
         new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 4");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 4");
 
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 5");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 5");
     try {
       inv1.join();
     } catch (InterruptedException e) {
@@ -445,7 +445,7 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
 
     // verify if the queue has all the events
     // vm4.invoke(WANTestBase.class, "checkQueueSize", new Object[] { "ln", 1000
@@ -462,22 +462,22 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm5.invoke(WANTestBase.class, "killSender", new Object[] {});
 
-    LogWriterSupport.getLogWriter().info("Killed the sender. ");
+    LogWriterUtils.getLogWriter().info("Killed the sender. ");
     // restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm4.invoke(WANTestBase.class, "createSender", new Object[] {
         "ln", 2, false, 100, 10, false, false, null, true});
-    LogWriterSupport.getLogWriter().info("Creted the sender.... in vm4 ");
+    LogWriterUtils.getLogWriter().info("Creted the sender.... in vm4 ");
     vm5.invoke(WANTestBase.class, "createSender", new Object[] {
         "ln", 2, false, 100, 10, false, false, null, true});
-    LogWriterSupport.getLogWriter().info("Creted the sender.... in vm5 ");
+    LogWriterUtils.getLogWriter().info("Creted the sender.... in vm5 ");
     
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 4");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 4");
 
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 5");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 5");
     
     AsyncInvocation inv1 =  vm4.invokeAsync(WANTestBase.class, "createPersistentReplicatedRegion", new Object[] {
       getTestMethodName() + "_RR", "ln", isOffHeap() });
@@ -529,8 +529,8 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
             100, 10, false, true, null, null, true  });
 
-    LogWriterSupport.getLogWriter().info("The first ds is " + firstDStore);
-    LogWriterSupport.getLogWriter().info("The first ds is " + secondDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + firstDStore);
+    LogWriterUtils.getLogWriter().info("The first ds is " + secondDStore);
 
     vm2.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", null, isOffHeap() });
@@ -555,13 +555,13 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class, "doPuts", new Object[] { getTestMethodName() + "_RR",
         1000 });
 
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
 
     // kill the vm
     vm4.invoke(WANTestBase.class, "killSender", new Object[] {});
     vm5.invoke(WANTestBase.class, "killSender", new Object[] {});
 
-    LogWriterSupport.getLogWriter().info("Killed the sender. ");
+    LogWriterUtils.getLogWriter().info("Killed the sender. ");
     // restart the vm
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -569,11 +569,11 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
     vm4.invoke(WANTestBase.class,
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
       100, 10, false, true, null, firstDStore, true  });
-    LogWriterSupport.getLogWriter().info("Created the sender.... in vm4 ");
+    LogWriterUtils.getLogWriter().info("Created the sender.... in vm4 ");
     vm5.invoke(WANTestBase.class,
         "createSenderWithDiskStore", new Object[] { "ln", 2, false,
             100, 10, false, true, null, secondDStore, true  });
-    LogWriterSupport.getLogWriter().info("Created the sender.... in vm5 ");
+    LogWriterUtils.getLogWriter().info("Created the sender.... in vm5 ");
     
     vm4.invoke(WANTestBase.class, "createPersistentReplicatedRegion", new Object[] {
       getTestMethodName() + "_RR", "ln", isOffHeap() });
@@ -583,10 +583,10 @@ public class SerialWANPersistenceEnabledGatewaySenderDUnitTest extends
   
     AsyncInvocation inv1 = vm4.invokeAsync(WANTestBase.class, "startSender",
         new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 4");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 4");
 
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("Started the sender in vm 5");
+    LogWriterUtils.getLogWriter().info("Started the sender in vm 5");
     try {
       inv1.join();
     } catch (InterruptedException e) {

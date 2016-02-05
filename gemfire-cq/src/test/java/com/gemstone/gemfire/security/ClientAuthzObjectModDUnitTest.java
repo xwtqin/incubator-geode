@@ -34,7 +34,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.security.ObjectWithAuthz;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
@@ -339,15 +339,15 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     String authInit = gen.getAuthInit();
     String authenticator = gen.getAuthenticator();
 
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testPutsGetsObjectModWithFailover: Using authinit: " + authInit);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testPutsGetsObjectModWithFailover: Using authenticator: "
             + authenticator);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testPutsGetsObjectModWithFailover: Using pre-operation accessor: "
             + preAccessor);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testPutsGetsObjectModWithFailover: Using post-operation accessor: "
             + postAccessor);
 

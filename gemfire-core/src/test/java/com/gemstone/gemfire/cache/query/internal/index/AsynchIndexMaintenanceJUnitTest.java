@@ -28,7 +28,7 @@ import com.gemstone.gemfire.cache.query.CacheUtils;
 import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.QueryService;
 import com.gemstone.gemfire.cache.query.data.Portfolio;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -248,7 +248,7 @@ public class AsynchIndexMaintenanceJUnitTest {
     }
     try {
       for (int i = 0; i < TOTAL_THREADS; ++i) {
-        Threads.join(threads[i], 30 * 1000, null);
+        ThreadUtils.join(threads[i], 30 * 1000);
       }
     }
     catch (Exception e) {

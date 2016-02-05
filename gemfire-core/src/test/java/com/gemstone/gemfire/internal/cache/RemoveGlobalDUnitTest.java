@@ -39,9 +39,9 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -152,7 +152,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
             }
         });
         
-        Threads.join(async, 30 * 1000, LogWriterSupport.getLogWriter());
+        ThreadUtils.join(async, 30 * 1000);
         if(async.exceptionOccurred())
           throw async.getException();
         
@@ -225,7 +225,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
             }
         });
         
-        Threads.join(async, 30 * 1000, LogWriterSupport.getLogWriter());
+        ThreadUtils.join(async, 30 * 1000);
         if(async.exceptionOccurred())
           throw async.getException();
         
@@ -243,7 +243,7 @@ public class RemoveGlobalDUnitTest extends DistributedTestCase {
             }catch(InterruptedException ex){
                 fail("interrupted");
             }
-            LogWriterSupport.getLogWriter().fine("quitingfromcachewriter");
+            LogWriterUtils.getLogWriter().fine("quitingfromcachewriter");
         }
     }///////////    
     

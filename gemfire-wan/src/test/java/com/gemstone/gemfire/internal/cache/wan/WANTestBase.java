@@ -117,7 +117,7 @@ import com.gemstone.gemfire.pdx.SimpleClass1;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -735,7 +735,7 @@ public class WANTestBase extends DistributedTestCase{
     } else {
       persistentDirectory = new File(diskStoreName); 
     }
-    LogWriterSupport.getLogWriter().info("The ds is : " + persistentDirectory.getName());
+    LogWriterUtils.getLogWriter().info("The ds is : " + persistentDirectory.getName());
     persistentDirectory.mkdir();
     DiskStoreFactory dsf = cache.createDiskStoreFactory();
     File [] dirs1 = new File[] {persistentDirectory};
@@ -1206,7 +1206,7 @@ public class WANTestBase extends DistributedTestCase{
       customerRegion = (PartitionedRegion)cache.createRegionFactory(
           fact.create()).create(customerRegionName);
       assertNotNull(customerRegion);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region CUSTOMER created Successfully :"
               + customerRegion.toString());
 
@@ -1231,7 +1231,7 @@ public class WANTestBase extends DistributedTestCase{
       orderRegion = (PartitionedRegion)cache.createRegionFactory(fact.create())
           .create(orderRegionName);
       assertNotNull(orderRegion);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region ORDER created Successfully :"
               + orderRegion.toString());
 
@@ -1256,7 +1256,7 @@ public class WANTestBase extends DistributedTestCase{
       shipmentRegion = (PartitionedRegion)cache.createRegionFactory(
           fact.create()).create(shipmentRegionName);
       assertNotNull(shipmentRegion);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region SHIPMENT created Successfully :"
               + shipmentRegion.toString());
     }
@@ -1366,7 +1366,7 @@ public class WANTestBase extends DistributedTestCase{
     boolean gatewaySslRequireAuth = true;
     
     Properties gemFireProps = new Properties();
-    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_ENABLED_NAME, String.valueOf(gatewaySslenabled));
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_PROTOCOLS_NAME, gatewaySslprotocols);
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_CIPHERS_NAME, gatewaySslciphers);
@@ -1383,7 +1383,7 @@ public class WANTestBase extends DistributedTestCase{
     gemFireProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     gemFireProps.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
     
-    LogWriterSupport.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
+    LogWriterUtils.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
     
     InternalDistributedSystem ds = test.getSystem(gemFireProps);
     cache = CacheFactory.create(ds);    
@@ -2601,7 +2601,7 @@ public class WANTestBase extends DistributedTestCase{
     else {
       persistentDirectory = new File(dsStore);  
     }
-    LogWriterSupport.getLogWriter().info("The ds is : " + persistentDirectory.getName());
+    LogWriterUtils.getLogWriter().info("The ds is : " + persistentDirectory.getName());
     
     persistentDirectory.mkdir();
     DiskStoreFactory dsf = cache.createDiskStoreFactory();
@@ -2623,12 +2623,12 @@ public class WANTestBase extends DistributedTestCase{
         gateway.setPersistenceEnabled(true);
         String dsname = dsf.setDiskDirs(dirs1).create(dsName).getName();
         gateway.setDiskStoreName(dsname);
-        LogWriterSupport.getLogWriter().info("The DiskStoreName is : " + dsname);
+        LogWriterUtils.getLogWriter().info("The DiskStoreName is : " + dsname);
       }
       else {
         DiskStore store = dsf.setDiskDirs(dirs1).create(dsName);
         gateway.setDiskStoreName(store.getName());
-        LogWriterSupport.getLogWriter().info("The ds is : " + store.getName());
+        LogWriterUtils.getLogWriter().info("The ds is : " + store.getName());
       }
       gateway.setBatchConflationEnabled(isConflation);
       gateway.create(dsName, remoteDsId);
@@ -2771,7 +2771,7 @@ public class WANTestBase extends DistributedTestCase{
     WANTestBase test = new WANTestBase(getTestMethodName());
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
 
@@ -2789,7 +2789,7 @@ public class WANTestBase extends DistributedTestCase{
       fail("Expected GatewayReciever Exception");
     }
     catch (GatewayReceiverException gRE){
-      LogWriterSupport.getLogWriter().fine("KBKBKB : got the GatewayReceiverException", gRE);
+      LogWriterUtils.getLogWriter().fine("KBKBKB : got the GatewayReceiverException", gRE);
       assertTrue(gRE.getMessage().contains("Failed to create server socket on"));
     }
     catch (IOException e) {
@@ -2807,7 +2807,7 @@ public class WANTestBase extends DistributedTestCase{
     
     Properties gemFireProps = new Properties();
 
-    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+    gemFireProps.put(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_ENABLED_NAME, String.valueOf(gatewaySslenabled));
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_PROTOCOLS_NAME, gatewaySslprotocols);
     gemFireProps.put(DistributionConfig.GATEWAY_SSL_CIPHERS_NAME, gatewaySslciphers);
@@ -2824,7 +2824,7 @@ public class WANTestBase extends DistributedTestCase{
     gemFireProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     gemFireProps.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
 
-    LogWriterSupport.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
+    LogWriterUtils.getLogWriter().info("Starting cache ds with following properties \n" + gemFireProps);
     
     InternalDistributedSystem ds = test.getSystem(gemFireProps);
     cache = CacheFactory.create(ds);    
@@ -2978,7 +2978,7 @@ public class WANTestBase extends DistributedTestCase{
     region = cache.createRegion(regionName, attrs);
     region.registerInterest("ALL_KEYS");
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region " + regionName + " created Successfully :"
             + region.toString());
   }
@@ -3228,7 +3228,7 @@ public class WANTestBase extends DistributedTestCase{
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterUtils.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
     return custKeyValues;
   }
@@ -3254,7 +3254,7 @@ public class WANTestBase extends DistributedTestCase{
             "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+      LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3277,7 +3277,7 @@ public class WANTestBase extends DistributedTestCase{
             "putOrderPartitionedRegionUsingCustId : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
+      LogWriterUtils.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3304,7 +3304,7 @@ public class WANTestBase extends DistributedTestCase{
               "updateOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
     return orderKeyValues;
@@ -3327,7 +3327,7 @@ public class WANTestBase extends DistributedTestCase{
             "updateOrderPartitionedRegionUsingCustId : failed while doing put operation in OrderPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
+      LogWriterUtils.getLogWriter().info("Order :- { " + custid + " : " + order + " }");
     }
     return orderKeyValues;
   }
@@ -3356,7 +3356,7 @@ public class WANTestBase extends DistributedTestCase{
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -3405,7 +3405,7 @@ public class WANTestBase extends DistributedTestCase{
             "putShipmentPartitionedRegionUsingCustId : failed while doing put operation in ShipmentPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
+      LogWriterUtils.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
     }
     return shipmentKeyValue;
   }
@@ -3434,7 +3434,7 @@ public class WANTestBase extends DistributedTestCase{
                 "updateShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -3459,7 +3459,7 @@ public class WANTestBase extends DistributedTestCase{
             "updateShipmentPartitionedRegionUsingCustId : failed while doing put operation in ShipmentPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
+      LogWriterUtils.getLogWriter().info("Shipment :- { " + custid + " : " + shipment + " }");
     }
     return shipmentKeyValue;
   }
@@ -3884,7 +3884,7 @@ public class WANTestBase extends DistributedTestCase{
     for (int bucketId : bucketIds) {
       List<GatewaySenderEventImpl> eventsForBucket = bucketToEventsMap
           .get(bucketId);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Events for bucket: " + bucketId + " is " + eventsForBucket);
       assertNotNull(eventsForBucket);
       for (int i = 0; i < batchSize; i++) {
@@ -3906,7 +3906,7 @@ public class WANTestBase extends DistributedTestCase{
 
     final Map eventsMap = ((MyAsyncEventListener)theListener).getEventsMap();
     assertNotNull(eventsMap);
-    LogWriterSupport.getLogWriter().info("The events map size is " + eventsMap.size());
+    LogWriterUtils.getLogWriter().info("The events map size is " + eventsMap.size());
     return eventsMap.size();
   }
   
@@ -3942,7 +3942,7 @@ public class WANTestBase extends DistributedTestCase{
     };
     Wait.waitForCriterion(wc, 200000, 500, true); 
     for(int i = 0 ; i < regionSize; i++){
-      LogWriterSupport.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
+      LogWriterUtils.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
       assertEquals(new SimpleClass(i, (byte)i), r.get("Key_" + i));
     }
   }
@@ -3964,7 +3964,7 @@ public class WANTestBase extends DistributedTestCase{
     };
     Wait.waitForCriterion(wc, 200000, 500, true); 
     for(int i = 0 ; i < regionSize; i++){
-      LogWriterSupport.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
+      LogWriterUtils.getLogWriter().info("For Key : Key_"+i + " : Values : " + r.get("Key_" + i));
       assertEquals(new SimpleClass1(false, (short) i, "" + i, i,"" +i ,""+ i,i, i), r.get("Key_" + i));
     }
   }
@@ -4047,7 +4047,7 @@ public class WANTestBase extends DistributedTestCase{
       public boolean done() {
         for(Object key: keyValues.keySet()) {
           if (!r.get(key).equals(keyValues.get(key))) {
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "The values are for key " + "  " + key + " " + r.get(key)
                     + " in the map " + keyValues.get(key));
             return false;
@@ -4209,7 +4209,7 @@ public class WANTestBase extends DistributedTestCase{
       }
     }
     if (sender.isPrimary()) {
-      LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
+      LogWriterUtils.getLogWriter().info("Gateway sender is killed by a test");
       cache.getDistributedSystem().disconnect();
       return Boolean.TRUE;
     }
@@ -4231,7 +4231,7 @@ public class WANTestBase extends DistributedTestCase{
       }
     }
     if (queue.isPrimary()) {
-      LogWriterSupport.getLogWriter().info("AsyncEventQueue is killed by a test");
+      LogWriterUtils.getLogWriter().info("AsyncEventQueue is killed by a test");
       cache.getDistributedSystem().disconnect();
       return Boolean.TRUE;
     }
@@ -4239,10 +4239,10 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   public static void killSender(){
-    LogWriterSupport.getLogWriter().info("Gateway sender is going to be killed by a test"); 
+    LogWriterUtils.getLogWriter().info("Gateway sender is going to be killed by a test"); 
     cache.close();
     cache.getDistributedSystem().disconnect();
-    LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
+    LogWriterUtils.getLogWriter().info("Gateway sender is killed by a test");
   }
   
   static void waitForSitesToUpdate() {
@@ -4561,7 +4561,7 @@ public class WANTestBase extends DistributedTestCase{
         WaitCriterion wc = new WaitCriterion() {
           public boolean done() {
             if (bucket.keySet().size() == 0) {
-              LogWriterSupport.getLogWriter().info("Bucket " + bucket.getId() + " is empty");
+              LogWriterUtils.getLogWriter().info("Bucket " + bucket.getId() + " is empty");
               return true;
             }
             return false;

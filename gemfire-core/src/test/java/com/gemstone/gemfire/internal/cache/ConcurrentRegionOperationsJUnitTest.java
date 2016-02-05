@@ -39,7 +39,7 @@ import org.junit.experimental.categories.Category;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.Scope;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
 /**
@@ -444,8 +444,8 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
     });
     t1.start();
     t2.start();
-    Threads.join(t1, 30 * 1000, null);
-    Threads.join(t2, 30 * 1000, null);
+    ThreadUtils.join(t1, 30 * 1000);
+    ThreadUtils.join(t2, 30 * 1000);
     assertTrue(!failure);
 
   }
@@ -540,19 +540,19 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
       this.timeToStop.set(true);
     }
     for (int i = 0; i < numberOfPutsThreads; i++) {
-      Threads.join(putThreads[i], 10*1000, null);
+      ThreadUtils.join(putThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfGetsThreads; i++) {
-      Threads.join(getThreads[i], 10*1000, null);
+      ThreadUtils.join(getThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfDestroysThreads; i++) {
-      Threads.join(destroyThreads[i], 10*1000, null);
+      ThreadUtils.join(destroyThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfClearThreads; i++) {
-      Threads.join(clearThreads[i], 10*1000, null);
+      ThreadUtils.join(clearThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfForceRollThreads; i++) {
-      Threads.join(forceRollThreads[i], 10*1000, null);
+      ThreadUtils.join(forceRollThreads[i], 10*1000);
     }
 
     if (this.validate) {
@@ -824,7 +824,7 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
         );
 
     region.clear();
-    Threads.join(th, 20 * 1000, null);
+    ThreadUtils.join(th, 20 * 1000);
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = false;
     DiskStoreImpl.DEBUG_DELAY_JOINING_WITH_COMPACTOR = 500;
     CacheObserverHolder.setInstance(old);

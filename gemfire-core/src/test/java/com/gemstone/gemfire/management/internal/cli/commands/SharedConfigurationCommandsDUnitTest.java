@@ -36,7 +36,7 @@ import com.gemstone.gemfire.management.internal.configuration.SharedConfiguratio
 import com.gemstone.gemfire.management.internal.configuration.domain.Configuration;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -214,23 +214,23 @@ public class SharedConfigurationCommandsDUnitTest extends CliCommandTestBase {
     cmdResult = executeCommand(commandStringBuilder.getCommandString());
     String resultString = commandResultToString(cmdResult);
 
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultString);
     assertEquals(true, cmdResult.getStatus().equals(Status.OK));
 
     commandStringBuilder = new CommandStringBuilder(CliStrings.STATUS_SHARED_CONFIG);
     cmdResult = executeCommand(commandStringBuilder.getCommandString());
     resultString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultString);
     assertEquals(Status.OK, cmdResult.getStatus());
 
     commandStringBuilder = new CommandStringBuilder(CliStrings.EXPORT_SHARED_CONFIG);
     commandStringBuilder.addOption(CliStrings.EXPORT_SHARED_CONFIG__FILE, sharedConfigZipFileName);
     cmdResult = executeCommand(commandStringBuilder.getCommandString());
     resultString = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("#SB Result\n");
-    LogWriterSupport.getLogWriter().info(resultString);
+    LogWriterUtils.getLogWriter().info("#SB Result\n");
+    LogWriterUtils.getLogWriter().info(resultString);
     assertEquals(Status.OK, cmdResult.getStatus());
 
     //Import into a running system should fail

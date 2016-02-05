@@ -35,9 +35,8 @@ import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -315,7 +314,7 @@ public class Bug37377DUnitTest extends CacheTestCase
     vm0.invoke(putSomeEntries());
     AsyncInvocation as1 = vm1.invokeAsync(createCacheForVM1());
     Wait.pause(10000);
-    Threads.join(as1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(as1, 30 * 1000);
     vm0.invoke(closeCacheForVM(0));
     vm1.invoke(closeCacheForVM(1));
     vm1.invoke(createCacheForVM1());

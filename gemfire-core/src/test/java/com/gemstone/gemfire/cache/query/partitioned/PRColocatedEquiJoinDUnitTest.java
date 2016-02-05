@@ -55,7 +55,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -102,40 +102,40 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         redundancy, Portfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedCreate(coloName,
         redundancy, name));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -161,7 +161,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -170,7 +170,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -181,29 +181,29 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         redundancy, Portfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -227,7 +227,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
           partitionedregion = cache.createRegion(coloName, attr.create());
         }
         catch (IllegalStateException ex) {
-          LogWriterSupport.getLogWriter()
+          LogWriterUtils.getLogWriter()
               .warning(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreateWithRedundancy: Creation caught IllegalStateException",
                   ex);
@@ -244,11 +244,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
       }
     });
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -274,7 +274,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -360,7 +360,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
 
         } catch (FunctionException e) {
           if (e.getCause() instanceof UnsupportedOperationException) {
-            LogWriterSupport.getLogWriter().info("Query received FunctionException successfully while using QueryService.");
+            LogWriterUtils.getLogWriter().info("Query received FunctionException successfully while using QueryService.");
           } else {
             fail("UnsupportedOperationException must be thrown here");
           }
@@ -368,7 +368,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
       }
     });
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -385,13 +385,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -400,16 +400,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -418,11 +418,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex2", "r2.id", "/"+coloName+" r2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -448,7 +448,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -457,7 +457,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -474,13 +474,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -489,27 +489,27 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedCreate(coloName,
         redundancy, name));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -535,7 +535,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -544,7 +544,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -561,39 +561,39 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         redundancy, Portfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(coloName, NewPortfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -619,7 +619,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -628,7 +628,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -645,13 +645,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -660,16 +660,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -678,11 +678,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex2", "r2.id", "/"+coloName+" r2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -708,7 +708,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -717,7 +717,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -734,13 +734,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -749,26 +749,26 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(coloName, NewPortfolio.class));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -794,7 +794,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -803,7 +803,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -820,39 +820,39 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(coloName,
         redundancy, NewPortfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(name, Portfolio.class));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -878,7 +878,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -887,7 +887,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -904,13 +904,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -918,16 +918,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
         redundancy, NewPortfolio.class));
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex1", "r2.id", "/"+coloName+" r2", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -935,11 +935,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex2", "r1.ID", "/"+name+" r1", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -965,7 +965,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -974,7 +974,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -991,29 +991,29 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(coloName,
         redundancy, NewPortfolio.class));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1021,11 +1021,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
 
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1051,7 +1051,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1060,7 +1060,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedDataSetQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1078,13 +1078,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1092,16 +1092,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
         redundancy, Portfolio.class));
     vm1.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         redundancy, Portfolio.class));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1109,11 +1109,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
         redundancy, name));
     vm1.invoke(PRQHelp.getCacheSerializableRunnableForPRColocatedCreate(coloName,
         redundancy, name));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1139,7 +1139,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1201,7 +1201,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (QueryException e) {
-          LogWriterSupport.getLogWriter()
+          LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -1209,11 +1209,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (UnsupportedOperationException uso) {
-          LogWriterSupport.getLogWriter().info(uso.getMessage());
+          LogWriterUtils.getLogWriter().info(uso.getMessage());
           if (!uso.getMessage().equalsIgnoreCase(LocalizedStrings.DefaultQuery_A_QUERY_ON_A_PARTITIONED_REGION_0_MAY_NOT_REFERENCE_ANY_OTHER_REGION_1.toLocalizedString(new Object[] {name, "/"+coloName}))) {
             fail("Query did not throw UnsupportedOperationException while using QueryService instead of LocalQueryService");
           } else {
-            LogWriterSupport.getLogWriter().info("Query received UnsupportedOperationException successfully while using QueryService.");
+            LogWriterUtils.getLogWriter().info("Query received UnsupportedOperationException successfully while using QueryService.");
           }
         } finally {
           for (int i = 0; i < expectedExceptions.length; i++) {
@@ -1225,7 +1225,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
       }
     });
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1235,13 +1235,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1250,16 +1250,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1268,11 +1268,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex2", "r2.id", "/"+coloName+" r2, r2.positions.values pos2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1298,7 +1298,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1307,7 +1307,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRAndRRQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1318,13 +1318,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1333,16 +1333,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex1", "r2.id", "/"+coloName+" r2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1351,11 +1351,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex2", "r1.ID", "/"+name+" r1, r1.positions.values pos1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1381,7 +1381,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1390,7 +1390,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForRRAndPRQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1400,13 +1400,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1415,16 +1415,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1433,11 +1433,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex2", "pos2.id", "/"+coloName+" r2, r2.positions.values pos2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1463,7 +1463,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1472,7 +1472,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRAndRRQueryWithCompactAndRangeIndexAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1482,13 +1482,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1497,16 +1497,16 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex1", "r1.ID", "/"+name+" r1", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(name, "IdIndex11", "r1.status", "/"+name+" r1", null));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the PR");
 
@@ -1515,11 +1515,11 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex2", "r2.id", "/"+coloName+" r2", null));
     //vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRIndexCreate(coloName, "IdIndex22", "r2.status", "/"+coloName+" r2", null));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Colocated DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1548,7 +1548,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
 
@@ -1560,7 +1560,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     // querying the VM for data
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRAndRRQueryAndCompareResults(name, coloName, localName, coloLocalName));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -1579,13 +1579,13 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the DataStore node in the PR");
 
@@ -1593,22 +1593,22 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
         0, Portfolio.class));
     vm1.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         0, Portfolio.class));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the DataStore node in the PR");
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
     // Creating Colocated Region DataStore node on the VM0.
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Colocated DataStore node in the RR");
 
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(coloName, NewPortfolio.class));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -1621,7 +1621,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(coloName, newPortfolio,
         cnt, cntDest));
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     
@@ -1707,7 +1707,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
 
         } catch (FunctionException e) {
           if (e.getCause() instanceof RegionNotFoundException) {
-            LogWriterSupport.getLogWriter().info("Query received FunctionException successfully while using QueryService.");
+            LogWriterUtils.getLogWriter().info("Query received FunctionException successfully while using QueryService.");
           } else {
             fail("RegionNotFoundException must be thrown here");
           }
@@ -1715,7 +1715,7 @@ public class PRColocatedEquiJoinDUnitTest extends PartitionedRegionDUnitTestCase
       }
     });
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }

@@ -50,11 +50,11 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -127,7 +127,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         PoolFactory cpf = PoolManager.createFactory();
         cpf.setSubscriptionEnabled(subscriptionEnabled);
         for (int i=0; i < servers.length; i++){
-          LogWriterSupport.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
+          LogWriterUtils.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
           cpf.addServer(servers[i], ports[i]);
         }
 
@@ -170,7 +170,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -196,7 +196,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     final String regionName = "/" + rootRegionName + "/" + name;
 
     // Create client pool.
@@ -307,7 +307,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -332,7 +332,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + rootRegionName + "/" + name;
 
@@ -439,7 +439,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -572,7 +572,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
       public void run2() throws CacheException {
         Properties config = new Properties();
@@ -603,7 +603,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         } catch (Exception e) {
           Assert.fail("Failed executing " + queryString, e);
         }
-        LogWriterSupport.getLogWriter().fine("size: " + results.size());
+        LogWriterUtils.getLogWriter().fine("size: " + results.size());
         //assertEquals(numberOfEntries, results.size());
         assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
       }
@@ -635,7 +635,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -661,7 +661,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + rootRegionName + "/" + name;
 
@@ -842,7 +842,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -867,7 +867,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
             Query query = qService.newQuery(queryString[i]);
             results = (SelectResults)query.execute(params[i]);
           } catch (Exception e) {
@@ -900,7 +900,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         for (int x=0; x < useMaintainedCompiledQueries; x++){
           for (int i=0; i < queryString.length; i++){
             try {
-              LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+              LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
               Query query = qService.newQuery(queryString[i]);
               results = (SelectResults)query.execute(params[i]);
             } catch (Exception e) {
@@ -1001,7 +1001,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     final int port0 = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
     final int port1 = vm1.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -1026,7 +1026,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         for (int j=0; j < queryString.length; j++){
           for (int i=0; i < queryString.length; i++){
             try {
-              LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+              LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
               Query query = qService.newQuery(queryString[i]);
               results = (SelectResults)query.execute(params[i]);
             } catch (Exception e) {
@@ -1152,7 +1152,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -1243,7 +1243,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -1363,7 +1363,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -1509,7 +1509,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     // Create client region
     final int port0 = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + this.rootRegionName + "/" + this.regionName;
 
@@ -1535,7 +1535,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         for (int j=0; j < 5; j++){
           for (int i=0; i < 2; i++){
             try {
-              LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+              LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
               Query query = qService.newQuery(queryString[i]);
               rs[0][0] = (SelectResults)query.execute(params[i]);
               Query query2 = qService.newQuery(querys[i]);
@@ -1544,9 +1544,9 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
             } catch (Exception e) {
               Assert.fail("Failed executing " + queryString[i], e);
             }
-            LogWriterSupport.getLogWriter().info("### Comparing results for Query :" + ((i+1) * (j+1)) + " : " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Comparing results for Query :" + ((i+1) * (j+1)) + " : " + queryString[i]);
             compareQueryResultsWithoutAndWithIndexes(rs, 1);
-            LogWriterSupport.getLogWriter().info("### Done Comparing results for Query :" + ((i+1) * (j+1)) + " : " + queryString[i]); 
+            LogWriterUtils.getLogWriter().info("### Done Comparing results for Query :" + ((i+1) * (j+1)) + " : " + queryString[i]); 
           }
         }
       }
@@ -1561,9 +1561,9 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
       public void run2() throws CacheException {
         long compiledQueryUsedCount = -1;
         while (true) {
-          LogWriterSupport.getLogWriter().info("### CompiledQueryUsedCount :" + compiledQueryUsedCount);
+          LogWriterUtils.getLogWriter().info("### CompiledQueryUsedCount :" + compiledQueryUsedCount);
           if (compiledQueryUsedCount == CacheClientNotifier.getInstance().getStats().getCompiledQueryUsedCount()) {
-            LogWriterSupport.getLogWriter().info("### previous and current CompiledQueryUsedCounts are same :" + compiledQueryUsedCount);
+            LogWriterUtils.getLogWriter().info("### previous and current CompiledQueryUsedCounts are same :" + compiledQueryUsedCount);
             break;
           } else {
             compiledQueryUsedCount = CacheClientNotifier.getInstance().getStats().getCompiledQueryUsedCount();
@@ -1595,7 +1595,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
         for (int j=0; j < queryString.length; j++){
           for (int i=0; i < queryString.length; i++){
             try {
-              LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+              LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
               Query query = qService.newQuery(queryString[i]);
               rs[0][0] = (SelectResults)query.execute(params[i]);
               Query query2 = qService.newQuery(querys[i]);
@@ -1619,9 +1619,9 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
       public void run2() throws CacheException {
         long compiledQueryUsedCount = -1;
         while (true) {
-          LogWriterSupport.getLogWriter().info("### previous CompiledQueryUsedCount :" + compiledQueryUsedCount);
+          LogWriterUtils.getLogWriter().info("### previous CompiledQueryUsedCount :" + compiledQueryUsedCount);
           if (compiledQueryUsedCount == CacheClientNotifier.getInstance().getStats().getCompiledQueryUsedCount()) {
-            LogWriterSupport.getLogWriter().info("### previous and current CompiledQueryUsedCounts are same :" + compiledQueryUsedCount);
+            LogWriterUtils.getLogWriter().info("### previous and current CompiledQueryUsedCounts are same :" + compiledQueryUsedCount);
             break;
           } else {
             compiledQueryUsedCount = CacheClientNotifier.getInstance().getStats().getCompiledQueryUsedCount();
@@ -1665,7 +1665,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -1696,7 +1696,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     final String regionName1 = "/" + rootRegionName + "/" + name+"1";
     final String regionName2 = "/" + rootRegionName + "/" + name+"2";
 
@@ -1768,7 +1768,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -1793,7 +1793,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + rootRegionName + "/" + name;
 
@@ -1906,7 +1906,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
 
         Wait.pause(1000);
@@ -1941,7 +1941,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName1 = "/" + rootRegionName + "/" + name;
     final String regionName2 = "/" + rootRegionName + "/" + name + "_2";
@@ -2002,7 +2002,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -2036,7 +2036,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName = "/" + rootRegionName + "/" + name;
 
@@ -2160,7 +2160,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
       public void run2() throws CacheException {
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         system = (InternalDistributedSystem) DistributedSystem.connect(config);
 
         Wait.pause(1000);
@@ -2187,7 +2187,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     });
 
     final int port = vm0.invokeInt(QueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     final String regionName1 = "/" + rootRegionName + "/" + name;
 //    final String regionName2 = "/" + rootRegionName + "/" + name + "_2";
@@ -2305,16 +2305,16 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
       type1 = ((SelectResults)r[j][0]).getCollectionType().getElementType();
       type2 = ((SelectResults)r[j][1]).getCollectionType().getElementType();
       if ((type1.getClass().getName()).equals(type2.getClass().getName())) {
-        LogWriterSupport.getLogWriter().info("Both SelectResults are of the same Type i.e.--> "
+        LogWriterUtils.getLogWriter().info("Both SelectResults are of the same Type i.e.--> "
             + ((SelectResults)r[j][0]).getCollectionType().getElementType());
       }
       else {
-        LogWriterSupport.getLogWriter().info("Classes are : " + type1.getClass().getName() + " "
+        LogWriterUtils.getLogWriter().info("Classes are : " + type1.getClass().getName() + " "
             + type2.getClass().getName());
         fail("FAILED:Select result Type is different in both the cases");
       }
       if (((SelectResults)r[j][0]).size() == ((SelectResults)r[j][1]).size()) {
-        LogWriterSupport.getLogWriter().info("Both SelectResults are of Same Size i.e.  Size= "
+        LogWriterUtils.getLogWriter().info("Both SelectResults are of Same Size i.e.  Size= "
             + ((SelectResults)r[j][1]).size());
       }
       else {
@@ -2325,7 +2325,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
       set2 = (((SelectResults)r[j][1]).asSet());
       set1 = (((SelectResults)r[j][0]).asSet());
       
-      LogWriterSupport.getLogWriter().info(" SIZE1 = " + set1.size() + " SIZE2 = " + set2.size());
+      LogWriterUtils.getLogWriter().info(" SIZE1 = " + set1.size() + " SIZE2 = " + set2.size());
       
 //      boolean pass = true;
       itert1 = set1.iterator();
@@ -2335,10 +2335,10 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
         boolean exactMatch = false;
         while (itert2.hasNext()) {
-          LogWriterSupport.getLogWriter().info("### Comparing results..");
+          LogWriterUtils.getLogWriter().info("### Comparing results..");
           Object p2 = itert2.next();
           if (p1 instanceof Struct) {
-            LogWriterSupport.getLogWriter().info("ITS a Set");
+            LogWriterUtils.getLogWriter().info("ITS a Set");
             Object[] values1 = ((Struct)p1).getFieldValues();
             Object[] values2 = ((Struct)p2).getFieldValues();
             assertEquals(values1.length, values2.length);
@@ -2351,32 +2351,32 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
             exactMatch = elementEqual;
           }
           else {
-            LogWriterSupport.getLogWriter().info("Not a Set p2:" + p2 + " p1: " + p1);
+            LogWriterUtils.getLogWriter().info("Not a Set p2:" + p2 + " p1: " + p1);
             if (p2 instanceof TestObject) {
-              LogWriterSupport.getLogWriter().info("An instance of TestObject");
+              LogWriterUtils.getLogWriter().info("An instance of TestObject");
               exactMatch = p2.equals(p1);
             } else {
-              LogWriterSupport.getLogWriter().info("Not an instance of TestObject" + p2.getClass().getCanonicalName());
+              LogWriterUtils.getLogWriter().info("Not an instance of TestObject" + p2.getClass().getCanonicalName());
               exactMatch = p2.equals(p1);
             }
           }
           if (exactMatch) {
-            LogWriterSupport.getLogWriter().info("Exact MATCH");
+            LogWriterUtils.getLogWriter().info("Exact MATCH");
             break;
           }
         }
         if (!exactMatch) {
-          LogWriterSupport.getLogWriter().info("NOT A MATCH");
+          LogWriterUtils.getLogWriter().info("NOT A MATCH");
           fail("Atleast one element in the pair of SelectResults supposedly identical, is not equal ");
         }
       }
-      LogWriterSupport.getLogWriter().info("### Done Comparing results..");
+      LogWriterUtils.getLogWriter().info("### Done Comparing results..");
     }
   }
 
   protected void configAndStartBridgeServer() {
     Properties config = new Properties();
-    config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     system = (InternalDistributedSystem) DistributedSystem.connect(config);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.LOCAL);
@@ -2403,7 +2403,7 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
 
     for (int i=0; i < queryString.length; i++){
       try {
-        LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+        LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
         Query query = qService.newQuery(queryString[i]);
         results = (SelectResults)query.execute(params[i]);
       } catch (Exception e) {
@@ -2442,11 +2442,11 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
     SerializableRunnable closeCache =
       new CacheSerializableRunnable("Close Client") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Close Client. ###");
+        LogWriterUtils.getLogWriter().info("### Close Client. ###");
         try {
           closeCache();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("### Failed to get close client. ###");
+          LogWriterUtils.getLogWriter().info("### Failed to get close client. ###");
         }
       }
     };

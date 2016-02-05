@@ -28,7 +28,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -71,7 +71,7 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
     // start servers first
     PORT1 = ((Integer)server1.invoke(DurableResponseMatrixDUnitTest.class,
         "createServerCache"));
-    createCacheClient(NetworkSupport.getServerHostName(server1.getHost()));
+    createCacheClient(NetworkUtils.getServerHostName(server1.getHost()));
     //Disconnecting the client can cause this
     IgnoredException.addIgnoredException("Connection reset||Unexpected IOException");
   }

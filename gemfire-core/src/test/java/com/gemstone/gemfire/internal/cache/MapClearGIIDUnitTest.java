@@ -35,9 +35,9 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -142,7 +142,7 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
     region = new MapClearGIIDUnitTest("dumb object to get cache").getCache().createRegion("map", attr);
 
     // region = region.createSubregion("map",attr);
-    LogWriterSupport.getLogWriter().info("Region in VM0 created ");
+    LogWriterUtils.getLogWriter().info("Region in VM0 created ");
   }
 /*
   public static void closeCache() {
@@ -218,7 +218,7 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
         }
       }
     });
-    LogWriterSupport.getLogWriter().info("Cache created in VM1 successfully");
+    LogWriterUtils.getLogWriter().info("Cache created in VM1 successfully");
     try {
       AsyncInvocation asyncGII = vm0.invokeAsync(MapClearGIIDUnitTest.class, 
           "createRegionInVm0");
@@ -240,7 +240,7 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
       // now that the gii has received some entries do the clear
       vm1.invoke(MapClearGIIDUnitTest.class, "clearRegionInVm1");
       // wait for GII to complete
-      Threads.join(asyncGII, 30 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(asyncGII, 30 * 1000);
       if (asyncGII.exceptionOccurred()) {
         Throwable t = asyncGII.getException();
         Assert.fail("createRegionInVM0 failed", t);
@@ -271,13 +271,13 @@ public class MapClearGIIDUnitTest extends CacheTestCase {
   public static class CacheObserverImpl extends CacheObserverAdapter {
 
     public void afterRegionClear(RegionEvent event) {
-      LogWriterSupport.getLogWriter().info("**********Received clear event in VM0 . ");
+      LogWriterUtils.getLogWriter().info("**********Received clear event in VM0 . ");
       Region rgn = event.getRegion();
       wasGIIInProgressDuringClear = ((LocalRegion) rgn).getImageState()
         .wasRegionClearedDuringGII();
       InitialImageOperation.slowImageProcessing = 0;
       InitialImageOperation.slowImageSleeps = 0;
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "wasGIIInProgressDuringClear when clear event was received= "
               + wasGIIInProgressDuringClear);
     }

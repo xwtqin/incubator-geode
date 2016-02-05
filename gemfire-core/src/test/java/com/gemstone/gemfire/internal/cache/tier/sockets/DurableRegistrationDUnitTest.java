@@ -42,8 +42,8 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -129,7 +129,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     // seconds
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
             regionName,
             getClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });
@@ -202,7 +202,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     // Step 8: Re-start the Client
     this.durableClientVM
         .invoke(CacheServerTestUtil.class, "createCacheClient",
-            new Object[] { getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
+            new Object[] { getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
                 regionName,
                 getClientDistributedSystemProperties(durableClientId),
                 Boolean.TRUE });
@@ -281,7 +281,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     final int durableClientTimeout = 600;
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
             regionName,
             getClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout) });
@@ -354,7 +354,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     // Step 8: Re-start the Client
     this.durableClientVM
         .invoke(CacheServerTestUtil.class, "createCacheClient",
-            new Object[] { getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
+            new Object[] { getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 0),
                 regionName,
                 getClientDistributedSystemProperties(durableClientId),
                 Boolean.TRUE });
@@ -472,7 +472,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     final int durableClientTimeout = 600;
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
             regionName,
             getClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout) });
@@ -507,7 +507,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     server2VM.invoke(new CacheSerializableRunnable("Verify Interests.") {
       public void run2() throws CacheException
       {
-        LogWriterSupport.getLogWriter().info("### Verifying interests registered by DurableClient. ###");
+        LogWriterUtils.getLogWriter().info("### Verifying interests registered by DurableClient. ###");
         CacheClientNotifier ccn = CacheClientNotifier.getInstance();
         CacheClientProxy p = null;
         
@@ -572,7 +572,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     final int durableClientTimeout = 600;
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
             regionName,
             getClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout) });
@@ -604,7 +604,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     //Re-start the Client
     this.durableClientVM
         .invoke(CacheServerTestUtil.class, "createCacheClient",
-            new Object[] { getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
+            new Object[] { getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, PORT2, true, 1),
                 regionName,
                 getClientDistributedSystemProperties(durableClientId),
                 Boolean.TRUE });
@@ -628,7 +628,7 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     server2VM.invoke(new CacheSerializableRunnable("Verify Interests.") {
       public void run2() throws CacheException
       {
-        LogWriterSupport.getLogWriter().info("### Verifying interests registered by DurableClient. ###");
+        LogWriterUtils.getLogWriter().info("### Verifying interests registered by DurableClient. ###");
         CacheClientNotifier ccn = CacheClientNotifier.getInstance();
         CacheClientProxy p = null;
         

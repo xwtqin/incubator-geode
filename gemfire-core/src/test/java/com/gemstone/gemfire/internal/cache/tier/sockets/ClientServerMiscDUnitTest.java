@@ -44,8 +44,8 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -147,13 +147,13 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testConcurrentOperationsWithDRandPR() throws Exception {
     int port1 = initServerCache(true); // vm0
     int port2 = initServerCache2(true); // vm1
-    String serverName = NetworkSupport.getServerHostName(Host.getHost(0));
+    String serverName = NetworkUtils.getServerHostName(Host.getHost(0));
     host.getVM(2).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port1});
     host.getVM(3).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port2});
-    LogWriterSupport.getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
+    LogWriterUtils.getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
     concurrentMapTest(host.getVM(2), "/" + REGION_NAME1);
     // TODO add verification in vm3
-    LogWriterSupport.getLogWriter().info("Testing concurrent map operations from a client with a partitioned region");
+    LogWriterUtils.getLogWriter().info("Testing concurrent map operations from a client with a partitioned region");
     concurrentMapTest(host.getVM(2), "/" + PR_REGION_NAME);
     // TODO add verification in vm3
   }
@@ -161,13 +161,13 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testConcurrentOperationsWithDRandPRandEmptyClient() throws Exception {
     int port1 = initServerCache(true); // vm0
     int port2 = initServerCache2(true); // vm1
-    String serverName = NetworkSupport.getServerHostName(Host.getHost(0));
+    String serverName = NetworkUtils.getServerHostName(Host.getHost(0));
     host.getVM(2).invoke(this.getClass(), "createEmptyClientCache", new Object[]{serverName, port1});
     host.getVM(3).invoke(this.getClass(), "createClientCacheV", new Object[]{serverName, port2});
-    LogWriterSupport.getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
+    LogWriterUtils.getLogWriter().info("Testing concurrent map operations from a client with a distributed region");
     concurrentMapTest(host.getVM(2), "/" + REGION_NAME1);
     // TODO add verification in vm3
-    LogWriterSupport.getLogWriter().info("Testing concurrent map operations from a client with a partitioned region");
+    LogWriterUtils.getLogWriter().info("Testing concurrent map operations from a client with a partitioned region");
     concurrentMapTest(host.getVM(2), "/" + PR_REGION_NAME);
     // TODO add verification in vm3
   }
@@ -379,7 +379,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1);
     populateCache();
     registerInterest();
     server1.invoke(ClientServerMiscDUnitTest.class, "put");
@@ -412,7 +412,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1);
     populateCache();
     registerInterestInBothTheRegions();
     closeRegion1();
@@ -435,7 +435,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(true);
-    pool = (PoolImpl)createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)),PORT1);
+    pool = (PoolImpl)createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)),PORT1);
     populateCache();
     registerInterestInBothTheRegions();
     closeBothRegions();
@@ -462,7 +462,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   public void testCCPDestroyOnLastDestroyRegion() throws Exception
   {
     PORT1 = initServerCache(true);
-    PoolImpl pool = (PoolImpl)createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)),PORT1);
+    PoolImpl pool = (PoolImpl)createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)),PORT1);
     destroyRegion1();
     // pause(5000);
     server1.invoke(ClientServerMiscDUnitTest.class,
@@ -499,7 +499,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(false);
-    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1);
     registerInterestForInvalidatesInBothTheRegions();
     populateCache();
     server1.invoke(ClientServerMiscDUnitTest.class, "put");
@@ -520,7 +520,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   {
     // start server first
     PORT1 = initServerCache(false);
-    createClientCache(NetworkSupport.getServerHostName(Host.getHost(0)), PORT1);
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1);
     registerInterestForInvalidatesInBothTheRegions();
     Region region = static_cache.getRegion(REGION_NAME1);
     populateCache();
@@ -566,7 +566,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "");
     new ClientServerMiscDUnitTest("temp").createCache(props);
-    String host = NetworkSupport.getServerHostName(server1.getHost());
+    String host = NetworkUtils.getServerHostName(server1.getHost());
     PoolImpl p = (PoolImpl)PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)
@@ -669,7 +669,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     ds.disconnect();
     ds = getSystem(props);
     PORT1 = initServerCache(true);
-    String host = NetworkSupport.getServerHostName(server1.getHost());
+    String host = NetworkUtils.getServerHostName(server1.getHost());
     Pool p = PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)
@@ -720,7 +720,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     assertNotNull(ds);
     
     PORT1 = initServerCache(true);
-    String host = NetworkSupport.getServerHostName(server1.getHost());
+    String host = NetworkUtils.getServerHostName(server1.getHost());
     Pool p = PoolManager.createFactory()
       .addServer(host, PORT1)
       .setSubscriptionEnabled(true)

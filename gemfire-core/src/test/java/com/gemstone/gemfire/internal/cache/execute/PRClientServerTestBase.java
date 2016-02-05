@@ -53,8 +53,8 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -412,7 +412,7 @@ public class PRClientServerTestBase extends CacheTestCase {
   public static void createCacheClientWithoutRegion(String host, Integer port1,
       Integer port2, Integer port3) throws Exception {
     CacheServerTestUtil.disableShufflingOfEndpoints();
-    LogWriterSupport.getLogWriter().info("PRClientServerTestBase#createCacheClientWithoutRegion : creating pool");
+    LogWriterUtils.getLogWriter().info("PRClientServerTestBase#createCacheClientWithoutRegion : creating pool");
     serverPort1 = port1;
     serverPort2 = port2;
     serverPort3 = port3;
@@ -435,7 +435,7 @@ public class PRClientServerTestBase extends CacheTestCase {
   public static void createCacheClientWithDistributedRegion(String host, Integer port1,
       Integer port2, Integer port3) throws Exception {
     CacheServerTestUtil.disableShufflingOfEndpoints();
-    LogWriterSupport.getLogWriter().info("PRClientServerTestBase#createCacheClientWithoutRegion : creating pool");
+    LogWriterUtils.getLogWriter().info("PRClientServerTestBase#createCacheClientWithoutRegion : creating pool");
     serverPort1 = port1;
     serverPort2 = port2;
     serverPort3 = port3;
@@ -477,7 +477,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createCacheClient",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
@@ -492,7 +492,7 @@ public class PRClientServerTestBase extends CacheTestCase {
         new Object[] {commonAttributes ,new Integer(localMaxMemoryServer2) });
     serverPort1 = port1;
     client.invoke(PRClientServerTestBase.class, "createCacheClient_SingleConnection",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1});
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1});
   }
   
   
@@ -513,7 +513,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createCacheClientWith2Regions",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
@@ -562,7 +562,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createNoSingleHopCacheClient",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
   
@@ -582,13 +582,13 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort2 = port2;
     serverPort3 = port3;
     client.invoke(PRClientServerTestBase.class, "createNoSingleHopCacheClient",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });
   }
 
   
   protected void createClientServerScenarionWithoutRegion () {
-    LogWriterSupport.getLogWriter().info("PRClientServerTestBase#createClientServerScenarionWithoutRegion : creating client server");
+    LogWriterUtils.getLogWriter().info("PRClientServerTestBase#createClientServerScenarionWithoutRegion : creating client server");
     createCacheInClientServer();
     Integer port1 = (Integer)server1.invoke(PRClientServerTestBase.class,
         "createCacheServer");
@@ -601,12 +601,12 @@ public class PRClientServerTestBase extends CacheTestCase {
     serverPort3 = port3;
     
     client.invoke(PRClientServerTestBase.class, "createCacheClientWithoutRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });    
   }
   
   protected void createClientServerScenarionWithDistributedtRegion () {
-    LogWriterSupport.getLogWriter().info("PRClientServerTestBase#createClientServerScenarionWithoutRegion : creating client server");
+    LogWriterUtils.getLogWriter().info("PRClientServerTestBase#createClientServerScenarionWithoutRegion : creating client server");
     createCacheInClientServer();
     Integer port1 = (Integer)server1.invoke(PRClientServerTestBase.class,
         "createCacheServerWithDR");
@@ -620,7 +620,7 @@ public class PRClientServerTestBase extends CacheTestCase {
     
     
     client.invoke(PRClientServerTestBase.class, "createCacheClientWithDistributedRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });    
   }
 
@@ -696,11 +696,11 @@ public class PRClientServerTestBase extends CacheTestCase {
     };
     Wait.waitForCriterion(wc, 2000, 500, false);
     Collection bridgeServers = cache.getCacheServers();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Start Server Bridge Servers list : " + bridgeServers.size());
     Iterator bridgeIterator = bridgeServers.iterator();
     CacheServer bridgeServer = (CacheServer)bridgeIterator.next();
-    LogWriterSupport.getLogWriter().info("start Server Bridge Server" + bridgeServer);
+    LogWriterUtils.getLogWriter().info("start Server Bridge Server" + bridgeServer);
     try {
       bridgeServer.start();
     }

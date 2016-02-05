@@ -111,7 +111,7 @@ public class Bug39356DUnitTest extends CacheTestCase {
     SerializableRunnable verifyBuckets = new SerializableRunnable("Verify buckets") {
 
       public void run() {
-        LogWriter log = com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter();
+        LogWriter log = com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter();
         Cache cache = getCache();
         PartitionedRegion r = (PartitionedRegion) cache.getRegion(REGION_NAME);
         for(int i = 0; i < r.getAttributes().getPartitionAttributes().getTotalNumBuckets(); i++) {

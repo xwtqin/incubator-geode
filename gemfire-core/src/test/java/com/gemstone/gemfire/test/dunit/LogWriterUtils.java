@@ -13,18 +13,39 @@ import com.gemstone.gemfire.internal.logging.LogWriterFactory;
 import com.gemstone.gemfire.internal.logging.ManagerLogWriter;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
 
-public class LogWriterSupport {
+/**
+ * <code>LogWriterUtils</code> provides static utility methods to access a
+ * <code>LogWriter</code> within a test. 
+ * 
+ * These methods can be used directly: <code>LogWriterUtils.getLogWriter(...)</code>, 
+ * however, they are intended to be referenced through static import:
+ *
+ * <pre>
+ * import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
+ *    ...
+ *    LogWriter logWriter = getLogWriter(...);
+ * </pre>
+ *
+ * Extracted from DistributedTestCase.
+ * 
+ * @deprecated Please use a <code>Logger</code> from  {@link LogService#getLogger()} instead.
+ */
+@Deprecated
+public class LogWriterUtils {
 
   private static final Logger logger = LogService.getLogger();
   private static final LogWriterLogger oldLogger = LogWriterLogger.create(logger);
   
+  protected LogWriterUtils() {
+  }
+  
   /**
    * Returns a <code>LogWriter</code> for logging information
-   * @deprecated Use a static logger from the log4j2 LogService.getLogger instead.
+   * 
+   * @deprecated Please use a <code>Logger</code> from  {@link LogService#getLogger()} instead.
    */
-  @Deprecated
   public static InternalLogWriter getLogWriter() {
-    return LogWriterSupport.oldLogger;
+    return LogWriterUtils.oldLogger;
   }
 
   /**
@@ -35,15 +56,16 @@ public class LogWriterSupport {
    * that will eventually be used by the DistributedSystem that connects using
    * config.
    * 
-   * @param config the DistributedSystem config properties to add LogWriter to
+   * @param properties the DistributedSystem config properties to add LogWriter to
    * @return early access to the DistributedSystem LogWriter
+   * @deprecated Please use a <code>Logger</code> from  {@link LogService#getLogger()} instead.
    */
-  public static LogWriter createLogWriter(Properties config) { // TODO:LOG:CONVERT: this is being used for ExpectedExceptions
-    Properties nonDefault = config;
+  public static LogWriter createLogWriter(final Properties properties) {
+    Properties nonDefault = properties;
     if (nonDefault == null) {
       nonDefault = new Properties();
     }
-    DistributedTestSupport.addHydraProperties(nonDefault);
+    DistributedTestUtils.addHydraProperties(nonDefault);
     
     DistributionConfig dc = new DistributionConfigImpl(nonDefault);
     LogWriter logger = LogWriterFactory.createLogWriterLogger(
@@ -59,11 +81,12 @@ public class LogWriterSupport {
   /**
    * This finds the log level configured for the test run.  It should be used
    * when creating a new distributed system if you want to specify a log level.
+   * 
    * @return the dunit log-level setting
    */
   public static String getDUnitLogLevel() {
-    Properties p = DUnitEnv.get().getDistributedSystemProperties();
-    String result = p.getProperty(DistributionConfig.LOG_LEVEL_NAME);
+    Properties dsProperties = DUnitEnv.get().getDistributedSystemProperties();
+    String result = dsProperties.getProperty(DistributionConfig.LOG_LEVEL_NAME);
     if (result == null) {
       result = ManagerLogWriter.levelToString(DistributionConfig.DEFAULT_LOG_LEVEL);
     }

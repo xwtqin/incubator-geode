@@ -36,7 +36,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -118,7 +118,7 @@ public class OperationsPropagationDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(OperationsPropagationDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(OperationsPropagationDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT2) });
+        new Object[] { NetworkUtils.getServerHostName(host), new Integer(PORT2) });
 
   }
 

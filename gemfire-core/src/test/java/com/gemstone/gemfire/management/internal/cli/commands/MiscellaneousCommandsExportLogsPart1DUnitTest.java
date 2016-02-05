@@ -25,7 +25,7 @@ import com.gemstone.gemfire.internal.logging.LogWriterImpl;
 import com.gemstone.gemfire.management.cli.Result;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -96,11 +96,11 @@ public class MiscellaneousCommandsExportLogsPart1DUnitTest extends CliCommandTes
     Result cmdResult = misc.exportLogsPreprocessing("./testExportLogs" + dir, null, null, logLevel, false, false, start,
         end, 1);
 
-    LogWriterSupport.getLogWriter().info("testExportLogs command result =" + cmdResult);
+    LogWriterUtils.getLogWriter().info("testExportLogs command result =" + cmdResult);
 
     if (cmdResult != null) {
       String cmdStringRsult = commandResultToString((CommandResult) cmdResult);
-      LogWriterSupport.getLogWriter().info("testExportLogs cmdStringRsult=" + cmdStringRsult);
+      LogWriterUtils.getLogWriter().info("testExportLogs cmdStringRsult=" + cmdStringRsult);
       assertEquals(Result.Status.OK, cmdResult.getStatus());
     } else {
       fail("testExportLogs failed as did not get CommandResult");
@@ -125,11 +125,11 @@ public class MiscellaneousCommandsExportLogsPart1DUnitTest extends CliCommandTes
 
     Result cmdResult = misc.exportLogsPreprocessing("./testExportLogsForMerge" + dir, null, null, logLevel, false, true,
         start, end, 1);
-    LogWriterSupport.getLogWriter().info("testExportLogsForMerge command=" + cmdResult);
+    LogWriterUtils.getLogWriter().info("testExportLogsForMerge command=" + cmdResult);
 
     if (cmdResult != null) {
       String cmdStringRsult = commandResultToString((CommandResult) cmdResult);
-      LogWriterSupport.getLogWriter().info("testExportLogsForMerge cmdStringRsult=" + cmdStringRsult);
+      LogWriterUtils.getLogWriter().info("testExportLogsForMerge cmdStringRsult=" + cmdStringRsult);
 
       assertEquals(Result.Status.OK, cmdResult.getStatus());
     } else {

@@ -36,7 +36,7 @@ import com.gemstone.gemfire.management.RegionMXBean;
 
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -169,7 +169,7 @@ public class TestRemoteClusterDUnitTest extends ManagementTestBase {
               .getDistributedSystemMXBean();
           assertNotNull(dsBean);
           Map<String, Boolean> dsMap = dsBean.viewRemoteClusterStatus();
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Ds Map is: " + dsMap.size());
           assertNotNull(dsMap);
           assertEquals(true, dsMap.size() > 0 ? true : false);

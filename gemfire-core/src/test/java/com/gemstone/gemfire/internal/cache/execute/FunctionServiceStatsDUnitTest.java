@@ -54,7 +54,7 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -263,7 +263,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
 
         }
         catch (Exception e) {
-          LogWriterSupport.getLogWriter().info("Exception : " + e.getMessage());
+          LogWriterUtils.getLogWriter().info("Exception : " + e.getMessage());
           e.printStackTrace();
           fail("Test failed after the put operation");
         }
@@ -287,9 +287,9 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
             .getFunctionExecutionsCompleted());
         assertTrue(functionServiceStats.getResultsReceived() >= resultReceived_Aggregate);
 
-        LogWriterSupport.getLogWriter().info("Calling FunctionStats for  TEST_FUNCTION2 :");
+        LogWriterUtils.getLogWriter().info("Calling FunctionStats for  TEST_FUNCTION2 :");
         FunctionStats functionStats = FunctionStats.getFunctionStats(TestFunction.TEST_FUNCTION2, iDS);
-        LogWriterSupport.getLogWriter().info("Called FunctionStats for  TEST_FUNCTION2 :");
+        LogWriterUtils.getLogWriter().info("Called FunctionStats for  TEST_FUNCTION2 :");
         assertEquals(noOfExecutionCalls_TESTFUNCTION2, functionStats
             .getFunctionExecutionCalls());
         assertEquals(noOfExecutionsCompleted_TESTFUNCTION2, functionStats
@@ -380,14 +380,14 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           ds.disconnect();
           ds = getSystem(props);
           cache = CacheFactory.create(ds);
-          LogWriterSupport.getLogWriter().info("Created Cache on Server");
+          LogWriterUtils.getLogWriter().info("Created Cache on Server");
           assertNotNull(cache);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.DISTRIBUTED_ACK);
           factory.setDataPolicy(DataPolicy.REPLICATE);
           assertNotNull(cache);
           Region region = cache.createRegion(regionName, factory.create());
-          LogWriterSupport.getLogWriter().info("Region Created :" + region);
+          LogWriterUtils.getLogWriter().info("Region Created :" + region);
           assertNotNull(region);
           for (int i = 1; i <= 200; i++) {
             region.put("execKey-" + i, new Integer(i));
@@ -429,7 +429,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           ds.disconnect();
           ds = getSystem(props);
           cache = CacheFactory.create(ds);
-          LogWriterSupport.getLogWriter().info("Created Cache on Client");
+          LogWriterUtils.getLogWriter().info("Created Cache on Client");
           assertNotNull(cache);
 
 
@@ -454,7 +454,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           factory.setPoolName(p.getName());
           assertNotNull(cache);
           Region region = cache.createRegion(regionName, factory.create());
-          LogWriterSupport.getLogWriter().info("Client Region Created :" + region);
+          LogWriterUtils.getLogWriter().info("Client Region Created :" + region);
           assertNotNull(region);
           for (int i = 1; i <= 200; i++) {
             region.put("execKey-" + i, new Integer(i));
@@ -605,7 +605,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         }
         catch (Exception ex) {
           ex.printStackTrace();
-          LogWriterSupport.getLogWriter().info("Exception : ", ex);
+          LogWriterUtils.getLogWriter().info("Exception : ", ex);
           fail("Test failed after the execute operation nn TRUE");
         }
         function = new TestFunction(true, TestFunction.TEST_FUNCTION5);
@@ -627,7 +627,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         }
         catch (Exception ex) {
           ex.printStackTrace();
-          LogWriterSupport.getLogWriter().info("Exception : ", ex);
+          LogWriterUtils.getLogWriter().info("Exception : ", ex);
           fail("Test failed after the execute operationssssss");
         }
         return Boolean.TRUE;
@@ -975,7 +975,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         factory.setScope(Scope.DISTRIBUTED_ACK);
         factory.setDataPolicy(DataPolicy.EMPTY);
         Region region = getCache().createRegion(rName, factory.create());
-        LogWriterSupport.getLogWriter().info("Region Created :" + region);
+        LogWriterUtils.getLogWriter().info("Region Created :" + region);
         assertNotNull(region);
         FunctionService.registerFunction(new TestFunction(true, TestFunction.TEST_FUNCTION2));
         for (int i = 1; i <= 200; i++) {
@@ -993,7 +993,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
         factory.setScope(Scope.DISTRIBUTED_ACK);
         factory.setDataPolicy(DataPolicy.REPLICATE);
         Region region = getCache().createRegion(rName, factory.create());
-        LogWriterSupport.getLogWriter().info("Region Created :" + region);
+        LogWriterUtils.getLogWriter().info("Region Created :" + region);
         assertNotNull(region);
         FunctionService.registerFunction(new TestFunction(true, TestFunction.TEST_FUNCTION2));
         for (int i = 1; i <= 200; i++) {
@@ -1147,7 +1147,7 @@ public class FunctionServiceStatsDUnitTest extends PRClientServerTestBase{
           
         }
         catch (Exception e) {
-          LogWriterSupport.getLogWriter().info("Exception Occured : " + e.getMessage());
+          LogWriterUtils.getLogWriter().info("Exception Occured : " + e.getMessage());
           e.printStackTrace();
           Assert.fail("Test failed", e);
         }

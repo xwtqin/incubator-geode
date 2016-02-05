@@ -57,7 +57,7 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.cache.Oplog.OPLOG_TYPE;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -1678,7 +1678,7 @@ public class OplogJUnitTest extends DiskRegionTestingBase
             });
             assertNull(conflated);
             th.start();
-            Threads.join(th, 30 * 1000, null);
+            ThreadUtils.join(th, 30 * 1000);
             LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = false;
 
           }
@@ -2094,7 +2094,7 @@ public class OplogJUnitTest extends DiskRegionTestingBase
       finally {
         ((LocalRegion)region).getDiskRegion().releaseWriteLock();
       }
-      Threads.join(th, 30 * 1000, null);
+      ThreadUtils.join(th, 30 * 1000);
       region.close();
       region = DiskRegionHelperFactory.getSyncPersistOnlyRegion(cache,
           diskProps, Scope.LOCAL);
@@ -3170,7 +3170,7 @@ public class OplogJUnitTest extends DiskRegionTestingBase
         }
       });
       try {
-        Threads.join(clearOp, 30 * 1000, null);
+        ThreadUtils.join(clearOp, 30 * 1000);
       }
       catch (Exception e) {
         testFailed = true;
@@ -3237,7 +3237,7 @@ public class OplogJUnitTest extends DiskRegionTestingBase
           });
           clearTh.start();
           try {
-            Threads.join(clearTh, 120 * 1000, null);
+            ThreadUtils.join(clearTh, 120 * 1000);
             failure = clearTh.isAlive();
             failureCause = "Clear Thread still running !";
           } catch(Exception e) {

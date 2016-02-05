@@ -25,10 +25,10 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -73,7 +73,7 @@ public class RedisDistDUnitTest extends DistributedTestCase {
     client1 = host.getVM(2);
     client2 = host.getVM(3);  
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
-    final int locatorPort = DistributedTestSupport.getDUnitLocatorPort();
+    final int locatorPort = DistributedTestUtils.getDUnitLocatorPort();
     final SerializableCallable<Object> startRedisAdapter = new SerializableCallable<Object>() {
 
       private static final long serialVersionUID = 1978017907725504294L;
@@ -83,7 +83,7 @@ public class RedisDistDUnitTest extends DistributedTestCase {
         int port = ports[VM.getCurrentVMNum()];
         CacheFactory cF = new CacheFactory();
         String locator = SocketCreator.getLocalHost().getHostName() + "[" + locatorPort + "]";
-        cF.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        cF.set("log-level", LogWriterUtils.getDUnitLogLevel());
         cF.set("redis-bind-address", localHost);
         cF.set("redis-port", ""+port);
         cF.set("mcast-port", "0");

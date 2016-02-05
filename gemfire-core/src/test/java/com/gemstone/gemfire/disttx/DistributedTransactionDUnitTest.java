@@ -60,7 +60,7 @@ import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -1952,7 +1952,7 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
         public Exception ex = new Exception();
         
         public void run() {
-          LogWriterSupport.getLogWriter().info("Inside TxConflictRunnable.TxThread after aquiring locks");
+          LogWriterUtils.getLogWriter().info("Inside TxConflictRunnable.TxThread after aquiring locks");
           CacheTransactionManager mgr = getGemfireCache().getTxManager();
           mgr.setDistributed(true);
           mgr.begin();
@@ -1965,10 +1965,10 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
             mgr.commit();
           } catch (CommitConflictException ce) {
             gotConflict = true;
-            LogWriterSupport.getLogWriter().info("Received exception ", ce);
+            LogWriterUtils.getLogWriter().info("Received exception ", ce);
           } catch (Exception e) {
             gotOtherException = true;
-            LogWriterSupport.getLogWriter().info("Received exception ", e);
+            LogWriterUtils.getLogWriter().info("Received exception ", e);
             ex.initCause(e);
           }
         }
@@ -2087,7 +2087,7 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
         public Exception ex = new Exception();
 
         public void run() {
-          LogWriterSupport.getLogWriter()
+          LogWriterUtils.getLogWriter()
               .info("Inside TxRunnable.TxThread after aquiring locks");
           CacheTransactionManager mgr = getGemfireCache().getTxManager();
           mgr.setDistributed(true);
@@ -2101,7 +2101,7 @@ public class DistributedTransactionDUnitTest extends CacheTestCase {
             mgr.commit();
           } catch (Exception e) {
             gotException = true;
-            LogWriterSupport.getLogWriter().info("Received exception ", e);
+            LogWriterUtils.getLogWriter().info("Received exception ", e);
             ex.initCause(e);
           }
         }

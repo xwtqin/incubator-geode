@@ -40,7 +40,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -251,7 +251,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
   public void testSlowClient() throws Exception {
     setBridgeObeserverForAfterQueueDestroyMessage();
     clientVM.invoke(HASlowReceiverDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT0),
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT0),
             new Integer(PORT1), new Integer(PORT2), new Integer(2) });
     clientVM.invoke(HASlowReceiverDUnitTest.class, "registerInterest");
     // add expected socket exception string

@@ -39,7 +39,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -70,7 +70,7 @@ public class RemoveAllDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(RemoveAllDAckDUnitTest.class, "createCacheForVM0");
       vm1.invoke(RemoveAllDAckDUnitTest.class, "createCacheForVM1");
-      LogWriterSupport.getLogWriter().fine("Cache created successfully");
+      LogWriterUtils.getLogWriter().fine("Cache created successfully");
     }
     
     public void preTearDown(){
@@ -161,7 +161,7 @@ public class RemoveAllDAckDUnitTest extends DistributedTestCase {
             beforeDestroyRemoveAllcounter++;
             assertEquals(true, event.getOperation().isRemoveAll());
             assertEquals("removeAllCallback", event.getCallbackArgument());
-            LogWriterSupport.getLogWriter().fine("*******BeforeDestroy*****");
+            LogWriterUtils.getLogWriter().fine("*******BeforeDestroy*****");
             beforeDestroy = true;
         }
     }

@@ -46,7 +46,7 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.Resou
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -304,7 +304,7 @@ public class LRUEvictionControllerDUnitTest extends CacheTestCase {
       CacheListenerAdapter() {
         public void afterCreate(EntryEvent event) {
           try {
-            LogWriterSupport.getLogWriter().info("AFTER CREATE");
+            LogWriterUtils.getLogWriter().info("AFTER CREATE");
             region.put(key, value2);
 
           } 

@@ -29,7 +29,7 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -202,7 +202,7 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
         assertNotNull(grantor);
 
-        LogWriterSupport.getLogWriter().info("In identifyLockGrantor - grantor is " + grantor);
+        LogWriterUtils.getLogWriter().info("In identifyLockGrantor - grantor is " + grantor);
 
        
 
@@ -340,10 +340,10 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
         assertNotNull(bean);
         String[] listHeldLock = bean.listHeldLocks();
         assertEquals(listHeldLock.length, 1);
-        LogWriterSupport.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
+        LogWriterUtils.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
         Map<String, String> lockThreadMap = bean.listThreadsHoldingLock();
         assertEquals(lockThreadMap.size(), 1);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "List Of Lock Thread is  " + lockThreadMap.toString());
       }
     };
@@ -376,10 +376,10 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
           assertNotNull(bean);
           String[] listHeldLock = bean.listHeldLocks();
           assertEquals(listHeldLock.length, 1);
-          LogWriterSupport.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
+          LogWriterUtils.getLogWriter().info("List Of Lock Object is  " + listHeldLock[0]);
           Map<String, String> lockThreadMap = bean.listThreadsHoldingLock();
           assertEquals(lockThreadMap.size(), 1);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "List Of Lock Thread is  " + lockThreadMap.toString());
         }
 

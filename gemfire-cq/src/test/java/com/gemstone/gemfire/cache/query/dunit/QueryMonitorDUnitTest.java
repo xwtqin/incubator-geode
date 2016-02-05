@@ -50,12 +50,12 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -160,7 +160,7 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
     
     r = new SerializableRunnable("getClientSystem") {
       public void run() {
-        Properties props = DistributedTestSupport.getAllDistributedSystemProperties(new Properties());
+        Properties props = DistributedTestUtils.getAllDistributedSystemProperties(new Properties());
         props.put(DistributionConfigImpl.LOCATORS_NAME, "");
         getSystem(props);
       }
@@ -264,7 +264,7 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
     for (int i=0; i < server.length; i++){
       port[i] = server[i].invokeInt(QueryMonitorDUnitTest.class, "getCacheServerPort");
     }
-    final String host0 = NetworkSupport.getServerHostName(server[0].getHost());
+    final String host0 = NetworkUtils.getServerHostName(server[0].getHost());
 
     SerializableRunnable initClient = new CacheSerializableRunnable("Init client") {
       public void run2() throws CacheException {
@@ -1020,7 +1020,7 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server, 0, true);
     final int port = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Create client.
     cqDUnitTest.createClient(client, port, host0);
@@ -1137,7 +1137,7 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
             exampleRegion.put(""+i, new Portfolio(i));
           }
         }
-        LogWriterSupport.getLogWriter().info("### Completed updates in server1 in testCacheOpAfterQueryCancel");
+        LogWriterUtils.getLogWriter().info("### Completed updates in server1 in testCacheOpAfterQueryCancel");
       }
     });
 
@@ -1150,7 +1150,7 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
             exampleRegion.put(""+i, new Portfolio(i));
           }
         }
-        LogWriterSupport.getLogWriter().info("### Completed updates in server2 in testCacheOpAfterQueryCancel");
+        LogWriterUtils.getLogWriter().info("### Completed updates in server2 in testCacheOpAfterQueryCancel");
       }
     });
 
@@ -1171,17 +1171,17 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
               Query query = queryService.newQuery(qStr);
               query.execute();
             } catch (QueryExecutionTimeoutException qet) {
-              LogWriterSupport.getLogWriter().info("### Got Expected QueryExecutionTimeout exception. " +
+              LogWriterUtils.getLogWriter().info("### Got Expected QueryExecutionTimeout exception. " +
                   qet.getMessage());
               if (qet.getMessage().contains("cancelled after exceeding max execution")){
-                LogWriterSupport.getLogWriter().info("### Doing a put operation");
+                LogWriterUtils.getLogWriter().info("### Doing a put operation");
                 exampleRegion.put(""+i, new Portfolio(i));
               }
             } catch (Exception e){
               fail("Exception executing query." + e.getMessage());
             }
           }
-          LogWriterSupport.getLogWriter().info("### Completed Executing queries in testCacheOpAfterQueryCancel");
+          LogWriterUtils.getLogWriter().info("### Completed Executing queries in testCacheOpAfterQueryCancel");
         } catch (Exception ex){
           Assert.fail("Exception creating the query service", ex);
         }
@@ -1191,23 +1191,23 @@ public class QueryMonitorDUnitTest extends CacheTestCase {
     AsyncInvocation ai3 = server3.invokeAsync(executeQuery);
     AsyncInvocation ai4 = server4.invokeAsync(executeQuery);
     
-    LogWriterSupport.getLogWriter().info("### Waiting for async threads to join in testCacheOpAfterQueryCancel");
+    LogWriterUtils.getLogWriter().info("### Waiting for async threads to join in testCacheOpAfterQueryCancel");
     try {
-      Threads.join(ai1, 5 * 60 * 1000, null);
-      Threads.join(ai2, 5 * 60 * 1000, null);
-      Threads.join(ai3, 5 * 60 * 1000, null);
-      Threads.join(ai4, 5 * 60 * 1000, null);
+      ThreadUtils.join(ai1, 5 * 60 * 1000);
+      ThreadUtils.join(ai2, 5 * 60 * 1000);
+      ThreadUtils.join(ai3, 5 * 60 * 1000);
+      ThreadUtils.join(ai4, 5 * 60 * 1000);
     } catch (Exception ex) {
       fail("Async thread join failure");
     }
-    LogWriterSupport.getLogWriter().info("### DONE Waiting for async threads to join in testCacheOpAfterQueryCancel");
+    LogWriterUtils.getLogWriter().info("### DONE Waiting for async threads to join in testCacheOpAfterQueryCancel");
     
     validateQueryMonitorThreadCnt(server1, 0, 1000);
     validateQueryMonitorThreadCnt(server2, 0, 1000);
     validateQueryMonitorThreadCnt(server3, 0, 1000);
     validateQueryMonitorThreadCnt(server4, 0, 1000);
     
-    LogWriterSupport.getLogWriter().info("### DONE validating query monitor threads testCacheOpAfterQueryCancel");
+    LogWriterUtils.getLogWriter().info("### DONE validating query monitor threads testCacheOpAfterQueryCancel");
     
     stopServer(server1);
     stopServer(server2);

@@ -51,7 +51,7 @@ import com.gemstone.gemfire.internal.cache.persistence.BackupManager;
 import com.gemstone.gemfire.internal.util.IOUtils;
 import com.gemstone.gemfire.internal.util.TransformUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -90,7 +90,7 @@ public class IncrementalBackupDUnitTest extends CacheTestCase {
   private final SerializableRunnable createRegions = new SerializableRunnable() {
     @Override
     public void run() {
-      Cache cache = getCache(new CacheFactory().set("log-level", LogWriterSupport.getDUnitLogLevel()));
+      Cache cache = getCache(new CacheFactory().set("log-level", LogWriterUtils.getDUnitLogLevel()));
       cache.createDiskStoreFactory().setDiskDirs(getDiskDirs()).create("fooStore");
       cache.createDiskStoreFactory().setDiskDirs(getDiskDirs()).create("barStore");
       getRegionFactory(cache).setDiskStoreName("fooStore").create("fooRegion");
@@ -127,7 +127,7 @@ public class IncrementalBackupDUnitTest extends CacheTestCase {
    * @param message a message to log.
    */
   private void log(String message) {
-    LogWriterSupport.getLogWriter().info("[IncrementalBackupDUnitTest] " + message);
+    LogWriterUtils.getLogWriter().info("[IncrementalBackupDUnitTest] " + message);
   }
 
   /**

@@ -51,7 +51,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -151,7 +151,7 @@ public class HAGIIDUnitTest extends DistributedTestCase
     PORT2 =  AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     //Start the client
     client0.invoke(HAGIIDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT1),new Integer(PORT2)});
+        new Object[] { NetworkUtils.getServerHostName(host), new Integer(PORT1),new Integer(PORT2)});
   }
   
   public void testGIIRegionQueue()

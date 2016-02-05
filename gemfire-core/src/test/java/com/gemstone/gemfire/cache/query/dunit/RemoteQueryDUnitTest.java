@@ -43,10 +43,10 @@ import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -98,7 +98,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -124,7 +124,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -241,7 +241,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -267,7 +267,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -369,7 +369,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -395,7 +395,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -495,7 +495,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -628,7 +628,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -659,7 +659,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
           } catch (Exception e) {
             Assert.fail("Failed executing " + queryString, e);
           }
-          LogWriterSupport.getLogWriter().fine("size: " + results.size());
+          LogWriterUtils.getLogWriter().fine("size: " + results.size());
           //assertEquals(numberOfEntries, results.size());
           assertTrue(!results.getCollectionType().allowsDuplicates() && results.getCollectionType().getElementType().isStructType());
         }
@@ -689,7 +689,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -715,7 +715,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -854,7 +854,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -885,7 +885,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
 
     // Create client region
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
     vm1.invoke(new CacheSerializableRunnable("Create region") {
         public void run2() throws CacheException {
           Properties config = new Properties();
@@ -955,7 +955,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
     vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
         public void run2() throws CacheException {
           Properties config = new Properties();
-          config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+          config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
           system = (InternalDistributedSystem) DistributedSystem.connect(config);
           AttributesFactory factory = new AttributesFactory();
           factory.setScope(Scope.LOCAL);
@@ -979,7 +979,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
       });
 
     final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     // Create client region in VM1
     vm1.invoke(new CacheSerializableRunnable("Create region") {
@@ -1114,7 +1114,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
      vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
          public void run2() throws CacheException {
            Properties config = new Properties();
-           config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+           config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
            system = (InternalDistributedSystem) DistributedSystem.connect(config);
            AttributesFactory factory = new AttributesFactory();
            factory.setScope(Scope.LOCAL);
@@ -1138,7 +1138,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
        });
 
      final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-     final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+     final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
      // Create client region in VM1
      vm1.invoke(new CacheSerializableRunnable("Create region") {
@@ -1218,7 +1218,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
       vm0.invoke(new CacheSerializableRunnable("Create Bridge Server") {
           public void run2() throws CacheException {
             Properties config = new Properties();
-            config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+            config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
             system = (InternalDistributedSystem) DistributedSystem.connect(config);
             AttributesFactory factory = new AttributesFactory();
             factory.setScope(Scope.LOCAL);
@@ -1249,7 +1249,7 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
         });
 
       final int port = vm0.invokeInt(RemoteQueryDUnitTest.class, "getCacheServerPort");
-      final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+      final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
       // Create client region in VM1
       vm1.invoke(new CacheSerializableRunnable("Create region") {

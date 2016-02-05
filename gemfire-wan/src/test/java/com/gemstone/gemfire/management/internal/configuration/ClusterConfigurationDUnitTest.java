@@ -838,8 +838,8 @@ public class ClusterConfigurationDUnitTest extends CliCommandTestBase {
   }
   protected void executeAndVerifyCommand(String commandString) {
     CommandResult cmdResult = executeCommand(commandString);
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Command : " + commandString);
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Command Result : " + commandResultToString(cmdResult));
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Command : " + commandString);
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Command Result : " + commandResultToString(cmdResult));
     assertEquals(Status.OK, cmdResult.getStatus());
     assertFalse(cmdResult.failedToPersist());
   }

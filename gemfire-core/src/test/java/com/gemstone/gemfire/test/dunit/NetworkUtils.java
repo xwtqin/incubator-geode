@@ -20,29 +20,50 @@ import java.net.UnknownHostException;
 
 import com.gemstone.gemfire.internal.SocketCreator;
 
-public class NetworkSupport {
+/**
+ * <code>NetworkUtils</code> provides static utility methods to perform
+ * network DNS lookups or similar actions.
+ * 
+ * These methods can be used directly: <code>NetworkUtils.getIPLiteral()</code>, 
+ * however, they are intended to be referenced through static import:
+ *
+ * <pre>
+ * import static com.gemstone.gemfire.test.dunit.NetworkUtils.*;
+ *    ...
+ *    String hostName = getIPLiteral();
+ * </pre>
+ *
+ * Extracted from DistributedTestCase.
+ */
+public class NetworkUtils {
 
-  /** get the IP literal name for the current host, use this instead of  
+  protected NetworkUtils() {
+  }
+  
+  /** 
+   * Get the IP literal name for the current host. Use this instead of  
    * "localhost" to avoid IPv6 name resolution bugs in the JDK/machine config.
-   * @return an ip literal, this method honors java.net.preferIPvAddresses
+   * This method honors java.net.preferIPvAddresses
+   * 
+   * @return an IP literal which honors java.net.preferIPvAddresses
    */
   public static String getIPLiteral() {
     try {
       return SocketCreator.getLocalHost().getHostAddress();
     } catch (UnknownHostException e) {
-      throw new Error("problem determining host IP address", e);
+      throw new Error("Problem determining host IP address", e);
     }
   }
 
-  /** get the host name to use for a server cache in client/server dunit
-   * testing
-   * @param host
+  /** 
+   * Get the host name to use for a server cache in client/server dunit
+   * testing.
+   * 
+   * @param host the dunit Host to get a machine host name for
    * @return the host name
    */
-  public static String getServerHostName(Host host) {
-    return System.getProperty("gemfire.server-bind-address") != null?
-        System.getProperty("gemfire.server-bind-address")
-        : host.getHostName();
+  public static String getServerHostName(final Host host) {
+    String serverBindAddress = System.getProperty("gemfire.server-bind-address");
+    return serverBindAddress != null ? serverBindAddress : host.getHostName();
   }
-
 }

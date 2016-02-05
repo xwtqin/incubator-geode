@@ -33,7 +33,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -167,7 +167,7 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
         
         props.setProperty(DistributionConfig.LOCATORS_NAME, "");
-        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
 
         InetAddress bindAddr = null;
         try {
@@ -229,8 +229,8 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         LocatorMXBean bean = service.getLocalLocatorMXBean();
         assertNotNull(bean);
         assertEquals(locPort, bean.getPort());
-        LogWriterSupport.getLogWriter().info("Log of Locator" + bean.viewLog());
-        LogWriterSupport.getLogWriter().info("BindAddress" + bean.getBindAddress());
+        LogWriterUtils.getLogWriter().info("Log of Locator" + bean.viewLog());
+        LogWriterUtils.getLogWriter().info("BindAddress" + bean.getBindAddress());
         assertEquals(isPeer, bean.isPeerLocator());
         return null;
       }
@@ -255,8 +255,8 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
         LocatorMXBean bean = MBeanUtil.getLocatorMbeanProxy(member);
         assertNotNull(bean);
 
-        LogWriterSupport.getLogWriter().info("Log of Locator" + bean.viewLog());
-        LogWriterSupport.getLogWriter().info("BindAddress" + bean.getBindAddress());
+        LogWriterUtils.getLogWriter().info("Log of Locator" + bean.viewLog());
+        LogWriterUtils.getLogWriter().info("BindAddress" + bean.getBindAddress());
 
         return null;
       }

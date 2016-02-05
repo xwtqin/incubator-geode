@@ -44,7 +44,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -124,7 +124,7 @@ public class RedundancyLevelTestBase extends DistributedTestCase
     PORT4 = ((Integer)server3.invoke(RedundancyLevelTestBase.class,
         "createServerCache")).intValue();
 
-    String hostName = NetworkSupport.getServerHostName(Host.getHost(0));
+    String hostName = NetworkUtils.getServerHostName(Host.getHost(0));
     SERVER1 = hostName + PORT1;
     SERVER2 = hostName + PORT2;
     SERVER3 = hostName + PORT3;

@@ -33,7 +33,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -215,11 +215,11 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testValidCredentials: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testValidCredentials: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
 
       // Start the servers
       Integer locPort1 = SecurityTestUtil.getLocatorPort();
@@ -237,12 +237,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start the clients with valid credentials
       Properties credentials1 = gen.getValidCredentials(1);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testValidCredentials: For first client credentials: " + credentials1
               + " : " + javaProps1);
       Properties credentials2 = gen.getValidCredentials(2);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testValidCredentials: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -281,11 +281,11 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info("testNoCredentials: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoCredentials: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info("testNoCredentials: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info("testNoCredentials: Using authinit: " + authInit);
 
       // Start the servers
       Integer locPort1 = SecurityTestUtil.getLocatorPort();
@@ -303,7 +303,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start first client with valid credentials
       Properties credentials1 = gen.getValidCredentials(1);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoCredentials: For first client credentials: " + credentials1
               + " : " + javaProps1);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -346,11 +346,11 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidCredentials: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidCredentials: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info("testInvalidCredentials: Using authinit: " + authInit);
 
       // Start the servers
@@ -369,7 +369,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start first client with valid credentials
       Properties credentials1 = gen.getValidCredentials(1);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidCredentials: For first client credentials: "
               + credentials1 + " : " + javaProps1);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -385,7 +385,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // exception
       Properties credentials2 = gen.getInvalidCredentials(1);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidCredentials: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client2.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -404,9 +404,9 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       Properties javaProps = gen.getJavaProperties();
       String authenticator = gen.getAuthenticator();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthInit: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthInit: Using authenticator: " + authenticator);
 
       // Start the server
@@ -419,7 +419,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
 
       Properties credentials = gen.getValidCredentials(1);
       javaProps = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthInit: For first client credentials: " + credentials
               + " : " + javaProps);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -440,9 +440,9 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
 
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthInitWithCredentials: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthInitWithCredentials: Using authenticator: "
               + authenticator);
 
@@ -462,12 +462,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start the clients with valid credentials
       Properties credentials1 = gen.getValidCredentials(1);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthInitWithCredentials: For first client credentials: "
               + credentials1 + " : " + javaProps1);
       Properties credentials2 = gen.getValidCredentials(2);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthInitWithCredentials: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -498,9 +498,9 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       Properties javaProps = gen.getJavaProperties();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthenticator: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthenticator: Using authinit: " + authInit);
 
       // Start the server with invalid authenticator
@@ -514,7 +514,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Trying to create the region on client should throw a security exception
       Properties credentials = gen.getValidCredentials(1);
       javaProps = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthenticator: For first client credentials: "
               + credentials + " : " + javaProps);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -526,7 +526,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Also test with invalid credentials
       credentials = gen.getInvalidCredentials(1);
       javaProps = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAuthenticator: For first client credentials: "
               + credentials + " : " + javaProps);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -546,10 +546,10 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthenticatorWithCredentials: Using scheme: "
               + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthenticatorWithCredentials: Using authinit: " + authInit);
 
       // Start the servers with no authenticator
@@ -567,12 +567,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // valid/invalid credentials when none are required on the server side
       Properties credentials1 = gen.getValidCredentials(3);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthenticatorWithCredentials: For first client credentials: "
               + credentials1 + " : " + javaProps1);
       Properties credentials2 = gen.getInvalidCredentials(5);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testNoAuthenticatorWithCredentials: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -602,11 +602,11 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: Using authinit: " + authInit);
 
       // Start the first server
@@ -625,12 +625,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start the clients with valid credentials
       Properties credentials1 = gen.getValidCredentials(5);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: For first client credentials: "
               + credentials1 + " : " + javaProps1);
       Properties credentials2 = gen.getValidCredentials(6);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -683,7 +683,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Verify that the creation of region throws security exception
       credentials1 = gen.getInvalidCredentials(7);
       javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsWithFailover: For first client invalid credentials: "
               + credentials1 + " : " + javaProps1);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -711,12 +711,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       String authenticator = gen.getAuthenticator();
       String authInit = gen.getAuthInit();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: Using scheme: " + gen.classCode());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: Using authenticator: "
               + authenticator);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: Using authinit: " + authInit);
 
       // Start the first server
@@ -735,12 +735,12 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Start the clients with valid credentials
       Properties credentials1 = gen.getValidCredentials(3);
       Properties javaProps1 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: For first client credentials: "
               + credentials1 + " : " + javaProps1);
       Properties credentials2 = gen.getValidCredentials(4);
       Properties javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: For second client credentials: "
               + credentials2 + " : " + javaProps2);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -806,7 +806,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
       // Verify that the creation of region throws security exception
       credentials2 = gen.getInvalidCredentials(3);
       javaProps2 = gen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testCredentialsForNotifications: For second client invalid credentials: "
               + credentials2 + " : " + javaProps2);
       client2.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -846,7 +846,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
                 new Integer(SecurityTestUtil.AUTHFAIL_EXCEPTION) });
       }
       else {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "testCredentialsForNotifications: Skipping invalid authenticator for scheme ["
                 + gen.classCode() + "] which has no authInit");
       }
@@ -877,7 +877,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
                 new Integer(SecurityTestUtil.AUTHREQ_EXCEPTION) });
       }
       else {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "testCredentialsForNotifications: Skipping null authInit for scheme ["
                 + gen.classCode() + "] which has no authInit");
       }
@@ -937,7 +937,7 @@ public class ClientAuthenticationDUnitTest extends DistributedTestCase {
             new Object[] { new Integer(4) });
       }
       else {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "testCredentialsForNotifications: Skipping scheme ["
                 + gen.classCode() + "] which has no authenticator");
       }

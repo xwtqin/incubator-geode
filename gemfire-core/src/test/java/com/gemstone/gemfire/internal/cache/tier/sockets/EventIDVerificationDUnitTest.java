@@ -45,7 +45,7 @@ import com.gemstone.gemfire.internal.cache.RegionEventImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -99,7 +99,7 @@ public class EventIDVerificationDUnitTest extends DistributedTestCase
 
     //vm2.invoke(EventIDVerificationDUnitTest.class, "createClientCache", new
     // Object[] { new Integer(PORT1),new Integer(PORT2)});
-    createClientCache(NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
+    createClientCache(NetworkUtils.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
     CacheObserverHolder.setInstance(new CacheObserverAdapter());
 
   }

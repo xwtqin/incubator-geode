@@ -71,7 +71,7 @@ import com.gemstone.gemfire.internal.cache.execute.data.Order;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -740,7 +740,7 @@ public class RemoteCQTransactionDUnitTest extends CacheTestCase {
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port);
         ccf.setPoolSubscriptionEnabled(true);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<Integer, String> crf = cCache
             .createClientRegionFactory(isEmpty ? ClientRegionShortcut.PROXY

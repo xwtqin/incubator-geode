@@ -659,7 +659,7 @@ public class DeltaPropagationDUnitTest extends DistributedTestCase {
       primary = (((PoolImpl)pool).getPrimaryPort() == PORT1) ? VM0
           : ((((PoolImpl)pool).getPrimaryPort() == PORT2) ? VM1 : VM2);
   
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("waiting for client to receive last_key");
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("waiting for client to receive last_key");
       waitForLastKey();
   
       long fromDeltasOnClient = DeltaTestImpl.getFromDeltaInvokations()

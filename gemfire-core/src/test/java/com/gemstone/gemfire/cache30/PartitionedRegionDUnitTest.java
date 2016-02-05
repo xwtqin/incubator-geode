@@ -188,7 +188,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
         fact.addCacheListener(new CacheListenerAdapter(){
           @Override
           public void afterInvalidate(EntryEvent event) {
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("afterInvalidate invoked with " + event);
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("afterInvalidate invoked with " + event);
             InvalidateInvoked = true;
           }
         });

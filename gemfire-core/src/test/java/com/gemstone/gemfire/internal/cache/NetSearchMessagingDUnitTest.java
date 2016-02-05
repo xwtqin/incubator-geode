@@ -36,7 +36,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.SearchLoadAndWriteProcessor.NetSearchRequestMessage;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -196,7 +196,7 @@ public class NetSearchMessagingDUnitTest extends CacheTestCase {
           LocalRegion region = (LocalRegion)cache.getRegion("region");
           RegionEntry re = region.getRegionEntry("a");
           Object o = re.getValueInVM(null);
-          LogWriterSupport.getLogWriter().info("key a="+o);;
+          LogWriterUtils.getLogWriter().info("key a="+o);;
           return o == null || o == Token.NOT_AVAILABLE;
         }
       };
@@ -218,7 +218,7 @@ public class NetSearchMessagingDUnitTest extends CacheTestCase {
           for (String key: keys) {
             RegionEntry re = region.getRegionEntry(key);
             Object o = re.getValueInVM(null);
-            LogWriterSupport.getLogWriter().info("key " + key + "=" + o);
+            LogWriterUtils.getLogWriter().info("key " + key + "=" + o);
             assertTrue("expected key " + key + " to not be evicted",
                 (o != null) && (o != Token.NOT_AVAILABLE));
           }
@@ -336,9 +336,9 @@ public class NetSearchMessagingDUnitTest extends CacheTestCase {
       public Object call() {
         Cache cache = getCache();
         Region region = cache.getRegion("region");
-        LogWriterSupport.getLogWriter().info("putting key="+key+"="+value);
+        LogWriterUtils.getLogWriter().info("putting key="+key+"="+value);
         Object result = region.put(key, value);
-        LogWriterSupport.getLogWriter().info("done putting key="+key);
+        LogWriterUtils.getLogWriter().info("done putting key="+key);
         return result;
       }
     });

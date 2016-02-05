@@ -44,7 +44,7 @@ import com.gemstone.gemfire.internal.admin.StatResource;
 import com.gemstone.gemfire.internal.admin.remote.RemoteTransportConfig;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -67,7 +67,7 @@ public class ConsoleDistributionManagerDUnitTest
 //  private volatile Alert lastAlert = null;
 
   public void alert(Alert alert) {
-    LogWriterSupport.getLogWriter().info("DEBUG: alert=" + alert);
+    LogWriterUtils.getLogWriter().info("DEBUG: alert=" + alert);
 //    this.lastAlert = alert;
   }
 
@@ -97,7 +97,7 @@ public class ConsoleDistributionManagerDUnitTest
       }
       // create a GfManagerAgent in the master vm.
       this.agent = GfManagerAgentFactory.
-        getManagerAgent(new GfManagerAgentConfig(null, transport, LogWriterSupport.getLogWriter(), Alert.SEVERE, this, null));
+        getManagerAgent(new GfManagerAgentConfig(null, transport, LogWriterUtils.getLogWriter(), Alert.SEVERE, this, null));
       if (!agent.isConnected()) {
         WaitCriterion ev = new WaitCriterion() {
           public boolean done() {
@@ -248,7 +248,7 @@ public class ConsoleDistributionManagerDUnitTest
       
       Region[] roots = apps[i].getRootRegions();
       if (roots.length == 0) {
-        LogWriterSupport.getLogWriter().info("DEBUG: testApplications: apps[" + i + "]=" + apps[i] + " did not have a root region");
+        LogWriterUtils.getLogWriter().info("DEBUG: testApplications: apps[" + i + "]=" + apps[i] + " did not have a root region");
       } else {
         Region root = roots[0];
         assertNotNull(root);
@@ -289,7 +289,7 @@ public class ConsoleDistributionManagerDUnitTest
         assertTrue(!node.isPrimitiveOrString());
         EntryValueNode[] fields = node.getChildren();
         assertNotNull(fields);
-        LogWriterSupport.getLogWriter().warning("The tests use StringBuffers for values which might be implmented differently in jdk 1.5");
+        LogWriterUtils.getLogWriter().warning("The tests use StringBuffers for values which might be implmented differently in jdk 1.5");
        // assertTrue(fields.length > 0);
         
         /// test destruction in the last valid app
@@ -366,7 +366,7 @@ public class ConsoleDistributionManagerDUnitTest
     region.create(entryName, value);
     
     
-    LogWriterSupport.getLogWriter().info("Put value " + value + " in entry " +
+    LogWriterUtils.getLogWriter().info("Put value " + value + " in entry " +
                         entryName + " in region '" +
                         region.getFullPath() +"'");
     

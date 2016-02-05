@@ -32,7 +32,7 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -51,7 +51,7 @@ public class DurableClientBug39997DUnitTest extends CacheTestCase {
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
 
-    final String hostName = NetworkSupport.getServerHostName(host);
+    final String hostName = NetworkUtils.getServerHostName(host);
     final int port = AvailablePortHelper.getRandomAvailableTCPPort();
     vm0.invoke(new SerializableRunnable("create cache") {
       public void run() {

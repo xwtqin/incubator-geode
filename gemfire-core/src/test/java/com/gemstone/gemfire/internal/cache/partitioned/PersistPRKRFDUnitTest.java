@@ -29,8 +29,7 @@ import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -102,7 +101,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
         }
       }
     });
-    Threads.join(async1, MAX_WAIT, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, MAX_WAIT);
     closeCache(vm0);
     
     // update
@@ -145,7 +144,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
         }
       }
     });
-    Threads.join(async1, MAX_WAIT, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, MAX_WAIT);
     closeCache(vm0);
 
     // destroy
@@ -188,7 +187,7 @@ public class PersistPRKRFDUnitTest extends PersistentPartitionedRegionTestBase {
         }
       }
     });
-    Threads.join(async1, MAX_WAIT, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, MAX_WAIT);
     
     checkData(vm0, 0, 10, "a");
     checkData(vm0, 10, 11, null);

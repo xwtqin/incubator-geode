@@ -64,7 +64,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -717,7 +717,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertNotNull(basicGetCache());
         Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
         assertNotNull(pr);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Partitioned Region " + partitionedRegionName
                 + " created Successfully :" + pr.toString());
       }
@@ -754,7 +754,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         }
         catch (Exception Expected) {
           Expected.printStackTrace();
-          LogWriterSupport.getLogWriter().info("Expected Message : " + Expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Expected Message : " + Expected.getMessage());
           assertTrue(Expected.getMessage().startsWith(
               "Colocated regions should have accessors at the same node"));
         }
@@ -789,7 +789,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertNotNull(basicGetCache());
         Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
         assertNotNull(pr);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Partitioned Region " + partitionedRegionName
                 + " created Successfully :" + pr.toString());
       }
@@ -825,7 +825,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               + "should have accessors at the same node");
         }
         catch (Exception Expected) {
-          LogWriterSupport.getLogWriter().info("Expected Message : " + Expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Expected Message : " + Expected.getMessage());
           assertTrue(Expected.getMessage().startsWith(
               "Colocated regions should have accessors at the same node"));
         }
@@ -860,7 +860,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertNotNull(basicGetCache());
         Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
         assertNotNull(pr);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Partitioned Region " + partitionedRegionName
                 + " created Successfully :" + pr.toString());
       }
@@ -888,7 +888,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         assertNotNull(basicGetCache());
         Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
         assertNotNull(pr);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Partitioned Region " + partitionedRegionName
                 + " created Successfully :" + pr.toString());
       }
@@ -927,7 +927,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               + "as colocated regions are not configured to be at the same nodes.");
         }
         catch (Exception Expected) {
-          LogWriterSupport.getLogWriter().info("Expected Message : " + Expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Expected Message : " + Expected.getMessage());
           assertTrue(Expected.getMessage().contains("Cannot create buckets, as "
               + "colocated regions are not configured to be at the same nodes."));
         }
@@ -963,7 +963,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         }
         catch (Exception NotExpected) {
           NotExpected.printStackTrace();
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Unexpected Exception Message : " + NotExpected.getMessage());
           Assert.fail("Unpexpected Exception" , NotExpected);
         }
@@ -1018,7 +1018,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               + expectedExMessage);
         }
         catch (Exception Expected) {
-          LogWriterSupport.getLogWriter().info("Expected Messageee : " + Expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Expected Messageee : " + Expected.getMessage());
           assertTrue(Expected.getMessage().contains(expectedExMessage));
         }
       }
@@ -1036,7 +1036,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               + expectedExMessage);
         }
         catch (Exception Expected) {
-          LogWriterSupport.getLogWriter().info("Expected Messageee : " + Expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Expected Messageee : " + Expected.getMessage());
           assertTrue(Expected.getMessage().contains(expectedExMessage));
         }
       }
@@ -1096,7 +1096,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               + expectedExMessage);
         }
         catch (IllegalStateException expected) {
-          LogWriterSupport.getLogWriter().info("Got message: " + expected.getMessage());
+          LogWriterUtils.getLogWriter().info("Got message: " + expected.getMessage());
           assertTrue(expected.getMessage().contains(expectedExMessage));
         }
       }
@@ -1114,7 +1114,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         }
         catch (Exception unexpected) {
           unexpected.printStackTrace();
-          LogWriterSupport.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
+          LogWriterUtils.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
           fail("Could not destroy the child region.");
         }
       }
@@ -1131,7 +1131,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
         }
         catch (Exception unexpected) {
           unexpected.printStackTrace();
-          LogWriterSupport.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
+          LogWriterUtils.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
           fail("Could not destroy the parent region.");
         }
       }
@@ -1226,7 +1226,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(1);
               prForCustomer.put(dummy, new Integer(100));
               assertEquals(prForCustomer.get(dummy), new Integer(100));
-              LogWriterSupport.getLogWriter().info(
+              LogWriterUtils.getLogWriter().info(
                   "Key :" + dummy.dummyID + " Value :"
                       + prForCustomer.get(dummy));
 
@@ -1235,14 +1235,14 @@ public class PRColocationDUnitTest extends CacheTestCase {
               assertNotNull(prForOrder);
               prForOrder.put(dummy, new Integer(200));
               assertEquals(prForOrder.get(dummy), new Integer(200));
-              LogWriterSupport.getLogWriter().info(
+              LogWriterUtils.getLogWriter().info(
                   "Key :" + dummy.dummyID + " Value :" + prForOrder.get(dummy));
               return null;
             }
           });
     } catch (Exception unexpected) {
       unexpected.printStackTrace();
-      LogWriterSupport.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
+      LogWriterUtils.getLogWriter().info("Unexpected Message: " + unexpected.getMessage());
       fail("Test failed");
     }
   }
@@ -2072,13 +2072,13 @@ public class PRColocationDUnitTest extends CacheTestCase {
       }
       Iterator primaryBucketIterator = primaryBucketListForCustomer.iterator();
       while (primaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
+        LogWriterUtils.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
 
       }
       Iterator SecondaryBucketIterator = secondaryBucketListForCustomer
           .iterator();
       while (SecondaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Secondary Bucket : " + SecondaryBucketIterator.next());
       }
     }
@@ -2119,12 +2119,12 @@ public class PRColocationDUnitTest extends CacheTestCase {
       }
       Iterator primaryBucketIterator = primaryBucketListForOrder.iterator();
       while (primaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
+        LogWriterUtils.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
 
       }
       Iterator SecondaryBucketIterator = secondaryBucketListForOrder.iterator();
       while (SecondaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Secondary Bucket : " + SecondaryBucketIterator.next());
       }
     }
@@ -2165,13 +2165,13 @@ public class PRColocationDUnitTest extends CacheTestCase {
       }
       Iterator primaryBucketIterator = primaryBucketListForShipment.iterator();
       while (primaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
+        LogWriterUtils.getLogWriter().info("Primary Bucket : " + primaryBucketIterator.next());
 
       }
       Iterator SecondaryBucketIterator = secondaryBucketListForShipment
           .iterator();
       while (SecondaryBucketIterator.hasNext()) {
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Secondary Bucket : " + SecondaryBucketIterator.next());
       }
     }
@@ -2211,10 +2211,10 @@ public class PRColocationDUnitTest extends CacheTestCase {
     HashMap localBucket2RegionMap = (HashMap)customerPartitionedregion
         .getDataStore().getSizeLocally();
     int customerBucketSize = localBucket2RegionMap.size();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of the " + customerPartitionedRegionName + " in this VM :- "
             + localBucket2RegionMap.size());
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of primary buckets the " + customerPartitionedRegionName + " in this VM :- "
             + customerPartitionedregion.getDataStore().getNumberOfPrimaryBucketsManaged());
     Set customerEntrySet = localBucket2RegionMap.entrySet();
@@ -2224,7 +2224,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
       Map.Entry me = (Map.Entry)customerIterator.next();
       Integer size = (Integer)me.getValue();
       assertEquals(1, size.intValue());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Size of the Bucket " + me.getKey() + ": - " + size.toString());
     }
     
@@ -2232,10 +2232,10 @@ public class PRColocationDUnitTest extends CacheTestCase {
     localBucket2RegionMap = (HashMap)orderPartitionedregion.getDataStore()
         .getSizeLocally();
     int orderBucketSize = localBucket2RegionMap.size();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of the " + orderPartitionedRegionName + " in this VM :- "
             + localBucket2RegionMap.size());
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of primary buckets the " + orderPartitionedRegionName + " in this VM :- "
             + orderPartitionedregion.getDataStore().getNumberOfPrimaryBucketsManaged());
     
@@ -2246,16 +2246,16 @@ public class PRColocationDUnitTest extends CacheTestCase {
       Map.Entry me = (Map.Entry)orderIterator.next();
       Integer size = (Integer)me.getValue();
       assertEquals(10, size.intValue());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Size of the Bucket " + me.getKey() + ": - " + size.toString());
     }
     localBucket2RegionMap = (HashMap)shipmentPartitionedregion.getDataStore()
         .getSizeLocally();
     int shipmentBucketSize = localBucket2RegionMap.size();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of the " + shipmentPartitionedRegionName + " in this VM :- "
             + localBucket2RegionMap.size());
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of primary buckets the " + shipmentPartitionedRegionName + " in this VM :- "
             + shipmentPartitionedregion.getDataStore().getNumberOfPrimaryBucketsManaged());
     Set shipmentEntrySet = localBucket2RegionMap.entrySet();
@@ -2265,7 +2265,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
       Map.Entry me = (Map.Entry)shipmentIterator.next();
       Integer size = (Integer)me.getValue();
       assertEquals(100, size.intValue());
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Size of the Bucket " + me.getKey() + ": - " + size.toString());
     }
     
@@ -2363,7 +2363,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
           // assertNotNull(orderPartitionedregion.get(orderId));
 
           if (custId.equals(orderId.getCustId())) {
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 orderId + "belongs to node " + idmForCustomer + " "
                     + idmForOrder);
             assertEquals(idmForCustomer, idmForOrder);
@@ -2375,7 +2375,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
             ShipmentId shipmentId = (ShipmentId)shipmentIterator.next();
             // assertNotNull(shipmentPartitionedregion.get(shipmentId));
             if (orderId.equals(shipmentId.getOrderId())) {
-              LogWriterSupport.getLogWriter().info(
+              LogWriterUtils.getLogWriter().info(
                   shipmentId + "belongs to node " + idmForOrder + " "
                       + idmForShipment);
             }
@@ -2460,7 +2460,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      LogWriterSupport.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterUtils.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
   }
 
@@ -2486,7 +2486,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -2513,7 +2513,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        LogWriterSupport.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -2542,7 +2542,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -2576,7 +2576,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     Region pr = basicGetCache().getRegion(partitionedRegionName);
     assertNotNull(pr);
     try {
-      LogWriterSupport.getLogWriter().info("Destroying Partitioned Region " + partitionedRegionName);
+      LogWriterUtils.getLogWriter().info("Destroying Partitioned Region " + partitionedRegionName);
       pr.destroyRegion();
       fail("Did not get the expected ISE");
     } catch (Exception e) {
@@ -2607,7 +2607,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     assertNotNull(basicGetCache());
     Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
     assertNotNull(pr);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + partitionedRegionName
             + " created Successfully :" + pr.toString());
   }
@@ -2628,7 +2628,7 @@ public class PRColocationDUnitTest extends CacheTestCase {
     attr.setPartitionAttributes(prAttr);
     Region pr = root.createSubregion(partitionedRegionName, attr.create());
     assertNotNull(pr);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned sub region " + pr.getName()
             + " created Successfully :" + pr.toString());
     if(localMaxMemory == 0){

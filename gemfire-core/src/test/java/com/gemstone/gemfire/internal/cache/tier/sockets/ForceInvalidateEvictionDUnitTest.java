@@ -45,7 +45,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.Token;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -345,7 +345,7 @@ public class ForceInvalidateEvictionDUnitTest extends CacheTestCase {
         Cache cache = getCache();
         
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(NetworkSupport.getServerHostName(host), port);
+        pf.addServer(NetworkUtils.getServerHostName(host), port);
         pf.setSubscriptionEnabled(true);
         pf.create(name);
         RegionFactory rf = new RegionFactory();

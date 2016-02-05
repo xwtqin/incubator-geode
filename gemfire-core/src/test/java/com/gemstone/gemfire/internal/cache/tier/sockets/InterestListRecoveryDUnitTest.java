@@ -42,7 +42,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -100,10 +100,10 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     PORT1 =  ((Integer)server1.invoke(InterestListRecoveryDUnitTest.class, "createServerCache" )).intValue();
     PORT2 =  ((Integer)server2.invoke(InterestListRecoveryDUnitTest.class, "createServerCache" )).intValue();
 
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("server1 port is " + String.valueOf(PORT1));
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("server2 port is " + String.valueOf(PORT2));
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("server1 port is " + String.valueOf(PORT1));
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("server2 port is " + String.valueOf(PORT2));
 
-    createClientCache(NetworkSupport.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
+    createClientCache(NetworkUtils.getServerHostName(host), new Integer(PORT1), new Integer(PORT2));
   }
 
   // this test fails because of bug# 35352 , hence commented the bug is Deferred to: Danube

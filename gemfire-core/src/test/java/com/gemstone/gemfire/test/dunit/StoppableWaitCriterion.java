@@ -16,10 +16,20 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
+/**
+ * Defines an asynchronous criterion with an optional method to fail early
+ * before timeout.
+ *
+ * Extracted from DistributedTestCase.
+ * 
+ * @deprecated Use {@link com.jayway.awaitility.Awaitility} instead.
+ */
 public interface StoppableWaitCriterion extends WaitCriterion {
+  
   /**
    * If this method returns true then quit waiting even if we are not done.
    * This allows a wait to fail early.
    */
   public boolean stopWaiting();
+  
 }

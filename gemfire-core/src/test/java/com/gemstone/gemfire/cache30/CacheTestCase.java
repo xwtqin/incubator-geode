@@ -59,7 +59,7 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -426,7 +426,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         try {
           cleanDiskDirs();
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Error cleaning disk dirs", e);
+          LogWriterUtils.getLogWriter().error("Error cleaning disk dirs", e);
         }
       }
     }

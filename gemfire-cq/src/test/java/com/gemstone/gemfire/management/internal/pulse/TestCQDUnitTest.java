@@ -21,8 +21,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -83,12 +83,12 @@ public class TestCQDUnitTest extends ManagementTestBase {
 
   public void testNumOfCQ() throws Exception {
     initManagement(false);
-    LogWriterSupport.getLogWriter().info("started testNumOfCQ");
+    LogWriterUtils.getLogWriter().info("started testNumOfCQ");
 
     VM server = managedNodeList.get(1);
     VM client = managedNodeList.get(2);    
     
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
     cqDUnitTest.createServer(server, serverPort);
@@ -132,7 +132,7 @@ public class TestCQDUnitTest extends ManagementTestBase {
     long numOfCQ = ((Number) managingNode.invoke(TestCQDUnitTest.class,
         "getNumOfCQ")).intValue();
 
-    LogWriterSupport.getLogWriter().info("testNumOfCQ numOfCQ= " + numOfCQ);
+    LogWriterUtils.getLogWriter().info("testNumOfCQ numOfCQ= " + numOfCQ);
 
     cqDUnitTest.closeClient(client);
     cqDUnitTest.closeServer(server);

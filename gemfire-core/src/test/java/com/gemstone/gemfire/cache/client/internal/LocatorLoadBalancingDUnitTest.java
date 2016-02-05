@@ -48,8 +48,8 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LocalLogWriter;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -101,7 +101,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     int serverPort = startBridgeServerInVM(vm1, new String[] {"a", "b"},  locators);
     
     ServerLoad expectedLoad = new ServerLoad(0f, 1 / 800.0f, 0f, 1f);
-    ServerLocation expectedLocation = new ServerLocation(NetworkSupport.getServerHostName(vm0
+    ServerLocation expectedLocation = new ServerLocation(NetworkUtils.getServerHostName(vm0
         .getHost()), serverPort);
     Map expected = new HashMap();
     expected.put(expectedLocation, expectedLoad);
@@ -110,7 +110,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     
     int serverPort2 = startBridgeServerInVM(vm2, new String[] {"a", "b"},  locators);
     
-    ServerLocation expectedLocation2 = new ServerLocation(NetworkSupport.getServerHostName(vm0
+    ServerLocation expectedLocation2 = new ServerLocation(NetworkUtils.getServerHostName(vm0
         .getHost()), serverPort2);
     
     expected.put(expectedLocation2, expectedLoad);
@@ -133,18 +133,18 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     int serverPort = startBridgeServerInVM(vm1, new String[] {"a", "b"},  locators);
     
     ServerLoad expectedLoad = new ServerLoad(2/800f, 1 / 800.0f, 0f, 1f);
-    ServerLocation expectedLocation = new ServerLocation(NetworkSupport.getServerHostName(host), serverPort);
+    ServerLocation expectedLocation = new ServerLocation(NetworkUtils.getServerHostName(host), serverPort);
     Map expected = new HashMap();
     expected.put(expectedLocation, expectedLoad);
     
     ClientConnectionResponse response;
     response = (ClientConnectionResponse) TcpClient.requestToServer(InetAddress
-        .getByName(NetworkSupport.getServerHostName(host)), locatorPort,
+        .getByName(NetworkUtils.getServerHostName(host)), locatorPort,
         new ClientConnectionRequest(Collections.EMPTY_SET, null), 10000);
     Assert.assertEquals(expectedLocation, response.getServer());
     
     response = (ClientConnectionResponse) TcpClient.requestToServer(InetAddress
-        .getByName(NetworkSupport.getServerHostName(host)), locatorPort,
+        .getByName(NetworkUtils.getServerHostName(host)), locatorPort,
         new ClientConnectionRequest(Collections.EMPTY_SET, null), 10000, true);
     Assert.assertEquals(expectedLocation, response.getServer());
     
@@ -153,13 +153,13 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     
     QueueConnectionResponse response2;
     response2 = (QueueConnectionResponse) TcpClient.requestToServer(InetAddress
-        .getByName(NetworkSupport.getServerHostName(host)), locatorPort,
+        .getByName(NetworkUtils.getServerHostName(host)), locatorPort,
         new QueueConnectionRequest(null, 2,
             Collections.EMPTY_SET, null, false), 10000, true);
     Assert.assertEquals(Collections.singletonList(expectedLocation), response2.getServers());
     
     response2 = (QueueConnectionResponse) TcpClient
-        .requestToServer(InetAddress.getByName(NetworkSupport.getServerHostName(host)),
+        .requestToServer(InetAddress.getByName(NetworkUtils.getServerHostName(host)),
             locatorPort, new QueueConnectionRequest(null, 5, Collections.EMPTY_SET, null,
                 false), 10000, true);
     
@@ -189,13 +189,13 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     
     //We expect 0 load
     Map expected = new HashMap();
-    ServerLocation expectedLocation = new ServerLocation(NetworkSupport.getServerHostName(host), serverPort);
+    ServerLocation expectedLocation = new ServerLocation(NetworkUtils.getServerHostName(host), serverPort);
     ServerLoad expectedLoad = new ServerLoad(0f, 1 / 800.0f, 0f, 1f);
     expected.put(expectedLocation, expectedLoad);
     checkLocatorLoad(vm0, expected);
     
     PoolFactoryImpl pf = new PoolFactoryImpl(null);
-    pf.addServer(NetworkSupport.getServerHostName(host), serverPort);
+    pf.addServer(NetworkUtils.getServerHostName(host), serverPort);
     pf.setMinConnections(8);
     pf.setMaxConnections(8);
     pf.setSubscriptionEnabled(true);
@@ -236,7 +236,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     startBridgeServerInVM(vm2, new String[] {"a", "b"},  locators);
     
     PoolFactoryImpl pf = new PoolFactoryImpl(null);
-    pf.addLocator(NetworkSupport.getServerHostName(host), locatorPort);
+    pf.addLocator(NetworkUtils.getServerHostName(host), locatorPort);
     pf.setMinConnections(80);
     pf.setMaxConnections(80);
     pf.setSubscriptionEnabled(false);
@@ -324,7 +324,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     startBridgeServerInVM(vm3, new String[] {"b"},  locators);
     
     PoolFactoryImpl pf = new PoolFactoryImpl(null);
-    pf.addLocator(NetworkSupport.getServerHostName(host), locatorPort);
+    pf.addLocator(NetworkUtils.getServerHostName(host), locatorPort);
     pf.setMinConnections(12);
     pf.setSubscriptionEnabled(false);
     pf.setServerGroup("a");
@@ -336,7 +336,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     checkConnectionCount(vm2, 6);
     checkConnectionCount(vm3, 0);
     
-    LogWriterSupport.getLogWriter().info("pool1 prefilled");
+    LogWriterUtils.getLogWriter().info("pool1 prefilled");
     
     PoolFactoryImpl pf2 = (PoolFactoryImpl) PoolManager.createFactory();
     pf2.init(pf.getPoolAttributes());
@@ -350,9 +350,9 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     checkConnectionCount(vm2, 9);
     checkConnectionCount(vm3, 9);
     
-    LogWriterSupport.getLogWriter().info("pool2 prefilled");
+    LogWriterUtils.getLogWriter().info("pool2 prefilled");
     
-    ServerLocation location1 = new ServerLocation(NetworkSupport.getServerHostName(host), serverPort1);
+    ServerLocation location1 = new ServerLocation(NetworkUtils.getServerHostName(host), serverPort1);
     PoolImpl pool1 = (PoolImpl) PoolManager.getAll().get(POOL_NAME);
     Assert.assertEquals("a", pool1.getServerGroup());
     
@@ -361,7 +361,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
       pool1.acquireConnection();
     }
     
-    LogWriterSupport.getLogWriter().info("aquired 15 connections in pool1");
+    LogWriterUtils.getLogWriter().info("aquired 15 connections in pool1");
     
     //now the load should be equal
     checkConnectionCount(vm1, 9);
@@ -373,7 +373,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
       pool2.acquireConnection();
     }
     
-    LogWriterSupport.getLogWriter().info("aquired 12 connections in pool2");
+    LogWriterUtils.getLogWriter().info("aquired 12 connections in pool2");
     
     //interleave creating connections in both pools
     for(int i = 0; i < 6; i++) {
@@ -381,7 +381,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
       pool2.acquireConnection();
     }
     
-    LogWriterSupport.getLogWriter().info("interleaved 6 connections from pool1 with 6 connections from pool2");
+    LogWriterUtils.getLogWriter().info("interleaved 6 connections from pool1 with 6 connections from pool2");
     
     //The load should still be balanced
     checkConnectionCount(vm1, 13);
@@ -407,8 +407,8 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     int serverPort2 = startBridgeServerInVM(vm2, null, locators, new String[] {REGION_NAME}, new MyLoadProbe(load2 ));
     
     HashMap expected = new HashMap();
-    ServerLocation l1 = new ServerLocation(NetworkSupport.getServerHostName(host), serverPort1);
-    ServerLocation l2 = new ServerLocation(NetworkSupport.getServerHostName(host), serverPort2);
+    ServerLocation l1 = new ServerLocation(NetworkUtils.getServerHostName(host), serverPort1);
+    ServerLocation l2 = new ServerLocation(NetworkUtils.getServerHostName(host), serverPort2);
     expected.put(l1, load1);
     expected.put(l2, load2);
     checkLocatorLoad(vm0, expected);
@@ -428,7 +428,7 @@ public class LocatorLoadBalancingDUnitTest extends LocatorTestBase {
     checkLocatorLoad(vm0, expected);
     
     PoolFactoryImpl pf = new PoolFactoryImpl(null);
-    pf.addLocator(NetworkSupport.getServerHostName(host), locatorPort);
+    pf.addLocator(NetworkUtils.getServerHostName(host), locatorPort);
     pf.setMinConnections(20);
     pf.setSubscriptionEnabled(true);
     pf.setIdleTimeout(-1);

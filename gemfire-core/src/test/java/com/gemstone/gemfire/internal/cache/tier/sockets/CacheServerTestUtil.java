@@ -52,9 +52,9 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl.PoolAttributes;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 /**
  *
  * @author Yogesh Mahajan
@@ -226,7 +226,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     ccf.set(DistributionConfig.DURABLE_CLIENT_ID_NAME, durableClientId);
     ccf.set(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, String.valueOf(timeout));
     ccf.set("log-file", "abs_client_system.log");
-    ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+    ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
     cache = (Cache)ccf.create();
     expected = IgnoredException.addIgnoredException("java.net.ConnectionException||java.net.SocketException");
     pool = (PoolImpl)PoolManager.find(poolName);
@@ -258,9 +258,9 @@ public class CacheServerTestUtil extends DistributedTestCase
       File cacheXmlFile = new File(url.toURI().getPath());
       ccf.set("cache-xml-file", cacheXmlFile.toURI().getPath());
       ccf.set("mcast-port", "0");
-      ccf.set("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+      ccf.set("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
       ccf.set("log-file", "abs_server_system.log");
-      ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+      ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
     }
     catch (URISyntaxException e) {
       throw new ExceptionInInitializerError(e);
@@ -275,7 +275,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       File cacheXmlFile = new File(url.toURI().getPath());
       ccf.set("cache-xml-file", cacheXmlFile.toURI().getPath());
       ccf.set("mcast-port", "0");
-      ccf.set("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+      ccf.set("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     }
     catch (URISyntaxException e) {
       throw new ExceptionInInitializerError(e);
@@ -330,7 +330,7 @@ public class CacheServerTestUtil extends DistributedTestCase
   {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
@@ -352,7 +352,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     Properties props = new Properties();
 //    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
@@ -373,7 +373,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       throws Exception {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);

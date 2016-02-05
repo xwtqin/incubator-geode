@@ -40,8 +40,8 @@ import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -102,8 +102,8 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
 
     int port = (Integer) createServerCache(server);
     DistributedMember serverMember = helper.getMember(server);
-    createClientCache(client, NetworkSupport.getServerHostName(server.getHost()), port);
-    createClientCache(client2, NetworkSupport.getServerHostName(server.getHost()), port);
+    createClientCache(client, NetworkUtils.getServerHostName(server.getHost()), port);
+    createClientCache(client2, NetworkUtils.getServerHostName(server.getHost()), port);
     put(client);
     put(client2);
     registerInterest(client);
@@ -244,7 +244,7 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
           final DistributedSystemMXBean dsBean = ManagementService
               .getExistingManagementService(cache).getDistributedSystemMXBean();
           assertNotNull(dsBean);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "TestSubscriptionsDUnitTest dsBean.getNumSubscriptions() ="
                   + dsBean.getNumSubscriptions());
           assertTrue(dsBean.getNumSubscriptions() == 2 ? true : false);

@@ -63,9 +63,9 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData;
 import com.gemstone.gemfire.management.internal.cli.result.CompositeResultData.SectionResultData;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -984,7 +984,7 @@ public void verifyClientStats(CommandResult commandResultForClient, String serve
           getSystem(props);
           
           final ClientCacheFactory ccf = new ClientCacheFactory(props);
-          ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
+          ccf.addPoolServer(NetworkUtils.getServerHostName(server.getHost()), port);
           ccf.setPoolSubscriptionEnabled(true);
           ccf.setPoolPingInterval(1);
           ccf.setPoolStatisticInterval(1);
@@ -1004,7 +1004,7 @@ public void verifyClientStats(CommandResult commandResultForClient, String serve
         }else{
           String poolName = "new_pool_" + System.currentTimeMillis();
           try{                      
-            PoolImpl p = (PoolImpl) PoolManager.createFactory().addServer(NetworkSupport.getServerHostName(server.getHost()), port)
+            PoolImpl p = (PoolImpl) PoolManager.createFactory().addServer(NetworkUtils.getServerHostName(server.getHost()), port)
               .setThreadLocalConnections(true)
               .setMinConnections(1)
               .setSubscriptionEnabled(true)
@@ -1057,7 +1057,7 @@ public void verifyClientStats(CommandResult commandResultForClient, String serve
 
   protected Properties getServerProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     return p;
   }
   
@@ -1397,7 +1397,7 @@ private void setUpNonSubscribedClient() throws Exception {
           getSystem(props);
           
           final ClientCacheFactory ccf = new ClientCacheFactory(props);
-          ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
+          ccf.addPoolServer(NetworkUtils.getServerHostName(server.getHost()), port);
           ccf.setPoolSubscriptionEnabled(false);
           ccf.setPoolPingInterval(1);
           ccf.setPoolStatisticInterval(1);
@@ -1417,7 +1417,7 @@ private void setUpNonSubscribedClient() throws Exception {
         }else{
           String poolName = "new_pool_" + System.currentTimeMillis();
           try{                      
-            PoolImpl p = (PoolImpl) PoolManager.createFactory().addServer(NetworkSupport.getServerHostName(server.getHost()), port)
+            PoolImpl p = (PoolImpl) PoolManager.createFactory().addServer(NetworkUtils.getServerHostName(server.getHost()), port)
               .setThreadLocalConnections(true)
               .setMinConnections(1)
               .setSubscriptionEnabled(false)

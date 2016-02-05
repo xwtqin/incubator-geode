@@ -42,8 +42,7 @@ import com.gemstone.gemfire.internal.cache.tier.InterestType;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -314,7 +313,7 @@ public class HAInterestTestCase extends DistributedTestCase {
           };
           t.start();
           try {
-            Threads.join(t, 30 * 1000, LogWriterSupport.getLogWriter());
+            ThreadUtils.join(t, 30 * 1000);
           } catch (Exception ignore) {
             exceptionOccured = true;
           }

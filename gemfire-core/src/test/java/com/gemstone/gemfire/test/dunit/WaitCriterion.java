@@ -16,7 +16,18 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
+/**
+ * Defines an asynchronous criterion to wait for by invoking a method in 
+ * {@link Wait}.
+ *
+ * Extracted from DistributedTestCase.
+ * 
+ * @deprecated Use {@link com.jayway.awaitility.Awaitility} instead.
+ */
 public interface WaitCriterion {
+  
   public boolean done();
+  
   public String description();
+  
 }

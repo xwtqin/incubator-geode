@@ -37,7 +37,7 @@ import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
@@ -538,7 +538,7 @@ public class MBeanUtil {
       try {
         propertyName = attributeInfo.getName();
         propertyValue = mbeanServer.getAttribute(objName, propertyName);
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "<ExpectedString> " + propertyName + " = " + propertyValue
                 + "</ExpectedString> ");
       } catch (Exception e) {

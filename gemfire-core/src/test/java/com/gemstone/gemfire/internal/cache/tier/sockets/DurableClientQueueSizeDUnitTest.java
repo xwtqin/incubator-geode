@@ -35,7 +35,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -277,7 +277,7 @@ public class DurableClientQueueSizeDUnitTest extends DistributedTestCase {
   public static Integer createCacheServer(Integer serverPort)
       throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
 //    props.setProperty("log-level", "fine");
 //    props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
 //    props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()

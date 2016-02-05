@@ -39,7 +39,7 @@ import com.gemstone.gemfire.pdx.PdxWriter;
 import com.gemstone.gemfire.pdx.internal.PdxType;
 import com.gemstone.gemfire.pdx.internal.PdxUnreadData;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -177,7 +177,7 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
       try {
         FileUtil.delete(new File(path));
       } catch (IOException e) {
-        LogWriterSupport.getLogWriter().error("Unable to delete file", e);
+        LogWriterUtils.getLogWriter().error("Unable to delete file", e);
       }
     }
     this.filesToBeDeleted.clear();

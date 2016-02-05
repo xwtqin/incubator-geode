@@ -99,7 +99,7 @@ import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -253,7 +253,7 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
     }
     public Object call() throws Exception {
       CacheTransactionManager mgr = getGemfireCache().getTxManager();
-      LogWriterSupport.getLogWriter().fine("testTXPut starting tx");
+      LogWriterUtils.getLogWriter().fine("testTXPut starting tx");
       mgr.begin();
       Region<CustId, Customer> custRegion = getCache().getRegion(CUSTOMER);
       Region<OrderId, Order> orderRegion = getCache().getRegion(ORDER);
@@ -2539,7 +2539,7 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
         PartitionedRegion pr = (PartitionedRegion)getGemfireCache().getRegion(CUSTOMER);
         Set filter = new HashSet();
         filter.add(expectedCustId);
-        LogWriterSupport.getLogWriter().info("SWAP:inside NestedTxFunc calling func2:");
+        LogWriterUtils.getLogWriter().info("SWAP:inside NestedTxFunc calling func2:");
         r.put(expectedCustId, expectedCustomer);
         FunctionService.onRegion(pr).withFilter(filter).execute(new NestedTxFunction2()).getResult();
         assertNotNull(getGemfireCache().getTxManager().getTXState());
@@ -3465,7 +3465,7 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port);
         ccf.setPoolSubscriptionEnabled(true);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<Integer, String> crf = cCache
             .createClientRegionFactory(isEmpty ? ClientRegionShortcut.PROXY
@@ -3677,7 +3677,7 @@ protected static class ClientListener extends CacheListenerAdapter {
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port);
         ccf.setPoolSubscriptionEnabled(true);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<Integer, String> crf = cCache
             .createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
@@ -3955,12 +3955,12 @@ protected static class ClientListener extends CacheListenerAdapter {
       private int count;
       @Override
       public void afterCreate(EntryEvent event) {
-        LogWriterSupport.getLogWriter().info("afterCreate invoked for " + event);
+        LogWriterUtils.getLogWriter().info("afterCreate invoked for " + event);
         count++;
       }
       @Override
       public void afterUpdate(EntryEvent event) {
-        LogWriterSupport.getLogWriter().info("afterUpdate invoked for " + event);
+        LogWriterUtils.getLogWriter().info("afterUpdate invoked for " + event);
         count++;
       }
     }

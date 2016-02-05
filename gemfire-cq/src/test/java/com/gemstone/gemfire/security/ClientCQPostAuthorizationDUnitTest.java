@@ -44,7 +44,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -304,7 +304,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
           + SecurityTestUtil.proxyCaches[i].getRegion(regionName).getFullPath();
       // Create CQ Attributes.
       CqAttributesFactory cqf = new CqAttributesFactory();
-      CqListener[] cqListeners = {new CqQueryTestListener(LogWriterSupport.getLogWriter())};
+      CqListener[] cqListeners = {new CqQueryTestListener(LogWriterUtils.getLogWriter())};
       ((CqQueryTestListener)cqListeners[0]).cqName = cqName;
 
       cqf.initCqListeners(cqListeners);
@@ -318,7 +318,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
         AssertionError err = new AssertionError("Failed to create CQ " + cqName
             + " . ");
         err.initCause(ex);
-        LogWriterSupport.getLogWriter().info("CqService is :" + cqService, err);
+        LogWriterUtils.getLogWriter().info("CqService is :" + cqService, err);
         throw err;
       }
     }
@@ -346,16 +346,16 @@ public class ClientCQPostAuthorizationDUnitTest extends
         try {
           cq1 = cqService.getCq(cqName);
           if (cq1 == null) {
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Failed to get CqQuery object for CQ name: " + cqName);
             fail("Failed to get CQ " + cqName);
           } else {
-            LogWriterSupport.getLogWriter().info("Obtained CQ, CQ name: " + cq1.getName());
+            LogWriterUtils.getLogWriter().info("Obtained CQ, CQ name: " + cq1.getName());
             assertTrue("newCq() state mismatch", cq1.getState().isStopped());
           }
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("CqService is :" + cqService);
-          LogWriterSupport.getLogWriter().error(ex);
+          LogWriterUtils.getLogWriter().info("CqService is :" + cqService);
+          LogWriterUtils.getLogWriter().error(ex);
           AssertionError err = new AssertionError("Failed to execute CQ "
               + cqName);
           err.initCause(ex);
@@ -369,9 +369,9 @@ public class ClientCQPostAuthorizationDUnitTest extends
             cqResults = cq1.executeWithInitialResults();
           } catch (CqException ce) {
             if (ce.getCause() instanceof NotAuthorizedException && !postAuthzAllowed[i]) {
-              LogWriterSupport.getLogWriter().info("Got expected exception for CQ " + cqName);
+              LogWriterUtils.getLogWriter().info("Got expected exception for CQ " + cqName);
             } else {
-              LogWriterSupport.getLogWriter().info("CqService is: " + cqService);
+              LogWriterUtils.getLogWriter().info("CqService is: " + cqService);
               ce.printStackTrace();
               AssertionError err = new AssertionError("Failed to execute CQ "
                   + cqName);
@@ -379,14 +379,14 @@ public class ClientCQPostAuthorizationDUnitTest extends
               throw err;
             }
           } catch (Exception ex) {
-            LogWriterSupport.getLogWriter().info("CqService is: " + cqService);
+            LogWriterUtils.getLogWriter().info("CqService is: " + cqService);
             ex.printStackTrace();
             AssertionError err = new AssertionError("Failed to execute CQ "
                 + cqName);
             err.initCause(ex);
             throw err;
           }
-          LogWriterSupport.getLogWriter().info("initial result size = " + cqResults.size());
+          LogWriterUtils.getLogWriter().info("initial result size = " + cqResults.size());
           assertTrue("executeWithInitialResults() state mismatch", cq1
               .getState().isRunning());
           if (expectedResultsSize >= 0) {
@@ -398,9 +398,9 @@ public class ClientCQPostAuthorizationDUnitTest extends
             cq1.execute();
           } catch (CqException ce) {
             if (ce.getCause() instanceof NotAuthorizedException && !postAuthzAllowed[i]) {
-              LogWriterSupport.getLogWriter().info("Got expected exception for CQ " + cqName);
+              LogWriterUtils.getLogWriter().info("Got expected exception for CQ " + cqName);
             } else {
-              LogWriterSupport.getLogWriter().info("CqService is: " + cqService);
+              LogWriterUtils.getLogWriter().info("CqService is: " + cqService);
               ce.printStackTrace();
               AssertionError err = new AssertionError("Failed to execute CQ "
                   + cqName);
@@ -412,7 +412,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
                 + cqName);
             err.initCause(ex);
             if (expectedErr == null) {
-              LogWriterSupport.getLogWriter().info("CqService is: " + cqService, err);
+              LogWriterUtils.getLogWriter().info("CqService is: " + cqService, err);
             }
             throw err;
           }

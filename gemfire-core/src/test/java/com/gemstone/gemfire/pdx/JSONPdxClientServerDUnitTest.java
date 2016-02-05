@@ -42,7 +42,7 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.pdx.internal.json.PdxToJSON;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
@@ -595,7 +595,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.PROXY)
@@ -611,7 +611,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         cf.setPdxReadSerialized(isPdxReadSerialized);
         ClientCache cache = getClientCache(cf);

@@ -39,7 +39,7 @@ import com.gemstone.gemfire.internal.cache.RegionQueue;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -124,8 +124,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     long numMemVm6 = (Long) vm6.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     long numMemVm7 = (Long) vm7.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     
-    LogWriterSupport.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
-    LogWriterSupport.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
+    LogWriterUtils.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
+    LogWriterUtils.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
     
     long totalOverflown = numOvVm4 + numOvVm5 + numOvVm6 + numOvVm7; 
     //considering a memory limit of 40 MB, maximum of 40 events can be in memory. Rest should be on disk.
@@ -212,8 +212,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     long numMemVm6 = (Long) vm6.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     long numMemVm7 = (Long) vm7.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     
-    LogWriterSupport.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
-    LogWriterSupport.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
+    LogWriterUtils.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
+    LogWriterUtils.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
     
     long totalOverflown = numOvVm4 + numOvVm5 + numOvVm6 + numOvVm7; 
     //considering a memory limit of 40 MB, maximum of 40 events can be in memory. Rest should be on disk.
@@ -301,8 +301,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     long numMemVm6 = (Long) vm6.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     long numMemVm7 = (Long) vm7.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     
-    LogWriterSupport.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
-    LogWriterSupport.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
+    LogWriterUtils.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
+    LogWriterUtils.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
     
     long totalOverflown = numOvVm4 + numOvVm5 + numOvVm6 + numOvVm7; 
     //considering a memory limit of 40 MB, maximum of 40 events can be in memory. Rest should be on disk.
@@ -390,8 +390,8 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     long numMemVm6 = (Long) vm6.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     long numMemVm7 = (Long) vm7.invoke(WANTestBase.class, "getNumberOfEntriesInVM", new Object[] { "ln" });
     
-    LogWriterSupport.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
-    LogWriterSupport.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
+    LogWriterUtils.getLogWriter().info("Entries overflown to disk: " + numOvVm4 + "," + numOvVm5 + "," + numOvVm6 + "," + numOvVm7);
+    LogWriterUtils.getLogWriter().info("Entries in VM: " + numMemVm4 + "," + numMemVm5 + "," + numMemVm6 + "," + numMemVm7);
     
     long totalOverflown = numOvVm4 + numOvVm5 + numOvVm6 + numOvVm7; 
     //all 30 (considering redundant copies) events should accommodate in 40 MB space given to 4 senders

@@ -51,15 +51,15 @@ import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LocalLogWriter;
 import com.gemstone.gemfire.internal.tcp.Connection;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedSystemSupport;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -105,10 +105,10 @@ public class LocatorDUnitTest extends DistributedTestCase {
     // delete locator state files so they don't accidentally
     // get used by other tests
     if (port1 > 0) {
-      DistributedSystemSupport.deleteLocatorStateFile(port1);
+      DistributedTestUtils.deleteLocatorStateFile(port1);
     }
     if (port2 > 0) {
-      DistributedSystemSupport.deleteLocatorStateFile(port2);
+      DistributedTestUtils.deleteLocatorStateFile(port2);
     }
   }
   
@@ -131,13 +131,13 @@ public class LocatorDUnitTest extends DistributedTestCase {
     VM vm3 = host.getVM(3);
     
     port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
+    DistributedTestUtils.deleteLocatorStateFile(port1);
 
-    final String locators = NetworkSupport.getServerHostName(host) + "[" + port1 + "]";
+    final String locators = NetworkUtils.getServerHostName(host) + "[" + port1 + "]";
     final Properties properties = new Properties();
     properties.put("mcast-port", "0");
     properties.put("start-locator", locators);
-    properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
     properties.put("security-peer-auth-init","com.gemstone.gemfire.distributed.AuthInitializer.create");
     properties.put("security-peer-authenticator","com.gemstone.gemfire.distributed.MyAuthenticator.create");
     properties.put(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
@@ -148,7 +148,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
         DistributionManager.NORMAL_DM_TYPE, system.getDistributedMember().getVmKind());
     
     properties.remove("start-locator");
-    properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
     properties.put("locators", locators);
     SerializableRunnable startSystem = new SerializableRunnable("start system") {
       public void run() {
@@ -207,13 +207,13 @@ public class LocatorDUnitTest extends DistributedTestCase {
       });
   
       properties.put("start-locator", locators);
-      properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+      properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
       system = (InternalDistributedSystem)DistributedSystem.connect(properties);
       System.out.println("done connecting distributed system");
       
       assertEquals("should be the coordinator", system.getDistributedMember(), MembershipManagerHelper.getCoordinator(system));
       NetView view = MembershipManagerHelper.getMembershipManager(system).getView();
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("view after becoming coordinator is " + view);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("view after becoming coordinator is " + view);
       assertNotSame("should not be the first member in the view ("+view+")", system.getDistributedMember(), view.get(0));
       
       service = DistributedLockService.create("test service", system);
@@ -261,9 +261,9 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     this.port2 = port2; // for cleanup in tearDown2
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
-    DistributedSystemSupport.deleteLocatorStateFile(port2);
-    final String host0 = NetworkSupport.getServerHostName(host); 
+    DistributedTestUtils.deleteLocatorStateFile(port1);
+    DistributedTestUtils.deleteLocatorStateFile(port2);
+    final String host0 = NetworkUtils.getServerHostName(host); 
     final String locators = host0 + "[" + port1 + "]," +
                             host0 + "[" + port2 + "]";
     final Properties properties = new Properties();
@@ -272,7 +272,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     properties.put("enable-network-partition-detection", "false");
     properties.put("disable-auto-reconnect", "true");
     properties.put("member-timeout", "2000");
-    properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
     properties.put(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
 
     SerializableCallable startLocator1 = new SerializableCallable("start locator1") {
@@ -316,7 +316,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
         if (async1 != null) {
           async1.join(45000);
           if (async1.isAlive()) {
-            Threads.dumpAllStacks();
+            ThreadUtils.dumpAllStacks();
           }
           if (async2 != null) {
             async2.join();
@@ -371,8 +371,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     VM vm3 = host.getVM(3);
     
     port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
-    final String locators = NetworkSupport.getServerHostName(host) + "[" + port1 + "]";
+    DistributedTestUtils.deleteLocatorStateFile(port1);
+    final String locators = NetworkUtils.getServerHostName(host) + "[" + port1 + "]";
     final Properties properties = new Properties();
     properties.put("mcast-port", "0");
     properties.put("locators", locators);
@@ -494,8 +494,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     this.port2 = port2; // for cleanup in tearDown2()
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
-    final String host0 = NetworkSupport.getServerHostName(host); 
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
+    final String host0 = NetworkUtils.getServerHostName(host); 
     final String locators = host0 + "[" + port1 + "]," +
                             host0 + "[" + port2 + "]";
     final Properties properties = new Properties();
@@ -504,7 +504,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     properties.put("enable-network-partition-detection", "true");
     properties.put("disable-auto-reconnect", "true");
     properties.put("member-timeout", "2000");
-    properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
 //    properties.put("log-level", "fine");
     properties.put(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     
@@ -553,7 +553,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       assertEquals(sys.getDistributedMember(), MembershipManagerHelper.getCoordinator(sys));
       
       // crash the second vm and the locator.  Should be okay
-      DistributedSystemSupport.crashDistributedSystem(vm2);
+      DistributedTestUtils.crashDistributedSystem(vm2);
       locvm.invoke(crashLocator);
       
       assertTrue("Distributed system should not have disconnected",
@@ -566,14 +566,14 @@ public class LocatorDUnitTest extends DistributedTestCase {
   
       // disconnect the first vm and demonstrate that the third vm and the
       // locator notice the failure and exit
-      DistributedSystemSupport.crashDistributedSystem(vm1);
+      DistributedTestUtils.crashDistributedSystem(vm1);
 
       /* This vm is watching vm1, which is watching vm2 which is watching locvm.
        * It will take 3 * (3 * member-timeout) milliseconds to detect the full
        * failure and eject the lost members from the view.
        */
       
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("waiting for my distributed system to disconnect due to partition detection");
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("waiting for my distributed system to disconnect due to partition detection");
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
           return !sys.isConnected();
@@ -629,8 +629,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     this.port2 = port2;
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
-    final String host0 = NetworkSupport.getServerHostName(host);
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
+    final String host0 = NetworkUtils.getServerHostName(host);
     final String locators = host0 + "[" + port1 + "],"
           + host0 + "[" + port2 + "]";
     final Properties properties = new Properties();
@@ -706,7 +706,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       
       if (!Locator.getLocators().isEmpty()) {
         // log this for debugging purposes before throwing assertion error
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().warning("found locator " + Locator.getLocators().iterator().next());
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("found locator " + Locator.getLocators().iterator().next());
       }
       assertTrue("locator is not stopped", Locator.getLocators().isEmpty());
       
@@ -744,7 +744,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       try {
         locvm.invoke(stopLocator);
       } catch (Exception e) {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().severe("failed to stop locator in vm 3", e);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().severe("failed to stop locator in vm 3", e);
       }
     }
   }
@@ -776,8 +776,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     this.port2 = port2;
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
-    final String host0 = NetworkSupport.getServerHostName(host);
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
+    final String host0 = NetworkUtils.getServerHostName(host);
     final String locators = host0 + "[" + port1 + "]," + host0 + "[" + port2 + "]";
 
     final Properties properties = new Properties();
@@ -786,7 +786,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     properties.put("enable-network-partition-detection", "true");
     properties.put("disable-auto-reconnect", "true");
     properties.put("member-timeout", "2000");
-    properties.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    properties.put("log-level", LogWriterUtils.getDUnitLogLevel());
     properties.put(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
 
     SerializableRunnable stopLocator = getStopLocatorRunnable();
@@ -915,8 +915,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     this.port2 = port2;
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
-    final String host0 = NetworkSupport.getServerHostName(host);
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
+    final String host0 = NetworkUtils.getServerHostName(host);
     final String locators = host0 + "[" + port1 + "],"
           + host0 + "[" + port2 + "]";
     final Properties properties = new Properties();
@@ -1036,8 +1036,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     Host host = Host.getHost(0);
     int port =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
-    String locators = NetworkSupport.getServerHostName(host) + "[" + port + "]";
+    DistributedTestUtils.deleteLocatorStateFile(port1);
+    String locators = NetworkUtils.getServerHostName(host) + "[" + port + "]";
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
     props.setProperty("locators", locators);
@@ -1099,8 +1099,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
 
     final int port =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
-    final String locators = NetworkSupport.getServerHostName(host) + "[" + port + "]";
+    DistributedTestUtils.deleteLocatorStateFile(port1);
+    final String locators = NetworkUtils.getServerHostName(host) + "[" + port + "]";
     final String uniqueName = getUniqueName();
     
     vm0.invoke(new SerializableRunnable("Start locator " + locators) {
@@ -1139,7 +1139,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     system = (InternalDistributedSystem)DistributedSystem.connect(props);
     
     final DistributedMember coord = MembershipManagerHelper.getCoordinator(system);
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("coordinator before termination of locator is " + coord);
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("coordinator before termination of locator is " + coord);
 
     vm0.invoke(getStopLocatorRunnable());
     
@@ -1155,7 +1155,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     };
     Wait.waitForCriterion(ev, 15 * 1000, 200, true);
     DistributedMember newCoord = MembershipManagerHelper.getCoordinator(system); 
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("coordinator after shutdown of locator was " +
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("coordinator after shutdown of locator was " +
         newCoord);
     if (coord.equals(newCoord)) {
       fail("another member should have become coordinator after the locator was stopped");
@@ -1211,8 +1211,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
 
     final int port =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
-    final String locators = NetworkSupport.getServerHostName(host) + "[" + port + "]";
+    DistributedTestUtils.deleteLocatorStateFile(port1);
+    final String locators = NetworkUtils.getServerHostName(host) + "[" + port + "]";
     
     vm0.invoke(getStartSBLocatorRunnable(port, getUniqueName()+"1"));
     try {
@@ -1236,7 +1236,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     system = (InternalDistributedSystem)getSystem(props);
 
     final DistributedMember coord = MembershipManagerHelper.getCoordinator(system);
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("coordinator before termination of locator is " + coord);
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("coordinator before termination of locator is " + coord);
 
     vm0.invoke(getStopLocatorRunnable());
     
@@ -1252,7 +1252,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     };
     Wait.waitForCriterion(ev, 15000, 200, true);
     DistributedMember newCoord = MembershipManagerHelper.getCoordinator(system); 
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("coordinator after shutdown of locator was " +
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("coordinator after shutdown of locator was " +
         newCoord);
     if (newCoord == null || coord.equals(newCoord)) {
       fail("another member should have become coordinator after the locator was stopped: "
@@ -1344,8 +1344,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = freeTCPPorts[1];
     this.port2 = port2;
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
-    final String host0 = NetworkSupport.getServerHostName(host); 
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
+    final String host0 = NetworkUtils.getServerHostName(host); 
     final String locators = host0 + "[" + port1 + "]," +
                             host0 + "[" + port2 + "]";
 
@@ -1460,10 +1460,10 @@ public class LocatorDUnitTest extends DistributedTestCase {
     this.port1 = port1;
     final int port2 = freeTCPPorts[1];
     this.port2 = port2;
-    DistributedSystemSupport.deleteLocatorStateFile(port1, port2);
+    DistributedTestUtils.deleteLocatorStateFile(port1, port2);
     final int mcastport = AvailablePort.getRandomAvailablePort(AvailablePort.MULTICAST);
     
-    final String host0 = NetworkSupport.getServerHostName(host); 
+    final String host0 = NetworkUtils.getServerHostName(host); 
     final String locators = host0 + "[" + port1 + "]," +
                             host0 + "[" + port2 + "]";
     final String uniqueName = getUniqueName();
@@ -1475,7 +1475,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Properties props = new Properties();
             props.setProperty("mcast-port", String.valueOf(mcastport));
             props.setProperty("locators", locators);
-            props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
+            props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
             props.setProperty("mcast-ttl", "0");
             props.setProperty("enable-network-partition-detection", "true");
             props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
@@ -1494,7 +1494,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Properties props = new Properties();
             props.setProperty("mcast-port", String.valueOf(mcastport));
             props.setProperty("locators", locators);
-            props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
+            props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
             props.setProperty("mcast-ttl", "0");
             props.setProperty("enable-network-partition-detection", "true");
             props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
@@ -1512,7 +1512,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Properties props = new Properties();
             props.setProperty("mcast-port", String.valueOf(mcastport));
             props.setProperty("locators", locators);
-            props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
+            props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
             props.setProperty("mcast-ttl", "0");
             props.setProperty("enable-network-partition-detection", "true");
             DistributedSystem.connect(props);
@@ -1525,7 +1525,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       Properties props = new Properties();
       props.setProperty("mcast-port", String.valueOf(mcastport));
       props.setProperty("locators", locators);
-      props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
+      props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
       props.setProperty("mcast-ttl", "0");
       props.setProperty("enable-network-partition-detection", "true");
 
@@ -1580,12 +1580,12 @@ public class LocatorDUnitTest extends DistributedTestCase {
 
     port1 =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
+    DistributedTestUtils.deleteLocatorStateFile(port1);
     File logFile = new File("");
     Locator locator = Locator.startLocator(port1, logFile);
     try {
 
-    final String locators = NetworkSupport.getServerHostName(host) + "[" + port1 + "]";
+    final String locators = NetworkUtils.getServerHostName(host) + "[" + port1 + "]";
 
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
@@ -1610,8 +1610,8 @@ public class LocatorDUnitTest extends DistributedTestCase {
     
     try {
       port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-      DistributedSystemSupport.deleteLocatorStateFile(port1);
-      final String locators = NetworkSupport.getServerHostName(host) + "[" + port1 + "]";
+      DistributedTestUtils.deleteLocatorStateFile(port1);
+      final String locators = NetworkUtils.getServerHostName(host) + "[" + port1 + "]";
       final Properties properties = new Properties();
       properties.put("mcast-port", "0");
       properties.put("locators", locators);
@@ -1687,7 +1687,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     port1 =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     File logFile1 = new File("");
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
+    DistributedTestUtils.deleteLocatorStateFile(port1);
     Locator locator1 = Locator.startLocator(port1, logFile1);
     
     try {
@@ -1696,7 +1696,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     File logFile2 = new File("");
 
-    DistributedSystemSupport.deleteLocatorStateFile(port2);
+    DistributedTestUtils.deleteLocatorStateFile(port2);
     
     try {
       Locator locator2 = Locator.startLocator(port2, logFile2);
@@ -1704,7 +1704,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     } catch (IllegalStateException expected) {
     }
 
-    final String host0 = NetworkSupport.getServerHostName(host);
+    final String host0 = NetworkUtils.getServerHostName(host);
     final String locators = host0 + "[" + port1 + "]," +
                             host0 + "[" + port2 + "]";
 
@@ -1714,7 +1714,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
             Properties props = new Properties();
             props.setProperty("mcast-port", "0");
             props.setProperty("locators", locators);
-            props.setProperty("log-level", LogWriterSupport.getDUnitLogLevel());
+            props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
             DistributedSystem.connect(props);
           }
         };
@@ -1749,7 +1749,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     disconnectAllFromDS();
     port1 =
       AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    DistributedSystemSupport.deleteLocatorStateFile(port1);
+    DistributedTestUtils.deleteLocatorStateFile(port1);
     File logFile = new File("");
     File stateFile = new File("locator"+port1+"state.dat");
     VM vm0 = Host.getHost(0).getVM(0);
@@ -1761,7 +1761,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
       stateFile.delete();
     }
 
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Starting locator");
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Starting locator");
     Locator locator = Locator.startLocatorAndDS(port1, logFile, p);
     try {
     
@@ -1773,10 +1773,10 @@ public class LocatorDUnitTest extends DistributedTestCase {
         };
     vm0.invoke(connect);
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Stopping locator");
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Stopping locator");
     locator.stop();
     
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Starting locator");
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Starting locator");
     locator = Locator.startLocatorAndDS(port1, logFile, p);
     
     vm0.invoke(new SerializableRunnable("disconnect") {
@@ -1835,7 +1835,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
           System.setProperty("p2p.joinTimeout", "1000");
           Properties locProps = new Properties();
           locProps.put("mcast-port", "0");
-          locProps.put("log-level", LogWriterSupport.getDUnitLogLevel());
+          locProps.put("log-level", LogWriterUtils.getDUnitLogLevel());
           Locator.startLocatorAndDS(port, logFile, locProps);
         } catch (IOException ex) {
           com.gemstone.gemfire.test.dunit.Assert.fail("While starting locator on port " + port, ex);
@@ -1902,7 +1902,7 @@ public class LocatorDUnitTest extends DistributedTestCase {
     public void quorumLost(Set<InternalDistributedMember> failures,
         List<InternalDistributedMember> remaining) {
       quorumLostInvoked = true;
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("quorumLost invoked in test code");
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("quorumLost invoked in test code");
     }
   }
   

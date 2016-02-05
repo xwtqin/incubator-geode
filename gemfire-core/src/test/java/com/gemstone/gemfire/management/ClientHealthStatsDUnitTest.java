@@ -49,7 +49,7 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -361,8 +361,8 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
 
       String[] clientIds = bean.getClientIds();
       assertTrue(clientIds.length == 2);
-      LogWriterSupport.getLogWriter().info("<ExpectedString> ClientId-1 of the Server is  " + clientIds[0] + "</ExpectedString> ");
-      LogWriterSupport.getLogWriter().info("<ExpectedString> ClientId-2 of the Server is  " + clientIds[1] + "</ExpectedString> ");
+      LogWriterUtils.getLogWriter().info("<ExpectedString> ClientId-1 of the Server is  " + clientIds[0] + "</ExpectedString> ");
+      LogWriterUtils.getLogWriter().info("<ExpectedString> ClientId-2 of the Server is  " + clientIds[1] + "</ExpectedString> ");
       
       ClientHealthStatus[] clientStatuses = bean.showAllClientStats();
 
@@ -372,15 +372,15 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
       ClientHealthStatus clientStatus2 = bean.showClientStats(clientIds[1]);
       assertNotNull(clientStatus1);
       assertNotNull(clientStatus2);
-      LogWriterSupport.getLogWriter().info("<ExpectedString> ClientStats-1 of the Server is  " + clientStatus1 + "</ExpectedString> ");
-      LogWriterSupport.getLogWriter().info("<ExpectedString> ClientStats-2 of the Server is  " + clientStatus2 + "</ExpectedString> ");
+      LogWriterUtils.getLogWriter().info("<ExpectedString> ClientStats-1 of the Server is  " + clientStatus1 + "</ExpectedString> ");
+      LogWriterUtils.getLogWriter().info("<ExpectedString> ClientStats-2 of the Server is  " + clientStatus2 + "</ExpectedString> ");
 
-      LogWriterSupport.getLogWriter().info("<ExpectedString> clientStatuses " + clientStatuses + "</ExpectedString> ");
+      LogWriterUtils.getLogWriter().info("<ExpectedString> clientStatuses " + clientStatuses + "</ExpectedString> ");
       assertNotNull(clientStatuses);
       
       assertTrue(clientStatuses.length == 2);
       for (ClientHealthStatus status : clientStatuses) {
-        LogWriterSupport.getLogWriter().info("<ExpectedString> ClientStats of the Server is  " + status + "</ExpectedString> ");
+        LogWriterUtils.getLogWriter().info("<ExpectedString> ClientStats of the Server is  " + status + "</ExpectedString> ");
 
       }
 

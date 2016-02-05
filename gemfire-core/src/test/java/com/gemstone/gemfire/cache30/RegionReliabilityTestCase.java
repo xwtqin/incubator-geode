@@ -66,9 +66,8 @@ import com.gemstone.gemfire.internal.cache.TXState;
 import com.gemstone.gemfire.internal.cache.TXStateInterface;
 import com.gemstone.gemfire.internal.cache.TXStateProxyImpl;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
@@ -1414,7 +1413,7 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
       }
     });
     
-    Threads.join(thread, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(thread, 30 * 1000);
     assertTrue(region.isDestroyed());
     try {
       region.put("fee", "fi");

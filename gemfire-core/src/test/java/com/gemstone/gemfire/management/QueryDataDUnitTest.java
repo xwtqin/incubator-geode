@@ -53,7 +53,7 @@ import com.gemstone.gemfire.management.internal.cli.json.TypedJson;
 import com.gemstone.gemfire.pdx.PdxInstance;
 import com.gemstone.gemfire.pdx.PdxInstanceFactory;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceFactoryImpl;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -172,7 +172,7 @@ public class QueryDataDUnitTest extends ManagementTestBase {
         Region region = cache.getRegion(regionName);
         for (int j = from; j < to; j++)
           region.put(new Integer(j), portfolio[j]);
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(
                 "PRQueryDUnitHelper#getCacheSerializableRunnableForPRPuts: Inserted Portfolio data on Region "
                     + regionName);
@@ -407,7 +407,7 @@ public class QueryDataDUnitTest extends ManagementTestBase {
               if (jsonString1.contains("result")) {
                 JSONObject jsonObj = new JSONObject(jsonString1);
               } else {
-                LogWriterSupport.getLogWriter().info("Failed Test String" + queriesForRR[i] + " is = " + jsonString1);
+                LogWriterUtils.getLogWriter().info("Failed Test String" + queriesForRR[i] + " is = " + jsonString1);
                 fail("Join on Replicated did not work.");
               }
             }
@@ -800,19 +800,19 @@ public class QueryDataDUnitTest extends ManagementTestBase {
 
             }, MAX_WAIT, 1000, true);
 
-            LogWriterSupport.getLogWriter().info("member1RealData  is = " + member1RealData);
-            LogWriterSupport.getLogWriter().info("member2RealData  is = " + member2RealData);
-            LogWriterSupport.getLogWriter().info("member3RealData  is = " + member3RealData);
+            LogWriterUtils.getLogWriter().info("member1RealData  is = " + member1RealData);
+            LogWriterUtils.getLogWriter().info("member2RealData  is = " + member2RealData);
+            LogWriterUtils.getLogWriter().info("member3RealData  is = " + member3RealData);
             
             String member1Result = bean.queryData(query, member1.getId(), 0);
-            LogWriterSupport.getLogWriter().info("member1Result " + query + " is = " + member1Result);
+            LogWriterUtils.getLogWriter().info("member1Result " + query + " is = " + member1Result);
 
 
             String member2Result = bean.queryData(query, member2.getId(), 0);
-            LogWriterSupport.getLogWriter().info("member2Result " + query + " is = " + member2Result);
+            LogWriterUtils.getLogWriter().info("member2Result " + query + " is = " + member2Result);
             
             String member3Result = bean.queryData(query, member3.getId(), 0);
-            LogWriterSupport.getLogWriter().info("member3Result " + query + " is = " + member3Result);
+            LogWriterUtils.getLogWriter().info("member3Result " + query + " is = " + member3Result);
             
             for (String val : member1RealData) {
               assertTrue(member1Result.contains(val));

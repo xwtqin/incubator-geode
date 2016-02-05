@@ -49,7 +49,7 @@ import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -151,7 +151,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       mgr = MembershipManagerHelper.getMembershipManager(sys);
       sys.disconnect();
       InternalDistributedMember idm2 = mgr.getLocalMember();
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("original ID=" + idm +
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("original ID=" + idm +
           " and after connecting=" + idm2);
       assertTrue("should not have used a different udp port",
           idm.getPort() == idm2.getPort());
@@ -176,7 +176,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
 
     try {
       InternalDistributedMember mbr = new InternalDistributedMember(
-        NetworkSupport.getIPLiteral(), 12345);
+        NetworkUtils.getIPLiteral(), 12345);
 
       // first make sure we can't add this as a surprise member (bug #44566)
       
@@ -186,8 +186,8 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
 
       int oldViewId = mbr.getVmViewId();
       mbr.setVmViewId((int)mgr.getView().getViewId()-1);
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("current membership view is " + mgr.getView());
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("created ID " + mbr + " with view ID " + mbr.getVmViewId());
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("current membership view is " + mgr.getView());
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("created ID " + mbr + " with view ID " + mbr.getVmViewId());
       sys.getLogWriter().info("<ExpectedException action=add>attempt to add old member</ExpectedException>");
       sys.getLogWriter().info("<ExpectedException action=add>Removing shunned GemFire node</ExpectedException>");
       try {
@@ -525,14 +525,14 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
     try {
       getSystem(props);
     } catch (IllegalArgumentException e) {
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("caught expected exception (1)", e);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("caught expected exception (1)", e);
     }
     // use an invalid address
     props.setProperty(DistributionConfig.BIND_ADDRESS_NAME, "bruce.schuchardt");
     try {
       getSystem(props);
     } catch (IllegalArgumentException e) {
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("caught expected exception (2_", e);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("caught expected exception (2_", e);
     }
     // use a valid bind address
     props.setProperty(DistributionConfig.BIND_ADDRESS_NAME, InetAddress.getLocalHost().getCanonicalHostName());

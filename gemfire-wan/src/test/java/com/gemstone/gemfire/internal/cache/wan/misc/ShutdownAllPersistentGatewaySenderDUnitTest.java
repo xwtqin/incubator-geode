@@ -30,7 +30,7 @@ import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -117,7 +117,7 @@ public class ShutdownAllPersistentGatewaySenderDUnitTest extends WANTestBase {
     future.join(MAX_WAIT);
 
     // now restart vm1 with gatewayHub
-    LogWriterSupport.getLogWriter().info("restart in VM2");
+    LogWriterUtils.getLogWriter().info("restart in VM2");
     vm2.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     vm3.invoke(WANTestBase.class, "createCache", new Object[] { nyPort });
     AsyncInvocation vm3_future = vm3.invokeAsync(WANTestBase.class,

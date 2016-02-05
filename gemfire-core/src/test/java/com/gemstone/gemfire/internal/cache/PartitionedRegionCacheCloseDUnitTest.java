@@ -30,7 +30,7 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -102,7 +102,7 @@ public class PartitionedRegionCacheCloseDUnitTest extends
             key = new Integer(k);
             pr.put(key, rName + k);
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info("VM0 Done put successfully for PR = " + rName + j);
         }
       }
@@ -123,13 +123,13 @@ public class PartitionedRegionCacheCloseDUnitTest extends
             key = new Integer(k);
             pr.put(key, rName + k);
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info("VM1 Done put successfully for PR = " + rName + j);
         }
       }
     });
-    Threads.join(async0, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
-    Threads.join(async1, 30 * 1000, com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async0, 30 * 1000);
+    ThreadUtils.join(async1, 30 * 1000);
 
    if(async0.exceptionOccurred()) {
      Assert.fail("Exception during async0", async0.getException());

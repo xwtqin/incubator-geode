@@ -41,7 +41,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -227,7 +227,7 @@ public class HADuplicateDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(HADuplicateDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(HADuplicateDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2) });
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2) });
 
   }
 

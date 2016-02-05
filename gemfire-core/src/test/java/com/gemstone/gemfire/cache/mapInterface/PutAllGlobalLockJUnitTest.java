@@ -36,7 +36,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
 @Category(IntegrationTest.class)
@@ -79,7 +79,7 @@ public class PutAllGlobalLockJUnitTest {
         }
         try {
             testRegion.putAll(trialMap);
-            Threads.join(this.thread, 30 * 1000, null);
+            ThreadUtils.join(this.thread, 30 * 1000);
             assertTrue(this.testOK);
         } catch (Exception e) {
             fail("Test has failed due to "+e);

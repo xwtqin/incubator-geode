@@ -68,7 +68,7 @@ import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -415,7 +415,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
         
         Region.Entry entry = ((PartitionedRegion)region).getEntry("testKey", true /*Entry is destroyed*/);
         RegionEntry re = ((EntrySnapshot)entry).getRegionEntry();
-        LogWriterSupport.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
+        LogWriterUtils.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
         assertTrue(re.getValueInVM((LocalRegion) region) instanceof Tombstone);
         
         VersionTag tag = re.getVersionStamp().asVersionTag();
@@ -839,7 +839,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
     for(int i = 0; i < 3; i++) {
       NonTXEntry entry = (NonTXEntry) recoveredRegion.getEntry("key" + i);
       tagsFromKrf[i] = entry.getRegionEntry().getVersionStamp().asVersionTag();
-      LogWriterSupport.getLogWriter().info("krfTag[" + i + "]="+ tagsFromKrf[i] + ",value=" + entry.getValue());
+      LogWriterUtils.getLogWriter().info("krfTag[" + i + "]="+ tagsFromKrf[i] + ",value=" + entry.getValue());
     }
     
     closeCache();
@@ -854,7 +854,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
       for(int i = 0; i < 3; i++) {
         NonTXEntry entry = (NonTXEntry) recoveredRegion.getEntry("key" + i);
         tagsFromCrf[i] = entry.getRegionEntry().getVersionStamp().asVersionTag();
-        LogWriterSupport.getLogWriter().info("crfTag[" + i + "]="+ tagsFromCrf[i] + ",value=" + entry.getValue());
+        LogWriterUtils.getLogWriter().info("crfTag[" + i + "]="+ tagsFromCrf[i] + ",value=" + entry.getValue());
       }
       
       //Make sure the version tags from the krf and the crf match.

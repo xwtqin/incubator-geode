@@ -43,10 +43,10 @@ import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -96,7 +96,7 @@ public class CqDataDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Create client.
     cqDUnitTest.createClient(client, port, host0);
@@ -142,7 +142,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1);
     
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     
@@ -259,7 +259,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server, 0, true);
     final int port = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Create client.
     cqDUnitTest.createClient(client, port, host0);
@@ -334,7 +334,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     /* Create Server and Client */
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client1, port, host0);
     cqDUnitTest.createClient(client2, port, host0);
     
@@ -403,7 +403,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server2, 0, false, MirrorType.KEYS);
         
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
       
     cqDUnitTest.createClient(client, port1, host0);
     
@@ -451,7 +451,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     final int evictionThreshold = 1;
     server1.invoke(new CacheSerializableRunnable("Create Cache Server") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Cache Server. ###");
+        LogWriterUtils.getLogWriter().info("### Create Cache Server. ###");
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.DISTRIBUTED_ACK);
         factory.setDataPolicy(DataPolicy.REPLICATE);
@@ -464,7 +464,7 @@ public class CqDataDUnitTest extends CacheTestCase {
         for (int i = 0; i < cqDUnitTest.regions.length; i++) { 
           Region region = createRegion(cqDUnitTest.regions[i], factory.createRegionAttributes());
           // Set CacheListener.
-          region.getAttributesMutator().setCacheListener(new CertifiableTestCacheListener(LogWriterSupport.getLogWriter()));  
+          region.getAttributesMutator().setCacheListener(new CertifiableTestCacheListener(LogWriterUtils.getLogWriter()));  
         } 
         Wait.pause(2000);
         
@@ -479,7 +479,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     });
         
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
       
     cqDUnitTest.createClient(client, port1, host0);
     
@@ -521,7 +521,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1, 0, false, MirrorType.KEYS_VALUES);
 
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     final String[] regions = cqDUnitTest.regions;
     final int[] serverPorts = new int[] {port1};
@@ -530,7 +530,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     SerializableRunnable createClientWithPool =
       new CacheSerializableRunnable("createClientWithPool") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Client. ###");
+        LogWriterUtils.getLogWriter().info("### Create Client. ###");
         // Initialize CQ Service.
         try {
           getCache().getQueryService();
@@ -544,7 +544,7 @@ public class CqDataDUnitTest extends CacheTestCase {
         ClientServerTestCase.configureConnectionPool(regionFactory, serverHost, serverPorts[0], -1, false, -1, -1, null);
         for (int i=0; i < regions.length; i++) {        
           createRegion(regions[i], regionFactory.create() );
-          LogWriterSupport.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
+          LogWriterUtils.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
         }
       }
     };
@@ -579,7 +579,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1, 0, false, MirrorType.KEYS_VALUES);
 
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     final String[] regions = cqDUnitTest.regions;
     final int[] serverPorts = new int[] {port1};
@@ -588,7 +588,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     SerializableRunnable createClientWithPool =
       new CacheSerializableRunnable("createClientWithPool") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Client. ###");
+        LogWriterUtils.getLogWriter().info("### Create Client. ###");
         //Region region1 = null;
         // Initialize CQ Service.
         try {
@@ -604,7 +604,7 @@ public class CqDataDUnitTest extends CacheTestCase {
 
         for (int i=0; i < regions.length; i++) {        
           createRegion(regions[i], regionFactory.createRegionAttributes());
-          LogWriterSupport.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
+          LogWriterUtils.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
         }
       }
     };
@@ -634,7 +634,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1, 0, false, MirrorType.KEYS_VALUES);
 
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     final String[] regions = cqDUnitTest.regions;
     final int[] serverPorts = new int[] {port1};
@@ -643,7 +643,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     SerializableRunnable createClientWithConnectionPool =
       new CacheSerializableRunnable("createClientWithConnectionPool") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Client. ###");
+        LogWriterUtils.getLogWriter().info("### Create Client. ###");
         //Region region1 = null;
         // Initialize CQ Service.
         try {
@@ -658,7 +658,7 @@ public class CqDataDUnitTest extends CacheTestCase {
         ClientServerTestCase.configureConnectionPool(regionFactory, serverHost, serverPorts[0], -1, true, -1, -1, null);
         for (int i=0; i < regions.length; i++) {        
           createRegion(regions[i], regionFactory.createRegionAttributes());
-          LogWriterSupport.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
+          LogWriterUtils.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
         }
       }
     };
@@ -688,7 +688,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1, 0, false, MirrorType.KEYS_VALUES);
 
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     final String[] regions = cqDUnitTest.regions;
     final int[] serverPorts = new int[] {port1};
@@ -697,7 +697,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     SerializableRunnable createClientWithPool =
       new CacheSerializableRunnable("createClientWithPool") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create Client. ###");
+        LogWriterUtils.getLogWriter().info("### Create Client. ###");
         //Region region1 = null;
         // Initialize CQ Service.
         try {
@@ -714,7 +714,7 @@ public class CqDataDUnitTest extends CacheTestCase {
 
         for (int i=0; i < regions.length; i++) {        
           createRegion(regions[i], regionFactory.createRegionAttributes());
-          LogWriterSupport.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
+          LogWriterUtils.getLogWriter().info("### Successfully Created Region on Client :" + regions[i]);
         }
       }
     };
@@ -753,7 +753,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     
     cqDUnitTest.createClient(client, port, host0);
     
@@ -768,7 +768,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     // Test for Event on Region Clear.
     server.invoke(new CacheSerializableRunnable("testRegionEvents"){
       public void run2()throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Clearing the region on the server ###");
+        LogWriterUtils.getLogWriter().info("### Clearing the region on the server ###");
         Region region = getCache().getRegion("/root/" + cqDUnitTest.regions[0]);
         for (int i = 1; i <=5; i++) {
           region.put(CqQueryDUnitTest.KEY+i, new Portfolio(i));
@@ -782,7 +782,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     // Test for Event on Region invalidate.
     server.invoke(new CacheSerializableRunnable("testRegionEvents"){
       public void run2()throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Invalidate the region on the server ###");
+        LogWriterUtils.getLogWriter().info("### Invalidate the region on the server ###");
         Region region = getCache().getRegion("/root/" + cqDUnitTest.regions[0]);
         for (int i = 1; i <=5; i++) {
           region.put(CqQueryDUnitTest.KEY+i, new Portfolio(i));
@@ -796,7 +796,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     // Test for Event on Region destroy.
     server.invoke(new CacheSerializableRunnable("testRegionEvents"){
       public void run2()throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Destroying the region on the server ###");
+        LogWriterUtils.getLogWriter().info("### Destroying the region on the server ###");
         Region region = getCache().getRegion("/root/" + cqDUnitTest.regions[1]);
         for (int i = 1; i <=5; i++) {
           region.put(CqQueryDUnitTest.KEY+i, new Portfolio(i));
@@ -834,7 +834,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     final String cqName = "testEventsDuringQueryExecution_0";
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     
     // Initialize Client.
     cqDUnitTest.createClient(client, port, host0);
@@ -943,7 +943,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     });
 
     //wait for 60 seconds for test to complete
-    Threads.join(processCqs, 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(processCqs, 60 * 1000);
     
     // Close.
     cqDUnitTest.closeClient(client);
@@ -974,7 +974,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Initialize Client.
     cqDUnitTest.createClient(client, port, host0);
@@ -1119,7 +1119,7 @@ public class CqDataDUnitTest extends CacheTestCase {
     });
 
     //wait for 60 seconds for test to complete
-    Threads.join(processCqs, 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(processCqs, 60 * 1000);
     // Close.
     cqDUnitTest.closeClient(client);
     cqDUnitTest.closeServer(server);

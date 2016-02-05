@@ -45,9 +45,9 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -258,7 +258,7 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   public void testSpecificTcpPort() throws Exception {
     Properties config = new Properties();
     int tcpPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    config.put("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    config.put("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     config.setProperty("tcp-port", String.valueOf(tcpPort));
     system = (InternalDistributedSystem)DistributedSystem.connect(config);
     DistributionManager dm = (DistributionManager)system.getDistributionManager();
@@ -286,10 +286,10 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
     if (loopback != null) {
       Properties config = new Properties();
       config.put(DistributionConfig.MCAST_PORT_NAME, "0");
-      String locators = InetAddress.getLocalHost().getHostName()+":"+DistributedTestSupport.getDUnitLocatorPort();
+      String locators = InetAddress.getLocalHost().getHostName()+":"+DistributedTestUtils.getDUnitLocatorPort();
       config.put(DistributionConfig.LOCATORS_NAME, locators);
       config.setProperty(DistributionConfig.BIND_ADDRESS_NAME, loopback.getHostAddress());
-      LogWriterSupport.getLogWriter().info("attempting to connect with " + loopback +" and locators=" + locators);
+      LogWriterUtils.getLogWriter().info("attempting to connect with " + loopback +" and locators=" + locators);
       try {
         system = (InternalDistributedSystem)DistributedSystem.connect(config);
         system.disconnect();
@@ -305,7 +305,7 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   public void testUDPPortRange() throws Exception {
     Properties config = new Properties();
     int unicastPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    config.put("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    config.put("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     // Minimum 3 ports required in range for UDP, FD_SOCK and TcpConduit.
     config.setProperty(DistributionConfig.MEMBERSHIP_PORT_RANGE_NAME, 
         ""+unicastPort+"-"+(unicastPort+2)); 
@@ -319,7 +319,7 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
 
   public void testMembershipPortRangeWithExactThreeValues() throws Exception {
     Properties config = new Properties();
-    config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     config.setProperty(DistributionConfig.MEMBERSHIP_PORT_RANGE_NAME, ""
         + (DistributionConfig.DEFAULT_MEMBERSHIP_PORT_RANGE[1] - 2) + "-"
         + (DistributionConfig.DEFAULT_MEMBERSHIP_PORT_RANGE[1]));

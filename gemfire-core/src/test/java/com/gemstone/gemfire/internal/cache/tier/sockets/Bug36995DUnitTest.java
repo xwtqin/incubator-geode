@@ -30,7 +30,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -168,7 +168,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
     createClientCacheWithDefaultMessageTrackingTimeout(
-        NetworkSupport.getServerHostName(server1.getHost()), port1.intValue(), port2
+        NetworkUtils.getServerHostName(server1.getHost()), port1.intValue(), port2
         .intValue(), port3.intValue());
     assertEquals(PoolFactory.DEFAULT_SUBSCRIPTION_MESSAGE_TRACKING_TIMEOUT,
                  pool.getSubscriptionMessageTrackingTimeout());
@@ -187,7 +187,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
         "createServerCache"));
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
-    createClientCache(NetworkSupport.getServerHostName(server1.getHost()),
+    createClientCache(NetworkUtils.getServerHostName(server1.getHost()),
         port1.intValue(), port2.intValue(), port3.intValue());
     assertEquals(54321, pool.getSubscriptionMessageTrackingTimeout());
   }
@@ -203,7 +203,7 @@ public class Bug36995DUnitTest extends DistributedTestCase
         "createServerCache"));
     Integer port3 = ((Integer)server3.invoke(Bug36995DUnitTest.class,
         "createServerCache"));
-    createClientCache(NetworkSupport.getServerHostName(server1.getHost()),
+    createClientCache(NetworkUtils.getServerHostName(server1.getHost()),
         port1.intValue(), port2.intValue(), port3.intValue());
     verifyDeadAndLiveServers(0, 3);
     server2.invoke(Bug36995DUnitTest.class, "stopServer");

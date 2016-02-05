@@ -38,7 +38,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PoolManagerImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 import security.DummyCredentialGenerator;
@@ -138,11 +138,11 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
     String authenticator = gen.getAuthenticator();
     String authInit = gen.getAuthInit();
 
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testValidCredentials: Using scheme: " + gen.classCode());
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testValidCredentials: Using authenticator: " + authenticator);
-    LogWriterSupport.getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
+    LogWriterUtils.getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
 
     // Start the servers
     Integer locPort1 = SecurityTestUtil.getLocatorPort();
@@ -158,12 +158,12 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
     // Start the clients with valid credentials
     Properties credentials1 = gen.getValidCredentials(1);
     Properties javaProps1 = gen.getJavaProperties();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testValidCredentials: For first client credentials: " + credentials1
             + " : " + javaProps1);
     Properties credentials2 = gen.getValidCredentials(2);
     Properties javaProps2 = gen.getJavaProperties();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testValidCredentials: For second client credentials: " + credentials2
             + " : " + javaProps2);
     client1.invoke(MultiuserAPIDUnitTest.class, "createCacheClient",

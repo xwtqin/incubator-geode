@@ -82,12 +82,12 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -481,7 +481,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
     verifyListenerValue(server1, MemoryState.EVICTION, 2, true);
     verifyListenerValue(server1, MemoryState.NORMAL, 1, true);
     
-    LogWriterSupport.getLogWriter().info("before NORMAL->CRITICAL->NORMAL");
+    LogWriterUtils.getLogWriter().info("before NORMAL->CRITICAL->NORMAL");
     //NORMAL -> EVICTION -> NORMAL
     server2.invoke(new SerializableCallable("NORMAL->CRITICAL->NORMAL") {
       public Object call() throws Exception {
@@ -491,7 +491,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         return null;
       }
     });
-    LogWriterSupport.getLogWriter().info("after NORMAL->CRITICAL->NORMAL");
+    LogWriterUtils.getLogWriter().info("after NORMAL->CRITICAL->NORMAL");
 
     verifyListenerValue(server2, MemoryState.CRITICAL, 2, true);
     verifyListenerValue(server2, MemoryState.EVICTION, 3, true);
@@ -668,7 +668,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
       server1.invoke(new SerializableCallable("local destroy sick member") {
         public Object call() throws Exception {
           Region r = getRootRegion().getSubregion(regionName);
-          LogWriterSupport.getLogWriter().info("PRLocalDestroy");
+          LogWriterUtils.getLogWriter().info("PRLocalDestroy");
           r.localDestroyRegion();
           return null;
         }
@@ -1287,7 +1287,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         getCache();
 
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), serverPort);
+        pf.addServer(NetworkUtils.getServerHostName(server.getHost()), serverPort);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1358,7 +1358,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));
           }
         } catch (LowMemoryException low) {
-          LogWriterSupport.getLogWriter().info("Caught LowMemoryException", low);
+          LogWriterUtils.getLogWriter().info("Caught LowMemoryException", low);
           if (!catchLowMemoryException) {
             Assert.fail("Unexpected exception: ", low);
           }
@@ -1577,7 +1577,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
 
   protected Properties getServerProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     return p;
   }
 
@@ -1664,7 +1664,7 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
       }
     };
     final String tenuredPoolName = HeapMemoryMonitor.getTenuredMemoryPoolMXBean().getName();
-    LogWriterSupport.getLogWriter().info("TenuredPoolName:"+tenuredPoolName);
+    LogWriterUtils.getLogWriter().info("TenuredPoolName:"+tenuredPoolName);
     final List list = internalSystem.getStatsList();
     assertFalse(list.isEmpty());
     
@@ -1674,10 +1674,10 @@ public class MemoryThresholdsDUnitTest extends ClientServerTestCase {
         int i=0;
         synchronized (list) {
           for (Object o : list) {
-            LogWriterSupport.getLogWriter().info("List:"+(++i)+":"+o);
+            LogWriterUtils.getLogWriter().info("List:"+(++i)+":"+o);
             if (o instanceof StatisticsImpl) {
               StatisticsImpl si = (StatisticsImpl)o;
-              LogWriterSupport.getLogWriter().info("stat:"+si.getTextId());
+              LogWriterUtils.getLogWriter().info("stat:"+si.getTextId());
               if (si.getTextId().contains(tenuredPoolName)) {
                 sampler.addLocalStatListener(l, si, "currentUsedMemory");
                 return true;

@@ -558,7 +558,7 @@ public class ManagementTestBase extends DistributedTestCase {
         RegionFactory rf = cache
             .createRegionFactory(RegionShortcut.LOCAL);
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Creating Local Region");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Creating Local Region");
         rf.create(localRegionName);
 
       }
@@ -581,7 +581,7 @@ public class ManagementTestBase extends DistributedTestCase {
         SystemManagementService service = (SystemManagementService) getManagementService();
         Region region = cache.getRegion(parentRegionPath);
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Creating Sub Region");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Creating Sub Region");
         region.createSubregion(subregionName, region.getAttributes());
 
       }
@@ -624,7 +624,7 @@ public class ManagementTestBase extends DistributedTestCase {
         SystemManagementService service = (SystemManagementService) getManagementService();
 
         RegionFactory rf = cache.createRegionFactory(RegionShortcut.REPLICATE);
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Creating Dist Region");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Creating Dist Region");
         rf.create(regionName);
 
       }
@@ -646,7 +646,7 @@ public class ManagementTestBase extends DistributedTestCase {
         SystemManagementService service = (SystemManagementService) getManagementService();
         RegionFactory rf = cache
             .createRegionFactory(RegionShortcut.PARTITION_REDUNDANT);
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Creating Par Region");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Creating Par Region");
         rf.create(partitionRegionName);
 
       }
@@ -665,7 +665,7 @@ public class ManagementTestBase extends DistributedTestCase {
       public void run() {
         GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Closing Dist Region");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Closing Dist Region");
         Region region = cache.getRegion(regionPath);
         region.close();
 
@@ -689,7 +689,7 @@ public class ManagementTestBase extends DistributedTestCase {
       public boolean done() {
         if (bean.listMemberObjectNames() != null) {
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
               "Member Length " + bean.listMemberObjectNames().length);
 
         }

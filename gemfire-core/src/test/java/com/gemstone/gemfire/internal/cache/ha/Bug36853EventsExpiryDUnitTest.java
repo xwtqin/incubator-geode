@@ -37,8 +37,8 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -114,7 +114,7 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
         "createServerCache")).intValue();
 
     client.invoke(Bug36853EventsExpiryDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT2) });
+        new Object[] { NetworkUtils.getServerHostName(host), new Integer(PORT2) });
 
   }
 
@@ -180,11 +180,11 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
       public void afterCreate(EntryEvent event)
       {
         String key = (String)event.getKey();
-        LogWriterSupport.getLogWriter().info("client2 : afterCreate : key =" + key);
+        LogWriterUtils.getLogWriter().info("client2 : afterCreate : key =" + key);
         if (key.equals(LAST_KEY)) {
 
           synchronized (Bug36853EventsExpiryDUnitTest.class) {
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Notifying client2 to proceed for validation");
             proceedForValidation = true;
             Bug36853EventsExpiryDUnitTest.class.notify();
@@ -259,7 +259,7 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
       synchronized (Bug36853EventsExpiryDUnitTest.class) {
         if (!proceedForValidation)
           try {
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Client2 going in wait before starting validation");
             Bug36853EventsExpiryDUnitTest.class.wait(5000);
           }
@@ -268,13 +268,13 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
           }
       }
     }
-    LogWriterSupport.getLogWriter().info("Starting validation on client2");
+    LogWriterUtils.getLogWriter().info("Starting validation on client2");
     Assert.assertEquals(
         "Puts recieved by client not equal to the puts done at server.",
         TOTAL_PUTS, putsRecievedByClient);
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info("putsRecievedByClient = " + putsRecievedByClient);
-    LogWriterSupport.getLogWriter().info("Validation complete on client2");
+    LogWriterUtils.getLogWriter().info("Validation complete on client2");
 
   }
 

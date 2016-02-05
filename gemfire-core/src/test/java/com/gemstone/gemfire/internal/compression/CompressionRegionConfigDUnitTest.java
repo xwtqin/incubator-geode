@@ -27,9 +27,9 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -369,7 +369,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createServerRegion(name,dataPolicy,compressor));
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -392,7 +392,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createRegion(name,dataPolicy,compressor));
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -415,7 +415,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createRegion(name,dataPolicy,compressor,diskStoreName));
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -439,7 +439,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createClientRegion(name,compressor,shortcut));
         } catch(Exception e) {
-          LogWriterSupport.getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -521,7 +521,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
     } 
     // Running in hydra
     else {
-      return DistributedTestSupport.getDUnitLocatorPort();
+      return DistributedTestUtils.getDUnitLocatorPort();
     }
   }
 }

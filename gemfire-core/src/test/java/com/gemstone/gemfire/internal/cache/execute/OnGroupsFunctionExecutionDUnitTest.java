@@ -46,7 +46,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -88,7 +88,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
 
     @Override
     public void execute(FunctionContext context) {
-      LogWriterSupport.getLogWriter().fine("SWAP:1:executing OnGroupsFunction:"+invocationCount);
+      LogWriterUtils.getLogWriter().fine("SWAP:1:executing OnGroupsFunction:"+invocationCount);
       InternalDistributedSystem ds = InternalDistributedSystem.getConnectedInstance();
       synchronized (OnGroupsFunction.class) {
     	  invocationCount++;
@@ -233,7 +233,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
     vm0.invoke(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().fine("SWAP:invoking on gm");
+        LogWriterUtils.getLogWriter().fine("SWAP:invoking on gm");
         DistributedSystem ds = getSystem();
         try {
           FunctionService.onMember("no such group");
@@ -260,7 +260,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
       @Override
       public Object call() throws Exception {
         DistributedSystem ds = getSystem();
-        LogWriterSupport.getLogWriter().fine("SWAP:invoking on g0");
+        LogWriterUtils.getLogWriter().fine("SWAP:invoking on g0");
         Execution e = FunctionService.onMembers("g0");
         ArrayList<String> args = new ArrayList<String>();
         args.add("g0");
@@ -300,7 +300,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
     vm0.invoke(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().fine("SWAP:invoking on g0 g1");
+        LogWriterUtils.getLogWriter().fine("SWAP:invoking on g0 g1");
         InternalDistributedSystem ds = InternalDistributedSystem.getConnectedInstance();
         Execution e = FunctionService.onMembers("g0", "g1");
         ArrayList<String> args = new ArrayList<String>();
@@ -685,11 +685,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         c.getLogger().info("SWAP:invoking function from client on g0");
@@ -783,11 +783,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         c.getLogger().info("SWAP:invoking function from client on g0");
@@ -860,11 +860,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         IgnoredException ex = IgnoredException.addIgnoredException("No member found");
@@ -940,11 +940,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         IgnoredException expected = IgnoredException.addIgnoredException("No member found");
@@ -1017,11 +1017,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         Execution e = InternalFunctionService.onServers(c, "g1");
@@ -1066,11 +1066,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         Execution e = InternalFunctionService.onServers(c, "g1");
@@ -1115,11 +1115,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         Execution e = InternalFunctionService.onServers(c, "g1");
@@ -1129,7 +1129,7 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         e = e.withArgs(args);
         ((AbstractExecution)e).setIgnoreDepartedMembers(true);
         ArrayList l = (ArrayList) e.execute(new OnGroupsExceptionFunction()).getResult();
-        LogWriterSupport.getLogWriter().info("SWAP:result:"+l);
+        LogWriterUtils.getLogWriter().info("SWAP:result:"+l);
         assertEquals(2, l.size());
         if (l.get(0) instanceof Throwable) {
           assertTrue((Boolean) l.get(1));
@@ -1182,11 +1182,11 @@ public class OnGroupsFunctionExecutionDUnitTest extends DistributedTestCase {
         } catch (CacheClosedException cce) {
         }
         disconnectFromDS();
-        LogWriterSupport.getLogWriter().fine("SWAP:creating client cache");
+        LogWriterUtils.getLogWriter().fine("SWAP:creating client cache");
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolLocator(hostName, locatorPort);
         ccf.setPoolServerGroup("mg");
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache c = ccf.create();
 
         c.getLogger().info("SWAP:invoking function from client on g0");

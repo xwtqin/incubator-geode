@@ -39,7 +39,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -109,7 +109,7 @@ public class Bug48571DUnitTest extends DistributedTestCase {
 
   public static int createServerCache() throws Exception {
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     props.setProperty("log-file", "server_" + OSProcess.getId() + ".log");
     props.setProperty("log-level", "info");
     props.setProperty("statistic-archive-file", "server_" + OSProcess.getId()

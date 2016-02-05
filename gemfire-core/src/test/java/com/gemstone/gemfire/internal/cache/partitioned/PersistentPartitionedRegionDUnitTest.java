@@ -78,8 +78,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
@@ -1387,7 +1387,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
           Cache cache = getCache();
 
           PoolFactory pf = PoolManager.createFactory();
-          pf.addServer(NetworkSupport.getServerHostName(host), serverPort);
+          pf.addServer(NetworkUtils.getServerHostName(host), serverPort);
           pf.setSubscriptionEnabled(true);
           pf.create("pool");
           AttributesFactory af = new AttributesFactory();
@@ -1450,7 +1450,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
               DistributedTestCase.disconnectFromDS();
               
               await().atMost(30, SECONDS).until(() -> {return (cache == null || cache.isClosed());});
-              LogWriterSupport.getLogWriter().info("Cache is confirmed closed");
+              LogWriterUtils.getLogWriter().info("Cache is confirmed closed");
             }
           }
         });
@@ -1661,7 +1661,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
       }
     });
     
-    LogWriterSupport.getLogWriter().info("Creating region in VM0");
+    LogWriterUtils.getLogWriter().info("Creating region in VM0");
     createPR(vm0, 1, 0, 1);
     
     //Make sure we create a bucket
@@ -1671,7 +1671,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     
     IgnoredException ex = IgnoredException.addIgnoredException("PartitionOfflineException");
     try { 
-    LogWriterSupport.getLogWriter().info("Creating region in VM1");
+    LogWriterUtils.getLogWriter().info("Creating region in VM1");
     createPR(vm1, 1, 0, 1);
     
     //Make sure get a partition offline exception

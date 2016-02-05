@@ -52,7 +52,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessageImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -156,7 +156,7 @@ public class Bug38741DUnitTest extends ClientServerTestCase {
     // Setup a client which subscribes to the server region, registers (aka pulls)
     // interest in keys which creates an assumed HARegionQueue on the server
     // (in the event that the above code didn't already create a HARegion)
-    final String serverHostName = NetworkSupport.getServerHostName(server.getHost());
+    final String serverHostName = NetworkUtils.getServerHostName(server.getHost());
     client.invoke(new CacheSerializableRunnable("Assert server copy behavior from client") {
       public void run2() throws CacheException {
         getCache();

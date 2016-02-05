@@ -44,7 +44,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBase{
@@ -954,7 +954,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
 
     Integer size = (Integer)vm4.invoke(WANTestBase.class,
         "getQueueContentSize", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("The size of the queue is in vm4 " + size);
+    LogWriterUtils.getLogWriter().info("The size of the queue is in vm4 " + size);
     
 
     vm4.invoke(WANTestBase.class,
@@ -962,7 +962,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
     
     size = (Integer)vm4.invoke(WANTestBase.class,
         "getQueueContentSize", new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("The size of the queue is in vm4 " + size);
+    LogWriterUtils.getLogWriter().info("The size of the queue is in vm4 " + size);
     
     vm2.invoke(WANTestBase.class, "validateRegionSize", new Object[] {
         getTestMethodName() + "_RR", 1000 });
@@ -1076,7 +1076,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        LogWriterSupport.getLogWriter().info("Put : key : " + i);
+        LogWriterUtils.getLogWriter().info("Put : key : " + i);
         r.put(i, "0_" + i);
       }
     } finally {
@@ -1095,7 +1095,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        LogWriterSupport.getLogWriter().info("Put : key : " + i);
+        LogWriterUtils.getLogWriter().info("Put : key : " + i);
         r.put(i, "1_" + i);
       }
     } finally {
@@ -1113,7 +1113,7 @@ public class ReplicatedRegion_ParallelWANPropogationDUnitTest extends WANTestBas
       Region r = cache.getRegion(Region.SEPARATOR + regionName);
       assertNotNull(r);
       for (long i = 0; i < numPuts; i++) {
-        LogWriterSupport.getLogWriter().info("Put : key : " + i);
+        LogWriterUtils.getLogWriter().info("Put : key : " + i);
         r.put(i, "2_" + i);
       }
     } finally {

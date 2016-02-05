@@ -39,7 +39,7 @@ import com.gemstone.gemfire.internal.cache.FilterProfile;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -313,7 +313,7 @@ public class UnregisterInterestDUnitTest extends DistributedTestCase {
     DistributedSystem ds = new UnregisterInterestDUnitTest("UnregisterInterestDUnitTest").getSystem();
     ds.disconnect();
     Properties props = new Properties();
-    props.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    props.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     CacheFactory cf = new CacheFactory(props);
     cache = cf.create();
     RegionFactory rf = ((GemFireCacheImpl)cache).createRegionFactory(RegionShortcut.REPLICATE);

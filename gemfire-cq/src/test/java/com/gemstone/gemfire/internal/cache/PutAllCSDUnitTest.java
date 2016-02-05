@@ -77,14 +77,14 @@ import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -156,7 +156,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     VM client2 = host.getVM(3);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     // set <false, true> means <PR=false, notifyBySubscription=true> to enable registerInterest and CQ
     createBridgeServer(server, regionName, serverPort, false, 0, null);
@@ -177,7 +177,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         
         // registerInterest for ALL_KEYS
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -203,7 +203,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         CqAttributes cqa1 = cqf1.create();
         String cqName1 = "EOInfoTracker";
         String queryStr1 = "SELECT ALL * FROM /root/"+regionName+" ii WHERE ii.getTicker() >= '10' and ii.getTicker() < '20'";
-        LogWriterSupport.getLogWriter().info("Query String: "+queryStr1);
+        LogWriterUtils.getLogWriter().info("Query String: "+queryStr1);
         try {
           QueryService cqService = getCache().getQueryService();
           CqQuery EOTracker = cqService.newCq(cqName1, queryStr1, cqa1);
@@ -213,11 +213,11 @@ public void testOneServer() throws CacheException, InterruptedException {
           for (int i=0; i<list1.size(); i++) {
             Struct s = (Struct)list1.get(i);
             TestObject o = (TestObject)s.get("value");
-            LogWriterSupport.getLogWriter().info("InitialResult:"+i+":"+o);
+            LogWriterUtils.getLogWriter().info("InitialResult:"+i+":"+o);
             localregion.put("key-"+i, o);
           }
           if (localregion.size() > 0) {
-            LogWriterSupport.getLogWriter().info("CQ is ready");
+            LogWriterUtils.getLogWriter().info("CQ is ready");
             synchronized(lockObject) {
               lockObject.notify();
             }
@@ -297,8 +297,8 @@ public void testOneServer() throws CacheException, InterruptedException {
             if (obj != null) {
               // wait for the key to be destroyed
               Wait.pause(100);
-              if (LogWriterSupport.getLogWriter().fineEnabled()) {
-                LogWriterSupport.getLogWriter().info("Waiting 100ms("+cnt+") for key-" + i + " to be destroyed");
+              if (LogWriterUtils.getLogWriter().fineEnabled()) {
+                LogWriterUtils.getLogWriter().info("Waiting 100ms("+cnt+") for key-" + i + " to be destroyed");
               }
               cnt++;
             } else {
@@ -329,7 +329,7 @@ public void testOneServer() throws CacheException, InterruptedException {
             obj = (TestObject)localregion.get("key-"+i);
             if (obj == null || obj.getPrice() != i*10) {
               Wait.pause(100);
-              LogWriterSupport.getLogWriter().info("Waiting 100ms("+cnt+") for obj.getPrice() == i*10 at entry "+i);
+              LogWriterUtils.getLogWriter().info("Waiting 100ms("+cnt+") for obj.getPrice() == i*10 at entry "+i);
               cnt++;
             } else {
               break;
@@ -343,7 +343,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
     
     // verify stats for client putAll into distributed region
     // 1. verify client staus
@@ -429,7 +429,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
   
     // set notifyBySubscription=false to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -444,7 +444,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         
         // registerInterest for ALL_KEYS
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
   
@@ -500,7 +500,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=false to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -583,7 +583,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         assertEquals(numberOfEntries, mywriter.num_destroyed);
       }
     });
@@ -595,7 +595,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         // beforeDestroys are only triggered at server1 since the removeAll is submitted from client1
         assertEquals(0, mywriter.num_destroyed);
       }
@@ -623,8 +623,8 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-    Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
+    ThreadUtils.join(async2, 30 * 1000);
     }
 
     client1.invoke(new CacheSerializableRunnable(title
@@ -722,8 +722,8 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
       });
 
-      Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-      Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(async1, 30 * 1000);
+      ThreadUtils.join(async2, 30 * 1000);
     }
 
     client1.invoke(new CacheSerializableRunnable(title+"client1 removeAll") {
@@ -918,7 +918,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     VM client2 = host.getVM(3);
     final String regionName = getUniqueName();
     
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=false to test local-invalidates
     int serverPort1 = createServerRegion(server1, regionName, CCE);
@@ -991,7 +991,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         assertEquals(numberOfEntries, mywriter.num_destroyed);
       }
     });
@@ -1003,7 +1003,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         // beforeDestroys are only triggered at server1 since the removeAll is submitted from client1
         assertEquals(0, mywriter.num_destroyed);
       }
@@ -1145,7 +1145,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, isPR, redundantCopies, null);
@@ -1294,7 +1294,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, true, 0, "ds1");
@@ -1313,7 +1313,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
     
@@ -1399,7 +1399,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, true, 1, null);
@@ -1482,7 +1482,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         // beforeDestroys are only triggered at primary buckets. server1 and server2 each holds half of buckets
         assertEquals(numberOfEntries/2, mywriter.num_destroyed);
       }
@@ -1495,7 +1495,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         assertEquals(0, region.size());
         MyWriter mywriter = (MyWriter)region.getAttributes().getCacheWriter();
-        LogWriterSupport.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
+        LogWriterUtils.getLogWriter().info("server cachewriter triggered for destroy: "+mywriter.num_destroyed);
         // beforeDestroys are only triggered at primary buckets. server1 and server2 each holds half of buckets
         assertEquals(numberOfEntries/2, mywriter.num_destroyed);
       }
@@ -1523,8 +1523,8 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-    Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
+    ThreadUtils.join(async2, 30 * 1000);
     }
     
     client1.invoke(new CacheSerializableRunnable(title
@@ -1601,8 +1601,8 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
       });
 
-      Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-      Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(async1, 30 * 1000);
+      ThreadUtils.join(async2, 30 * 1000);
     }
 
     client1.invoke(new CacheSerializableRunnable(title+"client1 removeAll") {
@@ -1773,7 +1773,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     final String regionName = getUniqueName();
 
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -1828,7 +1828,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -1856,7 +1856,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });   
 
@@ -1886,21 +1886,21 @@ public void testOneServer() throws CacheException, InterruptedException {
         int c2Size = getRegionSize(client2, regionName);
         int s1Size = getRegionSize(server1, regionName);
         int s2Size = getRegionSize(server2, regionName);
-        LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+        LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
         if (c1Size != 15) {
-          LogWriterSupport.getLogWriter().info("waiting for client1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client1 to get all updates");
           return false;
         }
         if (c2Size != 15) {
-          LogWriterSupport.getLogWriter().info("waiting for client2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client2 to get all updates");
           return false;
         }
         if (s1Size != 15) {
-          LogWriterSupport.getLogWriter().info("waiting for server1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server1 to get all updates");
           return false;
         }
         if (s2Size != 15) {
-          LogWriterSupport.getLogWriter().info("waiting for server2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server2 to get all updates");
           return false;
         }
         return true;
@@ -1950,21 +1950,21 @@ public void testOneServer() throws CacheException, InterruptedException {
           int c2Size = getRegionSize(client2, regionName);
           int s1Size = getRegionSize(server1, regionName);
           int s2Size = getRegionSize(server2, regionName);
-          LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+          LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
           if (c1Size != 15) { // client 1 did not register interest
-            LogWriterSupport.getLogWriter().info("waiting for client1 to get all updates");
+            LogWriterUtils.getLogWriter().info("waiting for client1 to get all updates");
             return false;
           }
           if (c2Size != 15*2) {
-            LogWriterSupport.getLogWriter().info("waiting for client2 to get all updates");
+            LogWriterUtils.getLogWriter().info("waiting for client2 to get all updates");
             return false;
           }
           if (s1Size != 15*2) {
-            LogWriterSupport.getLogWriter().info("waiting for server1 to get all updates");
+            LogWriterUtils.getLogWriter().info("waiting for server1 to get all updates");
             return false;
           }
           if (s2Size != 15*2) {
-            LogWriterSupport.getLogWriter().info("waiting for server2 to get all updates");
+            LogWriterUtils.getLogWriter().info("waiting for server2 to get all updates");
             return false;
           }
           return true;
@@ -2007,21 +2007,21 @@ public void testOneServer() throws CacheException, InterruptedException {
           int c2Size = getRegionSize(client2, regionName);
           int s1Size = getRegionSize(server1, regionName);
           int s2Size = getRegionSize(server2, regionName);
-          LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+          LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
           if (c1Size != 15-5) { // client 1 did not register interest
-            LogWriterSupport.getLogWriter().info("waiting for client1 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for client1 to get all destroys");
             return false;
           }
           if (c2Size != (15*2)-5) {
-            LogWriterSupport.getLogWriter().info("waiting for client2 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for client2 to get all destroys");
             return false;
           }
           if (s1Size != (15*2)-5) {
-            LogWriterSupport.getLogWriter().info("waiting for server1 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for server1 to get all destroys");
             return false;
           }
           if (s2Size != (15*2)-5) {
-            LogWriterSupport.getLogWriter().info("waiting for server2 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for server2 to get all destroys");
             return false;
           }
           return true;
@@ -2066,21 +2066,21 @@ public void testOneServer() throws CacheException, InterruptedException {
           int c2Size = getRegionSize(client2, regionName);
           int s1Size = getRegionSize(server1, regionName);
           int s2Size = getRegionSize(server2, regionName);
-          LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+          LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
           if (c1Size != 15-5) { // client 1 did not register interest
-            LogWriterSupport.getLogWriter().info("waiting for client1 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for client1 to get all destroys");
             return false;
           }
           if (c2Size != (15*2)-5-5) {
-            LogWriterSupport.getLogWriter().info("waiting for client2 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for client2 to get all destroys");
             return false;
           }
           if (s1Size != (15*2)-5-5) {
-            LogWriterSupport.getLogWriter().info("waiting for server1 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for server1 to get all destroys");
             return false;
           }
           if (s2Size != (15*2)-5-5) {
-            LogWriterSupport.getLogWriter().info("waiting for server2 to get all destroys");
+            LogWriterUtils.getLogWriter().info("waiting for server2 to get all destroys");
             return false;
           }
           return true;
@@ -2116,7 +2116,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, true, 0, "ds1");
@@ -2153,7 +2153,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });   
 
@@ -2180,7 +2180,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     // server2 will closeCache after created 10 keys
     
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
     if (async1.exceptionOccurred()) {
       Assert.fail("Aync1 get exceptions:", async1.getException());
     }
@@ -2189,14 +2189,14 @@ public void testOneServer() throws CacheException, InterruptedException {
     // client2Size maybe more than client1Size
     int client2Size = getRegionSize(client2, regionName);
     int server1Size = getRegionSize(server1, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
 //    assertEquals(server1Size, client1Size);
 
     // restart server2
     createBridgeServer(server2, regionName, serverPort2, true, 0, "ds1");
     server1Size = getRegionSize(server1, regionName);
     int server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size+":"+server2Size);
+    LogWriterUtils.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size+":"+server2Size);
     assertEquals(client2Size, server1Size);
     assertEquals(client2Size, server2Size);
 
@@ -2222,7 +2222,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int new_client1Size = getRegionSize(client1, regionName);
     int new_client2Size = getRegionSize(client2, regionName);
 
-    LogWriterSupport.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
     assertEquals(server1Size+numberOfEntries/2, new_server1Size);
     assertEquals(client1Size+numberOfEntries/2, new_client1Size);
     assertEquals(client2Size+numberOfEntries/2, new_client2Size);
@@ -2231,7 +2231,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     createBridgeServer(server2, regionName, serverPort2, true, 0, "ds1");
     server1Size = getRegionSize(server1, regionName);
     server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after restart server2: "+server1Size+","+server2Size);
+    LogWriterUtils.getLogWriter().info("region sizes after restart server2: "+server1Size+","+server2Size);
     assertEquals(server1Size, server2Size);
 
     // add a cacheWriter for server to stop after created 15 keys
@@ -2259,7 +2259,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     new_server1Size = getRegionSize(server1, regionName);
     int new_server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after restart server2: "+new_server1Size+","+new_server2Size);
+    LogWriterUtils.getLogWriter().info("region sizes after restart server2: "+new_server1Size+","+new_server2Size);
     assertEquals(server1Size+15, new_server1Size);
     assertEquals(server2Size+15, new_server2Size);
     server1.invoke(removeExceptionTag1(expectedExceptions));
@@ -2296,7 +2296,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, true, 0, "ds1");
@@ -2315,7 +2315,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
     
@@ -2334,21 +2334,21 @@ public void testOneServer() throws CacheException, InterruptedException {
         int c2Size = getRegionSize(client2, regionName);
         int s1Size = getRegionSize(server1, regionName);
         int s2Size = getRegionSize(server2, regionName);
-        LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+        LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
         if (c1Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for client1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client1 to get all updates");
           return false;
         }
         if (c2Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for client2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client2 to get all updates");
           return false;
         }
         if (s1Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for server1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server1 to get all updates");
           return false;
         }
         if (s2Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for server2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server2 to get all updates");
           return false;
         }
         return true;
@@ -2397,7 +2397,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     // server2 will closeCache after creating 10 keys
     
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
     if (async1.exceptionOccurred()) {
       Assert.fail("Aync1 get exceptions:", async1.getException());
     }
@@ -2406,11 +2406,11 @@ public void testOneServer() throws CacheException, InterruptedException {
     // client2Size maybe more than client1Size
     client2Size = getRegionSize(client2, regionName);
     server1Size = getRegionSize(server1, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
 //    assertEquals(server1Size, client1Size);
 
     // restart server2 
-    LogWriterSupport.getLogWriter().info("restarting server 2");
+    LogWriterUtils.getLogWriter().info("restarting server 2");
     createBridgeServer(server2, regionName, serverPort2, true, 0, "ds1");
     
     // Test Case1: Trigger singleHop putAll. Stop server2 in middle. 
@@ -2421,7 +2421,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     client2Size = getRegionSize(client2, regionName);
     server1Size = getRegionSize(server1, regionName);
     server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size);
     assertEquals(150, client1Size);
     assertEquals(client2Size, server1Size);
     assertEquals(client2Size, server2Size);
@@ -2449,7 +2449,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     // Test Case 2: based on case 1, but this time, there should be no X keys 
     // created on server2.
-    LogWriterSupport.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
     assertEquals(server1Size+numberOfEntries/2, new_server1Size);
     assertEquals(client1Size+numberOfEntries/2, new_client1Size);
     assertEquals(client2Size+numberOfEntries/2, new_client2Size);
@@ -2458,7 +2458,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     createBridgeServer(server2, regionName, serverPort2, true, 0, "ds1");
     server1Size = getRegionSize(server1, regionName);
     server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after restart server2: "+server1Size+","+server2Size);
+    LogWriterUtils.getLogWriter().info("region sizes after restart server2: "+server1Size+","+server2Size);
     assertEquals(server1Size, server2Size);
 
     // add a cacheWriter for server to fail putAll after it created cacheWriterAllowedKeyNum keys
@@ -2490,7 +2490,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int oncemore_client2Size = getRegionSize(client2, regionName);
     int oncemore_server1Size = getRegionSize(server1, regionName);
     int oncemore_server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes in once more test: "
+    LogWriterUtils.getLogWriter().info("region sizes in once more test: "
         +oncemore_client1Size+","+oncemore_client2Size+","+oncemore_server1Size+","+oncemore_server2Size);
     int delta_at_server = oncemore_server1Size - server1Size;
     assertEquals(new_client1Size+delta_at_server, oncemore_client1Size);
@@ -2528,7 +2528,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set <true, false> means <PR=true, notifyBySubscription=false> to test local-invalidates
     createBridgeServer(server1, regionName, serverPort1, true, 1, "ds1");
@@ -2547,7 +2547,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
     
@@ -2566,21 +2566,21 @@ public void testOneServer() throws CacheException, InterruptedException {
         int c2Size = getRegionSize(client2, regionName);
         int s1Size = getRegionSize(server1, regionName);
         int s2Size = getRegionSize(server2, regionName);
-        LogWriterSupport.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
+        LogWriterUtils.getLogWriter().info("region sizes: "+c1Size+","+c2Size+","+s1Size+","+s2Size);
         if (c1Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for client1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client1 to get all updates");
           return false;
         }
         if (c2Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for client2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for client2 to get all updates");
           return false;
         }
         if (s1Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for server1 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server1 to get all updates");
           return false;
         }
         if (s2Size != numberOfEntries) {
-          LogWriterSupport.getLogWriter().info("waiting for server2 to get all updates");
+          LogWriterUtils.getLogWriter().info("waiting for server2 to get all updates");
           return false;
         }
         return true;
@@ -2623,7 +2623,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     // server2 will closeCache after created 10 keys
     
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
     if (async1.exceptionOccurred()) {
       Assert.fail("Aync1 get exceptions:", async1.getException());
     }
@@ -2633,7 +2633,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     client2Size = getRegionSize(client2, regionName);
     server1Size = getRegionSize(server1, regionName);
     // putAll should succeed after retry
-    LogWriterSupport.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes: "+client1Size+","+client2Size+","+server1Size);
     assertEquals(server1Size, client1Size);
     assertEquals(server1Size, client2Size);
 
@@ -2642,7 +2642,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     server1Size = getRegionSize(server1, regionName);
     server2Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes after server2 restarted: "+client1Size+","+client2Size+","+server1Size);
     assertEquals(client2Size, server1Size);
     assertEquals(client2Size, server2Size);
 
@@ -2660,7 +2660,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int new_client2Size = getRegionSize(client2, regionName);
 
     // putAll should succeed, all the numbers should match
-    LogWriterSupport.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
+    LogWriterUtils.getLogWriter().info("region sizes after re-run the putAll: "+new_client1Size+","+new_client2Size+","+new_server1Size);
     assertEquals(new_server1Size, new_client1Size);
     assertEquals(new_server1Size, new_client2Size);
 
@@ -2685,7 +2685,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     final String regionName = getUniqueName();
     
     final int[] serverPorts = AvailablePortHelper.getRandomAvailableTCPPorts(3);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
     
     final SharedCounter sc_server1 = new SharedCounter("server1");
     final SharedCounter sc_server2 = new SharedCounter("server2");
@@ -2766,7 +2766,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int server1Size = getRegionSize(server1, regionName);
     int server2Size = getRegionSize(server2, regionName);
     int server3Size = getRegionSize(server2, regionName);
-    LogWriterSupport.getLogWriter().info("region sizes: "+client1Size+","+server1Size+","+server2Size+","+server3Size);
+    LogWriterUtils.getLogWriter().info("region sizes: "+client1Size+","+server1Size+","+server2Size+","+server3Size);
 
     AsyncInvocation async1 = client1.invokeAsync(new CacheSerializableRunnable(title+"client1 add listener and putAll") {
       public void run2() throws CacheException {
@@ -2778,7 +2778,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     // server1 and server2 will closeCache after created 10 keys
    
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
     if (async1.exceptionOccurred()) {
       Assert.fail("Aync1 get exceptions:", async1.getException());
     }
@@ -2788,14 +2788,14 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         Region r = getRootRegion().getSubregion(regionName);
         MyListener l = (MyListener)r.getAttributes().getCacheListeners()[0];
-        LogWriterSupport.getLogWriter().info("event counters : "+l.sc);
+        LogWriterUtils.getLogWriter().info("event counters : "+l.sc);
         assertEquals(numberOfEntries, l.sc.num_create_event);
         assertEquals(0, l.sc.num_update_event);
       }
     });
 
 
-    LogWriterSupport.getLogWriter().info("event counters : "+myListener.sc);
+    LogWriterUtils.getLogWriter().info("event counters : "+myListener.sc);
     assertEquals(numberOfEntries, myListener.sc.num_create_event);
     assertEquals(0, myListener.sc.num_update_event);
     
@@ -2831,7 +2831,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -2860,7 +2860,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         
         // registerInterest for ALL_KEYS
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -2871,7 +2871,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         
         // registerInterest for ALL_KEYS
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -2892,7 +2892,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
 
     // verify bridge server 2 for asyn keys
     server2.invoke(new CacheSerializableRunnable(title
@@ -2931,7 +2931,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     int serverPorts[] = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int serverPort1 = serverPorts[0];
     final int serverPort2 = serverPorts[1];
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -2962,7 +2962,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         try {
           doPutAll(regionName, "key-", thousandEntries);
         } catch (Exception e) {
-          LogWriterSupport.getLogWriter().info(title + "Expected SocketTimeOut:"+e.getMessage());
+          LogWriterUtils.getLogWriter().info(title + "Expected SocketTimeOut:"+e.getMessage());
           exceptionTriggered = true;
         }
         assertTrue(exceptionTriggered);
@@ -2993,7 +2993,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -3015,7 +3015,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
     
@@ -3025,7 +3025,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         try {
           doPutAll(regionName, title, testEndPointSwitchNumber);
         } catch (Exception e) {
-          LogWriterSupport.getLogWriter().info(title + "Expected SocketTimeOut"+e.getMessage());
+          LogWriterUtils.getLogWriter().info(title + "Expected SocketTimeOut"+e.getMessage());
         }
       }
     });
@@ -3113,7 +3113,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -3131,7 +3131,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client1 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3140,7 +3140,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         region.getAttributesMutator().addCacheListener(new MyListener(false));
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3168,8 +3168,8 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-    Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
+    ThreadUtils.join(async2, 30 * 1000);
 
     // verify client 2 for asyn keys
     client2.invokeAsync(new CacheSerializableRunnable(title
@@ -3241,12 +3241,12 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
         region.putAll(map, "putAllCallback");
         try {
-          LogWriterSupport.getLogWriter().info("before commit TX1");
+          LogWriterUtils.getLogWriter().info("before commit TX1");
           //tx.commit();
-          LogWriterSupport.getLogWriter().info("TX1 committed");
+          LogWriterUtils.getLogWriter().info("TX1 committed");
         }
         catch (CommitConflictException e) {
-          LogWriterSupport.getLogWriter().info("TX1 rollbacked");
+          LogWriterUtils.getLogWriter().info("TX1 rollbacked");
         }
       }
     });
@@ -3268,12 +3268,12 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
         region.putAll(map, "putAllCallback");
         try {
-          LogWriterSupport.getLogWriter().info("before commit TX2");
+          LogWriterUtils.getLogWriter().info("before commit TX2");
           //tx.commit();
-          LogWriterSupport.getLogWriter().info("TX2 committed");
+          LogWriterUtils.getLogWriter().info("TX2 committed");
         }
         catch (CommitConflictException e) {
-          LogWriterSupport.getLogWriter().info("TX2 rollbacked");
+          LogWriterUtils.getLogWriter().info("TX2 rollbacked");
         }
       }
     });
@@ -3296,19 +3296,19 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
         region.putAll(map, "putAllCallback");
         try {
-          LogWriterSupport.getLogWriter().info("before commit TX3");
+          LogWriterUtils.getLogWriter().info("before commit TX3");
           //tx.commit();
-          LogWriterSupport.getLogWriter().info("TX3 committed");
+          LogWriterUtils.getLogWriter().info("TX3 committed");
         }
         catch (CommitConflictException e) {
-          LogWriterSupport.getLogWriter().info("TX3 rollbacked");
+          LogWriterUtils.getLogWriter().info("TX3 rollbacked");
         }
       }
     });
 
-    Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
-    Threads.join(async2, 30 * 1000, LogWriterSupport.getLogWriter());
-    Threads.join(async3, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async1, 30 * 1000);
+    ThreadUtils.join(async2, 30 * 1000);
+    ThreadUtils.join(async3, 30 * 1000);
 
     // verify server 2 for asyn keys
     server2.invoke(new CacheSerializableRunnable(title
@@ -3331,7 +3331,7 @@ public void testOneServer() throws CacheException, InterruptedException {
             else if (obj.getPrice() == i + numberOfEntries * 2) {
               tx_no = 3;
             }
-            LogWriterSupport.getLogWriter().info("Verifying TX:" + tx_no);
+            LogWriterUtils.getLogWriter().info("Verifying TX:" + tx_no);
           }
           if (tx_no == 1) {
             assertEquals(i, obj.getPrice());
@@ -3370,7 +3370,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, true, 0, null);
@@ -3397,7 +3397,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3412,7 +3412,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         for (Object key : entries.keySet()) {
           RegionEntry internalRegionEntry = entries.getEntry(key);
           VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-          LogWriterSupport.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
+          LogWriterUtils.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
           versions.add(tag);
         }
         
@@ -3432,7 +3432,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         for (Object key : entries.keySet()) {
           RegionEntry internalRegionEntry = entries.getEntry(key);
           VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-          LogWriterSupport.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
+          LogWriterUtils.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
           versions.add(tag);
         }
         return versions;
@@ -3440,9 +3440,9 @@ public void testOneServer() throws CacheException, InterruptedException {
     });
 
     assertEquals(numberOfEntries*2, client1Versions.size());
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client1Versions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client1Versions.toArray()));
     
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client2Versions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client2Versions.toArray()));
     
     for (VersionTag tag : client1Versions) {
       if (!client2Versions.contains(tag)) {
@@ -3470,7 +3470,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, true, 0, null);
@@ -3500,7 +3500,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         Region region = getRootRegion().getSubregion(regionName);
         region.registerInterest("ALL_KEYS");
         assertEquals(numberOfEntries, region.size());
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3516,7 +3516,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         for (Object key : entries.keySet()) {
           RegionEntry internalRegionEntry = entries.getEntry(key);
           VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-          LogWriterSupport.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
+          LogWriterUtils.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
           versions.add(tag);
         }
         
@@ -3536,7 +3536,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         for (Object key : entries.keySet()) {
           RegionEntry internalRegionEntry = entries.getEntry(key);
           VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-          LogWriterSupport.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
+          LogWriterUtils.getLogWriter().info("Entry version tag on client for " + key + ": " + tag);
           versions.add(tag);
         }
         return versions;
@@ -3544,9 +3544,9 @@ public void testOneServer() throws CacheException, InterruptedException {
     });
 
     assertEquals(numberOfEntries*2, client1RAVersions.size());
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client1RAVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client1RAVersions.toArray()));
     
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client2RAVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client2RAVersions.toArray()));
     
     for (VersionTag tag : client1RAVersions) {
       if (!client2RAVersions.contains(tag)) {
@@ -3573,7 +3573,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, true, 1, null);
@@ -3592,7 +3592,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3619,7 +3619,7 @@ public void testOneServer() throws CacheException, InterruptedException {
           for (Object key : entries.keySet()) {
             RegionEntry internalRegionEntry = entries.getEntry(key);
             VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-            LogWriterSupport.getLogWriter().info("Entry version tag on server1:" + tag);
+            LogWriterUtils.getLogWriter().info("Entry version tag on server1:" + tag);
             versions.add(key + " " + tag);
           }
         }
@@ -3650,10 +3650,10 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    LogWriterSupport.getLogWriter().info(Arrays.toString(expectedVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(expectedVersions.toArray()));
     
     assertEquals(numberOfEntries*2, actualVersions.size());
-    LogWriterSupport.getLogWriter().info(Arrays.toString(actualVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(actualVersions.toArray()));
     
     for (String keyTag : expectedVersions) {
       if (!actualVersions.contains(keyTag)) {
@@ -3681,7 +3681,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, true, 1, null);
@@ -3700,7 +3700,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
         region.registerInterest("ALL_KEYS");
-        LogWriterSupport.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
+        LogWriterUtils.getLogWriter().info("client2 registerInterest ALL_KEYS at "+region.getFullPath());
       }
     });
 
@@ -3729,7 +3729,7 @@ public void testOneServer() throws CacheException, InterruptedException {
           for (Object key : entries.keySet()) {
             RegionEntry internalRegionEntry = entries.getEntry(key);
             VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-            LogWriterSupport.getLogWriter().info("Entry version tag on server1:" + tag);
+            LogWriterUtils.getLogWriter().info("Entry version tag on server1:" + tag);
             versions.add(key + " " + tag);
           }
         }
@@ -3761,10 +3761,10 @@ public void testOneServer() throws CacheException, InterruptedException {
       }
     });
 
-    LogWriterSupport.getLogWriter().info(Arrays.toString(expectedRAVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(expectedRAVersions.toArray()));
     
     assertEquals(numberOfEntries*2, actualRAVersions.size());
-    LogWriterSupport.getLogWriter().info(Arrays.toString(actualRAVersions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(actualRAVersions.toArray()));
     
     for (String keyTag : expectedRAVersions) {
       if (!actualRAVersions.contains(keyTag)) {
@@ -3791,7 +3791,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     
     final int serverPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int serverPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = NetworkSupport.getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     // set notifyBySubscription=true to test register interest
     createBridgeServer(server1, regionName, serverPort1, false, 0, null);
@@ -3825,7 +3825,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         for (Object key : entries.keySet()) {
           RegionEntry internalRegionEntry = entries.getEntry(key);
           VersionTag tag = internalRegionEntry.getVersionStamp().asVersionTag();
-          LogWriterSupport.getLogWriter().info("Entry version tag on client:" + tag);
+          LogWriterUtils.getLogWriter().info("Entry version tag on client:" + tag);
           versions.add(tag);
         }
         
@@ -3853,9 +3853,9 @@ public void testOneServer() throws CacheException, InterruptedException {
     });
 
     assertEquals(numberOfEntries*2, client1Versions.size());
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client1Versions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client1Versions.toArray()));
     
-    LogWriterSupport.getLogWriter().info(Arrays.toString(client2Versions.toArray()));
+    LogWriterUtils.getLogWriter().info(Arrays.toString(client2Versions.toArray()));
     
     for (VersionTag tag : client2Versions) {
       tag.setMemberID(null);
@@ -3872,7 +3872,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         getSystem(config);
 
         // Create Region
@@ -3926,7 +3926,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         }
         try {
           int retPort = startBridgeServer(serverPort);
-          LogWriterSupport.getLogWriter().info("Cache Server Started:"+retPort+":"+serverPort);
+          LogWriterUtils.getLogWriter().info("Cache Server Started:"+retPort+":"+serverPort);
         } catch (Exception e) {
           Assert.fail("While starting CacheServer", e);
         }
@@ -4182,7 +4182,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         localregion.put(key, newValue);
         num_updates ++;
       }
-      LogWriterSupport.getLogWriter().info("CQListener:TestObject:" + key + ":" + newValue);
+      LogWriterUtils.getLogWriter().info("CQListener:TestObject:" + key + ":" + newValue);
     }
 
     public void close() {
@@ -4248,7 +4248,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (closeCacheAtItem != -1 && sc.num_create_event >= closeCacheAtItem) {
         closeCacheAsync(vm);
       }
-      LogWriterSupport.getLogWriter().fine(
+      LogWriterUtils.getLogWriter().fine(
           "MyListener:afterCreate " + event.getKey() + ":"
               + event.getNewValue()+":num_create_event="+sc.num_create_event
               + ":eventID="+((EntryEventImpl)event).getEventId());
@@ -4269,7 +4269,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (event.getKey().toString().startsWith("testEndPointSwitch")) {
         num_testEndPointSwitch++;
         if (num_testEndPointSwitch == testEndPointSwitchNumber) {
-          LogWriterSupport.getLogWriter().info("testEndPointSwitch received expected events");
+          LogWriterUtils.getLogWriter().info("testEndPointSwitch received expected events");
           synchronized(lockObject3) {
             lockObject3.notify();
           }
@@ -4278,7 +4278,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (event.getKey().toString().startsWith("testHADRFailOver")) {
         num_testHADRFailOver++;
         if (num_testHADRFailOver == thousandEntries*2) {
-          LogWriterSupport.getLogWriter().info("testHADRFailOver received expected events");
+          LogWriterUtils.getLogWriter().info("testHADRFailOver received expected events");
           synchronized(lockObject4) {
             lockObject4.notify();
           }
@@ -4288,7 +4288,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     public void afterUpdate(EntryEvent event) {
       sc.num_update_event++;
-      LogWriterSupport.getLogWriter().fine(
+      LogWriterUtils.getLogWriter().fine(
           "MyListener:afterUpdate " + event.getKey() + ":"
               + event.getNewValue()+":"+event.getOldValue()
               +":num_update_event="+sc.num_update_event
@@ -4311,7 +4311,7 @@ public void testOneServer() throws CacheException, InterruptedException {
         if (event.getOldValue() !=null) {
           num_oldValueInAfterUpdate++;
           if (num_oldValueInAfterUpdate == numberOfEntries) {
-            LogWriterSupport.getLogWriter().info("received expected OldValue events");
+            LogWriterUtils.getLogWriter().info("received expected OldValue events");
             synchronized(lockObject) {
               lockObject.notify();
             }
@@ -4322,7 +4322,7 @@ public void testOneServer() throws CacheException, InterruptedException {
 
     public void afterInvalidate(EntryEvent event) {
       sc.num_invalidate_event++;
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info("local invalidate is triggered for " + event.getKey()+":num_invalidte_event="+sc.num_invalidate_event);
     }
 
@@ -4331,7 +4331,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (event.getOperation().isRemoveAll()) {
         assertEquals("removeAllCallback", event.getCallbackArgument());
       }
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info("local destroy is triggered for " + event.getKey()+":num_invalidte_event="+sc.num_destroy_event);
     }
   }
@@ -4360,7 +4360,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (exceptionAtItem != -1 && num_created >= exceptionAtItem) {
         throw new CacheWriterException("Triggered exception as planned, created "+num_created+" keys.");
       }
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info(
               "MyWriter:beforeCreate " + event.getKey() + ":"
                   + event.getNewValue() + "num_created=" + num_created);
@@ -4381,7 +4381,7 @@ public void testOneServer() throws CacheException, InterruptedException {
     }
 
     public void beforeUpdate(EntryEvent event) {
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info(
               "MyWriter:beforeUpdate " + event.getKey() + ":"
                   + event.getNewValue());
@@ -4405,7 +4405,7 @@ public void testOneServer() throws CacheException, InterruptedException {
       if (exceptionAtItem != -1 && num_destroyed >= exceptionAtItem) {
         throw new CacheWriterException("Triggered exception as planned, destroyed "+num_destroyed+" keys.");
       }
-      LogWriterSupport.getLogWriter().info("MyWriter:beforeDestroy " + event.getKey() + ":" + "num_destroyed=" + num_destroyed);
+      LogWriterUtils.getLogWriter().info("MyWriter:beforeDestroy " + event.getKey() + ":" + "num_destroyed=" + num_destroyed);
       if (event.getOperation().isRemoveAll()) {
         assertEquals("removeAllCallback", event.getCallbackArgument());
       }

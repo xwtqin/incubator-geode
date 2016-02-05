@@ -50,7 +50,7 @@ import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -148,7 +148,7 @@ public class ConcurrentMapOpsDUnitTest extends CacheTestCase {
           ccf.addPoolServer("localhost", port2);
         }
         ccf.setPoolSubscriptionEnabled(true);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<Integer, String> crf = cCache
             .createClientRegionFactory(isEmpty ? ClientRegionShortcut.PROXY

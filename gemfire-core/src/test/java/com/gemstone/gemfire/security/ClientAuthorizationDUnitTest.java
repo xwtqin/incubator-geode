@@ -35,7 +35,7 @@ import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 import templates.security.UserPasswordAuthInit;
@@ -113,7 +113,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           fail("executeRIOpBlock: Unknown client number " + clientNum);
           break;
       }
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "executeRIOpBlock: performing operation number ["
               + currentOp.getOpNum() + "]: " + currentOp);
       if ((opFlags & OpFlags.USE_OLDCONN) == 0) {
@@ -161,7 +161,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
                 extraAuthzProps });
         // Start the client with valid credentials but allowed or disallowed to
         // perform an operation
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "executeRIOpBlock: For client" + clientNum + credentialsTypeStr
                 + " credentials: " + opCredentials);
         if (useThisVM) {
@@ -214,10 +214,10 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       String authInit = cGen.getAuthInit();
       String accessor = gen.getAuthorizationCallback();
 
-      LogWriterSupport.getLogWriter().info("testAllowPutsGets: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info("testAllowPutsGets: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info(
           "testAllowPutsGets: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info("testAllowPutsGets: Using accessor: " + accessor);
+      LogWriterUtils.getLogWriter().info("testAllowPutsGets: Using accessor: " + accessor);
 
       // Start servers with all required properties
       Properties serverProps = buildProperties(authenticator, accessor, false,
@@ -234,7 +234,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.PUT },
           new String[] { regionName }, 1);
       javaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllowPutsGets: For first client credentials: "
               + createCredentials);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -246,7 +246,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.GET },
           new String[] { regionName }, 2);
       javaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter()
+      LogWriterUtils.getLogWriter()
           .info(
               "testAllowPutsGets: For second client credentials: "
                   + getCredentials);
@@ -274,10 +274,10 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       String authInit = cGen.getAuthInit();
       String accessor = gen.getAuthorizationCallback();
 
-      LogWriterSupport.getLogWriter().info("testDisallowPutsGets: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info("testDisallowPutsGets: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info(
           "testDisallowPutsGets: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info("testDisallowPutsGets: Using accessor: " + accessor);
+      LogWriterUtils.getLogWriter().info("testDisallowPutsGets: Using accessor: " + accessor);
 
       // Check that we indeed can obtain valid credentials not allowed to do
       // gets
@@ -285,7 +285,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.PUT },
           new String[] { regionName }, 1);
       Properties createJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testDisallowPutsGets: For first client credentials: "
               + createCredentials);
       Properties getCredentials = gen.getDisallowedCredentials(
@@ -293,7 +293,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new String[] { regionName }, 2);
       Properties getJavaProps = cGen.getJavaProperties();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testDisallowPutsGets: For second client disallowed GET credentials: "
               + getCredentials);
 
@@ -330,7 +330,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.GET },
           new String[] { regionName }, 5);
       getJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testDisallowPutsGets: For second client with GET credentials: "
               + getCredentials);
       client2.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -356,8 +356,8 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       String authInit = cGen.getAuthInit();
       String accessor = gen.getAuthorizationCallback();
 
-      LogWriterSupport.getLogWriter().info("testInvalidAccessor: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info("testInvalidAccessor: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAccessor: Using authenticator: " + authenticator);
 
       // Start server1 with invalid accessor
@@ -374,14 +374,14 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.PUT },
           new String[] { regionName }, 3);
       Properties createJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAccessor: For first client CREATE credentials: "
               + createCredentials);
       Properties getCredentials = gen.getAllowedCredentials(
           new OperationCode[] { OperationCode.GET },
           new String[] { regionName }, 7);
       Properties getJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testInvalidAccessor: For second client GET credentials: "
               + getCredentials);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -398,7 +398,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new Integer(1), new Integer(SecurityTestUtil.AUTHFAIL_EXCEPTION) });
 
       // Now start server2 that has valid accessor
-      LogWriterSupport.getLogWriter().info("testInvalidAccessor: Using accessor: " + accessor);
+      LogWriterUtils.getLogWriter().info("testInvalidAccessor: Using accessor: " + accessor);
       serverProps = buildProperties(authenticator, accessor, false,
           extraAuthProps, extraAuthzProps);
       server2.invoke(ClientAuthorizationTestBase.class, "createCacheServer",
@@ -433,11 +433,11 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       String authInit = cGen.getAuthInit();
       String accessor = gen.getAuthorizationCallback();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: Using accessor: " + accessor);
 
       // Start servers with all required properties
@@ -456,7 +456,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.PUT },
           new String[] { regionName }, 1);
       Properties createJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: For first client credentials: "
               + createCredentials);
       client1.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -468,7 +468,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new OperationCode[] { OperationCode.GET },
           new String[] { regionName }, 5);
       Properties getJavaProps = cGen.getJavaProperties();
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: For second client credentials: "
               + getCredentials);
       client2.invoke(ClientAuthenticationDUnitTest.class, "createCacheClient",
@@ -501,7 +501,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new String[] { regionName }, 9);
       getJavaProps = cGen.getJavaProperties();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testPutsGetsWithFailover: For second client disallowed GET credentials: "
               + noGetCredentials);
 
@@ -626,10 +626,10 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
     String authInit = cGen.getAuthInit();
     String accessor = gen.getAuthorizationCallback();
 
-    LogWriterSupport.getLogWriter().info("testAllOpsWithFailover: Using authinit: " + authInit);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info("testAllOpsWithFailover: Using authinit: " + authInit);
+    LogWriterUtils.getLogWriter().info(
         "testAllOpsWithFailover: Using authenticator: " + authenticator);
-    LogWriterSupport.getLogWriter().info("testAllOpsWithFailover: Using accessor: " + accessor);
+    LogWriterUtils.getLogWriter().info("testAllOpsWithFailover: Using accessor: " + accessor);
 
     // Start servers with all required properties
     Properties serverProps = buildProperties(authenticator, accessor, false,

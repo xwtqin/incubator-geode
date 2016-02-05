@@ -26,8 +26,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -74,7 +74,7 @@ public class CqQueryOptimizedExecuteDUnitTest extends CqQueryDUnitTest{
 
     final int thePort = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Create client.
     createClient(client, thePort, host0);
@@ -101,7 +101,7 @@ public class CqQueryOptimizedExecuteDUnitTest extends CqQueryDUnitTest{
         for (int i = numOfEntries+1; i <= numOfEntries*2; i++) {
           region1.put(KEY+i, new Portfolio(i));
         }
-        LogWriterSupport.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
+        LogWriterUtils.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
       }
     });
     
@@ -173,7 +173,7 @@ public class CqQueryOptimizedExecuteDUnitTest extends CqQueryDUnitTest{
 
     final int thePort = server.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     // Create client.
     createClient(client, thePort, host0);
@@ -201,7 +201,7 @@ public class CqQueryOptimizedExecuteDUnitTest extends CqQueryDUnitTest{
         for (int i = numOfEntries+1; i <= numOfEntries*2; i++) {
           region1.put(KEY+i, new Portfolio(i));
         }
-        LogWriterSupport.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
+        LogWriterUtils.getLogWriter().info("### Number of Entries in Region :" + region1.keys().size());
       }
     });
     
@@ -268,7 +268,7 @@ public class CqQueryOptimizedExecuteDUnitTest extends CqQueryDUnitTest{
 
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(1);
 
     createServer(server2, ports[0]);

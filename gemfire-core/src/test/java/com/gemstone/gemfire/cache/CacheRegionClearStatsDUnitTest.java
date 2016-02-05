@@ -28,7 +28,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 /**
  * verifies the count of clear operation
@@ -153,7 +153,7 @@ public class CacheRegionClearStatsDUnitTest extends DistributedTestCase {
 
     client1.invoke(CacheRegionClearStatsDUnitTest.class,
         "createClientCache", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), port1 });
+            NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client1.invoke(CacheRegionClearStatsDUnitTest.class, "put");
     
     try{
@@ -178,7 +178,7 @@ public class CacheRegionClearStatsDUnitTest extends DistributedTestCase {
 
     client1.invoke(CacheRegionClearStatsDUnitTest.class,
         "createClientCacheDisk", new Object[] {
-            NetworkSupport.getServerHostName(server1.getHost()), port1 });
+            NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client1.invoke(CacheRegionClearStatsDUnitTest.class, "put");
     
     try{

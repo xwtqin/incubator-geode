@@ -35,7 +35,7 @@ import com.gemstone.gemfire.internal.cache.wan.GatewaySenderException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -175,7 +175,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
       fail("Interrupted the async invocation.");
     }
 
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
     
     validateQueueContents(vm4, "ln", 0);
     validateQueueContents(vm5, "ln", 0);
@@ -315,7 +315,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm4.invoke(() -> WANTestBase.startSender( "ln" ));
     
     asyncPuts.getResult();
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
     
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         getTestMethodName() + "_RR", 300 ));
@@ -354,7 +354,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm4.invoke(() -> WANTestBase.doPuts( getTestMethodName() + "_RR",
         100 ));
     
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
 
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         getTestMethodName() + "_RR", 100 ));
@@ -389,7 +389,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
 
     vm5.invoke(() -> WANTestBase.doPuts( getTestMethodName() + "_RR",
         100 ));
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         getTestMethodName() + "_RR", 100 ));
   }
@@ -432,7 +432,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
     vm2.invoke(() -> WANTestBase.createReceiver( nyPort ));
     vm2.invoke(() -> WANTestBase.createReplicatedRegion(
         getTestMethodName() + "_RR", null, isOffHeap() ));
-    LogWriterSupport.getLogWriter().info("Completed puts in the region");
+    LogWriterUtils.getLogWriter().info("Completed puts in the region");
     vm2.invoke(() -> WANTestBase.validateRegionSize(
         getTestMethodName() + "_RR", 100 ));
     vm5.invoke(() -> WANTestBase.stopSender( "ln" ));
@@ -582,7 +582,7 @@ public class SerialGatewaySenderOperationsDUnitTest extends WANTestBase {
       public void run() {
         InternalLocator inl = (InternalLocator)Locator.getLocator();
         ServerLocator servel = inl.getServerLocatorAdvisee();
-        LogWriterSupport.getLogWriter().info("Server load map is " + servel.getLoadMap());
+        LogWriterUtils.getLogWriter().info("Server load map is " + servel.getLoadMap());
         assertTrue("expected an empty map but found " + servel.getLoadMap(),
             servel.getLoadMap().isEmpty());
         QueueConnectionRequest request = new QueueConnectionRequest(

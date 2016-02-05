@@ -48,7 +48,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.lru.LRUCapacityController;
 import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -143,7 +143,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     flush(region);
     
-    LogWriterSupport.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
+    LogWriterUtils.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
         + " reads=" + diskStats.getReads()
         + " evictions=" + lruStats.getEvictions()
         + " total=" + total
@@ -162,7 +162,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
     assertNotNull(value);
     assertEquals(0, ((int[]) value)[0]);
 
-    LogWriterSupport.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
+    LogWriterUtils.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
         + " reads=" + diskStats.getReads()
         + " evictions=" + lruStats.getEvictions()
         + " total=" + total
@@ -374,7 +374,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 //          DiskRegion dr = region.getDiskRegion();
           LRUStatistics lruStats = getLRUStats(region);
           for (int i = 0; lruStats.getEvictions() < 10; i++) {
-            LogWriterSupport.getLogWriter().info("Put " + i);
+            LogWriterUtils.getLogWriter().info("Put " + i);
             region.put(new Integer(i), new byte[1]);
           }
 
@@ -435,7 +435,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     long evictions = lruStats.getEvictions();
 
-    LogWriterSupport.getLogWriter().info("Destroying memory resident entries");
+    LogWriterUtils.getLogWriter().info("Destroying memory resident entries");
     // Destroying each of these guys should have no effect on the disk
     for (int i = total - 1; i >= evictions; i--) {
       region.destroy(new Integer(i));
@@ -446,7 +446,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
 //    long startRemoves = diskStats.getRemoves();
 
-    LogWriterSupport.getLogWriter().info("Destroying disk-resident entries.  evictions=" + evictions);
+    LogWriterUtils.getLogWriter().info("Destroying disk-resident entries.  evictions=" + evictions);
     
     // Destroying each of these guys should cause a removal from disk
     for (int i = ((int) evictions) - 1; i >= 0; i--) {
@@ -458,7 +458,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     assertEquals(evictions, lruStats.getEvictions());
     
-    LogWriterSupport.getLogWriter().info("keys remaining in region: " + region.keys().size());
+    LogWriterUtils.getLogWriter().info("keys remaining in region: " + region.keys().size());
     assertEquals(0, region.keys().size());
   }
 
@@ -970,7 +970,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 //          DiskRegion dr = region.getDiskRegion();
           LRUStatistics lruStats = getLRUStats(region);
           for (int i = 0; lruStats.getEvictions() < 10; i++) {
-            LogWriterSupport.getLogWriter().info("Put " + i);
+            LogWriterUtils.getLogWriter().info("Put " + i);
             region.put(new Integer(i), new byte[1]);
           }
 

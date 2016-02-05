@@ -42,8 +42,8 @@ import com.gemstone.gemfire.internal.cache.partitioned.fixed.FixedPartitioningTe
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -284,7 +284,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
     VM server4 = host.getVM(3);
     Boolean simpleFPR = false;
     final int portLocator = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
+    final String hostLocator = NetworkUtils.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
     server3.invoke(FixedPRSinglehopDUnitTest.class,
         "startLocatorInVM", new Object[] { portLocator });
@@ -388,7 +388,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       attr.setPartitionAttributes(paf.create());
       region = cache.createRegion(PR_NAME, attr.create());
       assertNotNull(region);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region " + PR_NAME + " created Successfully :"
               + region.toString());
     }
@@ -434,7 +434,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
       attr.setPartitionAttributes(paf.create());
       region = cache.createRegion(PR_NAME, attr.create());
       assertNotNull(region);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region " + PR_NAME + " created Successfully :"
               + region.toString());
     }
@@ -488,7 +488,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
     attr.setPartitionAttributes(paf.create());
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -605,7 +605,7 @@ public class FixedPRSinglehopDUnitTest extends CacheTestCase {
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(PR_NAME, attrs);
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region " + PR_NAME + " created Successfully :"
             + region.toString());
   }

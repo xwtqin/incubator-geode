@@ -56,8 +56,8 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HAEventWrapper;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -147,12 +147,12 @@ public class HADispatcherDUnitTest extends DistributedTestCase
     client2.invoke( CacheServerTestUtil.class, "disableShufflingOfEndpoints");
     client1.invoke(HADispatcherDUnitTest.class, "createClientCache",
         new Object[] {
-            NetworkSupport.getServerHostName(Host.getHost(0)),
+            NetworkUtils.getServerHostName(Host.getHost(0)),
             new Integer(PORT1), new Integer(PORT2),
             new Boolean(false) });
     client2.invoke(HADispatcherDUnitTest.class, "createClientCache",
         new Object[] {
-            NetworkSupport.getServerHostName(Host.getHost(0)),
+            NetworkUtils.getServerHostName(Host.getHost(0)),
             new Integer(PORT1), new Integer(PORT2),
             new Boolean(true) });
     //createClientCache(new Integer(PORT1), new Integer(PORT2), new Boolean(true) );
@@ -450,7 +450,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
     
     // Create CQ Attributes.
     CqAttributesFactory cqf = new CqAttributesFactory();
-    CqListener[] cqListeners = {new CqQueryTestListener(LogWriterSupport.getLogWriter())};    
+    CqListener[] cqListeners = {new CqQueryTestListener(LogWriterUtils.getLogWriter())};    
     cqf.initCqListeners(cqListeners);
     CqAttributes cqa = cqf.create();
     
@@ -462,7 +462,7 @@ public class HADispatcherDUnitTest extends DistributedTestCase
       CqQuery cq1 = cqService.newCq(cqName, queryStr, cqa);
       cq1.execute();
     } catch (Exception ex){
-      LogWriterSupport.getLogWriter().info("CQService is :" + cqService);
+      LogWriterUtils.getLogWriter().info("CQService is :" + cqService);
       ex.printStackTrace();
       AssertionError err = new AssertionError("Failed to create/execute CQ " + cqName + " . ");
       err.initCause(ex);

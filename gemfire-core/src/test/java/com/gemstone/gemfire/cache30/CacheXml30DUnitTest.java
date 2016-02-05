@@ -62,7 +62,7 @@ import com.gemstone.gemfire.internal.cache.xmlcache.Declarable2;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionCreation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.util.test.TestUtil;
 
 /**
@@ -596,7 +596,7 @@ public class CacheXml30DUnitTest extends CacheXmlTestCase {
       assertTrue("No XML files in " + dirName, xmlFiles.length > 0);
       for (int i = 0; i < xmlFiles.length; i++) {
         File xmlFile = xmlFiles[i];
-        LogWriterSupport.getLogWriter().info("Parsing " + xmlFile);
+        LogWriterUtils.getLogWriter().info("Parsing " + xmlFile);
 
         FileInputStream fis = new FileInputStream(xmlFile);
         CacheXmlParser.parse(fis);

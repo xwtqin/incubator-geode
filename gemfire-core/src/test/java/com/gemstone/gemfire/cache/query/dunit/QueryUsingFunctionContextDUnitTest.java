@@ -59,8 +59,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -733,7 +733,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
 
     //Create client cache without regions
     client.invoke(QueryUsingFunctionContextDUnitTest.class, "createCacheClientWithoutRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2,
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2,
             port3 });
 
     //Create proxy regions on client.
@@ -1024,7 +1024,7 @@ public class QueryUsingFunctionContextDUnitTest extends CacheTestCase {
         Region region = cache.getRegion(regionName);
         for (int j = from; j < to; j++)
           region.put(new Integer(j), portfolio[j]);
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(
                 "PRQueryDUnitHelper#getCacheSerializableRunnableForPRPuts: Inserted Portfolio data on Region "
                     + regionName);

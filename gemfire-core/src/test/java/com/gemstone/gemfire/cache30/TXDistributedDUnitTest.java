@@ -83,7 +83,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -527,7 +527,7 @@ public class TXDistributedDUnitTest extends CacheTestCase {
   @Override
   public Properties getDistributedSystemProperties() {
     Properties p = super.getDistributedSystemProperties();
-    p.put("log-level", LogWriterSupport.getDUnitLogLevel());
+    p.put("log-level", LogWriterUtils.getDUnitLogLevel());
     return p;
   }
 

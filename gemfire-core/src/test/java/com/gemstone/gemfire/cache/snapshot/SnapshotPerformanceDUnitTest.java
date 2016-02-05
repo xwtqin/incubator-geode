@@ -31,7 +31,7 @@ import com.gemstone.gemfire.cache.snapshot.RegionGenerator.SerializationType;
 import com.gemstone.gemfire.cache.snapshot.SnapshotOptions.SnapshotFormat;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class SnapshotPerformanceDUnitTest extends CacheTestCase {
@@ -53,7 +53,7 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
       for (SerializationType st : sts) {
         for (int i = 0; i < iterations; i++) {
           Region<Integer, MyObject> region = createRegion(rt, st);
-          LogWriterSupport.getLogWriter().info("SNP: Testing region " + region.getName() + ", iteration = " + i);
+          LogWriterUtils.getLogWriter().info("SNP: Testing region " + region.getName() + ", iteration = " + i);
 
           loadData(region, st, dataCount);
           doExport(region);
@@ -78,9 +78,9 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
     double eps = 1000.0 * size / elapsed;
     double mbps = 1000.0 * bytes / elapsed / (1024 * 1024);
 
-    LogWriterSupport.getLogWriter().info("SNP: Exported " + size + " entries (" + bytes + " bytes) in " + elapsed + " ms");
-    LogWriterSupport.getLogWriter().info("SNP: Export entry rate: " + eps + " entries / sec");
-    LogWriterSupport.getLogWriter().info("SNP: Export data rate: " + mbps + " MB / sec");
+    LogWriterUtils.getLogWriter().info("SNP: Exported " + size + " entries (" + bytes + " bytes) in " + elapsed + " ms");
+    LogWriterUtils.getLogWriter().info("SNP: Export entry rate: " + eps + " entries / sec");
+    LogWriterUtils.getLogWriter().info("SNP: Export data rate: " + mbps + " MB / sec");
   }
   
   private void doImport(Region<Integer, MyObject> region) throws Exception {
@@ -96,9 +96,9 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
     double eps = 1000.0 * size / elapsed;
     double mbps = 1000.0 * bytes / elapsed / (1024 * 1024);
 
-    LogWriterSupport.getLogWriter().info("SNP: Imported " + size + " entries (" + bytes + " bytes) in " + elapsed + " ms");
-    LogWriterSupport.getLogWriter().info("SNP: Import entry rate: " + eps + " entries / sec");
-    LogWriterSupport.getLogWriter().info("SNP: Import data rate: " + mbps + " MB / sec");
+    LogWriterUtils.getLogWriter().info("SNP: Imported " + size + " entries (" + bytes + " bytes) in " + elapsed + " ms");
+    LogWriterUtils.getLogWriter().info("SNP: Import entry rate: " + eps + " entries / sec");
+    LogWriterUtils.getLogWriter().info("SNP: Import data rate: " + mbps + " MB / sec");
   }
   
   public void setUp() throws Exception {
@@ -160,7 +160,7 @@ public class SnapshotPerformanceDUnitTest extends CacheTestCase {
     }
     
     long elapsed = System.currentTimeMillis() - start;
-    LogWriterSupport.getLogWriter().info("SNP: loaded " + count + " entries in " + elapsed + " ms");
+    LogWriterUtils.getLogWriter().info("SNP: loaded " + count + " entries in " + elapsed + " ms");
     
     assertEquals(count, region.size());
   }

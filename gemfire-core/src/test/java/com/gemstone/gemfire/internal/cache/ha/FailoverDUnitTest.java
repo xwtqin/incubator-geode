@@ -42,7 +42,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -90,7 +90,7 @@ public class FailoverDUnitTest extends DistributedTestCase
     PORT2 =  ((Integer)vm1.invoke(FailoverDUnitTest.class, "createServerCache" )).intValue();
 
     CacheServerTestUtil.disableShufflingOfEndpoints();
-    createClientCache(NetworkSupport.getServerHostName(host), new Integer(PORT1),new Integer(PORT2));
+    createClientCache(NetworkUtils.getServerHostName(host), new Integer(PORT1),new Integer(PORT2));
     { // calculate the primary vm
       waitForPrimaryAndBackups(1);
       PoolImpl pool = (PoolImpl)PoolManager.find("FailoverPool");

@@ -31,9 +31,9 @@ import com.gemstone.gemfire.internal.cache.StateFlushOperation;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -184,12 +184,12 @@ public class DistributedNoAckRegionDUnitTest
     SerializableRunnable create = new
       CacheSerializableRunnable("Create Mirrored Region") {
         public void run2() throws CacheException {
-          LogWriterSupport.getLogWriter().info("testBug30705: Start creating Mirrored Region"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: Start creating Mirrored Region"); 
           AttributesFactory factory =
             new AttributesFactory(getRegionAttributes());
           factory.setDataPolicy(DataPolicy.REPLICATE);
           createRegion(name, factory.create());
-          LogWriterSupport.getLogWriter().info("testBug30705: Finished creating Mirrored Region"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: Finished creating Mirrored Region"); 
         }
       };
       
@@ -201,14 +201,14 @@ public class DistributedNoAckRegionDUnitTest
           Object key = new Integer(0x42);
           Object value = new byte[0];
           assertNotNull(value);
-          LogWriterSupport.getLogWriter().info("testBug30705: Started Distributed NoAck Puts"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: Started Distributed NoAck Puts"); 
           for (int i = 0; i < NUM_PUTS; i++) {
             if (stopPutting) {
-              LogWriterSupport.getLogWriter().info("testBug30705: Interrupted Distributed Ack Puts after " + i + " PUTS"); 
+              LogWriterUtils.getLogWriter().info("testBug30705: Interrupted Distributed Ack Puts after " + i + " PUTS"); 
               break;
             }
             if ((i % 1000) == 0) {
-              LogWriterSupport.getLogWriter().info("testBug30705: modification #" + i); 
+              LogWriterUtils.getLogWriter().info("testBug30705: modification #" + i); 
             }
             rgn.put(key, value);
           }          
@@ -220,18 +220,18 @@ public class DistributedNoAckRegionDUnitTest
 
     vm0.invoke(new CacheSerializableRunnable("Put data") {
         public void run2() throws CacheException {
-          LogWriterSupport.getLogWriter().info("testBug30705: starting initial data load"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: starting initial data load"); 
           Region region =
             getRootRegion().getSubregion(name);
           final byte[] value = new byte[valueSize];
           Arrays.fill(value, (byte)0x42);
           for (int i = 0; i < numEntries; i++) {
             if ((i % 1000) == 0) {
-              LogWriterSupport.getLogWriter().info("testBug30705: initial put #" + i); 
+              LogWriterUtils.getLogWriter().info("testBug30705: initial put #" + i); 
             }
             region.put(new Integer(i), value);
           }
-          LogWriterSupport.getLogWriter().info("testBug30705: finished initial data load"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: finished initial data load"); 
         }
       });
 
@@ -240,19 +240,19 @@ public class DistributedNoAckRegionDUnitTest
     
     // do initial image
     try {
-      LogWriterSupport.getLogWriter().info("testBug30705: before the critical create");
+      LogWriterUtils.getLogWriter().info("testBug30705: before the critical create");
       vm2.invoke(create);
-      LogWriterSupport.getLogWriter().info("testBug30705: after the critical create");
+      LogWriterUtils.getLogWriter().info("testBug30705: after the critical create");
    } finally {
       // test passes if this does not hang
-      LogWriterSupport.getLogWriter().info("testBug30705: INTERRUPTING Distributed NoAck Puts after GetInitialImage");
+      LogWriterUtils.getLogWriter().info("testBug30705: INTERRUPTING Distributed NoAck Puts after GetInitialImage");
       vm0.invoke(new SerializableRunnable("Interrupt Puts") {
         public void run() {
-          LogWriterSupport.getLogWriter().info("testBug30705: interrupting putter"); 
+          LogWriterUtils.getLogWriter().info("testBug30705: interrupting putter"); 
           stopPutting = true;
         }
       });
-      Threads.join(async, 30 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(async, 30 * 1000);
       // wait for overflow queue to quiesce before continuing
       vm2.invoke(new SerializableRunnable("Wait for Overflow Queue") {
         public void run() {
@@ -274,7 +274,7 @@ public class DistributedNoAckRegionDUnitTest
         }
        });
     } // finally
-   LogWriterSupport.getLogWriter().info("testBug30705: at end of test");
+   LogWriterUtils.getLogWriter().info("testBug30705: at end of test");
    if (async.exceptionOccurred()) {
      Assert.fail("Got exception", async.getException());
    }

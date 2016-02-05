@@ -32,7 +32,7 @@ import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase.MyGatewayEventFilter;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 public class ParallelWANPropagationDUnitTest extends WANTestBase {
@@ -421,7 +421,7 @@ public class ParallelWANPropagationDUnitTest extends WANTestBase {
     
     Integer regionSize = 
       (Integer) vm2.invoke(WANTestBase.class, "getRegionSize", new Object[] {getTestMethodName() + "_PR" });
-    LogWriterSupport.getLogWriter().info("Region size on remote is: " + regionSize);
+    LogWriterUtils.getLogWriter().info("Region size on remote is: " + regionSize);
     
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });

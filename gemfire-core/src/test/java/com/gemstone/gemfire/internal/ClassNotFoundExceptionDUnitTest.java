@@ -40,7 +40,7 @@ import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -191,7 +191,7 @@ public class ClassNotFoundExceptionDUnitTest extends CacheTestCase {
       public Object call() throws Exception {
         disconnectFromDS();
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port);
         cf.setPoolSubscriptionEnabled(true);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)

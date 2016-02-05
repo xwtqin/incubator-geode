@@ -59,7 +59,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -824,7 +824,7 @@ public class PRDeltaPropagationDUnitTest extends DistributedTestCase {
     assertNotNull(cache);
     deltaPR = cache.createRegion(partitionedRegionName, attr.create());
     assertNotNull(deltaPR);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + partitionedRegionName
             + " created Successfully :" + deltaPR);
   }

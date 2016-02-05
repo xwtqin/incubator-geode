@@ -56,8 +56,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -537,7 +537,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     replicate1.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
         "disconnect");
 
-    Threads.join(async[0], 50 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 50 * 1000);
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -693,7 +693,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
         "startServerHA");
     emptyServer1.invoke(DistributedRegionFunctionExecutionDUnitTest.class,
         "closeCacheHA");
-    Threads.join(async[0], 4 * 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 4 * 60 * 1000);
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -1138,7 +1138,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
       ds.disconnect();
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception Occured : " + e.getMessage());
+      LogWriterUtils.getLogWriter().info("Exception Occured : " + e.getMessage());
       e.printStackTrace();
       Assert.fail("Test failed", e);
     }
@@ -1418,7 +1418,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     factory.setDataPolicy(policy);
     assertNotNull(cache);
     region = cache.createRegion(REGION_NAME, factory.create());
-    LogWriterSupport.getLogWriter().info("Client Region Created :" + region);
+    LogWriterUtils.getLogWriter().info("Client Region Created :" + region);
     assertNotNull(region);
     for (int i = 1; i <= 200; i++) {
       region.put("execKey-" + i, new Integer(i));
@@ -1444,7 +1444,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     factory.setPoolName(p.getName());
     assertNotNull(cache);
     region = cache.createRegion(REGION_NAME, factory.create());
-    LogWriterSupport.getLogWriter().info("Client Region Created :" + region);
+    LogWriterUtils.getLogWriter().info("Client Region Created :" + region);
     assertNotNull(region);
   }
 
@@ -1454,7 +1454,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     factory.setDataPolicy(policy);
     assertNotNull(cache);
     region = cache.createRegion(REGION_NAME, factory.create());
-    LogWriterSupport.getLogWriter().info("Region Created :" + region);
+    LogWriterUtils.getLogWriter().info("Region Created :" + region);
     assertNotNull(region);
 
     CacheServer server = cache.addCacheServer();
@@ -1477,7 +1477,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     factory.setDataPolicy(policy);
     assertNotNull(cache);
     region = cache.createRegion(REGION_NAME, factory.create());
-    LogWriterSupport.getLogWriter().info("Region Created :" + region);
+    LogWriterUtils.getLogWriter().info("Region Created :" + region);
     assertNotNull(region);
   }
   
@@ -1497,7 +1497,7 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
       ds.disconnect();
       ds = getSystem(props);
       cache = CacheFactory.create(ds);
-      LogWriterSupport.getLogWriter().info("Created Cache on peer");
+      LogWriterUtils.getLogWriter().info("Created Cache on peer");
       assertNotNull(cache);
       FunctionService.registerFunction(function);
     }
@@ -1542,11 +1542,11 @@ public class DistributedRegionFunctionExecutionDUnitTest extends
     };
     Wait.waitForCriterion(wc, 2000, 500, false);
     Collection bridgeServers = cache.getCacheServers();
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Start Server Bridge Servers list : " + bridgeServers.size());
     Iterator bridgeIterator = bridgeServers.iterator();
     CacheServer bridgeServer = (CacheServer)bridgeIterator.next();
-    LogWriterSupport.getLogWriter().info("start Server Bridge Server" + bridgeServer);
+    LogWriterUtils.getLogWriter().info("start Server Bridge Server" + bridgeServer);
     try {
       bridgeServer.start();
     }

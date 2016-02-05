@@ -27,7 +27,7 @@ import com.gemstone.gemfire.internal.cache.wan.BatchException70;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 public class SerialWANPropogationDUnitTest extends WANTestBase {
@@ -333,7 +333,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     
     Integer regionSize = 
       (Integer) vm2.invoke(WANTestBase.class, "getRegionSize", new Object[] {getTestMethodName() + "_RR" });
-    LogWriterSupport.getLogWriter().info("Region size on remote is: " + regionSize);
+    LogWriterUtils.getLogWriter().info("Region size on remote is: " + regionSize);
     
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1310,7 +1310,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm7.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
 
-    LogWriterSupport.getLogWriter().info("Started receivers on remote site");
+    LogWriterUtils.getLogWriter().info("Started receivers on remote site");
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1332,7 +1332,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    LogWriterSupport.getLogWriter().info("Started senders on local site");
+    LogWriterUtils.getLogWriter().info("Started senders on local site");
 
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", "ln", isOffHeap()  });
@@ -1341,7 +1341,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
 
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { getTestMethodName() + "_RR", 10000 });
-    LogWriterSupport.getLogWriter().info("Started async puts on local site");
+    LogWriterUtils.getLogWriter().info("Started async puts on local site");
     Wait.pause(1000);
 
     Map oldConnectionInfo = (Map)vm4.invoke(WANTestBase.class,
@@ -1349,11 +1349,11 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     assertNotNull(oldConnectionInfo);
     String oldServerHost = (String)oldConnectionInfo.get("serverHost");
     int oldServerPort = (Integer)oldConnectionInfo.get("serverPort");
-    LogWriterSupport.getLogWriter().info("Got sender to receiver connection information");
+    LogWriterUtils.getLogWriter().info("Got sender to receiver connection information");
 
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     inv2.join();
-    LogWriterSupport.getLogWriter().info("Killed primary sender on local site");
+    LogWriterUtils.getLogWriter().info("Killed primary sender on local site");
     Wait.pause(5000);// give some time for vm5 to take primary charge
 
     Map newConnectionInfo = (Map)vm5.invoke(WANTestBase.class,
@@ -1361,11 +1361,11 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     assertNotNull(newConnectionInfo);
     String newServerHost = (String)newConnectionInfo.get("serverHost");
     int newServerPort = (Integer)newConnectionInfo.get("serverPort");
-    LogWriterSupport.getLogWriter().info("Got new sender to receiver connection information");
+    LogWriterUtils.getLogWriter().info("Got new sender to receiver connection information");
     assertEquals(oldServerHost, newServerHost);
     assertEquals(oldServerPort, newServerPort);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "Matched the new connection info with old connection info. Receiver affinity verified.");
 
@@ -1400,7 +1400,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     vm6.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     vm7.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
 
-    LogWriterSupport.getLogWriter().info("Started receivers on remote site");
+    LogWriterUtils.getLogWriter().info("Started receivers on remote site");
 
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
@@ -1422,7 +1422,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm5.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
 
-    LogWriterSupport.getLogWriter().info("Started senders on local site");
+    LogWriterUtils.getLogWriter().info("Started senders on local site");
 
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", "ln", isOffHeap()  });
@@ -1431,7 +1431,7 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
 
     AsyncInvocation inv1 = vm5.invokeAsync(WANTestBase.class, "doPuts",
         new Object[] { getTestMethodName() + "_RR", 10000 });
-    LogWriterSupport.getLogWriter().info("Started async puts on local site");
+    LogWriterUtils.getLogWriter().info("Started async puts on local site");
     Wait.pause(1000);
 
     Map oldConnectionInfo = (Map)vm4.invoke(WANTestBase.class,
@@ -1439,36 +1439,36 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     assertNotNull(oldConnectionInfo);
     String oldServerHost = (String)oldConnectionInfo.get("serverHost");
     int oldServerPort = (Integer)oldConnectionInfo.get("serverPort");
-    LogWriterSupport.getLogWriter().info("Got sender to receiver connection information");
+    LogWriterUtils.getLogWriter().info("Got sender to receiver connection information");
 
     // ---------------------------- KILL vm4
     // --------------------------------------
     AsyncInvocation inv2 = vm4.invokeAsync(WANTestBase.class, "killSender");
     inv2.join();
-    LogWriterSupport.getLogWriter().info("Killed vm4 (primary sender) on local site");
+    LogWriterUtils.getLogWriter().info("Killed vm4 (primary sender) on local site");
     // -----------------------------------------------------------------------------
 
     vm5.invoke(WANTestBase.class, "waitForSenderToBecomePrimary",
         new Object[] { "ln" });
-    LogWriterSupport.getLogWriter().info("vm5 sender has now acquired primary status");
+    LogWriterUtils.getLogWriter().info("vm5 sender has now acquired primary status");
     Wait.pause(5000);// give time to process unprocessedEventsMap
 
     // ---------------------------REBUILD vm4
     // --------------------------------------
-    LogWriterSupport.getLogWriter().info("Rebuilding vm4....");
+    LogWriterUtils.getLogWriter().info("Rebuilding vm4....");
     vm4.invoke(WANTestBase.class, "createCache", new Object[] { lnPort });
     vm4.invoke(WANTestBase.class, "createSender", new Object[] { "ln", 2,
         false, 100, 10, false, false, null, true });
     vm4.invoke(WANTestBase.class, "startSender", new Object[] { "ln" });
     vm4.invoke(WANTestBase.class, "createReplicatedRegion", new Object[] {
         getTestMethodName() + "_RR", "ln", isOffHeap()  });
-    LogWriterSupport.getLogWriter().info("Rebuilt vm4");
+    LogWriterUtils.getLogWriter().info("Rebuilt vm4");
     // -----------------------------------------------------------------------------
 
     // --------------------------- KILL vm5
     // ----------------------------------------
     inv1.join();// once the puts are done, kill vm5
-    LogWriterSupport.getLogWriter().info("puts in vm5 are done");
+    LogWriterUtils.getLogWriter().info("puts in vm5 are done");
 
     inv2 = vm5.invokeAsync(WANTestBase.class, "killSender");
     inv2.join();
@@ -1481,10 +1481,10 @@ public class SerialWANPropogationDUnitTest extends WANTestBase {
     assertNotNull(newConnectionInfo);
     String newServerHost = (String)newConnectionInfo.get("serverHost");
     int newServerPort = (Integer)newConnectionInfo.get("serverPort");
-    LogWriterSupport.getLogWriter().info("Got new sender to receiver connection information");
+    LogWriterUtils.getLogWriter().info("Got new sender to receiver connection information");
     assertEquals(oldServerHost, newServerHost);
     assertEquals(oldServerPort, newServerPort);
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "Matched the new connection info with old connection info. Receiver affinity verified.");
 

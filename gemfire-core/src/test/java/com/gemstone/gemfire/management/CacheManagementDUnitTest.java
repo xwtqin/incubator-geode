@@ -46,7 +46,7 @@ import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.NotificationHub.NotificationHubListener;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -144,7 +144,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
       String log = (String) vm.invoke(CacheManagementDUnitTest.class,
           "fetchLog");
       assertNotNull(log);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> Log Of Member is " + log.toString()
               + "</ExpectedString> ");
 
@@ -660,7 +660,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
         .getMemberMXBean();
     JVMMetrics metrics = bean.showJVMMetrics();
 
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "<ExpectedString> JVMMetrics is " + metrics.toString()
             + "</ExpectedString> ");
 
@@ -671,7 +671,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
         .getMemberMXBean();
     OSMetrics metrics = bean.showOSMetrics();
 
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "<ExpectedString> OSMetrics is " + metrics.toString()
             + "</ExpectedString> ");
 
@@ -712,14 +712,14 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
       MemberMXBean bean = MBeanUtil.getMemberMbeanProxy(member);
       JVMMetrics metrics = bean.showJVMMetrics();
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> JVMMetrics is " + metrics.toString()
               + "</ExpectedString> ");
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> OSMetrics is " + metrics.toString()
               + "</ExpectedString> ");
       
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> Boolean Data Check " +bean.isManager()
               + "</ExpectedString> ");
       

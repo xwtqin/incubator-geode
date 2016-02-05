@@ -27,7 +27,7 @@ import security.CredentialGenerator;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 
 /**
  * Tests for authorization from client to server. This tests for authorization
@@ -127,10 +127,10 @@ public class ClientPostAuthorizationDUnitTest extends
       String accessor = gen.getAuthorizationCallback();
       TestAuthzCredentialGenerator tgen = new TestAuthzCredentialGenerator(gen);
 
-      LogWriterSupport.getLogWriter().info("testAllPostOps: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info("testAllPostOps: Using authinit: " + authInit);
+      LogWriterUtils.getLogWriter().info(
           "testAllPostOps: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info("testAllPostOps: Using accessor: " + accessor);
+      LogWriterUtils.getLogWriter().info("testAllPostOps: Using accessor: " + accessor);
 
       // Start servers with all required properties
       Properties serverProps = buildProperties(authenticator, accessor, true,
@@ -316,7 +316,7 @@ public class ClientPostAuthorizationDUnitTest extends
         OperationWithAction.OPBLOCK_NO_FAILOVER };
 
       AuthzCredentialGenerator gen = getXmlAuthzGenerator();
-      LogWriterSupport.getLogWriter().info("Executing opblocks with credential generator " + gen);
+      LogWriterUtils.getLogWriter().info("Executing opblocks with credential generator " + gen);
       CredentialGenerator cGen = gen.getCredentialGenerator();
       Properties extraAuthProps = cGen.getSystemProperties();
       Properties javaProps = cGen.getJavaProperties();
@@ -326,11 +326,11 @@ public class ClientPostAuthorizationDUnitTest extends
       String accessor = gen.getAuthorizationCallback();
       TestAuthzCredentialGenerator tgen = new TestAuthzCredentialGenerator(gen);
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using accessor: " + accessor);
 
       // Start servers with all required properties

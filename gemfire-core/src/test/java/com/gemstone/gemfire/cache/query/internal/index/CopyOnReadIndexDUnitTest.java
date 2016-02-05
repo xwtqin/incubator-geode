@@ -43,10 +43,10 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -613,7 +613,7 @@ public class CopyOnReadIndexDUnitTest extends CacheTestCase {
         getSystem(props);
         
         final ClientCacheFactory ccf = new ClientCacheFactory(props);
-        ccf.addPoolServer(NetworkSupport.getServerHostName(server.getHost()), port);
+        ccf.addPoolServer(NetworkUtils.getServerHostName(server.getHost()), port);
         ccf.setPoolSubscriptionEnabled(true);
         
         ClientCache cache = (ClientCache)getClientCache(ccf);
@@ -630,7 +630,7 @@ public class CopyOnReadIndexDUnitTest extends CacheTestCase {
 
   protected Properties getServerProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     return p;
   }
 

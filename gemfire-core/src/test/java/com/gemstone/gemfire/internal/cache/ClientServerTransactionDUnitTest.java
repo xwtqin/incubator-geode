@@ -67,7 +67,7 @@ import com.gemstone.gemfire.internal.cache.execute.util.RollbackFunction;
 import com.gemstone.gemfire.internal.cache.tx.ClientTXStateStub;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -171,7 +171,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         // these settings were used to manually check that tx operation stats were being updated
         //ccf.set(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
         //ccf.set(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, "clientStats.gfs");
@@ -231,7 +231,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
     ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
     ccf.setPoolSubscriptionEnabled(false);
 
-    ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+    ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
 
     ClientCache cCache = getClientCache(ccf);
     
@@ -302,7 +302,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
     ClientCacheFactory ccf = new ClientCacheFactory();
     ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
     ccf.setPoolSubscriptionEnabled(false);
-    ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+    ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
     ClientCache cCache = getClientCache(ccf);
     ClientRegionFactory<CustId, Customer> custrf = cCache
       .createClientRegionFactory(cachingProxy ? ClientRegionShortcut.CACHING_PROXY : ClientRegionShortcut.PROXY);
@@ -344,7 +344,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
           Wait.waitForCriterion(new WaitCriterion() {
             public boolean done() {
               Set states = txmgr.getTransactionsForClient((InternalDistributedMember)myId);
-              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("found " + states.size() + " tx states for " + myId);
+              com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("found " + states.size() + " tx states for " + myId);
               return states.isEmpty();
             }
             public String description() {
@@ -401,17 +401,17 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         assertEquals(initSize, pr.size());
         assertEquals(initSize, r.size());
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Looking up transaction manager");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Looking up transaction manager");
         TXManagerImpl mgr = (TXManagerImpl) getCache().getCacheTransactionManager();
         Context ctx = getCache().getJNDIContext();
         UserTransaction utx = (UserTransaction)ctx.lookup("java:/UserTransaction");
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("starting transaction");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("starting transaction");
         if (useJTA) {
           utx.begin();
         } else {
           mgr.begin();
         }
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("done starting transaction");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("done starting transaction");
         for (int i = 0; i < MAX_ENTRIES; i++) {
           CustId custId = new CustId(i);
           Customer cust = new Customer("name"+suffix+i, "address"+suffix+i);
@@ -423,10 +423,10 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
           Customer cust = new Customer("name"+suffix+i, "address"+suffix+i);
           assertEquals(cust, r.get(custId));
           assertEquals(cust, pr.get(custId));
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("SWAP:get:"+r.get(custId));
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("SWAP:get:"+pr.get(custId));
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("SWAP:get:"+r.get(custId));
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("SWAP:get:"+pr.get(custId));
         }
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("suspending transaction");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("suspending transaction");
         if (!useJTA) {
           TXStateProxy tx = mgr.internalSuspend();
           if (prePopulateData) {
@@ -441,7 +441,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
             assertNull(r.get(new CustId(i)));
             assertNull(pr.get(new CustId(i)));
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("resuming transaction");
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("resuming transaction");
           mgr.resume(tx);
         }
         assertEquals(
@@ -450,13 +450,13 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         assertEquals(
             "pr sized should be " + MAX_ENTRIES + " but it is:" + pr.size(),
             MAX_ENTRIES, pr.size());
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("committing transaction");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("committing transaction");
         if (useJTA) {
           utx.commit();
         } else {
           getCache().getCacheTransactionManager().commit();
         }
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("done committing transaction");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("done committing transaction");
         assertEquals(
             "r sized should be " + MAX_ENTRIES + " but it is:" + r.size(),
             MAX_ENTRIES, r.size());
@@ -686,7 +686,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         Order order = (orderRegion.getAll(keys)).get(orderId);
         assertNotNull(order);
         mgr.rollback();
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("entry for " + orderId + " = " + orderRegion.getEntry(orderId));
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("entry for " + orderId + " = " + orderRegion.getEntry(orderId));
         assertNull(orderRegion.getEntry(orderId));
         return null;
       }
@@ -1337,7 +1337,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ClientCacheFactory ccf = new ClientCacheFactory();
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.PROXY);
@@ -1433,7 +1433,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost", port2);
         ccf.setPoolLoadConditioningInterval(1);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.PROXY);
@@ -1550,7 +1550,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         if (port2 != 0) ccf.addPoolServer("localhost", port2);
         if (port3 != 0) ccf.addPoolServer("localhost", port3);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(cachingProxy ? ClientRegionShortcut.CACHING_PROXY : ClientRegionShortcut.PROXY);
@@ -2062,7 +2062,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost", port2);
         ccf.setPoolSubscriptionEnabled(false);
         ccf.setPoolLoadConditioningInterval(1);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.PROXY);
@@ -2455,7 +2455,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.setPoolMinConnections(5);
         ccf.setPoolLoadConditioningInterval(-1);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         Region r1 = cCache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).create("r1");
         Region r2 = cCache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).create("r2");
@@ -2688,7 +2688,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
           ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port);
           ccf.addPoolServer("localhost", port2);
           ccf.setPoolSubscriptionEnabled(false);
-          ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+          ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
           // these settings were used to manually check that tx operation stats were being updated
           //ccf.set(DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "true");
           //ccf.set(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, "clientStats.gfs");
@@ -2702,7 +2702,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
               );
 
           Region cust = getCache().getRegion(CUSTOMER);
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().fine("SWAP:doing first get from client");
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().fine("SWAP:doing first get from client");
           assertNull(cust.get(new CustId(0)));
           assertNull(cust.get(new CustId(1)));
           ArrayList args = new ArrayList();
@@ -2990,7 +2990,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
         if (port2 != 0) ccf.addPoolServer("localhost", port2);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
@@ -3124,7 +3124,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost", port2);
         ccf.setPoolMinConnections(0);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
@@ -3212,7 +3212,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
         ccf.setPoolMinConnections(0);
         ccf.setPoolSubscriptionEnabled(false);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         ClientRegionFactory<CustId, Customer> custrf = cCache
             .createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY);
@@ -3302,7 +3302,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.setPoolMinConnections(0);
         ccf.setPoolSubscriptionEnabled(true);
         ccf.setPoolSubscriptionRedundancy(0);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         Region r = cCache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).addCacheListener(new ClientListener()).create(regionName);
         r.registerInterestRegex(".*");
@@ -3318,7 +3318,7 @@ public void testClientCommitAndDataStoreGetsEvent() throws Exception {
         ccf.addPoolServer("localhost"/*getServerHostName(Host.getHost(0))*/, port1);
         ccf.setPoolMinConnections(0);
         ccf.setPoolSubscriptionEnabled(true);
-        ccf.set("log-level", LogWriterSupport.getDUnitLogLevel());
+        ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
         ClientCache cCache = getClientCache(ccf);
         Region r = cCache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY).create(regionName);
         getCache().getCacheTransactionManager().begin();

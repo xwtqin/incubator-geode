@@ -26,8 +26,8 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -63,7 +63,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     final VM vm = Host.getHost(0).getVM(whichVM);
     vm.invoke(new CacheSerializableRunnable("Create bridge server") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("[testBug35381] Create BridgeServer");
+        LogWriterUtils.getLogWriter().info("[testBug35381] Create BridgeServer");
         getSystem();
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -76,21 +76,21 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
           bridgeServerPort = startBridgeServer(0);
         }
         catch (IOException e) {
-          LogWriterSupport.getLogWriter().error("startBridgeServer threw IOException", e);
+          LogWriterUtils.getLogWriter().error("startBridgeServer threw IOException", e);
           fail("startBridgeServer threw IOException " + e.getMessage());
         }
         
         assertTrue(bridgeServerPort != 0);
     
-        LogWriterSupport.getLogWriter().info("[testBug35381] port=" + bridgeServerPort);
-        LogWriterSupport.getLogWriter().info("[testBug35381] serverMemberId=" + getMemberId());
+        LogWriterUtils.getLogWriter().info("[testBug35381] port=" + bridgeServerPort);
+        LogWriterUtils.getLogWriter().info("[testBug35381] serverMemberId=" + getMemberId());
       }
     });
     ports[whichVM] = vm.invokeInt(ClientRegisterInterestDUnitTest.class, 
                                   "getBridgeServerPort");
     assertTrue(ports[whichVM] != 0);
     
-    LogWriterSupport.getLogWriter().info("[testBug35381] create bridge client");
+    LogWriterUtils.getLogWriter().info("[testBug35381] create bridge client");
     Properties config = new Properties();
     config.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     config.setProperty(DistributionConfig.LOCATORS_NAME, "");
@@ -100,9 +100,9 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.LOCAL);
 
-    LogWriterSupport.getLogWriter().info("[testBug35381] creating connection pool");
+    LogWriterUtils.getLogWriter().info("[testBug35381] creating connection pool");
     boolean establishCallbackConnection = false; // SOURCE OF BUG 35381
-    ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
+    ClientServerTestCase.configureConnectionPool(factory, NetworkUtils.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
     Region region = createRegion(name, factory.create());
     assertNotNull(getRootRegion().getSubregion(name));
     try {
@@ -148,7 +148,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     final VM firstServerVM = Host.getHost(0).getVM(firstServerIdx);
     firstServerVM.invoke(new CacheSerializableRunnable("Create first bridge server") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] Create first bridge server");
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] Create first bridge server");
         getSystem();
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -163,15 +163,15 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
           bridgeServerPort = startBridgeServer(0);
         }
         catch (IOException e) {
-          LogWriterSupport.getLogWriter().error("startBridgeServer threw IOException", e);
+          LogWriterUtils.getLogWriter().error("startBridgeServer threw IOException", e);
           fail("startBridgeServer threw IOException " + e.getMessage());
         }
         
         assertTrue(bridgeServerPort != 0);
     
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] " +
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] " +
           "firstServer port=" + bridgeServerPort);
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] " +
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] " +
           "firstServer memberId=" + getMemberId());
       }
     });
@@ -181,7 +181,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     final VM secondServerVM = Host.getHost(0).getVM(secondServerIdx);
     secondServerVM.invoke(new CacheSerializableRunnable("Create second bridge server") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] Create second bridge server");
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] Create second bridge server");
         getSystem();
         AttributesFactory factory = new AttributesFactory();
         factory.setScope(Scope.LOCAL);
@@ -194,15 +194,15 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
           bridgeServerPort = startBridgeServer(0);
         }
         catch (IOException e) {
-          LogWriterSupport.getLogWriter().error("startBridgeServer threw IOException", e);
+          LogWriterUtils.getLogWriter().error("startBridgeServer threw IOException", e);
           fail("startBridgeServer threw IOException " + e.getMessage());
         }
         
         assertTrue(bridgeServerPort != 0);
     
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] " +
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] " +
           "secondServer port=" + bridgeServerPort);
-        LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] " +
+        LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] " +
           "secondServer memberId=" + getMemberId());
       }
     });
@@ -224,7 +224,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     });
     
     // create the bridge client
-    LogWriterSupport.getLogWriter().info("[testBug35654] create bridge client");
+    LogWriterUtils.getLogWriter().info("[testBug35654] create bridge client");
     Properties config = new Properties();
     config.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     config.setProperty(DistributionConfig.LOCATORS_NAME, "");
@@ -234,9 +234,9 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.LOCAL);
 
-    LogWriterSupport.getLogWriter().info("[testRegisterInterestFailover] creating connection pool");
+    LogWriterUtils.getLogWriter().info("[testRegisterInterestFailover] creating connection pool");
     boolean establishCallbackConnection = true;
-    final PoolImpl p = (PoolImpl)ClientServerTestCase.configureConnectionPool(factory, NetworkSupport.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
+    final PoolImpl p = (PoolImpl)ClientServerTestCase.configureConnectionPool(factory, NetworkUtils.getServerHostName(host), ports, establishCallbackConnection, -1, -1, null);
 
     final Region region1 = createRootRegion(regionName1, factory.create());
     final Region region2 = createRootRegion(regionName2, factory.create());
@@ -311,7 +311,7 @@ public class ClientRegisterInterestDUnitTest extends ClientServerTestCase {
           startBridgeServer(ports[secondServerIdx]);
         }
         catch (IOException e) {
-          LogWriterSupport.getLogWriter().error("startBridgeServer threw IOException", e);
+          LogWriterUtils.getLogWriter().error("startBridgeServer threw IOException", e);
           fail("startBridgeServer threw IOException " + e.getMessage());
         }
       }

@@ -48,7 +48,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -128,9 +128,9 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     PORT2 =  ((Integer)server2.invoke(getClass(), "createServerCache" )).intValue();
 
     client1.invoke(getClass(), "createClientCache", new Object[] {
-      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     client2.invoke(getClass(), "createClientCache", new Object[] {
-      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     
     IgnoredException.addIgnoredException("java.net.SocketException");
     IgnoredException.addIgnoredException("Unexpected IOException");
@@ -257,7 +257,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     // Client1 should not receive updated value while client2 should receive
     client1.invoke(impl.getClass(),
         "acquireConnectionsAndPutonK1andK2",
-        new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
+        new Object[] { NetworkUtils.getServerHostName(client1.getHost())});
     //pause(5000);
     //Check if both the puts ( on key1 & key2 ) have reached the servers
     server1.invoke(impl.getClass(), "verifyUpdates");
@@ -383,7 +383,7 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     // Client1 should not receive updated value while client2 should receive
     client1.invoke(impl.getClass(),
         "acquireConnectionsAndPutonK1andK2",
-        new Object[] { NetworkSupport.getServerHostName(client1.getHost())});
+        new Object[] { NetworkUtils.getServerHostName(client1.getHost())});
     Wait.pause(5000);
     //Check if both the puts ( on key1 & key2 ) have reached the servers
     server1.invoke(impl.getClass(), "verifyUpdates");

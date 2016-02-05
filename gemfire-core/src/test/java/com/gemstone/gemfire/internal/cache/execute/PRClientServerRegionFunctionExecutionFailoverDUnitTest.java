@@ -46,13 +46,13 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
@@ -116,7 +116,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    Threads.join(async[0], 6 * 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 6 * 60 * 1000);
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -156,7 +156,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "verifyDeadAndLiveServers", new Object[] { new Integer(1),
             new Integer(2) });
-    Threads.join(async[0], 5 * 60 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(async[0], 5 * 60 * 1000);
     if (async[0].getException() != null) {
       Assert.fail("UnExpected Exception Occured : ", async[0].getException());
     }
@@ -194,7 +194,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_HA_REGION);
@@ -225,7 +225,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_HA_REGION);
@@ -257,7 +257,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()) });
 
     Function function = new TestFunction(true,
         TestFunction.TEST_FUNCTION_NONHA_REGION);
@@ -290,7 +290,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     client.invoke(PRClientServerRegionFunctionExecutionDUnitTest.class,
         "createProxyRegion",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()) });
 
     //Make sure the buckets are created.
     client.invoke(new SerializableRunnable() {
@@ -355,7 +355,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     final int portLocator = AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
+    final String hostLocator = NetworkUtils.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
 
     startLocatorInVM(portLocator);
@@ -413,7 +413,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
 
     final int portLocator = AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET);
-    final String hostLocator = NetworkSupport.getServerHostName(server1.getHost());
+    final String hostLocator = NetworkUtils.getServerHostName(server1.getHost());
     final String locator = hostLocator + "[" + portLocator + "]";
 
     startLocatorInVM(portLocator);
@@ -460,7 +460,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     File logFile = new File("locator-" + locatorPort + ".log");
 
     Properties props = new Properties();
-    props = DistributedTestSupport.getAllDistributedSystemProperties(props);
+    props = DistributedTestUtils.getAllDistributedSystemProperties(props);
     props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     
     try {
@@ -505,7 +505,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     attr.setPartitionAttributes(paf.create());
     region = cache.createRegion(regionName, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + regionName + " created Successfully :"
             + region.toString());
     return port;
@@ -538,7 +538,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(regionName, attrs);
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region " + regionName + " created Successfully :"
             + region.toString());
   }
@@ -547,7 +547,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     for(int i = 0 ; i < 113; i++){
       region.put(i, "KB_"+i);
     }
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region " + regionName + " Have size :"
             + region.size());
   }
@@ -556,7 +556,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
     Execution execute = FunctionService.onRegion(region);
     ResultCollector rc = execute.withArgs(Boolean.TRUE).execute(
         new TestFunction(true, TestFunction.TEST_FUNCTION_LASTRESULT));
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Exeuction Result :"
             + rc.getResult());
     List l = ((List)rc.getResult());
@@ -564,7 +564,7 @@ public class PRClientServerRegionFunctionExecutionFailoverDUnitTest extends
   }
   
   public static void checkSize(){
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + regionName + " Have size :"
             + region.size());
   }

@@ -43,7 +43,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -216,7 +216,7 @@ public class ColocationFailoverDUnitTest extends DistributedTestCase {
 
   
   protected static void dump() {
-    final InternalLogWriter logger = LogWriterSupport.getLogWriter();
+    final InternalLogWriter logger = LogWriterUtils.getLogWriter();
     ((PartitionedRegion)customerPR).dumpAllBuckets(false);
     ((PartitionedRegion)orderPR).dumpAllBuckets(false);
     ((PartitionedRegion)shipmentPR).dumpAllBuckets(false);
@@ -431,7 +431,7 @@ public class ColocationFailoverDUnitTest extends DistributedTestCase {
     if (partitionedRegionName.equals(customerPR_Name)) {
       customerPR = cache.createRegion(partitionedRegionName, attr.create());
       assertNotNull(customerPR);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region " + partitionedRegionName
               + " created Successfully :" + customerPR);
 
@@ -439,7 +439,7 @@ public class ColocationFailoverDUnitTest extends DistributedTestCase {
     if (partitionedRegionName.equals(orderPR_Name)) {
       orderPR = cache.createRegion(partitionedRegionName, attr.create());
       assertNotNull(orderPR);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region " + partitionedRegionName
               + " created Successfully :" + orderPR);
 
@@ -448,7 +448,7 @@ public class ColocationFailoverDUnitTest extends DistributedTestCase {
     if (partitionedRegionName.equals(shipmentPR_Name)) {
       shipmentPR = cache.createRegion(partitionedRegionName, attr.create());
       assertNotNull(shipmentPR);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Partitioned Region " + partitionedRegionName
               + " created Successfully :" + shipmentPR);
 

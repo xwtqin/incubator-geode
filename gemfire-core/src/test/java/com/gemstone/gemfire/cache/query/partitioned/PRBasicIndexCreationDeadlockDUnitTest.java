@@ -32,7 +32,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -186,7 +186,7 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
       });  
 
       for (AsyncInvocation async: asyns) {
-        Threads.join(async, 10000, null);
+        ThreadUtils.join(async, 10000);
       }
     } finally {
       

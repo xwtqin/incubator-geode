@@ -41,9 +41,8 @@ import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -215,8 +214,8 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         
         AsyncInvocation as1 = vm0.invokeAsync(ClearMultiVmDUnitTest.class, "firstVM");
         AsyncInvocation as2 = vm1.invokeAsync(ClearMultiVmDUnitTest.class, "secondVM");
-        Threads.join(as1, 30 * 1000, LogWriterSupport.getLogWriter());
-        Threads.join(as2, 30 * 1000, LogWriterSupport.getLogWriter());
+        ThreadUtils.join(as1, 30 * 1000);
+        ThreadUtils.join(as2, 30 * 1000);
         
         if(as1.exceptionOccurred()){
           Assert.fail("as1 failed", as1.getException());
@@ -331,7 +330,7 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
             }
         });
         
-        Threads.join(async1, 30 * 1000, LogWriterSupport.getLogWriter());
+        ThreadUtils.join(async1, 30 * 1000);
         if(async1.exceptionOccurred()){
           Assert.fail("async1 failed", async1.getException());
         }

@@ -79,7 +79,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -449,7 +449,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     else {
       persistentDirectory = new File(diskStoreName);
     }
-    LogWriterSupport.getLogWriter().info("The ds is : " + persistentDirectory.getName());
+    LogWriterUtils.getLogWriter().info("The ds is : " + persistentDirectory.getName());
     persistentDirectory.mkdir();
     DiskStoreFactory dsf = cache.createDiskStoreFactory();
     File[] dirs1 = new File[] { persistentDirectory };
@@ -1022,12 +1022,12 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     try {
       RebalanceResults simulateResults = null;
       if (!heapEviction) {
-        LogWriterSupport.getLogWriter().info("Calling rebalance simulate");
+        LogWriterUtils.getLogWriter().info("Calling rebalance simulate");
         RebalanceOperation simulateOp = factory.simulate();
         simulateResults = simulateOp.getResults();
       }
 
-      LogWriterSupport.getLogWriter().info("Starting rebalancing");
+      LogWriterUtils.getLogWriter().info("Starting rebalancing");
       RebalanceOperation rebalanceOp = factory.start();
       RebalanceResults rebalanceResults = rebalanceOp.getResults();
 
@@ -1406,7 +1406,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     for (int bucketId : bucketIds) {
       List<GatewaySenderEventImpl> eventsForBucket = bucketToEventsMap
           .get(bucketId);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Events for bucket: " + bucketId + " is " + eventsForBucket);
       assertNotNull(eventsForBucket);
       for (int i = 0; i < batchSize; i++) {
@@ -1428,7 +1428,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
     final Map eventsMap = ((MyAsyncEventListener)theListener).getEventsMap();
     assertNotNull(eventsMap);
-    LogWriterSupport.getLogWriter().info("The events map size is " + eventsMap.size());
+    LogWriterUtils.getLogWriter().info("The events map size is " + eventsMap.size());
     return eventsMap.size();
   }
 
@@ -1488,7 +1488,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
         }
       }
       if (sender.isPrimary()) {
-        LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
+        LogWriterUtils.getLogWriter().info("Gateway sender is killed by a test");
         cache.getDistributedSystem().disconnect();
         return Boolean.TRUE;
       }
@@ -1511,7 +1511,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
       }
     }
     if (queue.isPrimary()) {
-      LogWriterSupport.getLogWriter().info("AsyncEventQueue is killed by a test");
+      LogWriterUtils.getLogWriter().info("AsyncEventQueue is killed by a test");
       cache.getDistributedSystem().disconnect();
       return Boolean.TRUE;
     }
@@ -1519,10 +1519,10 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   public static void killSender() {
-    LogWriterSupport.getLogWriter().info("Gateway sender is going to be killed by a test");
+    LogWriterUtils.getLogWriter().info("Gateway sender is going to be killed by a test");
     cache.close();
     cache.getDistributedSystem().disconnect();
-    LogWriterSupport.getLogWriter().info("Gateway sender is killed by a test");
+    LogWriterUtils.getLogWriter().info("Gateway sender is killed by a test");
   }
 
   public static class MyLocatorCallback extends LocatorDiscoveryCallbackAdapter {

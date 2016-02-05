@@ -58,8 +58,8 @@ import com.gemstone.gemfire.internal.cache.versions.VMVersionTag;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -282,7 +282,7 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     final VM vm2 = host.getVM(2);
     final VM vm3 = host.getVM(3);
     
-    LogWriterSupport.getLogWriter().info("creating region in vm0");
+    LogWriterUtils.getLogWriter().info("creating region in vm0");
     createRegionInPeer(vm0, RegionShortcut.PARTITION_REDUNDANT_PERSISTENT);
     
     vm0.invoke(new SerializableRunnable() {
@@ -294,11 +294,11 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
       }
     });
     
-    LogWriterSupport.getLogWriter().info("creating region in vm1");
+    LogWriterUtils.getLogWriter().info("creating region in vm1");
     createRegionInPeer(vm1, RegionShortcut.PARTITION_REDUNDANT_PERSISTENT);
-    LogWriterSupport.getLogWriter().info("creating region in vm2");
+    LogWriterUtils.getLogWriter().info("creating region in vm2");
     createRegionInPeer(vm2, RegionShortcut.PARTITION_REDUNDANT_PERSISTENT);    
-    LogWriterSupport.getLogWriter().info("creating region in vm3");
+    LogWriterUtils.getLogWriter().info("creating region in vm3");
     createRegionInPeer(vm3, RegionShortcut.PARTITION_PROXY);
     
     expectedExceptions.add(IgnoredException.addIgnoredException("RuntimeException", vm2));
@@ -497,8 +497,8 @@ public class ClientsWithVersioningRetryDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable("create client region in " + vm) {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port1);
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port2);
         cf.setPoolPRSingleHopEnabled(false);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         cf.setPoolReadTimeout(10 * 60 * 1000);

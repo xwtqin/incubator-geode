@@ -59,7 +59,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -2030,8 +2030,8 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           RegionFactory f = getCache().createRegionFactory(getRegionAttributes());
 //          CCRegion = (LocalRegion)f.create(REGION_NAME);
           LocalRegion lr = (LocalRegion)f.create(REGION_NAME);
-          LogWriterSupport.getLogWriter().info("In createDistributedRegion, using hydra.getLogWriter()");
-          LogWriterSupport.getLogWriter().fine("Unfinished Op limit="+InitialImageOperation.MAXIMUM_UNFINISHED_OPERATIONS);
+          LogWriterUtils.getLogWriter().info("In createDistributedRegion, using hydra.getLogWriter()");
+          LogWriterUtils.getLogWriter().fine("Unfinished Op limit="+InitialImageOperation.MAXIMUM_UNFINISHED_OPERATIONS);
         } catch (CacheException ex) {
           Assert.fail("While creating region", ex);
         }
@@ -2099,9 +2099,9 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
   protected void removeSystemPropertiesInVM(VM vm, final String prop) {
     SerializableRunnable change = new SerializableRunnable() {
       public void run() {
-        LogWriterSupport.getLogWriter().info("Current prop setting: "+prop+"="+System.getProperty(prop));
+        LogWriterUtils.getLogWriter().info("Current prop setting: "+prop+"="+System.getProperty(prop));
         System.getProperties().remove(prop);
-        LogWriterSupport.getLogWriter().info(prop+"="+System.getProperty(prop));
+        LogWriterUtils.getLogWriter().info(prop+"="+System.getProperty(prop));
       }
     };
     vm.invoke(change);
@@ -2134,7 +2134,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
     DiskStoreID dsid0 = getMemberID(vm0);
     DiskStoreID dsid1 = getMemberID(vm1);
     int compare = dsid0.compareTo(dsid1);
-    LogWriterSupport.getLogWriter().info("Before assignVMsToPandR, dsid0 is "+dsid0+",dsid1 is "+dsid1+",compare="+compare);
+    LogWriterUtils.getLogWriter().info("Before assignVMsToPandR, dsid0 is "+dsid0+",dsid1 is "+dsid1+",compare="+compare);
     if (compare > 0) {
       P = vm0;
       R = vm1;
@@ -2142,7 +2142,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
       P = vm1;
       R = vm0;
     }
-    LogWriterSupport.getLogWriter().info("After assignVMsToPandR, P is "+P.getPid()+"; R is "+R.getPid()+" for region "+REGION_NAME);
+    LogWriterUtils.getLogWriter().info("After assignVMsToPandR, P is "+P.getPid()+"; R is "+R.getPid()+" for region "+REGION_NAME);
   }
   
   private DiskStoreID getMemberID(VM vm) {
@@ -2196,7 +2196,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           for (long i:exceptionList) {
             exceptionListVerified = !rvv.contains(member, i);
             if (!exceptionListVerified) {
-              LogWriterSupport.getLogWriter().finer("DeltaGII:missing exception "+i+":"+rvv);
+              LogWriterUtils.getLogWriter().finer("DeltaGII:missing exception "+i+":"+rvv);
               break;
             }
           }
@@ -2205,7 +2205,7 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
           for (long i = 1; i<=regionversion; i++) {
             if (!rvv.contains(member, i)) {
               exceptionListVerified = false;
-              LogWriterSupport.getLogWriter().finer("DeltaGII:unexpected exception "+i);
+              LogWriterUtils.getLogWriter().finer("DeltaGII:unexpected exception "+i);
               break;
             }
           }
@@ -2221,8 +2221,8 @@ public class GIIDeltaDUnitTest extends CacheTestCase {
             long gcversion = getRegionVersionForMember(rvv, member, true);
             
             boolean exceptionListVerified = verifyExceptionList(member, regionversion, rvv, exceptionList);
-            LogWriterSupport.getLogWriter().info("DeltaGII:expected:"+expectedRegionVersion+":"+expectedGCVersion);
-            LogWriterSupport.getLogWriter().info("DeltaGII:actual:"+regionversion+":"+gcversion+":"+exceptionListVerified+":"+rvv);
+            LogWriterUtils.getLogWriter().info("DeltaGII:expected:"+expectedRegionVersion+":"+expectedGCVersion);
+            LogWriterUtils.getLogWriter().info("DeltaGII:actual:"+regionversion+":"+gcversion+":"+exceptionListVerified+":"+rvv);
 
             boolean match = true;
             if (expectedRegionVersion != -1) {

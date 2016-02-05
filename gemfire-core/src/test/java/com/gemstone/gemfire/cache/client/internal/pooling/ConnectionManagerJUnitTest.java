@@ -59,7 +59,7 @@ import com.gemstone.gemfire.internal.cache.PoolStats;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ServerQueueStatus;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.LocalLogWriter;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -427,7 +427,7 @@ public class ConnectionManagerJUnitTest {
     }
     
     for(int i = 0; i < updaterCount; i++) {
-      Threads.join(updaters[i], 30 * 1000, null);
+      ThreadUtils.join(updaters[i], 30 * 1000);
     }
 
     if(exception.get() !=null) {
@@ -491,7 +491,7 @@ public class ConnectionManagerJUnitTest {
     }
     
     for(int i = 0; i < updaterCount; i++) {
-      Threads.join(updaters[i], 30 * 1000, null);
+      ThreadUtils.join(updaters[i], 30 * 1000);
     }
 
     if(exception.get() !=null) {

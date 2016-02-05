@@ -35,8 +35,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -161,7 +161,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -216,7 +216,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -261,7 +261,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -320,7 +320,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
     
     final int port = server1.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -377,7 +377,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server1.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -426,7 +426,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server1.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCqResults";
     cqDUnitTest.createPool(client, poolName, host0, port);
@@ -495,7 +495,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     String poolName = "testCqResults";
     final String cqName = "testCqResultsP_0";
@@ -558,7 +558,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -581,7 +581,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
           if (cqQuery.getName().equals(cqName)) {
             int size = cqQuery.getCqResultKeysSize();
             if (size != totalObjects) {
-              LogWriterSupport.getLogWriter().info("The number of Cached events " + size + 
+              LogWriterUtils.getLogWriter().info("The number of Cached events " + size + 
                   " is not equal to the expected size " + totalObjects);
               HashSet expectedKeys = new HashSet();
               for (int i = 1; i < totalObjects; i++) {
@@ -589,7 +589,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
               }
               Set cachedKeys = cqQuery.getCqResultKeyCache();
               expectedKeys.removeAll(cachedKeys);
-              LogWriterSupport.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
+              LogWriterUtils.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
             }
             assertEquals("The number of keys cached for cq " + cqName + " is wrong.", 
                 totalObjects, cqQuery.getCqResultKeysSize());              
@@ -619,7 +619,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
 
     final int port = server.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
 
     String poolName = "testCqResults";
     final String cqName1 = "testCqResultsP_0";
@@ -687,7 +687,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -709,7 +709,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
           ServerCQImpl cqQuery = (ServerCQImpl)cq;
           int size = cqQuery.getCqResultKeysSize();
           if (size != totalObjects) {
-            LogWriterSupport.getLogWriter().info("The number of Cached events " + size + 
+            LogWriterUtils.getLogWriter().info("The number of Cached events " + size + 
                 " is not equal to the expected size " + totalObjects);
             HashSet expectedKeys = new HashSet();
             for (int i = 1; i < totalObjects; i++) {
@@ -717,7 +717,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
             }
             Set cachedKeys = cqQuery.getCqResultKeyCache();
             expectedKeys.removeAll(cachedKeys);
-            LogWriterSupport.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
+            LogWriterUtils.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
           }
           assertEquals("The number of keys cached for cq " + cqQuery.getName() + " is wrong.", 
               totalObjects, cqQuery.getCqResultKeysSize());              
@@ -748,7 +748,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
     
     final int port = server1.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCqResults";
     final String cqName = "testCqResultsP_0";
@@ -811,7 +811,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -861,7 +861,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
     
     final int port = server1.invokeInt(CqQueryUsingPoolDUnitTest.class,
         "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     String poolName = "testCqResults";
     final String cqName = "testCqResultsCachingForDestroyEventsOnPR_0";
@@ -922,7 +922,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -942,7 +942,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -978,7 +978,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
     cqDUnitTest.createServer(server1);
     
     final int port1 = server1.invokeInt(CqQueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(1);
     
     String poolName = "testCQFailOver";
@@ -1039,7 +1039,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -1062,7 +1062,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
           if (cqQuery.getName().equals(cqName)) {
             int size = cqQuery.getCqResultKeysSize();
             if (size != totalObjects) {
-              LogWriterSupport.getLogWriter().info("The number of Cached events " + size + 
+              LogWriterUtils.getLogWriter().info("The number of Cached events " + size + 
                   " is not equal to the expected size " + totalObjects);
               HashSet expectedKeys = new HashSet();
               for (int i = 1; i < totalObjects; i++) {
@@ -1070,7 +1070,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
               }
               Set cachedKeys = cqQuery.getCqResultKeyCache();
               expectedKeys.removeAll(cachedKeys);
-              LogWriterSupport.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
+              LogWriterUtils.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
             }
             assertEquals("The number of keys cached for cq " + cqName + " is wrong.", 
                 totalObjects, cqQuery.getCqResultKeysSize());              
@@ -1096,7 +1096,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         
@@ -1119,7 +1119,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
           if (cqQuery.getName().equals(cqName)) {
             int size = cqQuery.getCqResultKeysSize();
             if (size != totalObjects) {
-              LogWriterSupport.getLogWriter().info("The number of Cached events " + size + 
+              LogWriterUtils.getLogWriter().info("The number of Cached events " + size + 
                   " is not equal to the expected size " + totalObjects);
               HashSet expectedKeys = new HashSet();
               for (int i = 1; i < totalObjects; i++) {
@@ -1127,7 +1127,7 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
               }
               Set cachedKeys = cqQuery.getCqResultKeyCache();
               expectedKeys.removeAll(cachedKeys);
-              LogWriterSupport.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
+              LogWriterUtils.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
             }
             assertEquals("The number of keys cached for cq " + cqName + " is wrong.", 
                 totalObjects, cqQuery.getCqResultKeysSize());              

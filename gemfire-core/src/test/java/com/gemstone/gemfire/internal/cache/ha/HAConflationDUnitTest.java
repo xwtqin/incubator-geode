@@ -39,7 +39,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -114,7 +114,7 @@ public class HAConflationDUnitTest extends CacheTestCase
     server1.invoke(ConflationDUnitTest.class, "setIsSlowStart");
     server1.invoke(HAConflationDUnitTest.class, "makeDispatcherSlow");
     client1.invoke(HAConflationDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(host), new Integer(PORT1), new Boolean(true) });
+        new Object[] { NetworkUtils.getServerHostName(host), new Integer(PORT1), new Boolean(true) });
 
   }
 

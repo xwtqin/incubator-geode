@@ -21,7 +21,7 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -86,7 +86,7 @@ public class TestServerDUnitTest extends ManagementTestBase {
     cqDUnitTest.createServer(server, serverPort);    
     int serverCount = ((Number) managingNode.invoke(TestServerDUnitTest.class,
         "getNumOfServersFromMBean")).intValue();
-    LogWriterSupport.getLogWriter().info("TestServerDUnitTest serverCount =" + serverCount);
+    LogWriterUtils.getLogWriter().info("TestServerDUnitTest serverCount =" + serverCount);
     cqDUnitTest.closeServer(server);
     assertEquals(1, serverCount);
   }

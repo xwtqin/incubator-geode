@@ -26,7 +26,7 @@ import com.gemstone.gemfire.internal.cache.InitialImageOperation;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation.GIITestHook;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation.GIITestHookType;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -157,7 +157,7 @@ public class ConcurrentLeaveDuringGIIDUnitTest extends CacheTestCase {
         // ensure that the RVV has recorded the event
         DistributedRegion r = (DistributedRegion)getCache().getRegion(regionName);
         if (!r.getVersionVector().contains(Xid, 1)) {
-          LogWriterSupport.getLogWriter().info("r's version vector is " + r.getVersionVector().fullToString());
+          LogWriterUtils.getLogWriter().info("r's version vector is " + r.getVersionVector().fullToString());
           ((LocalRegion)r).dumpBackingMap();
         }
         assertTrue(r.containsKey("keyFromX"));

@@ -36,7 +36,7 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -174,25 +174,25 @@ public class DistributedNoAckRegionCCEDUnitTest extends
         if (event.isOriginRemote()) {
           synchronized(this) {
             while (ListenerBlocking) {
-              LogWriterSupport.getLogWriter().info("blocking cache operations for " + event.getDistributedMember());
+              LogWriterUtils.getLogWriter().info("blocking cache operations for " + event.getDistributedMember());
               blocked = true;
               try {
                 wait();
               } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                LogWriterSupport.getLogWriter().info("blocking cache listener interrupted");
+                LogWriterUtils.getLogWriter().info("blocking cache listener interrupted");
                 return;
               }
             }
           }
           if (blocked) {
-            LogWriterSupport.getLogWriter().info("allowing cache operations for " + event.getDistributedMember());
+            LogWriterUtils.getLogWriter().info("allowing cache operations for " + event.getDistributedMember());
           }
         }
       }
       @Override
       public void close() {
-        LogWriterSupport.getLogWriter().info("closing blocking listener");
+        LogWriterUtils.getLogWriter().info("closing blocking listener");
         ListenerBlocking = false;
         synchronized(this) {
           notifyAll();

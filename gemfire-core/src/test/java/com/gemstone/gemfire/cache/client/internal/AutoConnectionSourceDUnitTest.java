@@ -38,7 +38,7 @@ import com.gemstone.gemfire.management.membership.ClientMembershipEvent;
 import com.gemstone.gemfire.management.membership.ClientMembershipListenerAdapter;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -74,11 +74,11 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     startLocatorInVM(vm0, locatorPort, "");
     
-    String locators = NetworkSupport.getServerHostName(vm0.getHost())+ "[" + locatorPort + "]";
+    String locators = NetworkUtils.getServerHostName(vm0.getHost())+ "[" + locatorPort + "]";
     
     startBridgeServerInVM(vm1, null, locators);
 
-    startBridgeClientInVM(vm2, null, NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+    startBridgeClientInVM(vm2, null, NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
 
     putAndWaitForSuccess(vm2, REGION_NAME, "key", "value");
     
@@ -91,7 +91,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     VM vm0 = host.getVM(0);
     
     try {
-      startBridgeClientInVM(vm0, null, NetworkSupport.getServerHostName(vm0.getHost()), AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
+      startBridgeClientInVM(vm0, null, NetworkUtils.getServerHostName(vm0.getHost()), AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
       putInVM(vm0, "key", "value");
       fail("Client cache should not have been able to start");
     } catch(Exception e) {
@@ -107,7 +107,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     startLocatorInVM(vm0, locatorPort, "");
     try { 
-      startBridgeClientInVM(vm1, null, NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+      startBridgeClientInVM(vm1, null, NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
       putInVM(vm0, "key", "value");
       fail("Client cache should not have been able to start");
     } catch(Exception e) {
@@ -125,11 +125,11 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     startLocatorInVM(vm0, locatorPort, "");
     
-    String locators = NetworkSupport.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
+    String locators = NetworkUtils.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
     
     startBridgeServerInVM(vm1, null, locators);
     
-    startBridgeClientInVM(vm2, null, NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+    startBridgeClientInVM(vm2, null, NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
     
     putAndWaitForSuccess(vm2, REGION_NAME, "key", "value");
     
@@ -144,7 +144,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
   
   public void testDynamicallyFindLocators() throws Exception {
     final Host host = Host.getHost(0);
-    final String hostName = NetworkSupport.getServerHostName(host);
+    final String hostName = NetworkUtils.getServerHostName(host);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
     VM vm2 = host.getVM(2);
@@ -159,7 +159,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     startLocatorInVM(vm0, locatorPort0, locators);
     
     startLocatorInVM(vm1, locatorPort1, locators);
-    startBridgeClientInVM(vm2, null, NetworkSupport.getServerHostName(vm0.getHost()), locatorPort0);
+    startBridgeClientInVM(vm2, null, NetworkUtils.getServerHostName(vm0.getHost()), locatorPort0);
     
     InetSocketAddress locatorToWaitFor= new InetSocketAddress(hostName, locatorPort1);
     waitForLocatorDiscovery(vm2, locatorToWaitFor);
@@ -190,11 +190,11 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     
-    String locators = NetworkSupport.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
+    String locators = NetworkUtils.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
     
     startBridgeServerWithEmbeddedLocator(vm0, null, locators, new String[] {REGION_NAME}, CacheServer.DEFAULT_LOAD_PROBE);
     
-    startBridgeClientInVM(vm2, null, NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+    startBridgeClientInVM(vm2, null, NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
     
     putAndWaitForSuccess(vm2, REGION_NAME, "key", "value");
     
@@ -226,13 +226,13 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     startLocatorInVM(vm0, locatorPort, "");
     
-    String locators = NetworkSupport.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
+    String locators = NetworkUtils.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
     
     startBridgeServerInVM(vm1, new String[] {"group1", "group2"} , locators, new String[] {"A", "B"});
     startBridgeServerInVM(vm2, new String[] {"group2", "group3"}, locators, new String[] {"B", "C"});
 
     
-    startBridgeClientInVM(vm3, "group1", NetworkSupport.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
+    startBridgeClientInVM(vm3, "group1", NetworkUtils.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
     putAndWaitForSuccess(vm3, "A", "key", "value");
     Assert.assertEquals("value", getInVM(vm1, "A", "key"));
     try {
@@ -242,7 +242,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     
     stopBridgeMemberVM(vm3);
     
-    startBridgeClientInVM(vm3, "group3", NetworkSupport.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
+    startBridgeClientInVM(vm3, "group3", NetworkUtils.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
     try {
       putInVM(vm3, "A", "key3", "value");
       fail("Should not have been able to find Region A on the server");
@@ -252,7 +252,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     
     stopBridgeMemberVM(vm3);
     
-    startBridgeClientInVM(vm3, "group2", NetworkSupport.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
+    startBridgeClientInVM(vm3, "group2", NetworkUtils.getServerHostName(vm0.getHost()), locatorPort, new String [] {"A", "B", "C"});
     putInVM(vm3, "B", "key5", "value");
     Assert.assertEquals("value", getInVM(vm1, "B", "key5"));
     Assert.assertEquals("value", getInVM(vm2, "B", "key5"));
@@ -278,18 +278,18 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     
     startLocatorInVM(vm0, locatorPort, "");
     
-    final String locators = NetworkSupport.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
+    final String locators = NetworkUtils.getServerHostName(vm0.getHost()) + "[" + locatorPort + "]";
     
     final int serverPort1 =startBridgeServerInVM(vm1, new String[] {"group1"}, locators);
     final int serverPort2 =addCacheServerInVM(vm1, new String[] {"group2"});
     
-    startBridgeClientInVM(vm2, "group2", NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+    startBridgeClientInVM(vm2, "group2", NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
     
     checkEndpoints(vm2, new int[] {serverPort2});
     
     stopBridgeMemberVM(vm2);
 
-    startBridgeClientInVM(vm2, "group1", NetworkSupport.getServerHostName(vm0.getHost()), locatorPort);
+    startBridgeClientInVM(vm2, "group1", NetworkUtils.getServerHostName(vm0.getHost()), locatorPort);
     
     checkEndpoints(vm2, new int[] {serverPort1});
   }
@@ -302,7 +302,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
     VM clientVM = host.getVM(3);
     int locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     startLocatorInVM(locatorVM, locatorPort, "");
-    String locators = NetworkSupport.getServerHostName(locatorVM.getHost()) + "[" + locatorPort + "]";
+    String locators = NetworkUtils.getServerHostName(locatorVM.getHost()) + "[" + locatorPort + "]";
 
     //start a bridge server with a listener
     addBridgeListener(bridge1VM);
@@ -310,7 +310,7 @@ public class AutoConnectionSourceDUnitTest extends LocatorTestBase {
 
     //start a bridge client with a listener
     addBridgeListener(clientVM);
-    startBridgeClientInVM(clientVM, null, NetworkSupport.getServerHostName(locatorVM.getHost()), locatorPort);
+    startBridgeClientInVM(clientVM, null, NetworkUtils.getServerHostName(locatorVM.getHost()), locatorPort);
     // wait for client to connect
     checkEndpoints(clientVM, new int[] {serverPort1});
     

@@ -44,8 +44,8 @@ import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -136,11 +136,11 @@ public class PutAllDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(PutAllDUnitTest.class,
     "createServerCache")).intValue();
     client1.invoke(PutAllDUnitTest.class, "createClientCache1",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1) });
     client2.invoke(PutAllDUnitTest.class, "createClientCache2",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT2) });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT2) });
     try {
-      createClientCache2(NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT2));
+      createClientCache2(NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT2));
     }
     catch (Exception e) {
      fail(" test failed due to "+e);
@@ -550,7 +550,7 @@ public class PutAllDUnitTest extends DistributedTestCase
 
     public void afterCreate(EntryEvent event)
     {
-      LogWriterSupport.getLogWriter().fine(" entered after created with "+event.getKey());
+      LogWriterUtils.getLogWriter().fine(" entered after created with "+event.getKey());
       boolean shouldNotify = false;
       Object key = event.getKey();
       if (key.equals(PUTALL_KEY1)) {

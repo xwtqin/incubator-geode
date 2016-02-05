@@ -31,7 +31,7 @@ import com.gemstone.gemfire.internal.cache.Token.Tombstone;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
@@ -82,7 +82,7 @@ public class NewWANConcurrencyCheckForDestroyDUnitTest extends WANTestBase {
         "createFirstRemoteLocator", new Object[] { 3, lnPort });
     Integer tkRecPort = (Integer) vm5.invoke(WANTestBase.class, "createReceiver", new Object[] { tkPort });
 
-    LogWriterSupport.getLogWriter().info("Created locators and receivers in 3 distributed systems");
+    LogWriterUtils.getLogWriter().info("Created locators and receivers in 3 distributed systems");
      
     //Site 1
     vm1.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
@@ -162,7 +162,7 @@ public class NewWANConcurrencyCheckForDestroyDUnitTest extends WANTestBase {
         "createFirstRemoteLocator", new Object[] { 2, lnPort });
     Integer nyRecPort = (Integer) vm3.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
 
-    LogWriterSupport.getLogWriter().info("Created locators and receivers in 2 distributed systems");
+    LogWriterUtils.getLogWriter().info("Created locators and receivers in 2 distributed systems");
      
     //Site 1
     vm1.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
@@ -267,7 +267,7 @@ public void testPutAllEventSequenceOnSerialGatewaySenderWithPR() {
         "createFirstRemoteLocator", new Object[] { 2, lnPort });
     Integer nyRecPort = (Integer) vm3.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
 
-    LogWriterSupport.getLogWriter().info("Created locators and receivers in 2 distributed systems");
+    LogWriterUtils.getLogWriter().info("Created locators and receivers in 2 distributed systems");
      
     //Site 1
     vm1.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
@@ -374,7 +374,7 @@ public void testPutAllEventSequenceOnSerialGatewaySenderWithPR() {
         "createFirstRemoteLocator", new Object[] { 2, lnPort });
     Integer nyRecPort = (Integer) vm3.invoke(WANTestBase.class, "createReceiver", new Object[] { nyPort });
     
-    LogWriterSupport.getLogWriter().info("Created locators and receivers in 2 distributed systems");
+    LogWriterUtils.getLogWriter().info("Created locators and receivers in 2 distributed systems");
 
     //Site 1
     vm1.invoke(WANTestBase.class, "createSender", new Object[] { "ln1", 2,
@@ -483,7 +483,7 @@ public void testPutAllEventSequenceOnSerialGatewaySenderWithPR() {
       re = ((NonTXEntry)entry).getRegionEntry();
     }
     if (re != null) {
-      LogWriterSupport.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
+      LogWriterUtils.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
       
       VersionTag tag = re.getVersionStamp().asVersionTag();
       return tag.getVersionTimeStamp();
@@ -503,7 +503,7 @@ public void testPutAllEventSequenceOnSerialGatewaySenderWithPR() {
 
     Region.Entry entry = ((LocalRegion)region).getEntry("testKey", /*null,*/ true);
     RegionEntry re = ((EntrySnapshot)entry).getRegionEntry();
-    LogWriterSupport.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
+    LogWriterUtils.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
     assertTrue(re.getValueInVM((LocalRegion) region) instanceof Tombstone);
     
     VersionTag tag = re.getVersionStamp().asVersionTag();

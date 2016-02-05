@@ -51,8 +51,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -167,9 +167,9 @@ public class InterestListDUnitTest extends DistributedTestCase
     {
 
       vm1.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-        NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+        NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
       vm2.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-        NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+        NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
 
       vm1.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
       vm2.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
@@ -232,9 +232,9 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     // Initialization
     vm1.invoke(InterestListDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1)});
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1)});
     vm2.invoke(InterestListDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT1)});
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1)});
 
     vm1.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
     vm2.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
@@ -290,9 +290,9 @@ public class InterestListDUnitTest extends DistributedTestCase
   {
 
     vm1.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-      NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+      NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
     vm2.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-      NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+      NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
 
     vm1.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
     vm2.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
@@ -320,9 +320,9 @@ public class InterestListDUnitTest extends DistributedTestCase
     Wait.pause(1000);
     // create clients to connect to that server
     vm1.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-      NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+      NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
     vm2.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-      NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1)});
+      NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1)});
 
     // register interest
     vm1.invoke(InterestListDUnitTest.class, "registerKeys");
@@ -358,10 +358,10 @@ public class InterestListDUnitTest extends DistributedTestCase
 
       DistributedMember c1 = (DistributedMember)vm1
         .invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-          NetworkSupport.getServerHostName(vm0.getHost()), PORT1});
+          NetworkUtils.getServerHostName(vm0.getHost()), PORT1});
       DistributedMember c2 = (DistributedMember)vm2
         .invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-          NetworkSupport.getServerHostName(vm0.getHost()), PORT1});
+          NetworkUtils.getServerHostName(vm0.getHost()), PORT1});
 
       vm1.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
       vm2.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
@@ -428,17 +428,17 @@ public class InterestListDUnitTest extends DistributedTestCase
       // servers are set up, now do the clients
       DistributedMember c1 = (DistributedMember)vm1
       .invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-        NetworkSupport.getServerHostName(vm0.getHost()), PORT1, port2});
+        NetworkUtils.getServerHostName(vm0.getHost()), PORT1, port2});
       DistributedMember c2 = (DistributedMember)vm2
       .invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-        NetworkSupport.getServerHostName(vm0.getHost()), PORT1, port2});
+        NetworkUtils.getServerHostName(vm0.getHost()), PORT1, port2});
 
       vm1.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
       vm2.invoke(InterestListDUnitTest.class, "createEntriesK1andK2");
 
       // interest registration from clients should cause listeners to be invoked
       // in both servers
-      LogWriterSupport.getLogWriter().info("test phase 1");
+      LogWriterUtils.getLogWriter().info("test phase 1");
       vm1.invoke(InterestListDUnitTest.class, "registerKey",
           new Object[] { key1 });
       vm2.invoke(InterestListDUnitTest.class, "registerKey",
@@ -452,7 +452,7 @@ public class InterestListDUnitTest extends DistributedTestCase
           new Object[]{ two, zero });
 
       // unregistration from clients should invoke listeners on both servers
-      LogWriterSupport.getLogWriter().info("test phase 2");
+      LogWriterUtils.getLogWriter().info("test phase 2");
       vm1.invoke(InterestListDUnitTest.class, "unregisterKey",
           new Object[] { key1 });
       vm2.invoke(InterestListDUnitTest.class, "unregisterKey",
@@ -463,7 +463,7 @@ public class InterestListDUnitTest extends DistributedTestCase
           new Object[]{ zero, two });
 
       // now the primary server for eache client will register and unregister
-      LogWriterSupport.getLogWriter().info("test phase 3");
+      LogWriterUtils.getLogWriter().info("test phase 3");
       registerKeyForClient(c1, key1);
       vm0.invoke(InterestListDUnitTest.class, "registerKeyForClient",
           new Object[] { c1, key1 });
@@ -475,7 +475,7 @@ public class InterestListDUnitTest extends DistributedTestCase
       vm0.invoke(InterestListDUnitTest.class, "verifyCountsAndClear",
           new Object[]{ two, zero });
 
-      LogWriterSupport.getLogWriter().info("test phase 4");
+      LogWriterUtils.getLogWriter().info("test phase 4");
       unregisterKeyForClient(c1, key1);
       vm0.invoke(InterestListDUnitTest.class, "unregisterKeyForClient",
           new Object[] { c1, key1 });
@@ -496,7 +496,7 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     // Register interest in key1.
     vm1.invoke(InterestListDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(vm0.getHost()), new Integer(PORT1) });
+        new Object[] { NetworkUtils.getServerHostName(vm0.getHost()), new Integer(PORT1) });
     vm1.invoke(InterestListDUnitTest.class, "registerKey",
         new Object[] { key1 });
 
@@ -535,7 +535,7 @@ public class InterestListDUnitTest extends DistributedTestCase
 
     // Create client cache
     vm1.invoke(InterestListDUnitTest.class, "createClientCache",new Object[] {
-      NetworkSupport.getServerHostName(vm0.getHost()), port1, port2});
+      NetworkUtils.getServerHostName(vm0.getHost()), port1, port2});
     
     // Register interest in all keys
     vm1.invoke(InterestListDUnitTest.class, "registerALL_KEYS");
@@ -795,7 +795,7 @@ public class InterestListDUnitTest extends DistributedTestCase
     }
     catch (NoSubscriptionServersAvailableException ex) {
       // expected an exception
-      LogWriterSupport.getLogWriter().info("Got expected exception in registerKey: ");
+      LogWriterUtils.getLogWriter().info("Got expected exception in registerKey: ");
     }
   }
 
@@ -1104,7 +1104,7 @@ public class InterestListDUnitTest extends DistributedTestCase
      * @see com.gemstone.gemfire.cache.InterestRegistrationListener#afterRegisterInterest(com.gemstone.gemfire.cache.InterestRegistrationEvent)
      */
     public void afterRegisterInterest(InterestRegistrationEvent event) {
-      LogWriterSupport.getLogWriter().info("InterestListener.afterRegisterInterest invoked with this event: " + event);
+      LogWriterUtils.getLogWriter().info("InterestListener.afterRegisterInterest invoked with this event: " + event);
       registrationCount++;
     }
 
@@ -1112,7 +1112,7 @@ public class InterestListDUnitTest extends DistributedTestCase
      * @see com.gemstone.gemfire.cache.InterestRegistrationListener#afterUnregisterInterest(com.gemstone.gemfire.cache.InterestRegistrationEvent)
      */
     public void afterUnregisterInterest(InterestRegistrationEvent event) {
-      LogWriterSupport.getLogWriter().info("InterestListener.afterUnregisterInterest invoked with this event: " + event);
+      LogWriterUtils.getLogWriter().info("InterestListener.afterUnregisterInterest invoked with this event: " + event);
       unregistrationCount++;
     }
 

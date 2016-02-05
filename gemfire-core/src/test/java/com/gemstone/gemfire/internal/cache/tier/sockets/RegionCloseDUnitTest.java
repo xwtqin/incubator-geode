@@ -35,7 +35,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -79,7 +79,7 @@ public class RegionCloseDUnitTest extends DistributedTestCase
 
     PORT1 =  ((Integer)server1.invoke(RegionCloseDUnitTest.class, "createServerCache" )).intValue();
     client1.invoke(RegionCloseDUnitTest.class, "createClientCache", new Object[] {
-      NetworkSupport.getServerHostName(host), new Integer(PORT1)});
+      NetworkUtils.getServerHostName(host), new Integer(PORT1)});
 
   }
 

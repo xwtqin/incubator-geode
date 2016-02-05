@@ -33,9 +33,9 @@ import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -90,7 +90,7 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
       public Object call() throws Exception {
         long giveupTime = System.currentTimeMillis() + 60000;
         while (!hooked && System.currentTimeMillis() < giveupTime) {
-          LogWriterSupport.getLogWriter().info("Query Waiting for index hook.");
+          LogWriterUtils.getLogWriter().info("Query Waiting for index hook.");
           Wait.pause(100);
         }
         assertTrue(hooked);
@@ -127,12 +127,12 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
       }
     });
     
-    Threads.join(a1, 6000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(a1, 6000);
     
     if(a1.exceptionOccurred()) {
       fail(a1.getException().getMessage());
     }
-    Threads.join(a2, 6000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(a2, 6000);
     if(a2.exceptionOccurred()) {
       fail(a2.getException().getMessage());
     }
@@ -189,9 +189,9 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
       long giveupTime = System.currentTimeMillis() + 60000;
       if (spot == 13) {
         hooked = true;
-        LogWriterSupport.getLogWriter().info("MultiIndexCreationTestHook is hooked in create defined indexes.");
+        LogWriterUtils.getLogWriter().info("MultiIndexCreationTestHook is hooked in create defined indexes.");
         while (hooked && System.currentTimeMillis() < giveupTime) {
-          LogWriterSupport.getLogWriter().info("MultiIndexCreationTestHook waiting.");
+          LogWriterUtils.getLogWriter().info("MultiIndexCreationTestHook waiting.");
           Wait.pause(100);
         }
         assertEquals(hooked, false);

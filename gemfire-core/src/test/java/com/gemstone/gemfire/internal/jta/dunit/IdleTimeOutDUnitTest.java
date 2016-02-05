@@ -41,8 +41,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
@@ -65,7 +65,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       //
       //    sb.append(lineSep);
     }
-    LogWriterSupport.getLogWriter().info("***********\n " + sb);
+    LogWriterUtils.getLogWriter().info("***********\n " + sb);
     return sb.toString();
   }
 
@@ -115,22 +115,22 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
      * value=\"83f0069202c571faf1ae6c42b4ad46030e4e31c17409e19a\"/>";
      */
     int n1 = str.indexOf(search);
-    LogWriterSupport.getLogWriter().info("Start Index = " + n1);
+    LogWriterUtils.getLogWriter().info("Start Index = " + n1);
     int n2 = str.indexOf(last_search, n1);
     StringBuffer sbuff = new StringBuffer(str);
-    LogWriterSupport.getLogWriter().info("END Index = " + n2);
+    LogWriterUtils.getLogWriter().info("END Index = " + n2);
     String modified_str = sbuff.replace(n1, n2, new_str).toString();
     return modified_str;
   }
 
   public static String init(String className) throws Exception {
-    LogWriterSupport.getLogWriter().fine("PATH11 ");
+    LogWriterUtils.getLogWriter().fine("PATH11 ");
     Properties props = new Properties();
     String path = System.getProperty("CACHEXMLFILE");
-    LogWriterSupport.getLogWriter().fine("PATH2 " + path);
+    LogWriterUtils.getLogWriter().fine("PATH2 " + path);
     int pid = OSProcess.getId();
     path = File.createTempFile("dunit-cachejta_", ".xml").getAbsolutePath();
-    LogWriterSupport.getLogWriter().fine("PATH " + path);
+    LogWriterUtils.getLogWriter().fine("PATH " + path);
     /** * Return file as string and then modify the string accordingly ** */
     String file_as_str = readFile(TestUtil.getResourcePath(CacheUtils.class, "cachejta.xml"));
     file_as_str = file_as_str.replaceAll("newDB", "newDB_" + pid);
@@ -172,7 +172,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     String sql = "create table "
         + tableName
         + " (id integer NOT NULL, name varchar(50), CONSTRAINT "+tableName+"_key PRIMARY KEY(id))";
-    LogWriterSupport.getLogWriter().info(sql);
+    LogWriterUtils.getLogWriter().info(sql);
     Connection conn = ds.getConnection();
     Statement sm = conn.createStatement();
     sm.execute(sql);
@@ -181,7 +181,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     for (int i = 1; i <= 10; i++) {
       sql = "insert into " + tableName + " values (" + i + ",'name" + i + "')";
       sm.addBatch(sql);
-      LogWriterSupport.getLogWriter().info(sql);
+      LogWriterUtils.getLogWriter().info(sql);
     }
     sm.executeBatch();
     conn.close();
@@ -193,18 +193,18 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       Context ctx = cache.getJNDIContext();
       DataSource ds = (DataSource) ctx.lookup("java:/SimpleDataSource");
       Connection conn = ds.getConnection();
-      LogWriterSupport.getLogWriter().info(" trying to drop table: " + tableName);
+      LogWriterUtils.getLogWriter().info(" trying to drop table: " + tableName);
       String sql = "drop table " + tableName;
       Statement sm = conn.createStatement();
       sm.execute(sql);
       conn.close();
     }
     catch (NamingException ne) {
-      LogWriterSupport.getLogWriter().info("destroy table naming exception: " + ne);
+      LogWriterUtils.getLogWriter().info("destroy table naming exception: " + ne);
       throw ne;
     }
     catch (SQLException se) {
-      LogWriterSupport.getLogWriter().info("destroy table sql exception: " + se);
+      LogWriterUtils.getLogWriter().info("destroy table sql exception: " + se);
       throw se;
     }
     finally {
@@ -240,7 +240,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       ds.disconnect();
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Error in disconnecting from Distributed System");
+      LogWriterUtils.getLogWriter().info("Error in disconnecting from Distributed System");
     }
   }
 
@@ -267,7 +267,7 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(IdleTimeOutDUnitTest.class, "runTest1");
     AsyncInvocation asyncObj = vm0.invokeAsync(IdleTimeOutDUnitTest.class,
         "runTest2");
-    Threads.join(asyncObj, 30 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(asyncObj, 30 * 1000);
     if(asyncObj.exceptionOccurred()){
       Assert.fail("asyncObj failed", asyncObj.getException());
     }				   
@@ -281,27 +281,27 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       ds = (DataSource) ctx.lookup("java:/XAPooledDataSource");
     }
     catch (NamingException e) {
-      LogWriterSupport.getLogWriter().info("Naming Exception caught in lookup: " + e);
+      LogWriterUtils.getLogWriter().info("Naming Exception caught in lookup: " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception caught during naming lookup: " + e);
+      LogWriterUtils.getLogWriter().info("Exception caught during naming lookup: " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
     try {
       for (int count = 0; count < MAX_CONNECTIONS; count++) {
         ds.getConnection();
-        LogWriterSupport.getLogWriter().info("runTest1 :acquired connection #" + count);
+        LogWriterUtils.getLogWriter().info("runTest1 :acquired connection #" + count);
       }
     }
     catch (SQLException e) {
-      LogWriterSupport.getLogWriter().info("Success SQLException caught in runTest1: " + e);
+      LogWriterUtils.getLogWriter().info("Success SQLException caught in runTest1: " + e);
       fail("runTest1 SQL Exception caught: " + e);
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception caught in runTest1: " + e);
+      LogWriterUtils.getLogWriter().info("Exception caught in runTest1: " + e);
       fail("Exception caught in runTest1: " + e);
       e.printStackTrace();
     }
@@ -317,12 +317,12 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       ds = (DataSource) ctx.lookup("java:/XAPooledDataSource");
     }
     catch (NamingException e) {
-      LogWriterSupport.getLogWriter().info("Exception caught during naming lookup: " + e);
+      LogWriterUtils.getLogWriter().info("Exception caught during naming lookup: " + e);
       fail("failed in naming lookup: " + e);
       return;
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception caught during naming lookup: " + e);
+      LogWriterUtils.getLogWriter().info("Exception caught during naming lookup: " + e);
       fail("failed in because of unhandled excpetion: " + e);
       return;
     }
@@ -330,16 +330,16 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
       for (int count = 0; count < MAX_CONNECTIONS; count++) {
         Connection con = ds.getConnection();
         assertNotNull("Connection object is null", con);
-        LogWriterSupport.getLogWriter().info("runTest2 :acquired connection #" + count);
+        LogWriterUtils.getLogWriter().info("runTest2 :acquired connection #" + count);
       }
     }
     catch (SQLException sqle) {
-      LogWriterSupport.getLogWriter().info("SQLException caught in runTest2: " + sqle);
+      LogWriterUtils.getLogWriter().info("SQLException caught in runTest2: " + sqle);
       fail("failed because of SQL exception : " + sqle);
       sqle.printStackTrace();
     }
     catch (Exception e) {
-      LogWriterSupport.getLogWriter().info("Exception caught in runTest2: " + e);
+      LogWriterUtils.getLogWriter().info("Exception caught in runTest2: " + e);
       fail("failed because of unhandled exception : " + e);
       e.printStackTrace();
     }

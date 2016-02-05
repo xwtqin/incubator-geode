@@ -54,7 +54,7 @@ import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionCreation;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -380,7 +380,7 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
     });
     CacheCreation cache = new CacheCreation();
     cache.createPoolFactory()
-    .addServer(NetworkSupport.getServerHostName(vm0.getHost()), port)
+    .addServer(NetworkUtils.getServerHostName(vm0.getHost()), port)
       .setSubscriptionEnabled(true)
     .create("connectionPool");
     cache.setDynamicRegionFactoryConfig(new DynamicRegionFactory.Config(null, "connectionPool", false, false));

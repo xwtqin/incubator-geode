@@ -32,7 +32,7 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
@@ -77,8 +77,8 @@ public class BlockingHARegionJUnitTest
       thread1.start();
       thread2.start();
 
-      Threads.join(thread1, 30 * 1000, null);
-      Threads.join(thread2, 30 * 1000, null);
+      ThreadUtils.join(thread1, 30 * 1000);
+      ThreadUtils.join(thread2, 30 * 1000);
 
       if (exceptionOccured) {
         fail(" Test failed due to " + exceptionString);
@@ -152,8 +152,8 @@ public class BlockingHARegionJUnitTest
       };
       Wait.waitForCriterion(ev, 30 * 1000, 1000, true);
       
-      Threads.join(thread1, 30 * 1000, null); // for completeness
-      Threads.join(thread2, 30 * 1000, null);
+      ThreadUtils.join(thread1, 30 * 1000); // for completeness
+      ThreadUtils.join(thread2, 30 * 1000);
       if (exceptionOccured) {
         fail(" Test failed due to " + exceptionString);
       }
@@ -226,11 +226,11 @@ public class BlockingHARegionJUnitTest
       
       Thread.sleep(2000);
       
-      Threads.join(thread1, 5 * 60 * 1000, null);
-      Threads.join(thread2, 5 * 60 * 1000, null);
-      Threads.join(thread3, 5 * 60 * 1000, null);
-      Threads.join(thread4, 5 * 60 * 1000, null);
-      Threads.join(thread5, 5 * 60 * 1000, null);
+      ThreadUtils.join(thread1, 5 * 60 * 1000);
+      ThreadUtils.join(thread2, 5 * 60 * 1000);
+      ThreadUtils.join(thread3, 5 * 60 * 1000);
+      ThreadUtils.join(thread4, 5 * 60 * 1000);
+      ThreadUtils.join(thread5, 5 * 60 * 1000);
       
       cache.close();
     }
@@ -283,11 +283,11 @@ public class BlockingHARegionJUnitTest
       thread9.start();
       thread10.start();
       
-      Threads.join(thread6, 30 * 1000, null);
-      Threads.join(thread7, 30 * 1000, null);
-      Threads.join(thread8, 30 * 1000, null);
-      Threads.join(thread9, 30 * 1000, null);
-      Threads.join(thread10, 30 * 1000, null);
+      ThreadUtils.join(thread6, 30 * 1000);
+      ThreadUtils.join(thread7, 30 * 1000);
+      ThreadUtils.join(thread8, 30 * 1000);
+      ThreadUtils.join(thread9, 30 * 1000);
+      ThreadUtils.join(thread10, 30 * 1000);
       
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
@@ -320,11 +320,11 @@ public class BlockingHARegionJUnitTest
       Thread.sleep(2000);
       
       
-      Threads.join(thread1, 30 * 1000, null);
-      Threads.join(thread2, 30 * 1000, null);
-      Threads.join(thread3, 30 * 1000, null);
-      Threads.join(thread4, 30 * 1000, null);
-      Threads.join(thread5, 30 * 1000, null);
+      ThreadUtils.join(thread1, 30 * 1000);
+      ThreadUtils.join(thread2, 30 * 1000);
+      ThreadUtils.join(thread3, 30 * 1000);
+      ThreadUtils.join(thread4, 30 * 1000);
+      ThreadUtils.join(thread5, 30 * 1000);
       
       cache.close();
     }
@@ -378,7 +378,7 @@ public class BlockingHARegionJUnitTest
         }
       };
       t1.start();
-      Threads.join(t1, 20 * 1000, null);
+      ThreadUtils.join(t1, 20 * 1000);
       if (exceptionOccured) {
         fail(" Test failed due to " + exceptionString);
       }

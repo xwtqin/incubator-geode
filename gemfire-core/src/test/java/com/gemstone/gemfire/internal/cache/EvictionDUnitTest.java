@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 import com.gemstone.gemfire.cache.EvictionAlgorithm;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.lru.MemLRUCapacityController;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 
 @Category(DistributedTest.class)
@@ -95,7 +95,7 @@ public class EvictionDUnitTest extends EvictionTestBase {
     createPartitionedRegion(true, EvictionAlgorithm.LRU_ENTRY, "PR1", 4, 1, 1000,maxEnteries);
     
     final PartitionedRegion pr = (PartitionedRegion)cache.getRegion("PR1");
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "PR- " +pr.getEvictionAttributes().getMaximum());
     
     for (int counter = 1; counter <= maxEnteries+extraEntries; counter++) {
@@ -112,7 +112,7 @@ public class EvictionDUnitTest extends EvictionTestBase {
     createPartitionedRegion(true, EvictionAlgorithm.LRU_ENTRY, "PR1", 4, 1, 1000,maxEnteries);
     
     final PartitionedRegion pr = (PartitionedRegion)cache.getRegion("PR1");
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "PR- " +pr.getEvictionAttributes().getMaximum());
     for (int i = 0; i < 3; i++) {
       // assume mod-based hashing for bucket creation
@@ -139,7 +139,7 @@ public class EvictionDUnitTest extends EvictionTestBase {
     createPartitionedRegion(true, EvictionAlgorithm.LRU_ENTRY, "PR1", 5, 1, 1000,maxEnteries);
     
     final PartitionedRegion pr = (PartitionedRegion)cache.getRegion("PR1");
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "PR- " +pr.getEvictionAttributes().getMaximum());
     
     for (int counter = 1; counter <= maxEnteries+extraEntries; counter++) {
@@ -155,7 +155,7 @@ public class EvictionDUnitTest extends EvictionTestBase {
       if (bucketRegion == null) {
         continue;
       }
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "FINAL bucket= " + bucketRegion.getFullPath() + "size= "
               + bucketRegion.size() + "  count= "+bucketRegion.entryCount());
       assertEquals(4,bucketRegion.size());

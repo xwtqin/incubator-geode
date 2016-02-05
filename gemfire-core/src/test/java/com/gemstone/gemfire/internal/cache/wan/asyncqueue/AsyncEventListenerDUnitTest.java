@@ -32,7 +32,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.wan.AsyncEventQueueTestBase;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Wait;
 
 public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
@@ -645,8 +645,8 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     int vm5size = (Integer)vm5.invoke(AsyncEventQueueTestBase.class,
         "getAsyncEventListenerMapSize", new Object[] { "ln" });
 
-    LogWriterSupport.getLogWriter().info("vm4 size is: " + vm4size);
-    LogWriterSupport.getLogWriter().info("vm5 size is: " + vm5size);
+    LogWriterUtils.getLogWriter().info("vm4 size is: " + vm4size);
+    LogWriterUtils.getLogWriter().info("vm5 size is: " + vm5size);
     // verify that there is no event loss
     assertTrue(
         "Total number of entries in events map on vm4 and vm5 should be at least 2000",
@@ -1662,14 +1662,14 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     vm4.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
 
-    LogWriterSupport.getLogWriter().info("Created the cache");
+    LogWriterUtils.getLogWriter().info("Created the cache");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
     vm5.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
 
-    LogWriterSupport.getLogWriter().info("Created the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class,
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
@@ -1678,7 +1678,7 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
             getTestMethodName() + "_PR", "ln", isOffHeap() });
 
-    LogWriterSupport.getLogWriter().info("Created PR with AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created PR with AsyncEventQueue");
 
     vm4
         .invoke(AsyncEventQueueTestBase.class, "pauseAsyncEventQueue",
@@ -1689,18 +1689,18 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     Wait.pause(1000);// pause for the batchTimeInterval to make sure the AsyncQueue
                 // is paused
 
-    LogWriterSupport.getLogWriter().info("Paused the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Paused the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "doPuts",
         new Object[] { getTestMethodName() + "_PR", 80 });
 
-    LogWriterSupport.getLogWriter().info("Done puts");
+    LogWriterUtils.getLogWriter().info("Done puts");
 
     Set<Integer> primaryBucketsVm5 = (Set<Integer>)vm5.invoke(
         AsyncEventQueueTestBase.class, "getAllPrimaryBucketsOnTheNode",
         new Object[] { getTestMethodName() + "_PR" });
 
-    LogWriterSupport.getLogWriter().info("Primary buckets on vm5: " + primaryBucketsVm5);
+    LogWriterUtils.getLogWriter().info("Primary buckets on vm5: " + primaryBucketsVm5);
     // ---------------------------- Kill vm5 --------------------------
     vm5.invoke(AsyncEventQueueTestBase.class, "killSender", new Object[] {});
 
@@ -1728,14 +1728,14 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     vm4.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
 
-    LogWriterSupport.getLogWriter().info("Created the cache");
+    LogWriterUtils.getLogWriter().info("Created the cache");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
     vm5.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
 
-    LogWriterSupport.getLogWriter().info("Created the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class,
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
@@ -1744,7 +1744,7 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
             getTestMethodName() + "_PR", "ln", isOffHeap() });
 
-    LogWriterSupport.getLogWriter().info("Created PR with AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created PR with AsyncEventQueue");
 
     vm4
         .invoke(AsyncEventQueueTestBase.class, "pauseAsyncEventQueue",
@@ -1755,18 +1755,18 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     Wait.pause(1000);// pause for the batchTimeInterval to make sure the AsyncQueue
                 // is paused
 
-    LogWriterSupport.getLogWriter().info("Paused the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Paused the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "doPuts",
         new Object[] { getTestMethodName() + "_PR", 80 });
 
-    LogWriterSupport.getLogWriter().info("Done puts");
+    LogWriterUtils.getLogWriter().info("Done puts");
 
     Set<Integer> primaryBucketsVm5 = (Set<Integer>)vm5.invoke(
         AsyncEventQueueTestBase.class, "getAllPrimaryBucketsOnTheNode",
         new Object[] { getTestMethodName() + "_PR" });
 
-    LogWriterSupport.getLogWriter().info("Primary buckets on vm5: " + primaryBucketsVm5);
+    LogWriterUtils.getLogWriter().info("Primary buckets on vm5: " + primaryBucketsVm5);
     // ---------------------------- Kill vm5 --------------------------
     vm5.invoke(AsyncEventQueueTestBase.class, "killSender", new Object[] {});
     // ----------------------------------------------------------------
@@ -1812,14 +1812,14 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     vm4.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
     vm5.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
 
-    LogWriterSupport.getLogWriter().info("Created the cache");
+    LogWriterUtils.getLogWriter().info("Created the cache");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
     vm5.invoke(AsyncEventQueueTestBase.class, "createAsyncEventQueueWithListener2",
         new Object[] { "ln", true, 100, 5, false, null });
 
-    LogWriterSupport.getLogWriter().info("Created the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class,
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
@@ -1828,7 +1828,7 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
         "createPRWithRedundantCopyWithAsyncEventQueue", new Object[] {
             getTestMethodName() + "_PR", "ln", isOffHeap() });
 
-    LogWriterSupport.getLogWriter().info("Created PR with AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Created PR with AsyncEventQueue");
 
     vm4
         .invoke(AsyncEventQueueTestBase.class, "pauseAsyncEventQueue",
@@ -1839,12 +1839,12 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     Wait.pause(1000);// pause for the batchTimeInterval to make sure the AsyncQueue
                 // is paused
 
-    LogWriterSupport.getLogWriter().info("Paused the AsyncEventQueue");
+    LogWriterUtils.getLogWriter().info("Paused the AsyncEventQueue");
 
     vm4.invoke(AsyncEventQueueTestBase.class, "doPuts",
         new Object[] { getTestMethodName() + "_PR", 80 });
 
-    LogWriterSupport.getLogWriter().info("Done puts");
+    LogWriterUtils.getLogWriter().info("Done puts");
 
     // ---------------------------- start vm6 --------------------------
     vm6.invoke(AsyncEventQueueTestBase.class, "createCache", new Object[] { lnPort });
@@ -1860,7 +1860,7 @@ public class AsyncEventListenerDUnitTest extends AsyncEventQueueTestBase {
     Set<Integer> primaryBucketsVm6 = (Set<Integer>)vm6.invoke(
         AsyncEventQueueTestBase.class, "getAllPrimaryBucketsOnTheNode",
         new Object[] { getTestMethodName() + "_PR" });
-    LogWriterSupport.getLogWriter().info("Primary buckets on vm6: " + primaryBucketsVm6);
+    LogWriterUtils.getLogWriter().info("Primary buckets on vm6: " + primaryBucketsVm6);
     vm4.invoke(AsyncEventQueueTestBase.class, "resumeAsyncEventQueue",
         new Object[] { "ln" });
     vm5.invoke(AsyncEventQueueTestBase.class, "resumeAsyncEventQueue",

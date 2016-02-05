@@ -59,7 +59,7 @@ import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -203,7 +203,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
 
   protected void createData(VM vm, final int startKey, final int endKey,
       final String value) {
-    LogWriterSupport.getLogWriter().info("createData invoked.  PR_REGION_NAME is " + PR_REGION_NAME);
+    LogWriterUtils.getLogWriter().info("createData invoked.  PR_REGION_NAME is " + PR_REGION_NAME);
         createData(vm, startKey, endKey,value, PR_REGION_NAME);
       }
 
@@ -213,7 +213,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
           
           public void run() {
             Cache cache = getCache();
-            LogWriterSupport.getLogWriter().info("creating data in " + regionName);
+            LogWriterUtils.getLogWriter().info("creating data in " + regionName);
             Region region = cache.getRegion(regionName);
             
             for(int i =startKey; i < endKey; i++) {
@@ -790,7 +790,7 @@ public abstract class PersistentPartitionedRegionTestBase extends CacheTestCase 
     BufferedReader br = new BufferedReader(new InputStreamReader(is));
     String line;
     while((line = br.readLine()) != null) {
-      LogWriterSupport.getLogWriter().fine("OUTPUT:" + line);
+      LogWriterUtils.getLogWriter().fine("OUTPUT:" + line);
       //TODO validate output
     };
     

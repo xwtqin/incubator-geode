@@ -56,7 +56,7 @@ import com.gemstone.gemfire.internal.cache.wan.InternalGatewaySenderFactory;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -189,7 +189,7 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
               throw new RuntimeException("unexpected exception", e);
             }
             if (entry != null) {
-              LogWriterSupport.getLogWriter().info("found entry " + entry);
+              LogWriterUtils.getLogWriter().info("found entry " + entry);
             }
             return (entry != null);
           }
@@ -453,7 +453,7 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
               throw new RuntimeException("unexpected exception", e);
             }
             if (entry != null) {
-              LogWriterSupport.getLogWriter().info("found entry " + entry);
+              LogWriterUtils.getLogWriter().info("found entry " + entry);
             }
             return (entry != null);
           }
@@ -592,7 +592,7 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
               throw new RuntimeException("unexpected exception", e);
             }
             if (entry != null) {
-              LogWriterSupport.getLogWriter().info("found entry " + entry);
+              LogWriterUtils.getLogWriter().info("found entry " + entry);
             }
             return (entry != null);
           }
@@ -655,7 +655,7 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
-    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+    props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
     props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
     props.setProperty(DistributionConfig.USE_CLUSTER_CONFIGURATION_NAME, "false");
     InternalDistributedSystem ds = test.getSystem(props);

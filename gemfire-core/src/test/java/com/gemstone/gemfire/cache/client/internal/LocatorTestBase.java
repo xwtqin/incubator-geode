@@ -46,8 +46,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -112,14 +112,14 @@ public abstract class LocatorTestBase  extends DistributedTestCase {
         Properties props = new Properties();
         props.setProperty(DistributionConfig.MCAST_PORT_NAME, String.valueOf(0));
         props.setProperty(DistributionConfig.LOCATORS_NAME, otherLocators);
-        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterSupport.getDUnitLogLevel());
+        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
         props.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
         try {
           File logFile = new File(testName + "-locator" + locatorPort
               + ".log");
           InetAddress bindAddr = null;
           try {
-            bindAddr = InetAddress.getByName(NetworkSupport.getServerHostName(vm.getHost()));
+            bindAddr = InetAddress.getByName(NetworkUtils.getServerHostName(vm.getHost()));
           } catch (UnknownHostException uhe) {
             Assert.fail("While resolving bind address ", uhe);
           }
@@ -306,7 +306,7 @@ public abstract class LocatorTestBase  extends DistributedTestCase {
   public String getLocatorString(Host host, int[] locatorPorts) {
     StringBuffer str = new StringBuffer();
     for(int i = 0; i < locatorPorts.length; i++) {
-      str.append(NetworkSupport.getServerHostName(host))
+      str.append(NetworkUtils.getServerHostName(host))
           .append("[")
           .append(locatorPorts[i])
           .append("]");

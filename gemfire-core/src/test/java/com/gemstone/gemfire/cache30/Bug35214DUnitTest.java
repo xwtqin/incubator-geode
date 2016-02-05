@@ -32,8 +32,8 @@ import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -97,7 +97,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
                 //pause(5);
               }
               else {
-                LogWriterSupport.getLogWriter().info("PROFILE CHECK: Found " + numProfiles + " getInitialImage Profiles (OK)");
+                LogWriterUtils.getLogWriter().info("PROFILE CHECK: Found " + numProfiles + " getInitialImage Profiles (OK)");
                 break;
               }
             }
@@ -188,7 +188,7 @@ public class Bug35214DUnitTest extends CacheTestCase {
         };
       af.addCacheListener(cl1);
       final Region r1 = createRootRegion("r1", af.create());
-      Threads.join(updater, 60 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(updater, 60 * 1000);
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
           return r1.values().size() == 0;

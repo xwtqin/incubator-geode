@@ -47,7 +47,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -111,7 +111,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     // then create client
     Wait.pause(5000);  // [bruce] avoid ConnectException
     client1.invoke(impl.getClass(), "createClientCache", new Object[] {
-      NetworkSupport.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
 
   }
 

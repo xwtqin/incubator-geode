@@ -29,7 +29,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
@@ -548,18 +548,18 @@ public class CliCommandTestBase extends CacheTestCase {
   }
 
   protected void info(String string) {
-    LogWriterSupport.getLogWriter().info(string);
+    LogWriterUtils.getLogWriter().info(string);
   }
 
   protected void debug(String string) {
-    LogWriterSupport.getLogWriter().fine(string);
+    LogWriterUtils.getLogWriter().fine(string);
   }
 
   protected void error(String string) {
-    LogWriterSupport.getLogWriter().error(string);
+    LogWriterUtils.getLogWriter().error(string);
   }
 
   protected void error(String string, Throwable e) {
-    LogWriterSupport.getLogWriter().error(string, e);
+    LogWriterUtils.getLogWriter().error(string, e);
   }
 }

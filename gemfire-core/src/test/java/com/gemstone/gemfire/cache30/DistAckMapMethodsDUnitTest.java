@@ -44,7 +44,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -199,8 +199,8 @@ public class DistAckMapMethodsDUnitTest extends DistributedTestCase{
         vm0.invoke(DistAckMapMethodsDUnitTest.class, "putMethod", objArr);
         obj1 = vm1.invoke(DistAckMapMethodsDUnitTest.class, "getMethod", objArr);//to make sure that vm1 region has the entry
         obj2 = vm1.invoke(DistAckMapMethodsDUnitTest.class, "removeMethod", objArr);
-        LogWriterSupport.getLogWriter().fine("111111111"+obj1);
-        LogWriterSupport.getLogWriter().fine("2222222222"+obj2);
+        LogWriterUtils.getLogWriter().fine("111111111"+obj1);
+        LogWriterUtils.getLogWriter().fine("2222222222"+obj2);
         if (obj1 == null)
           fail("region1.getMethod returned null");
         if(!(obj1.equals(obj2))){

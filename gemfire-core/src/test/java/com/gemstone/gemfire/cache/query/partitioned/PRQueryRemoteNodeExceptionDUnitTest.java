@@ -45,7 +45,7 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -109,7 +109,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
   public void testPRWithLocalAndRemoteException()
       throws Exception {
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception test Started");
     Host host = Host.getHost(0);
@@ -120,7 +120,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vmList.add(vm1);
     vmList.add(vm0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating PR's across all VM0 , VM1");
     vm0.invoke(PRQHelp
@@ -128,17 +128,17 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vm1.invoke(PRQHelp
         .getCacheSerializableRunnableForPRCreateLimitedBuckets(name, redundancy, numOfBuckets));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created PR on VM0 , VM1");
 
     // creating a local region on one of the JVM's
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating Local Region on VM0");
     vm0.invoke(PRQHelp
         .getCacheSerializableRunnableForLocalRegionCreation(localName));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created Local Region on VM0");
 
@@ -148,29 +148,29 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     final PortfolioData[] portfolio = PRQHelp.createPortfolioData(cnt, cntDest);
 
     // Putting the data into the accessor node
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data through the accessor node");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(name, portfolio,
         cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data through the accessor node");
 
     // Putting the same data in the local region created
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data on local node  VM0 for result Set Comparison");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
         portfolio, cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data on local node  VM0 for result Set Comparison");
 
     // Execute query first time. This is to make sure all the buckets are
     // created
     // (lazy bucket creation).
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying on VM0 First time");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRQueryAndCompareResults(
@@ -220,7 +220,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               gotException = true;
               if (ex.getMessage().contains("local node")) {
 //                ex.printStackTrace();
-                LogWriterSupport.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
+                LogWriterUtils.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
               } else {
                 Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
@@ -232,14 +232,14 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
         }
       );
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception Test ENDED");
   }
   
   public void testRemoteException() throws Exception {
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception test Started");
     Host host = Host.getHost(0);
@@ -250,7 +250,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vmList.add(vm1);
     vmList.add(vm0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating PR's across all VM0 , VM1");
     vm0.invoke(PRQHelp
@@ -258,17 +258,17 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vm1.invoke(PRQHelp
         .getCacheSerializableRunnableForPRCreateLimitedBuckets(name, redundancy, numOfBuckets));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created PR on VM0 , VM1");
 
     // creating a local region on one of the JVM's
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating Local Region on VM0");
     vm0.invoke(PRQHelp
         .getCacheSerializableRunnableForLocalRegionCreation(localName));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created Local Region on VM0");
 
@@ -278,22 +278,22 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     final PortfolioData[] portfolio = PRQHelp.createPortfolioData(cnt, cntDest);
 
     // Putting the data into the accessor node
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data through the accessor node");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(name, portfolio,
         cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data through the accessor node");
 
     // Putting the same data in the local region created
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data on local node  VM0 for result Set Comparison");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
         portfolio, cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data on local node  VM0 for result Set Comparison");
 
@@ -351,7 +351,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               gotException = true;
               if (ex.getMessage().contains("remote node")) {
                 ex.printStackTrace();
-                LogWriterSupport.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully.");
+                LogWriterUtils.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully.");
               } else {
                 Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from remote node rather received", ex);
               }
@@ -363,14 +363,14 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
         }
       );
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception Test ENDED");
   }
   
   public void testCacheCloseExceptionFromLocalAndRemote() throws Exception {
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception test Started");
     Host host = Host.getHost(0);
@@ -381,7 +381,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vmList.add(vm1);
     vmList.add(vm0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating PR's across all VM0 , VM1");
     vm0.invoke(PRQHelp
@@ -389,17 +389,17 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vm1.invoke(PRQHelp
         .getCacheSerializableRunnableForPRCreateLimitedBuckets(name, redundancy, numOfBuckets));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created PR on VM0 , VM1");
 
     // creating a local region on one of the JVM's
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating Local Region on VM0");
     vm0.invoke(PRQHelp
         .getCacheSerializableRunnableForLocalRegionCreation(localName));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created Local Region on VM0");
 
@@ -409,22 +409,22 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     final PortfolioData[] portfolio = PRQHelp.createPortfolioData(cnt, cntDest);
 
     // Putting the data into the accessor node
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data through the accessor node");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(name, portfolio,
         cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data through the accessor node");
 
     // Putting the same data in the local region created
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data on local node  VM0 for result Set Comparison");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
         portfolio, cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data on local node  VM0 for result Set Comparison");
 
@@ -440,7 +440,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               
               @Override
               public void afterIterationEvaluation(Object result) {
-                LogWriterSupport.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
+                LogWriterUtils.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
                 if (noOfAccess > 2) {
                   PRQHelp.getCache().getRegion(name).destroyRegion();
                 }
@@ -466,7 +466,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               @Override
               public void afterIterationEvaluation(Object result) {
                 //Object region = ((DefaultQuery)query).getRegionsInQuery(null).iterator().next();
-                LogWriterSupport.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
+                LogWriterUtils.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
                 if (noOfAccess > 2) {
                   PRQHelp.getCache().close();
                 }
@@ -483,8 +483,8 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
             } catch (Exception ex) {
               gotException = true;
               if (ex instanceof CacheClosedException || ex instanceof QueryInvocationTargetException) {
-                LogWriterSupport.getLogWriter().info(ex.getMessage());
-                LogWriterSupport.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
+                LogWriterUtils.getLogWriter().info(ex.getMessage());
+                LogWriterUtils.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from local node successfully.");
               } else {
                 Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
@@ -496,14 +496,14 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
         }
       );
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception Test ENDED");
   }
   
   public void testCacheCloseExceptionFromLocalAndRemote2() throws Exception {
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception test Started");
     Host host = Host.getHost(0);
@@ -514,7 +514,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vmList.add(vm1);
     vmList.add(vm0);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating PR's across all VM0 , VM1");
     vm0.invoke(PRQHelp
@@ -522,17 +522,17 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vm1.invoke(PRQHelp
         .getCacheSerializableRunnableForPRCreateLimitedBuckets(name, redundancy, numOfBuckets));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created PR on VM0 , VM1");
 
     // creating a local region on one of the JVM's
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating Local Region on VM0");
     vm0.invoke(PRQHelp
         .getCacheSerializableRunnableForLocalRegionCreation(localName));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created Local Region on VM0");
 
@@ -542,22 +542,22 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     final PortfolioData[] portfolio = PRQHelp.createPortfolioData(cnt, cntDest);
 
     // Putting the data into the accessor node
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data through the accessor node");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(name, portfolio,
         cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data through the accessor node");
 
     // Putting the same data in the local region created
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data on local node  VM0 for result Set Comparison");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
         portfolio, cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data on local node  VM0 for result Set Comparison");
 
@@ -573,7 +573,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               
               @Override
               public void afterIterationEvaluation(Object result) {
-                LogWriterSupport.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
+                LogWriterUtils.getLogWriter().info("Calling after IterationEvaluation :" + noOfAccess);
                 if (noOfAccess > 1) {
                   PRQHelp.getCache().getRegion(name).destroyRegion();
                 }
@@ -626,8 +626,8 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
             } catch (Exception ex) {
               gotException = true;
               if (ex instanceof QueryInvocationTargetException) {
-                LogWriterSupport.getLogWriter().info(ex.getMessage());
-                LogWriterSupport.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully as region.destroy happened before cache.close().");
+                LogWriterUtils.getLogWriter().info(ex.getMessage());
+                LogWriterUtils.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Test received Exception from remote node successfully as region.destroy happened before cache.close().");
               } else {
                 Assert.fail("PRQueryRemoteNodeExceptionDUnitTest: Test did not receive Exception as expected from local node rather received", ex);
               }
@@ -639,14 +639,14 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
         }
       );
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception Test ENDED");
   }
   
   public void testForceReattemptExceptionFromLocal() throws Exception {
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception test Started");
     Host host = Host.getHost(0);
@@ -659,7 +659,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vmList.add(vm0);
     vmList.add(vm2);
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating PR's across all VM0 , VM1");
     vm0.invoke(PRQHelp
@@ -669,17 +669,17 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     vm2.invoke(PRQHelp
         .getCacheSerializableRunnableForPRCreateLimitedBuckets(name, 1/*redundancy*/, numOfBuckets));
 
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created PR on VM0 , VM1");
 
     // creating a local region on one of the JVM's
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Creating Local Region on VM0");
     vm0.invoke(PRQHelp
         .getCacheSerializableRunnableForLocalRegionCreation(localName));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Created Local Region on VM0");
 
@@ -689,22 +689,22 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
     final PortfolioData[] portfolio = PRQHelp.createPortfolioData(cnt, cntDest);
 
     // Putting the data into the accessor node
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data through the accessor node");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(name, portfolio,
         cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data through the accessor node");
 
     // Putting the same data in the local region created
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Inserting Portfolio data on local node  VM0 for result Set Comparison");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
         portfolio, cnt, cntDest));
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRegionDestroyedDUnitTest#testPRWithLocalAndRemoteException: Successfully Inserted Portfolio data on local node  VM0 for result Set Comparison");
 
@@ -721,13 +721,13 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               @Override
               public void startQuery(Query query) {
                 Object region = ((DefaultQuery)query).getRegionsInQuery(null).iterator().next();
-                LogWriterSupport.getLogWriter().info("Region type on VM1:"+region);
+                LogWriterUtils.getLogWriter().info("Region type on VM1:"+region);
                 if (noOfAccess == 1) {
                   PartitionedRegion pr = (PartitionedRegion)PRQHelp.getCache().getRegion(name);
                   List buks = pr.getLocalPrimaryBucketsListTestOnly();
-                  LogWriterSupport.getLogWriter().info("Available buckets:"+buks);
+                  LogWriterUtils.getLogWriter().info("Available buckets:"+buks);
                   int bukId = ((Integer)(buks.get(0))).intValue();
-                  LogWriterSupport.getLogWriter().info("Destroying bucket id:"+bukId);
+                  LogWriterUtils.getLogWriter().info("Destroying bucket id:"+bukId);
                   pr.getDataStore().getLocalBucketById(bukId).destroyRegion();
                 }
                 ++noOfAccess;
@@ -752,13 +752,13 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
               @Override
               public void startQuery(Query query) {
                 Object region = ((DefaultQuery)query).getRegionsInQuery(null).iterator().next();
-                LogWriterSupport.getLogWriter().info("Region type on VM0:"+region);
+                LogWriterUtils.getLogWriter().info("Region type on VM0:"+region);
                 if (noOfAccess == 2) {
                   PartitionedRegion pr = (PartitionedRegion)PRQHelp.getCache().getRegion(name);
                   List buks = pr.getLocalPrimaryBucketsListTestOnly();
-                  LogWriterSupport.getLogWriter().info("Available buckets:"+buks);
+                  LogWriterUtils.getLogWriter().info("Available buckets:"+buks);
                   int bukId = ((Integer)(buks.get(0))).intValue();
-                  LogWriterSupport.getLogWriter().info("Destroying bucket id:"+bukId);
+                  LogWriterUtils.getLogWriter().info("Destroying bucket id:"+bukId);
                   pr.getDataStore().getLocalBucketById(bukId).destroyRegion();
                 }
                 ++noOfAccess;
@@ -770,7 +770,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
 
             try {
               query.execute();
-              LogWriterSupport.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Query executed successfully with ForceReattemptException on local and remote both.");
+              LogWriterUtils.getLogWriter().info("PRQueryRemoteNodeExceptionDUnitTest: Query executed successfully with ForceReattemptException on local and remote both.");
             } catch (Exception ex) {
               gotException = true;
               Assert.fail("PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Test received Exception", ex);
@@ -779,7 +779,7 @@ public class PRQueryRemoteNodeExceptionDUnitTest extends PartitionedRegionDUnitT
         }
       );
     
-    LogWriterSupport.getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQueryRemoteNodeExceptionDUnitTest#testPRWithLocalAndRemoteException: Querying with PR Local/Remote Exception Test ENDED");
   }

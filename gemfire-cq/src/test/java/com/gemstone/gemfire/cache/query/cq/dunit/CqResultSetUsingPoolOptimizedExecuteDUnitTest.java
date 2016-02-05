@@ -33,8 +33,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -80,7 +80,7 @@ public class CqResultSetUsingPoolOptimizedExecuteDUnitTest extends CqResultSetUs
     cqDUnitTest.createServer(server1);
     
     final int port1 = server1.invokeInt(CqQueryUsingPoolDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(1);
     
     String poolName = "testCQFailOver";
@@ -141,7 +141,7 @@ public class CqResultSetUsingPoolOptimizedExecuteDUnitTest extends CqResultSetUs
         try {
           CqServiceImpl = (com.gemstone.gemfire.cache.query.internal.cq.CqServiceImpl) ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqServiceImpl.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqServiceImpl.", ex);
           Assert.fail ("Failed to get the internal CqServiceImpl.", ex);
         }
         
@@ -164,7 +164,7 @@ public class CqResultSetUsingPoolOptimizedExecuteDUnitTest extends CqResultSetUs
           if (cqQuery.getName().equals(cqName)) {
             int size = cqQuery.getCqResultKeysSize();
             if (size != totalObjects) {
-              LogWriterSupport.getLogWriter().info("The number of Cached events " + size + 
+              LogWriterUtils.getLogWriter().info("The number of Cached events " + size + 
                   " is not equal to the expected size " + totalObjects);
               HashSet expectedKeys = new HashSet();
               for (int i = 1; i < totalObjects; i++) {
@@ -172,7 +172,7 @@ public class CqResultSetUsingPoolOptimizedExecuteDUnitTest extends CqResultSetUs
               }
               Set cachedKeys = cqQuery.getCqResultKeyCache();
               expectedKeys.removeAll(cachedKeys);
-              LogWriterSupport.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
+              LogWriterUtils.getLogWriter().info("Missing keys from the Cache : " + expectedKeys);
             }
             assertEquals("The number of keys cached for cq " + cqName + " is wrong.", 
                 totalObjects, cqQuery.getCqResultKeysSize());              
@@ -198,7 +198,7 @@ public class CqResultSetUsingPoolOptimizedExecuteDUnitTest extends CqResultSetUs
         try {
           CqServiceImpl = (CqServiceImpl) ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqServiceImpl.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqServiceImpl.", ex);
           Assert.fail ("Failed to get the internal CqServiceImpl.", ex);
         }
         

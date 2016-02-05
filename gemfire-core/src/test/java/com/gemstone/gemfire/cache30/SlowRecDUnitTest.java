@@ -40,9 +40,9 @@ import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.internal.tcp.Connection;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -295,7 +295,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
           dequeuedMsgs = stats.getAsyncDequeuedMsgs();
           curQueuedMsgs = queuedMsgs - dequeuedMsgs;
         }
-        LogWriterSupport.getLogWriter().info("After " + count + " " + " puts slowrec mode kicked in by queuing " + queuedMsgs + " for a total size of " + queueSize);
+        LogWriterUtils.getLogWriter().info("After " + count + " " + " puts slowrec mode kicked in by queuing " + queuedMsgs + " for a total size of " + queueSize);
       } finally {
         forceQueueFlush();
       }
@@ -310,7 +310,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       final long start = System.currentTimeMillis();
       Wait.waitForCriterion(ev, 30 * 1000, 200, true);
       final long finish = System.currentTimeMillis();
-      LogWriterSupport.getLogWriter().info("After " + (finish - start) + " ms async msgs where flushed. A total of " + stats.getAsyncDequeuedMsgs() + " were flushed. lastValue=" + lastValue);
+      LogWriterUtils.getLogWriter().info("After " + (finish - start) + " ms async msgs where flushed. A total of " + stats.getAsyncDequeuedMsgs() + " were flushed. lastValue=" + lastValue);
     
       checkLastValueInOtherVm(lastValue, null);
     }
@@ -393,7 +393,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
 //                           + "  dequeuedMsgs=" + dequeuedMsgs
 //                           + " conflatedMsgs=" + conflatedMsgs);
     final long finish = System.currentTimeMillis();
-    LogWriterSupport.getLogWriter().info("After " + (finish - start) + " ms async msgs where flushed. A total of " + (stats.getAsyncDequeuedMsgs()-intialDeQueuedMsgs) + " were flushed. Leaving a queue size of " + stats.getAsyncQueueSize() + ". The lastValue was " + lastValue);
+    LogWriterUtils.getLogWriter().info("After " + (finish - start) + " ms async msgs where flushed. A total of " + (stats.getAsyncDequeuedMsgs()-intialDeQueuedMsgs) + " were flushed. Leaving a queue size of " + stats.getAsyncQueueSize() + ". The lastValue was " + lastValue);
     
     checkLastValueInOtherVm(lastValue, null);
   }
@@ -437,8 +437,8 @@ public class SlowRecDUnitTest extends CacheTestCase {
       // give threads a chance to get queued
       try {Thread.sleep(100);} catch (InterruptedException ignore) {fail("interrupted");}
       forceQueueFlush();
-      Threads.join(t, 2 * 1000, LogWriterSupport.getLogWriter());
-      Threads.join(t2, 2 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(t, 2 * 1000);
+      ThreadUtils.join(t2, 2 * 1000);
       long endQueuedMsgs = stats.getAsyncQueuedMsgs();
       long endConflatedMsgs = stats.getAsyncConflatedMsgs();
       assertEquals(startConflatedMsgs, endConflatedMsgs);
@@ -481,7 +481,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
 
     // now make sure update+destroy does not conflate
     final Object key = "key";      
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] about to force queuing");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] about to force queuing");
     forceQueuing(r);
 
     int count = 0;
@@ -493,7 +493,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
 //    long dequeuedMsgs = stats.getAsyncDequeuedMsgs();
     int endCount = count+60;
 
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] about to build up queue");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] about to build up queue");
     long begin = System.currentTimeMillis();
     while (count < endCount) {
       value = "count=" + count;
@@ -516,14 +516,14 @@ public class SlowRecDUnitTest extends CacheTestCase {
     checkLastValueInOtherVm(lastValue, mylcb);
 
     // now make sure create+update+localDestroy does not conflate
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] force queuing create-update-destroy");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] force queuing create-update-destroy");
     forceQueuing(r);
     initialConflatedMsgs = stats.getAsyncConflatedMsgs();
 //    initialDequeuedMsgs = stats.getAsyncDequeuedMsgs();
 //    dequeuedMsgs = stats.getAsyncDequeuedMsgs();
     endCount = count + 40;
     
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] create-update-destroy");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] create-update-destroy");
     begin = System.currentTimeMillis();
     while (count < endCount) {
       value = "count=" + count;
@@ -543,7 +543,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     checkLastValueInOtherVm(lastValue, null);
 
     // now make sure update+invalidate does not conflate
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] force queuing update-invalidate");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] force queuing update-invalidate");
     forceQueuing(r);
     initialConflatedMsgs = stats.getAsyncConflatedMsgs();
 //    initialDequeuedMsgs = stats.getAsyncDequeuedMsgs();
@@ -554,7 +554,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
 //    dequeuedMsgs = stats.getAsyncDequeuedMsgs();
     endCount = count + 40;
 
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] update-invalidate");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] update-invalidate");
     begin = System.currentTimeMillis();
     while (count < endCount) {
       value = "count=" + count;
@@ -569,14 +569,14 @@ public class SlowRecDUnitTest extends CacheTestCase {
     }
     assertEquals(initialConflatedMsgs, stats.getAsyncConflatedMsgs());
     forceQueueFlush();
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] assert other vm");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] assert other vm");
     checkLastValueInOtherVm(lastValue, null);
 
     r.destroy(key);
 
     // now make sure updates to a conflating region are conflated even while
     // updates to a non-conflating are not.
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] conflate & no-conflate regions");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] conflate & no-conflate regions");
     forceQueuing(r);
     final int initialAsyncSocketWrites = stats.getAsyncSocketWrites();
 //    initialDequeuedMsgs = stats.getAsyncDequeuedMsgs();
@@ -606,7 +606,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     endCount = count + 80;
 
     begin = System.currentTimeMillis();
-    LogWriterSupport.getLogWriter().info("[testConflationSequence:DEBUG] count=" + count
+    LogWriterUtils.getLogWriter().info("[testConflationSequence:DEBUG] count=" + count
                         + " queuedMsgs=" + stats.getAsyncQueuedMsgs()
                         + " conflatedMsgs=" + stats.getAsyncConflatedMsgs()
                         + " dequeuedMsgs=" + stats.getAsyncDequeuedMsgs()
@@ -637,7 +637,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     }
 
     forceQueueFlush();
-    LogWriterSupport.getLogWriter().info("[testConflationSequence] assert other vm");
+    LogWriterUtils.getLogWriter().info("[testConflationSequence] assert other vm");
     checkLastValueInOtherVm(lastValue, null);
   }
   /**
@@ -688,7 +688,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
           fail("should have exceeded max-queue-size by now");
         }
       }
-      LogWriterSupport.getLogWriter().info("After " + count + " " + VALUE_SIZE + " byte puts slowrec mode kicked in but the queue filled when its size reached " + queueSize + " with " + queuedMsgs + " msgs");
+      LogWriterUtils.getLogWriter().info("After " + count + " " + VALUE_SIZE + " byte puts slowrec mode kicked in but the queue filled when its size reached " + queueSize + " with " + queuedMsgs + " msgs");
       // make sure we lost a connection to vm0
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
@@ -760,7 +760,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
           fail("should have exceeded async-queue-timeout by now");
         }
       }
-      LogWriterSupport.getLogWriter().info("After " + count + " " + VALUE_SIZE + " byte puts slowrec mode kicked in but the queue filled when its size reached " + queueSize + " with " + queuedMsgs + " msgs");
+      LogWriterUtils.getLogWriter().info("After " + count + " " + VALUE_SIZE + " byte puts slowrec mode kicked in but the queue filled when its size reached " + queueSize + " with " + queuedMsgs + " msgs");
       // make sure we lost a connection to vm0
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
@@ -818,7 +818,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     public final Object CONTROL_LOCK = new Object();
     
     public void afterCreate(EntryEvent event) {
-      LogWriterSupport.getLogWriter().info(event.getRegion().getName() + " afterCreate " + event.getKey());
+      LogWriterUtils.getLogWriter().info(event.getRegion().getName() + " afterCreate " + event.getKey());
       synchronized(this.CONTROL_LOCK) {
         if (event.getCallbackArgument() != null) {
           this.callbackArguments.add(
@@ -830,7 +830,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       processEvent(event);
     }
     public void afterUpdate(EntryEvent event) {
-      LogWriterSupport.getLogWriter().info(event.getRegion().getName() + " afterUpdate " + event.getKey());
+      LogWriterUtils.getLogWriter().info(event.getRegion().getName() + " afterUpdate " + event.getKey());
       synchronized(this.CONTROL_LOCK) {
         if (event.getCallbackArgument() != null) {
           this.callbackArguments.add(
@@ -884,14 +884,14 @@ public class SlowRecDUnitTest extends CacheTestCase {
     }
     private void processSleep(EntryEvent event) {
       int sleepMs = ((Integer)event.getNewValue()).intValue();
-      LogWriterSupport.getLogWriter().info("[processSleep] sleeping for " + sleepMs);
+      LogWriterUtils.getLogWriter().info("[processSleep] sleeping for " + sleepMs);
       try {
         Thread.sleep(sleepMs);
       } catch (InterruptedException ignore) {fail("interrupted");}
     }
     private void processWait(EntryEvent event) {
       int sleepMs = ((Integer)event.getNewValue()).intValue();
-      LogWriterSupport.getLogWriter().info("[processWait] waiting for " + sleepMs);
+      LogWriterUtils.getLogWriter().info("[processWait] waiting for " + sleepMs);
       synchronized(this.CONTROL_LOCK) {
         try {
           this.CONTROL_LOCK.wait(sleepMs);
@@ -899,7 +899,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       }
     }
     private void processDisconnect(EntryEvent event) {
-      LogWriterSupport.getLogWriter().info("[processDisconnect] disconnecting");
+      LogWriterUtils.getLogWriter().info("[processDisconnect] disconnecting");
       disconnectFromDS();
     }
   };
@@ -920,7 +920,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       throw e;
     }
     catch (Throwable t) {
-      LogWriterSupport.getLogWriter().error("Encountered exception: ", t);
+      LogWriterUtils.getLogWriter().error("Encountered exception: ", t);
       throw t;
     }
     finally {
@@ -989,11 +989,11 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // put vm0 cache listener into wait
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] about to put vm0 into wait");
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] about to put vm0 into wait");
     r1.put(KEY_WAIT, new Integer(millisToWait));
 
     // build up queue size
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] building up queue size...");
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] building up queue size...");
     final Object key = "key";
     final int socketBufferSize = getSystem().getConfig().getSocketBufferSize();
     final int VALUE_SIZE = socketBufferSize*3;
@@ -1006,7 +1006,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       r1.put(key, value);
     }
     
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] After " + 
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] After " + 
       count + " puts of size " + VALUE_SIZE + 
       " slowrec mode kicked in with queue size=" + stats.getAsyncQueueSize());
 
@@ -1064,7 +1064,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
         CALLBACK_DESTROY, CALLBACK_CREATE, CALLBACK_UPDATE }; 
 
     // send notify to vm0
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] wake up vm0");
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] wake up vm0");
     getOtherVm().invoke(new SerializableRunnable("Wake up other vm") {
       public void run() {
         synchronized(doTestMultipleRegionConflation_R1_Listener.CONTROL_LOCK) {
@@ -1074,7 +1074,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // wait for queue to be flushed
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] wait for vm0");
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] wait for vm0");
     getOtherVm().invoke(new SerializableRunnable("Wait for other vm") {
       public void run() {
         try {
@@ -1093,12 +1093,12 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // assert values on both listeners
-    LogWriterSupport.getLogWriter().info("[doTestMultipleRegionConflation] assert callback arguments");
+    LogWriterUtils.getLogWriter().info("[doTestMultipleRegionConflation] assert callback arguments");
     getOtherVm().invoke(new SerializableRunnable("Assert callback arguments") {
       public void run() {
         synchronized(doTestMultipleRegionConflation_R1_Listener.CONTROL_LOCK) {
-          LogWriterSupport.getLogWriter().info("doTestMultipleRegionConflation_R1_Listener.callbackArguments=" + doTestMultipleRegionConflation_R1_Listener.callbackArguments);
-          LogWriterSupport.getLogWriter().info("doTestMultipleRegionConflation_R1_Listener.callbackTypes=" + doTestMultipleRegionConflation_R1_Listener.callbackTypes);
+          LogWriterUtils.getLogWriter().info("doTestMultipleRegionConflation_R1_Listener.callbackArguments=" + doTestMultipleRegionConflation_R1_Listener.callbackArguments);
+          LogWriterUtils.getLogWriter().info("doTestMultipleRegionConflation_R1_Listener.callbackTypes=" + doTestMultipleRegionConflation_R1_Listener.callbackTypes);
           assertEquals(doTestMultipleRegionConflation_R1_Listener.callbackArguments.size(),
                        doTestMultipleRegionConflation_R1_Listener.callbackTypes.size());
           int i = 0;
@@ -1112,8 +1112,8 @@ public class SlowRecDUnitTest extends CacheTestCase {
           }
         }
         synchronized(doTestMultipleRegionConflation_R2_Listener.CONTROL_LOCK) {
-          LogWriterSupport.getLogWriter().info("doTestMultipleRegionConflation_R2_Listener.callbackArguments=" + doTestMultipleRegionConflation_R2_Listener.callbackArguments);
-          LogWriterSupport.getLogWriter().info("doTestMultipleRegionConflation_R2_Listener.callbackTypes=" + doTestMultipleRegionConflation_R2_Listener.callbackTypes);
+          LogWriterUtils.getLogWriter().info("doTestMultipleRegionConflation_R2_Listener.callbackArguments=" + doTestMultipleRegionConflation_R2_Listener.callbackArguments);
+          LogWriterUtils.getLogWriter().info("doTestMultipleRegionConflation_R2_Listener.callbackTypes=" + doTestMultipleRegionConflation_R2_Listener.callbackTypes);
           assertEquals(doTestMultipleRegionConflation_R2_Listener.callbackArguments.size(),
                        doTestMultipleRegionConflation_R2_Listener.callbackTypes.size());
           int i = 0;
@@ -1142,7 +1142,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       throw e;
     }
     catch (Throwable t) {
-      LogWriterSupport.getLogWriter().error("Encountered exception: ", t);
+      LogWriterUtils.getLogWriter().error("Encountered exception: ", t);
       throw t;
     }
     finally {
@@ -1188,13 +1188,13 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
 
     // put vm0 cache listener into wait
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] about to put vm0 into wait");
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] about to put vm0 into wait");
     int millisToWait = 1000 * 60 * 5; // 5 minutes
     r.put(KEY_WAIT, new Integer(millisToWait));
     r.put(KEY_DISCONNECT, KEY_DISCONNECT);
 
     // build up queue size
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] building up queue size...");
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] building up queue size...");
     final Object key = "key";
     final int socketBufferSize = getSystem().getConfig().getSocketBufferSize();
     final int VALUE_SIZE = socketBufferSize*3;
@@ -1209,7 +1209,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       assertFalse(System.currentTimeMillis() >= abortMillis);
     }
     
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] After " + 
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] After " + 
       count + " puts of size " + VALUE_SIZE + 
       " slowrec mode kicked in with queue size=" + stats.getAsyncQueueSize());
 
@@ -1226,7 +1226,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       assertFalse(System.currentTimeMillis() >= abortMillis);
     }
     
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] After " + 
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] After " + 
       count + " puts of size " + VALUE_SIZE + " queue size has reached " + 
       stats.getAsyncQueueSize() + " bytes and number of queues is " + 
       stats.getAsyncQueues() + ".");
@@ -1238,7 +1238,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     assertTrue(dm.getOtherDistributionManagerIds().size() > others.size());
     
     // send notify to vm0
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] wake up vm0");
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] wake up vm0");
     getOtherVm().invoke(new SerializableRunnable("Wake up other vm") {
       public void run() {
         synchronized(doTestDisconnectCleanup_Listener.CONTROL_LOCK) {
@@ -1248,7 +1248,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // make sure we lost a connection to vm0
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] wait for vm0 to disconnect");
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] wait for vm0 to disconnect");
     WaitCriterion ev = new WaitCriterion() {
       public boolean done() {
         return dm.getOtherDistributionManagerIds().size() <= others.size();
@@ -1261,7 +1261,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     assertEquals(others, dm.getOtherDistributionManagerIds());
     
     // check free memory... perform wait loop with System.gc
-    LogWriterSupport.getLogWriter().info("[testDisconnectCleanup] wait for queue cleanup");
+    LogWriterUtils.getLogWriter().info("[testDisconnectCleanup] wait for queue cleanup");
     ev = new WaitCriterion() {
       public boolean done() {
         if (stats.getAsyncQueues() <= initialQueues) {
@@ -1296,7 +1296,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
       throw e;
     }
     catch (Throwable t) {
-      LogWriterSupport.getLogWriter().error("Encountered exception: ", t);
+      LogWriterUtils.getLogWriter().error("Encountered exception: ", t);
       throw t;
     }
     finally {
@@ -1344,12 +1344,12 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
 
     // put vm0 cache listener into wait
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] about to put vm0 into wait");
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] about to put vm0 into wait");
     final int millisToWait = 1000 * 60 * 5; // 5 minutes
     r.put(KEY_WAIT, new Integer(millisToWait));
 
     // build up queue size
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] building up queue size...");
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] building up queue size...");
     final Object key = "key";
     final int socketBufferSize = getSystem().getConfig().getSocketBufferSize();
     final int VALUE_SIZE = socketBufferSize*3;
@@ -1365,7 +1365,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     final int partialId = count;
     assertEquals(0, stats.getAsyncConflatedMsgs());
     
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] After " + 
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] After " + 
       count + " puts of size " + VALUE_SIZE + 
       " slowrec mode kicked in with queue size=" + stats.getAsyncQueueSize());
 
@@ -1394,7 +1394,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     final int[] expectedArgs = { partialId, conflateId };
 
     // send notify to vm0
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] wake up vm0");
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] wake up vm0");
     getOtherVm().invoke(new SerializableRunnable("Wake up other vm") {
       public void run() {
         synchronized(doTestPartialMessage_Listener.CONTROL_LOCK) {
@@ -1404,7 +1404,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // wait for queue to be flushed
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] wait for vm0");
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] wait for vm0");
     getOtherVm().invoke(new SerializableRunnable("Wait for other vm") {
       public void run() {
         try {
@@ -1430,11 +1430,11 @@ public class SlowRecDUnitTest extends CacheTestCase {
     });
     
     // assert values on both listeners
-    LogWriterSupport.getLogWriter().info("[testPartialMessage] assert callback arguments");
+    LogWriterUtils.getLogWriter().info("[testPartialMessage] assert callback arguments");
     getOtherVm().invoke(new SerializableRunnable("Assert callback arguments") {
       public void run() {
         synchronized(doTestPartialMessage_Listener.CONTROL_LOCK) {
-          LogWriterSupport.getLogWriter().info("[testPartialMessage] " +
+          LogWriterUtils.getLogWriter().info("[testPartialMessage] " +
               "doTestPartialMessage_Listener.callbackArguments=" + 
               doTestPartialMessage_Listener.callbackArguments);
               

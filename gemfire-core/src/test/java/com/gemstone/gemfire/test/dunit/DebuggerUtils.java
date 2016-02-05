@@ -16,16 +16,35 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
-public class DebuggerSupport {
+import com.gemstone.gemfire.internal.util.DebuggerSupport;
 
-  protected DebuggerSupport() {
+/**
+ * <code>DebuggerUtils</code> provides static utility methods that facilitate
+ * runtime debugging.
+ * 
+ * These methods can be used directly: <code>DebuggerUtils.attachDebugger(...)</code>, 
+ * however, they are intended to be referenced through static import:
+ *
+ * <pre>
+ * import static com.gemstone.gemfire.test.dunit.DebuggerUtils.*;
+ *    ...
+ *    attachDebugger(...);
+ * </pre>
+ *
+ * Extracted from DistributedTestCase.
+ * 
+ * @see com.gemstone.gemfire.internal.util.DebuggerSupport
+ */
+public class DebuggerUtils {
+
+  protected DebuggerUtils() {
   }
   
-  public static void attachDebugger(VM vm, final String msg) {
-    vm.invoke(new SerializableRunnable("Attach Debugger") {
+  @SuppressWarnings("serial")
+  public static void attachDebugger(final VM vm, final String message) {
+    vm.invoke(new SerializableRunnable(DebuggerSupport.class.getSimpleName()+" waitForJavaDebugger") {
       public void run() {
-        com.gemstone.gemfire.internal.util.DebuggerSupport.
-        waitForJavaDebugger(msg);
+        DebuggerSupport.waitForJavaDebugger(message);
       } 
     });
   }

@@ -42,7 +42,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -234,7 +234,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
               ObjectName queryExpON = new ObjectName(queryExp);
               return !(mbeanServer.queryNames(null, queryExpON).isEmpty());
             } catch (MalformedObjectNameException mone) {
-              LogWriterSupport.getLogWriter().error(mone);
+              LogWriterUtils.getLogWriter().error(mone);
               fail(mone.getMessage());
               return false;
             }
@@ -252,36 +252,36 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
 
     // Test failure when region not found
     String command = "destroy region --name=DOESNOTEXIST";
-    LogWriterSupport.getLogWriter().info("testDestroyRegion command=" + command);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion command=" + command);
     CommandResult cmdResult = executeCommand(command);
     String strr = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("testDestroyRegion strr=" + strr);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion strr=" + strr);
     assertTrue(stringContainsLine(strr, "Could not find.*\"DOESNOTEXIST\".*"));
     assertEquals(Result.Status.ERROR, cmdResult.getStatus());
 
     // Test unable to destroy with co-location
     command = "destroy region --name=/Customer";
-    LogWriterSupport.getLogWriter().info("testDestroyRegion command=" + command);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion command=" + command);
     cmdResult = executeCommand(command);
     strr = commandResultToString(cmdResult);
-    LogWriterSupport.getLogWriter().info("testDestroyRegion strr=" + strr);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion strr=" + strr);
     assertEquals(Result.Status.ERROR, cmdResult.getStatus());
 
     // Test success
     command = "destroy region --name=/Order";
-    LogWriterSupport.getLogWriter().info("testDestroyRegion command=" + command);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion command=" + command);
     cmdResult = executeCommand(command);
     strr = commandResultToString(cmdResult);
     assertTrue(stringContainsLine(strr, ".*Order.*destroyed successfully.*"));
-    LogWriterSupport.getLogWriter().info("testDestroyRegion strr=" + strr);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion strr=" + strr);
     assertEquals(Result.Status.OK, cmdResult.getStatus());
 
     command = "destroy region --name=/Customer";
-    LogWriterSupport.getLogWriter().info("testDestroyRegion command=" + command);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion command=" + command);
     cmdResult = executeCommand(command);
     strr = commandResultToString(cmdResult);
     assertTrue(stringContainsLine(strr, ".*Customer.*destroyed successfully.*"));
-    LogWriterSupport.getLogWriter().info("testDestroyRegion strr=" + strr);
+    LogWriterUtils.getLogWriter().info("testDestroyRegion strr=" + strr);
     assertEquals(Result.Status.OK, cmdResult.getStatus());
   }
 
@@ -290,19 +290,19 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
     createDefaultSetup(null);
     String command = CliStrings.CREATE_REGION + " --" + CliStrings.CREATE_REGION__REGION + "=" + this.region46391 + " --" + CliStrings.CREATE_REGION__REGIONSHORTCUT + "=REPLICATE";
 
-    LogWriterSupport.getLogWriter().info("testCreateRegion46391 create region command=" + command);
+    LogWriterUtils.getLogWriter().info("testCreateRegion46391 create region command=" + command);
 
     CommandResult cmdResult = executeCommand(command);
     assertEquals(Result.Status.OK, cmdResult.getStatus());
 
     command = CliStrings.PUT + " --" + CliStrings.PUT__KEY + "=k1" + " --" + CliStrings.PUT__VALUE + "=k1" + " --" + CliStrings.PUT__REGIONNAME + "=" + this.region46391;
 
-    LogWriterSupport.getLogWriter().info("testCreateRegion46391 put command=" + command);
+    LogWriterUtils.getLogWriter().info("testCreateRegion46391 put command=" + command);
 
     CommandResult cmdResult2 = executeCommand(command);
     assertEquals(Result.Status.OK, cmdResult2.getStatus());
 
-    LogWriterSupport.getLogWriter().info("testCreateRegion46391  cmdResult2=" + commandResultToString(cmdResult2));
+    LogWriterUtils.getLogWriter().info("testCreateRegion46391  cmdResult2=" + commandResultToString(cmdResult2));
     String str1 = "Result      : true";
     String str2 = "Key         : k1";
     String str3 = "Key Class   : java.lang.String";
@@ -815,7 +815,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
               ObjectName queryExpON = new ObjectName(queryExp);
               return !(mbeanServer.queryNames(null, queryExpON).isEmpty());
             } catch (MalformedObjectNameException mone) {
-              LogWriterSupport.getLogWriter().error(mone);
+              LogWriterUtils.getLogWriter().error(mone);
               fail(mone.getMessage());
               return false;
             }
@@ -1001,7 +1001,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
               ObjectName queryExpON = new ObjectName(queryExp);
               return !(mbeanServer.queryNames(null, queryExpON).isEmpty());
             } catch (MalformedObjectNameException mone) {
-              LogWriterSupport.getLogWriter().error(mone);
+              LogWriterUtils.getLogWriter().error(mone);
               fail(mone.getMessage());
               return false;
             }
@@ -1034,7 +1034,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
     commandStringBuilder = new CommandStringBuilder(CliStrings.DESTROY_REGION);
     commandStringBuilder.addOption(CliStrings.DESTROY_REGION__REGION, regionName);
     cmdResult = executeCommand(commandStringBuilder.toString());
-    LogWriterSupport.getLogWriter().info("#SB" + commandResultToString(cmdResult));
+    LogWriterUtils.getLogWriter().info("#SB" + commandResultToString(cmdResult));
     assertEquals(Result.Status.OK, cmdResult.getStatus());
 
     // Make sure the region was removed from the shared config
@@ -1087,7 +1087,7 @@ public class CreateAlterDestroyRegionCommandsDUnitTest extends CliCommandTestBas
           executeCommand("undeploy --jar=" + fileToDelete.getName());
         }
       } catch (IOException e) {
-        LogWriterSupport.getLogWriter().error("Unable to delete file", e);
+        LogWriterUtils.getLogWriter().error("Unable to delete file", e);
       }
     }
     this.filesToBeDeleted.clear();

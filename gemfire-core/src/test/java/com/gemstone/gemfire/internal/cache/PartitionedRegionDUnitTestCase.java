@@ -199,10 +199,10 @@ public class PartitionedRegionDUnitTestCase extends CacheTestCase
                 prPrefix + i,
                 PartitionedRegionTestHelper.createRegionAttrsForPR(redundancy,
                     localmaxMemory, recoveryDelay));
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Created Region  new  --- " + prPrefix + i);
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Created Region  new  --- " + prPrefix + i);
           } catch (RegionExistsException ignore) {}
         }
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("getCreateMultiplePRregion() - Partition Regions Successfully Completed ");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("getCreateMultiplePRregion() - Partition Regions Successfully Completed ");
       }
     };
   }

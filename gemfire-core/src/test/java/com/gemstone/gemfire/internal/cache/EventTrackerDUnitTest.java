@@ -42,7 +42,7 @@ import com.gemstone.gemfire.internal.cache.EventTracker.BulkOpHolder;
 import com.gemstone.gemfire.internal.cache.ha.ThreadIdentifier;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -161,7 +161,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
     // Create Create Region in the client
     final int port = serverVM.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = NetworkSupport.getServerHostName(host);
+    final String hostName = NetworkUtils.getServerHostName(host);
     clientVM.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();
@@ -234,7 +234,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
     // Create Create Region in the client
     final int port = serverVM.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = NetworkSupport.getServerHostName(host);
+    final String hostName = NetworkUtils.getServerHostName(host);
     clientVM.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();
@@ -312,7 +312,7 @@ public class EventTrackerDUnitTest extends CacheTestCase {
     
  // Create Create Region in the client
     final int port = vm0.invokeInt(EventTrackerDUnitTest.class, "getCacheServerPort");
-    final String hostName = NetworkSupport.getServerHostName(host);
+    final String hostName = NetworkUtils.getServerHostName(host);
     vm2.invoke(new CacheSerializableRunnable("Create client") {
       public void run2() throws CacheException {
         getCache();

@@ -66,8 +66,8 @@ import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -170,7 +170,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -183,7 +183,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -210,35 +210,35 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
             resWithoutIndexRemote[i] = rs[0][0];
-            LogWriterSupport.getLogWriter().info("RR remote indexType: no index  size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote indexType: no index  size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
             
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
             resWithoutIndexLocal[i] = rs[0][1];
-            LogWriterSupport.getLogWriter().info("RR  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
           } catch (Exception e) {
             Assert.fail("Failed executing " + queryString[i], e);
           }
           try{
             // to compare remote query results with and without index
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server for region2:" + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server for region2:" + queryString2[i]);
             Query query = remoteQueryService.newQuery(queryString2[i]);
             resWithIndexRemote[i] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR  remote region2 size of resultset: "+ resWithIndexRemote[i].size() + " for query: " + queryString2[i]);;
+            LogWriterUtils.getLogWriter().info("RR  remote region2 size of resultset: "+ resWithIndexRemote[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexRemote[i].asList(), queryString2[i]);
 
            // to compare local query results with and without index
-            LogWriterSupport.getLogWriter().info("### Executing Query on local for region2:" + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on local for region2:" + queryString2[i]);
             query = localQueryService.newQuery(queryString2[i]);
             resWithIndexLocal[i] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
+            LogWriterUtils.getLogWriter().info("RR  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexLocal[i].asList(), queryString2[i]);
           } catch (Exception e) {
             Assert.fail("Failed executing " + queryString2[i], e);
@@ -295,7 +295,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -304,9 +304,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType: no  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType: no  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
 
@@ -315,7 +315,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           }
           try{
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString2[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType: no size of resultset: " + rs.size() + " for query: " + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType: no size of resultset: " + rs.size() + " for query: " + queryString2[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString2[i]);
           }catch (Exception e) {
@@ -335,9 +335,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("isPR: false server local readSerializedTrue: indexType: false size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("isPR: false server local readSerializedTrue: indexType: false size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -357,9 +357,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType: false size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType: false size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -428,7 +428,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -441,7 +441,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -482,16 +482,16 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR remote indexType: CompactRange size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote indexType: CompactRange size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
              
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR  client local indexType: CompactRange size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR  client local indexType: CompactRange size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
              
             if(i < orderByQueryIndex){
@@ -519,7 +519,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -528,9 +528,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -549,9 +549,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local readSerializedTrue: indexType: CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local readSerializedTrue: indexType: CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -571,9 +571,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -640,7 +640,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port0 = server0.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -653,7 +653,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -690,16 +690,16 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR remote indexType: Range size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote indexType: Range size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
            
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR  client local indexType: Range size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR  client local indexType: Range size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
             
             if(i < orderByQueryIndex){
@@ -726,7 +726,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -735,9 +735,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -755,9 +755,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
        // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR  server local readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR  server local readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -775,9 +775,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -854,7 +854,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -867,7 +867,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -894,35 +894,35 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
             resWithoutIndexRemote[i] = rs[0][0];
-            LogWriterSupport.getLogWriter().info("RR remote no index size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote no index size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
 
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
             resWithoutIndexLocal[i] = rs[0][1];
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ "  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ "  client local indexType:no index size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
           } catch (Exception e) {
             Assert.fail("Failed executing " + queryString[i], e);
           }
           try{  
             // to compare remote query results with and without index
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server for region2:" + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server for region2:" + queryString2[i]);
             Query query = remoteQueryService.newQuery(queryString2[i]);
             resWithIndexRemote[i] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ "  remote region2 size of resultset: "+ resWithIndexRemote[i].size() + " for query: " + queryString2[i]);;
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ "  remote region2 size of resultset: "+ resWithIndexRemote[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexRemote[i].asList(), queryString2[i]);
 
            // to compare local query results with and without index
-            LogWriterSupport.getLogWriter().info("### Executing Query on local for region2:" + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on local for region2:" + queryString2[i]);
             query = localQueryService.newQuery(queryString2[i]);
             resWithIndexLocal[i] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ "  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ "  local region2 size of resultset: "+ resWithIndexLocal[i].size() + " for query: " + queryString2[i]);;
             checkForPdxString(resWithIndexLocal[i].asList(), queryString2[i]);
           } catch (Exception e) {
             Assert.fail("Failed executing " + queryString2[i], e);
@@ -931,8 +931,8 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
             if(i < orderByQueryIndex){
               // Compare local and remote query results.
               if (!compareResultsOfWithAndWithoutIndex(rs)){
-                LogWriterSupport.getLogWriter().info("result0="+rs[0][0].asList());
-                LogWriterSupport.getLogWriter().info("result1="+rs[0][1].asList());
+                LogWriterUtils.getLogWriter().info("result0="+rs[0][0].asList());
+                LogWriterUtils.getLogWriter().info("result1="+rs[0][1].asList());
                fail("Local and Remote Query Results are not matching for query :" + queryString[i]);  
               }
             }
@@ -980,7 +980,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -989,9 +989,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("PR server local indexType:no  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("PR server local indexType:no  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -999,7 +999,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           }
           try{
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString2[i]).execute();
-            LogWriterSupport.getLogWriter().info("PR server local indexType: no size of resultset: " + rs.size() + " for query: " + queryString2[i]);
+            LogWriterUtils.getLogWriter().info("PR server local indexType: no size of resultset: " + rs.size() + " for query: " + queryString2[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString2[i]);
           }catch (Exception e) {
@@ -1019,9 +1019,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
        // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType: no index size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType: no index size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1040,9 +1040,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType:no index size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType:no index size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1118,7 +1118,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1131,7 +1131,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -1179,16 +1179,16 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR remote indexType:CompactRange size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote indexType:CompactRange size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
            
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ "  client local indexType:CompactRange size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ "  client local indexType:CompactRange size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
  
             if(i < orderByQueryIndex){
@@ -1214,7 +1214,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -1223,9 +1223,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1245,9 +1245,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1267,9 +1267,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType: indexType:CompactRange size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1345,7 +1345,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1358,7 +1358,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         factory.setScope(Scope.LOCAL);
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         for (int i=0; i<numberOfEntries; i++) {
           region.put("key-"+i, new PortfolioPdx(i));
          }
@@ -1403,23 +1403,23 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         
         for (int i=0; i < queryString.length; i++){
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query on remote server:" + queryString[i]);
             Query query = remoteQueryService.newQuery(queryString[i]);
             rs[0][0] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("RR remote indexType: Range size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("RR remote indexType: Range size of resultset: "+ rs[0][0].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][0].asList(), queryString[i]);
                       
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on client:" + queryString[i]);
             query = localQueryService.newQuery(queryString[i]);
             rs[0][1] = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ "  client local indexType: Range size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ "  client local indexType: Range size of resultset: "+ rs[0][1].size() + " for query: " + queryString[i]);;
             checkForPdxString(rs[0][1].asList(), queryString[i]);
                    
             if(i < orderByQueryIndex){
               // Compare local and remote query results.
               if (!compareResultsOfWithAndWithoutIndex(rs)){
-                LogWriterSupport.getLogWriter().info("result0="+rs[0][0].asList());
-                LogWriterSupport.getLogWriter().info("result1="+rs[0][1].asList());
+                LogWriterUtils.getLogWriter().info("result0="+rs[0][0].asList());
+                LogWriterUtils.getLogWriter().info("result1="+rs[0][1].asList());
                fail("Local and Remote Query Results are not matching for query :" + queryString[i]);  
               }
             }
@@ -1441,7 +1441,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       public void run2() throws CacheException {
         Region region = getRootRegion().getSubregion(regionName);
 
-        LogWriterSupport.getLogWriter().info("Put Objects locally on server");
+        LogWriterUtils.getLogWriter().info("Put Objects locally on server");
         for (int i=numberOfEntries; i<numberOfEntries*2; i++) {
           region.put("key-"+i, new Portfolio(i));
          }
@@ -1450,9 +1450,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server local indexType:Range  size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1472,9 +1472,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 locally to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) localQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("isPR: " + isPr+ " server local readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1494,9 +1494,9 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         // Query server1 remotely to check if PdxString is not being returned
         for (int i = 0; i < queryString.length; i++) {
           try {
-            LogWriterSupport.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
+            LogWriterUtils.getLogWriter().info("### Executing Query locally on server:" + queryString[i]);
             SelectResults rs = (SelectResults) remoteQueryService.newQuery(queryString[i]).execute();
-            LogWriterSupport.getLogWriter().info("RR server remote readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
+            LogWriterUtils.getLogWriter().info("RR server remote readSerializedTrue: indexType: Range size of resultset: " + rs.size() + " for query: " + queryString[i]);
             // The results should not be PdxString
             checkForPdxString(rs.asList(), queryString[i]);
           } catch (Exception e) {
@@ -1572,7 +1572,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     final int port1 = server1.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(PdxStringQueryDUnitTest.class, "getCacheServerPort");
 
-    final String host0 = NetworkSupport.getServerHostName(server0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server0.getHost());
 
     // Create client pool.
     final String poolName = "testClientServerQueryPool"; 
@@ -1586,7 +1586,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         ClientServerTestCase.configureConnectionPool(factory, host0, port1,-1, true, -1, -1, null);
         Region region = createRegion(regionName, rootRegionName,  factory.create());
       
-        LogWriterSupport.getLogWriter().info("Put PortfolioPdx");
+        LogWriterUtils.getLogWriter().info("Put PortfolioPdx");
         // Put some PortfolioPdx objects with null Status and secIds 
         for (int i=0; i<numberOfEntries*2; i++) {
           PortfolioPdx portfolioPdx = new PortfolioPdx(i);
@@ -1649,7 +1649,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
           try {
             Query query = remoteQueryService.newQuery(qs[i]);
             SelectResults res = (SelectResults)query.execute();
-            LogWriterSupport.getLogWriter().info("PR NULL Pdxstring test size of resultset: "+ res.size() + " for query: " + qs[i]);;
+            LogWriterUtils.getLogWriter().info("PR NULL Pdxstring test size of resultset: "+ res.size() + " for query: " + qs[i]);;
             if(i == 0){
               for(Object o : res){
                 if(o != null){
@@ -1839,8 +1839,8 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm0.getHost()), port1);
-        cf.addPoolServer(NetworkSupport.getServerHostName(vm1.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm0.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm1.getHost()), port2);
         ClientCache cache = getClientCache(cf);
         Region region = cache.createClientRegionFactory(ClientRegionShortcut.PROXY)
            .create(regionName);
@@ -1935,12 +1935,12 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
     SerializableRunnable closeCache =
       new CacheSerializableRunnable("Close Client") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Close Client. ###");
+        LogWriterUtils.getLogWriter().info("### Close Client. ###");
         try {
           closeCache();
           disconnectFromDS();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("### Failed to get close client. ###");
+          LogWriterUtils.getLogWriter().info("### Failed to get close client. ###");
         }
       }
     };
@@ -1973,7 +1973,7 @@ public class PdxStringQueryDUnitTest extends CacheTestCase{
         cpf.setSubscriptionEnabled(subscriptionEnabled);
         cpf.setSubscriptionRedundancy(redundancy);
         for (int i=0; i < servers.length; i++){
-          LogWriterSupport.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
+          LogWriterUtils.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
           cpf.addServer(servers[i], ports[i]);
         }
         cpf.create(poolName);

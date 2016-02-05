@@ -44,9 +44,9 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -204,7 +204,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         hooked = false;//Let client put go further.
       }
     });
-    Threads.join(putThread, 200, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(putThread, 200);
   }
 
   public void testRangeIndex() {
@@ -299,7 +299,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         }
       }
     });
-    Threads.join(putThread, 200, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(putThread, 200);
   }
   
   public void testRangeIndexWithIndexAndQueryFromCluaseMisMatch() {
@@ -390,7 +390,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         }
       }
     });
-    Threads.join(putThread, 200, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(putThread, 200);
   }
 
   public void testRangeIndexWithIndexAndQueryFromCluaseMisMatch2() {
@@ -481,7 +481,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         }
       }
     });
-    Threads.join(putThread, 200, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(putThread, 200);
   }
   
   public static void createProxyRegions() {
@@ -544,7 +544,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         Region region = cache.getRegion(repRegionName);
         for (int j = from; j < to; j++)
           region.put(new Integer(j), portfolio[j]);
-          LogWriterSupport.getLogWriter()
+          LogWriterUtils.getLogWriter()
             .info(
                 "PRQueryDUnitHelper#getCacheSerializableRunnableForPRPuts: Inserted Portfolio data on Region "
                     + regionName);
@@ -558,7 +558,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
       switch (spot) {
       case 9: //Before Index update and after region entry lock.
         hooked  = true;
-        LogWriterSupport.getLogWriter().info("QueryDataInconsistency.IndexManagerTestHook is hooked in Update Index Entry.");
+        LogWriterUtils.getLogWriter().info("QueryDataInconsistency.IndexManagerTestHook is hooked in Update Index Entry.");
         while(hooked) {
           Wait.pause(100);
         }
@@ -566,7 +566,7 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
         break;
       case 10: //Before Region update and after Index Remove call.
         hooked  = true;
-        LogWriterSupport.getLogWriter().info("QueryDataInconsistency.IndexManagerTestHook is hooked in Remove Index Entry.");
+        LogWriterUtils.getLogWriter().info("QueryDataInconsistency.IndexManagerTestHook is hooked in Remove Index Entry.");
         while(hooked) {
           Wait.pause(100);
         }

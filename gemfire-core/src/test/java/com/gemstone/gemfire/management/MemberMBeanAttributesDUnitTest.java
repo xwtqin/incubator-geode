@@ -26,7 +26,7 @@ import com.gemstone.gemfire.internal.NanoTimer;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.process.PidUnavailableException;
 import com.gemstone.gemfire.internal.process.ProcessUtils;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -113,7 +113,7 @@ public class MemberMBeanAttributesDUnitTest extends ManagementTestBase {
       public void run() {
         GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
         RegionFactory rf = cache.createRegionFactory(RegionShortcut.REPLICATE);
-        LogWriterSupport.getLogWriter().info("Creating Dist Region");
+        LogWriterUtils.getLogWriter().info("Creating Dist Region");
         rf.create("testRegion1");
         rf.create("testRegion2");
         rf.create("testRegion3");

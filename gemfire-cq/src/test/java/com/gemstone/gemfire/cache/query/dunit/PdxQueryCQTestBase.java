@@ -131,7 +131,7 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
             cpf.setSubscriptionEnabled(subscriptionEnabled);
             cpf.setSubscriptionRedundancy(redundancy);
             for (int i=0; i < servers.length; i++){
-              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
+              com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Adding to Pool. ### Server : " + servers[i] + " Port : " + ports[i]);
               cpf.addServer(servers[i], ports[i]);
             }
             cpf.create(poolName);
@@ -157,14 +157,14 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
         }          
   
         try {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Executing Query on server:" + queryStr);
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Executing Query on server:" + queryStr);
           Query query = remoteQueryService.newQuery(queryStr);
           rs[0][0] = (SelectResults)query.execute();
           //printResults (rs[0][0], " ### Remote Query Results : ####");
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Executing Query locally:" + queryStr);
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Executing Query locally:" + queryStr);
           query = localQueryService.newQuery(queryStr);
           rs[0][1] = (SelectResults)query.execute();
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Remote Query rs size: " + (rs[0][0]).size() + 
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Remote Query rs size: " + (rs[0][0]).size() + 
               "Local Query rs size: " + (rs[0][1]).size());
           //printResults (rs[0][1], " ### Local Query Results : ####");
           // Compare local and remote query results.
@@ -255,7 +255,7 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
   
     for (int i=0; i < queryString.length; i++){
       try {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Executing Query :" + queryString[i]);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Executing Query :" + queryString[i]);
         Query query = qService.newQuery(queryString[i]);
         results = (SelectResults)query.execute(params[i]);
       } catch (Exception e) {
@@ -294,12 +294,12 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
     SerializableRunnable closeCache =
       new CacheSerializableRunnable("Close Client") {
       public void run2() throws CacheException {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Close Client. ###");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Close Client. ###");
         try {
           closeCache();
           disconnectFromDS();
         } catch (Exception ex) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("### Failed to get close client. ###");
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("### Failed to get close client. ###");
         }
       }
     };
@@ -334,13 +334,13 @@ public abstract class PdxQueryCQTestBase extends CacheTestCase {
     
     @Override
     public boolean equals(Object o){
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("In TestObject2.equals() this: " + this + " other :" + o);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("In TestObject2.equals() this: " + this + " other :" + o);
       GemFireCacheImpl.getInstance().getLoggerI18n().fine("In TestObject2.equals() this: " + this + " other :" + o);
       TestObject2 other = (TestObject2)o;
       if (_id == other._id) {
         return true;
       } else {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("NOT EQUALS");  
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("NOT EQUALS");  
         return false;
       }
     }

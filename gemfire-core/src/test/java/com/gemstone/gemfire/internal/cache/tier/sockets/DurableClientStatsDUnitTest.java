@@ -33,7 +33,7 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -181,7 +181,7 @@ public class DurableClientStatsDUnitTest extends DistributedTestCase {
 
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
             regionName,
             getDurableClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });
@@ -206,7 +206,7 @@ public class DurableClientStatsDUnitTest extends DistributedTestCase {
 
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
             regionName,
             getNonDurableClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });
@@ -231,7 +231,7 @@ public class DurableClientStatsDUnitTest extends DistributedTestCase {
 
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
             regionName,
             getDurableClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });
@@ -255,7 +255,7 @@ public class DurableClientStatsDUnitTest extends DistributedTestCase {
 
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(NetworkSupport.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
             regionName,
             getNonDurableClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });

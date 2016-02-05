@@ -28,7 +28,7 @@ import com.gemstone.gemfire.cache.snapshot.SnapshotOptions.SnapshotFormat;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class SnapshotByteArrayDUnitTest extends CacheTestCase {
@@ -81,13 +81,13 @@ public class SnapshotByteArrayDUnitTest extends CacheTestCase {
           }
           
           private void dump(EntryEvent<Integer, Object> event) {
-            LogWriterSupport.getLogWriter().info("op = " + event.getOperation());
+            LogWriterUtils.getLogWriter().info("op = " + event.getOperation());
             
             Object obj1 = event.getNewValue();
-            LogWriterSupport.getLogWriter().info("new = " + obj1);
+            LogWriterUtils.getLogWriter().info("new = " + obj1);
 
             Object obj2 = event.getOldValue();
-            LogWriterSupport.getLogWriter().info("old = " + obj2);
+            LogWriterUtils.getLogWriter().info("old = " + obj2);
           }
         });
         

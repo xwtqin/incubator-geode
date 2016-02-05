@@ -40,8 +40,8 @@ import com.gemstone.gemfire.management.internal.cli.CliUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -110,8 +110,8 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
     helper.startManagingNode(managingNode);
     int port = (Integer) createServerCache(server);
     DistributedMember serverMember = helper.getMember(server);
-    createClientCache(client, NetworkSupport.getServerHostName(server.getHost()), port);
-    createClientCache(client2, NetworkSupport.getServerHostName(server.getHost()), port);
+    createClientCache(client, NetworkUtils.getServerHostName(server.getHost()), port);
+    createClientCache(client2, NetworkUtils.getServerHostName(server.getHost()), port);
     put(client);
     put(client2);
     verifyClientIds(managingNode, serverMember, port);
@@ -233,7 +233,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
                   }
                 } 
               }catch (Exception e) {                 
-                LogWriterSupport.getLogWriter().info("exception occured " + e.getMessage() + CliUtil.stackTraceAsString((Throwable)e));
+                LogWriterUtils.getLogWriter().info("exception occured " + e.getMessage() + CliUtil.stackTraceAsString((Throwable)e));
               }
               return false;
             }
@@ -247,7 +247,7 @@ public class TestClientIdsDUnitTest extends DistributedTestCase {
           //Now it is sure that bean would be available
           CacheServerMXBean bean = MBeanUtil.getCacheServerMbeanProxy(
               serverMember, serverPort);
-          LogWriterSupport.getLogWriter().info("verifyClientIds = " + bean.getClientIds().length);
+          LogWriterUtils.getLogWriter().info("verifyClientIds = " + bean.getClientIds().length);
           assertEquals(true, bean.getClientIds().length > 0 ? true : false);
         } catch (Exception e) {
           fail("Error while verifying cache server from remote member " + e);

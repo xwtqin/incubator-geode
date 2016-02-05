@@ -24,7 +24,7 @@ import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.management.DistributedSystemMXBean;
 import com.gemstone.gemfire.management.ManagementService;
 import com.gemstone.gemfire.management.ManagementTestBase;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -101,7 +101,7 @@ public class TestFunctionsDUnitTest extends ManagementTestBase {
     });
     Integer numOfRunningFunctions = (Integer) managingNode.invoke(
         TestFunctionsDUnitTest.class, "getNumOfRunningFunction");
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "TestNumOfFunctions numOfRunningFunctions= " + numOfRunningFunctions);
     assertTrue(numOfRunningFunctions > 0 ? true : false);
   }

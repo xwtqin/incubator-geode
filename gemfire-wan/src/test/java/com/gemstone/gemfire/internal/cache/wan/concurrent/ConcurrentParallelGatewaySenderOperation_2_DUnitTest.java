@@ -24,7 +24,7 @@ import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -242,7 +242,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
     try {
       vm7.invoke(() -> createCache_INFINITE_MAXIMUM_SHUTDOWN_WAIT_TIME(lnPort));
 
-      LogWriterSupport.getLogWriter().info("Created cache on local site");
+      LogWriterUtils.getLogWriter().info("Created cache on local site");
 
       vm7.invoke(() -> createConcurrentSender("ln1", 2, true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY));
       vm7.invoke(() -> createConcurrentSender("ln2", 3, true, 100, 10, false, false, null, true, 5, OrderPolicy.KEY));
@@ -255,7 +255,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       String regionName = getTestMethodName() + "_PR";
       vm7.invoke(() -> createPartitionedRegion(regionName, "ln1,ln2,ln3", 1, 10, isOffHeap()));
 
-      LogWriterSupport.getLogWriter().info("Created PRs on local site");
+      LogWriterUtils.getLogWriter().info("Created PRs on local site");
 
       vm4.invoke(() -> createPartitionedRegion(regionName, null, 1, 10, isOffHeap()));
       vm5.invoke(() -> createPartitionedRegion(regionName, null, 1, 10, isOffHeap()));
@@ -380,7 +380,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       createAndStartSenderWithCustomerOrderShipmentRegion(vm4, lnPort, 5, true);
       createAndStartSenderWithCustomerOrderShipmentRegion(vm5, lnPort, 5, true);
 
-      LogWriterSupport.getLogWriter().info("Created PRs on local site");
+      LogWriterUtils.getLogWriter().info("Created PRs on local site");
 
       vm2.invoke(() -> createCustomerOrderShipmentPartitionedRegion(null, null, 1, 100, isOffHeap()));
 
@@ -418,7 +418,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       createAndStartSenderWithCustomerOrderShipmentRegion(vm4, lnPort, 6, true);
       createAndStartSenderWithCustomerOrderShipmentRegion(vm5, lnPort, 6, true);
 
-      LogWriterSupport.getLogWriter().info("Created PRs on local site");
+      LogWriterUtils.getLogWriter().info("Created PRs on local site");
 
       vm2.invoke(WANTestBase.class,
           "createCustomerOrderShipmentPartitionedRegion", new Object[] { null,
@@ -486,7 +486,7 @@ public class ConcurrentParallelGatewaySenderOperation_2_DUnitTest extends WANTes
       vm.invoke(() -> pauseSender("ln"));
     }
     vm.invoke(() -> createPartitionedRegion(getTestMethodName() + "_PR", "ln", 1, 10, isOffHeap()));
-    LogWriterSupport.getLogWriter().info("Created PRs on local site");
+    LogWriterUtils.getLogWriter().info("Created PRs on local site");
   }
 
   protected void createReceiverAndDoPutsInPausedSender(int port) {

@@ -47,9 +47,9 @@ import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -116,7 +116,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterUtils.getLogWriter().warning("Creation caught IllegalStateException", ex);
         }
         assertNotNull("Region " + name + " not in cache", cache.getRegion(name));
         assertNotNull("Region ref null", partitionRegion);
@@ -184,10 +184,8 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
-        .getLogger());
-    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
-        .getLogger());
+    ThreadUtils.join(asyncInv2, 30 * 1000);
+    ThreadUtils.join(asyncInv1, 30 * 1000);
   }
 
   /**
@@ -236,7 +234,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
           RegionFactory regionFactory = cache.createRegionFactory(attr.create());
           partitionRegion = regionFactory.create(name);
         } catch (IllegalStateException ex) {
-          LogWriterSupport.getLogWriter().warning("Creation caught IllegalStateException", ex);
+          LogWriterUtils.getLogWriter().warning("Creation caught IllegalStateException", ex);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -258,7 +256,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     
     final int port = vm0.invokeInt(ConcurrentIndexInitOnOverflowRegionDUnitTest.class,
     "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(vm0.getHost());
+    final String host0 = NetworkUtils.getServerHostName(vm0.getHost());
 
     // Start changing the value in Region which should turn into a deadlock if
     // the fix is not there
@@ -327,10 +325,8 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // If we take more than 30 seconds then its a deadlock.
-    Threads.join(asyncInv2, 30 * 1000, PRQHelp.getCache()
-        .getLogger());
-    Threads.join(asyncInv1, 30 * 1000, PRQHelp.getCache()
-        .getLogger());
+    ThreadUtils.join(asyncInv2, 30 * 1000);
+    ThreadUtils.join(asyncInv1, 30 * 1000);
     
     vm0.invoke(new CacheSerializableRunnable("Set Test Hook") {
       
@@ -435,8 +431,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
     });
 
     // Kill asynch thread
-    Threads.join(indexUpdateAsysnch, 20000, PRQHelp.getCache()
-        .getLogger());
+    ThreadUtils.join(indexUpdateAsysnch, 20000);
 
     //Verify region size which must be 50
     vm0.invoke(new CacheSerializableRunnable("Check region size") {
@@ -457,7 +452,7 @@ public class ConcurrentIndexInitOnOverflowRegionDUnitTest extends CacheTestCase 
       switch (spot) {
       case 6: // Before Index update and after region entry lock.
         hooked = true;
-        LogWriterSupport.getLogWriter().fine("IndexManagerTestHook is hooked.");
+        LogWriterUtils.getLogWriter().fine("IndexManagerTestHook is hooked.");
         Wait.pause(10000);
         hooked = false;
         break;

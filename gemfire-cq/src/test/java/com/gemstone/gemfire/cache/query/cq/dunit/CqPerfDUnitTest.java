@@ -38,8 +38,8 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -87,7 +87,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     final int port = server.invokeInt(CqQueryDUnitTest.class,
     "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     
     // Create client.
     cqDUnitTest.createClient(client, port, host0);
@@ -95,7 +95,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     client.invoke(new CacheSerializableRunnable("Create CQ :" + cqName) {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Create CQ. ###" + cqName);
+        LogWriterUtils.getLogWriter().info("### Create CQ. ###" + cqName);
         // Get CQ Service.
         QueryService cqService = null;
         try {
@@ -106,7 +106,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         }
         // Create CQ Attributes.
         CqAttributesFactory cqf = new CqAttributesFactory();
-        CqListener[] cqListeners = {new CqTimeTestListener(LogWriterSupport.getLogWriter())};
+        CqListener[] cqListeners = {new CqTimeTestListener(LogWriterUtils.getLogWriter())};
         ((CqTimeTestListener)cqListeners[0]).cqName = cqName;
         
         cqf.initCqListeners(cqListeners);
@@ -118,7 +118,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
           assertTrue("newCq() state mismatch", cq1.getState().isStopped());
           cq1.execute();
         } catch (Exception ex){
-          LogWriterSupport.getLogWriter().info("CqService is :" + cqService);
+          LogWriterUtils.getLogWriter().info("CqService is :" + cqService);
           ex.printStackTrace();
           AssertionError err = new AssertionError("Failed to create CQ " + cqName + " . ");
           err.initCause(ex);
@@ -138,7 +138,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     client.invoke(new CacheSerializableRunnable("Validate CQs") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Validating CQ. ### " + cqName);
+        LogWriterUtils.getLogWriter().info("### Validating CQ. ### " + cqName);
         // Get CQ Service.
         QueryService cqService = null;
         try {          
@@ -192,7 +192,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client, port, host0);
     
 
@@ -218,7 +218,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
 
@@ -249,7 +249,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         Collection<? extends InternalCqQuery> cqs = cqService.getAllCqs();
@@ -280,7 +280,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
 
@@ -312,7 +312,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         Collection<? extends InternalCqQuery> cqs = cqService.getAllCqs();
@@ -342,7 +342,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
 
@@ -374,7 +374,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
         Collection<? extends InternalCqQuery> cqs = cqService.getAllCqs();
@@ -412,7 +412,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client, port, host0);
     
     // Create and Execute same kind of CQs.
@@ -527,7 +527,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
         
     for (int clientIndex=0; clientIndex < 3; clientIndex++){
       cqDUnitTest.createClient(clients[clientIndex], port, host0);
@@ -686,7 +686,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     VM clients[] = new VM[]{client1, client2};
     
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     // Create client.
     
     // Create client with redundancyLevel -1
@@ -849,7 +849,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     VM clients[] = new VM[]{client1, client2};
     
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
     final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(1);
     
     cqDUnitTest.createLocalRegion(client1, new int[] {port1, ports[0]}, host0, "-1", cqDUnitTest.regions);
@@ -898,7 +898,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
     
     final int port1 = server1.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
     final int port2 = server2.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server1.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server1.getHost());
 
     // Create client.
 //    final int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(1);
@@ -973,7 +973,7 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = (CqServiceImpl) ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
 
@@ -999,12 +999,12 @@ public class CqPerfDUnitTest extends CacheTestCase {
         try {
           cqService = (CqServiceImpl) ((DefaultQueryService)getCache().getQueryService()).getCqService();
         } catch (Exception ex) {
-          LogWriterSupport.getLogWriter().info("Failed to get the internal CqService.", ex);
+          LogWriterUtils.getLogWriter().info("Failed to get the internal CqService.", ex);
           Assert.fail ("Failed to get the internal CqService.", ex);
         }
 
         long timeTaken = cqService.getCqServiceVsdStats().getCqQueryExecutionTime();
-        LogWriterSupport.getLogWriter().info("Total Time taken to Execute CQ Query :" + timeTaken);
+        LogWriterUtils.getLogWriter().info("Total Time taken to Execute CQ Query :" + timeTaken);
         //System.out.println("Total Time taken to Execute CQ Query :" + timeTaken);
       }
     });

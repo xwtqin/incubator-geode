@@ -34,9 +34,9 @@ import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -256,7 +256,7 @@ public class GlobalRegionDUnitTest extends MultiVMRegionTestCase {
               Thread thread = new Thread(group, new Runnable() {
                   public void run() {
                     try {
-                      LogWriterSupport.getLogWriter().info("testSynchronousIncrements." + this);
+                      LogWriterUtils.getLogWriter().info("testSynchronousIncrements." + this);
                       final Random rand = new Random(System.identityHashCode(this));
                       try {
                         Region region = getRootRegion().getSubregion(name);
@@ -280,7 +280,7 @@ public class GlobalRegionDUnitTest extends MultiVMRegionTestCase {
                           region.put(key, value);
                           assertEquals(value, region.get(key));
                           
-                          LogWriterSupport.getLogWriter().info("testSynchronousIncrements." + 
+                          LogWriterUtils.getLogWriter().info("testSynchronousIncrements." + 
                               this + ": " + key + " -> " + value);
                           lock.unlock();
                         }
@@ -296,7 +296,7 @@ public class GlobalRegionDUnitTest extends MultiVMRegionTestCase {
                       throw e;
                     }
                     catch (Throwable t) {
-                      LogWriterSupport.getLogWriter().info("testSynchronousIncrements." + 
+                      LogWriterUtils.getLogWriter().info("testSynchronousIncrements." + 
                           this + " caught Throwable", t);
                     }
                   }
@@ -306,7 +306,7 @@ public class GlobalRegionDUnitTest extends MultiVMRegionTestCase {
             }
             
             for (int i = 0; i < threads.length; i++) {
-              Threads.join(threads[i], 30 * 1000, LogWriterSupport.getLogWriter());
+              ThreadUtils.join(threads[i], 30 * 1000);
             }
           }
         };
@@ -317,7 +317,7 @@ public class GlobalRegionDUnitTest extends MultiVMRegionTestCase {
     }
 
     for (int i = 0; i < vmCount; i++) {
-      Threads.join(invokes[i], 5 * 60 * 1000, LogWriterSupport.getLogWriter());
+      ThreadUtils.join(invokes[i], 5 * 60 * 1000);
       if (invokes[i].exceptionOccurred()) {
         Assert.fail("invocation failed", invokes[i].getException());
       }

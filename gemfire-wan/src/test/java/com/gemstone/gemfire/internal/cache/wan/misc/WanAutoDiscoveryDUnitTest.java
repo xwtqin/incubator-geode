@@ -30,7 +30,7 @@ import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 
 public class WanAutoDiscoveryDUnitTest extends WANTestBase {
 
@@ -458,7 +458,7 @@ public class WanAutoDiscoveryDUnitTest extends WANTestBase {
      Assert.fail("Could not get end time", e);
     }
     
-    LogWriterSupport.getLogWriter().info("Time taken for all 9 locators discovery in 3 sites: " + (endTime.longValue() - startTime));
+    LogWriterUtils.getLogWriter().info("Time taken for all 9 locators discovery in 3 sites: " + (endTime.longValue() - startTime));
     
     vm0.invoke(WANTestBase.class, "checkAllSiteMetaDataFor3Sites",
         new Object[] { dsVsPort });

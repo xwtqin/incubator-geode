@@ -75,6 +75,7 @@ import junit.framework.TestCase;
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
 public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
+  
   private static final Logger logger = LogService.getLogger();
   
   private static final Set<String> testHistory = new LinkedHashSet<String>();
@@ -129,7 +130,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
     if (system == null || !system.isConnected()) {
       // Figure out our distributed system properties
-      Properties p = DistributedTestSupport.getAllDistributedSystemProperties(props);
+      Properties p = DistributedTestUtils.getAllDistributedSystemProperties(props);
       lastSystemCreatedInTest = getClass(); // used to be getDeclaringClass()
       if (logPerTest) {
         String testMethod = getTestMethodName();
@@ -146,10 +147,10 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     } else {
       boolean needNewSystem = false;
       if(!getClass().equals(lastSystemCreatedInTest)) { // used to be getDeclaringClass()
-        Properties newProps = DistributedTestSupport.getAllDistributedSystemProperties(props);
+        Properties newProps = DistributedTestUtils.getAllDistributedSystemProperties(props);
         needNewSystem = !newProps.equals(lastSystemProperties);
         if(needNewSystem) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Test class has changed and the new DS properties are not an exact match. "
                   + "Forcing DS disconnect. Old props = "
                   + lastSystemProperties + "new props=" + newProps);
@@ -163,7 +164,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
           String value = (String) entry.getValue();
           if (!value.equals(activeProps.getProperty(key))) {
             needNewSystem = true;
-            LogWriterSupport.getLogWriter().info("Forcing DS disconnect. For property " + key
+            LogWriterUtils.getLogWriter().info("Forcing DS disconnect. For property " + key
                                 + " old value = " + activeProps.getProperty(key)
                                 + " new value = " + value);
             break;
@@ -173,7 +174,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
       if(needNewSystem) {
         // the current system does not meet our needs to disconnect and
         // call recursively to get a new system.
-        LogWriterSupport.getLogWriter().info("Disconnecting from current DS in order to make a new one");
+        LogWriterUtils.getLogWriter().info("Disconnecting from current DS in order to make a new one");
         disconnectFromDS();
         getSystem(props);
       }
@@ -458,7 +459,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     Invoke.invokeInEveryVM(()->tearDownVM());
     Invoke.invokeInLocator(()->{
       DistributionMessageObserver.setInstance(null);
-      DistributedTestSupport.unregisterInstantiatorsInThisVM();
+      DistributedTestUtils.unregisterInstantiatorsInThisVM();
     });
     DUnitLauncher.closeAndCheckForSuspects();
   }
@@ -473,7 +474,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     ClientServerTestCase.AUTO_LOAD_BALANCE = false;
     ClientStatsManager.cleanupForTests();
     DiskStoreObserver.setInstance(null);
-    DistributedTestSupport.unregisterInstantiatorsInThisVM();
+    DistributedTestUtils.unregisterInstantiatorsInThisVM();
     DistributionMessageObserver.setInstance(null);
     GlobalLockingDUnitTest.region_testBug32356 = null;
     InitialImageOperation.slowImageProcessing = 0;

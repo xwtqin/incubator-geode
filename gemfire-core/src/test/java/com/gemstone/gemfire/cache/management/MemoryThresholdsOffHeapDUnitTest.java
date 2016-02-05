@@ -71,12 +71,12 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -869,7 +869,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
         vm.invoke(new SerializableCallable("local destroy sick member") {
           public Object call() throws Exception {
             Region r = getRootRegion().getSubregion(regionName);
-            LogWriterSupport.getLogWriter().info("PRLocalDestroy");
+            LogWriterUtils.getLogWriter().info("PRLocalDestroy");
             r.localDestroyRegion();
             return null;
           }
@@ -1371,7 +1371,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
             assertFalse("Key " + me + " should not exist", r.containsKey(me));
           }
         } catch (LowMemoryException low) {
-          LogWriterSupport.getLogWriter().info("Caught LowMemoryException", low);
+          LogWriterUtils.getLogWriter().info("Caught LowMemoryException", low);
           if (!catchLowMemoryException) {
             Assert.fail("Unexpected exception: ", low);
           }
@@ -1655,7 +1655,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
         getCache();
 
         PoolFactory pf = PoolManager.createFactory();
-        pf.addServer(NetworkSupport.getServerHostName(server.getHost()), serverPort);
+        pf.addServer(NetworkUtils.getServerHostName(server.getHost()), serverPort);
         pf.create("pool1");
         
         AttributesFactory af = new AttributesFactory();
@@ -1816,7 +1816,7 @@ public class MemoryThresholdsOffHeapDUnitTest extends ClientServerTestCase {
   
   private Properties getOffHeapProperties() {
     Properties p = new Properties();
-    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestSupport.getDUnitLocatorPort()+"]");
+    p.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     p.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1m");
     return p;
   }

@@ -42,8 +42,8 @@ import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -133,8 +133,8 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   }
   
   private void performSteps(String conflation) throws Exception {
-    createClientCacheFeeder(NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT));
-    vm1.invoke(ClientConflationDUnitTest.class, "createClientCache", new Object[] { NetworkSupport.getServerHostName(vm1.getHost()), new Integer(PORT),
+    createClientCacheFeeder(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT));
+    vm1.invoke(ClientConflationDUnitTest.class, "createClientCache", new Object[] { NetworkUtils.getServerHostName(vm1.getHost()), new Integer(PORT),
       conflation});
     vm1.invoke(ClientConflationDUnitTest.class, "setClientServerObserverForBeforeInterestRecovery");
     vm1.invoke(ClientConflationDUnitTest.class, "setAllCountersZero");
@@ -505,7 +505,7 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   public static void putEntries()
   {
     try {
-      LogWriterSupport.getLogWriter().info("Putting entries...");
+      LogWriterUtils.getLogWriter().info("Putting entries...");
       Region r1 = cacheFeeder.getRegion(Region.SEPARATOR +REGION_NAME1);
       Region r2 = cacheFeeder.getRegion(Region.SEPARATOR +REGION_NAME2);
       r1.put("key-1", "11");

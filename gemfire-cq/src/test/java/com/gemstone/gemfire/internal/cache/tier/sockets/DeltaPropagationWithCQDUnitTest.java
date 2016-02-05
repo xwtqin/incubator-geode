@@ -54,7 +54,7 @@ import com.gemstone.gemfire.internal.cache.CacheServerImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -129,10 +129,10 @@ public class DeltaPropagationWithCQDUnitTest extends DistributedTestCase {
     // 2. setup a client
     client1
         .invoke(DeltaPropagationWithCQDUnitTest.class, "createClientCache",
-            new Object[] {NetworkSupport.getServerHostName(server1.getHost()), port,
+            new Object[] {NetworkUtils.getServerHostName(server1.getHost()), port,
                 Boolean.TRUE});
     // 3. setup another client with cqs and interest in all keys.
-    createClientCache(NetworkSupport.getServerHostName(server1.getHost()), port, true);
+    createClientCache(NetworkUtils.getServerHostName(server1.getHost()), port, true);
     registerCQs(1, "CQWithInterestDUnitTest_cq");
     // 4. put a key on client1
     client1.invoke(DeltaPropagationWithCQDUnitTest.class, "doPut", new Object[] {
@@ -167,10 +167,10 @@ public class DeltaPropagationWithCQDUnitTest extends DistributedTestCase {
     // 2. setup a client with register interest
     client1
         .invoke(DeltaPropagationWithCQDUnitTest.class, "createClientCache",
-            new Object[] {NetworkSupport.getServerHostName(server1.getHost()), port,
+            new Object[] {NetworkUtils.getServerHostName(server1.getHost()), port,
                 Boolean.TRUE});
     // 3. setup another client with cqs but without interest.
-    createClientCache(NetworkSupport.getServerHostName(server1.getHost()), port, false/*RI*/);
+    createClientCache(NetworkUtils.getServerHostName(server1.getHost()), port, false/*RI*/);
     for (int i = 0; i < numOfCQs; i++) {
       registerCQs(numOfListeners, "Query_"+i);
     }

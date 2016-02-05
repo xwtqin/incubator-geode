@@ -42,8 +42,8 @@ import com.gemstone.gemfire.internal.cache.VMCachedDeserializable;
 import com.gemstone.gemfire.pdx.PdxInstance;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.VM;
 
@@ -119,9 +119,9 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
-        cf.addPoolServer(NetworkSupport.getServerHostName(server2.getHost()), port2);
-        cf.addPoolServer(NetworkSupport.getServerHostName(server3.getHost()), port3);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server2.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server3.getHost()), port3);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -145,7 +145,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -291,7 +291,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -319,7 +319,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -491,7 +491,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -515,7 +515,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -664,9 +664,9 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
-        cf.addPoolServer(NetworkSupport.getServerHostName(server2.getHost()), port2);
-        cf.addPoolServer(NetworkSupport.getServerHostName(server3.getHost()), port3);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server2.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server3.getHost()), port3);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -690,7 +690,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -820,7 +820,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -864,7 +864,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -940,7 +940,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -1022,7 +1022,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1046,7 +1046,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -1243,7 +1243,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1267,7 +1267,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -1470,7 +1470,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(NetworkSupport.getServerHostName(server1.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1486,7 +1486,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        LogWriterSupport.getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
@@ -1605,10 +1605,10 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     public void beforeIterationEvaluation(CompiledValue executer,
         Object currentObject) {
       if (currentObject instanceof VMCachedDeserializable) {
-        LogWriterSupport.getLogWriter().fine("currentObject is serialized object");
+        LogWriterUtils.getLogWriter().fine("currentObject is serialized object");
         isObjectSerialized = true;
       } else {
-        LogWriterSupport.getLogWriter().fine("currentObject is deserialized object");
+        LogWriterUtils.getLogWriter().fine("currentObject is deserialized object");
       }
     }
 

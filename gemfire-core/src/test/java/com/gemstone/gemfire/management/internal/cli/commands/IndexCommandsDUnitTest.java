@@ -37,7 +37,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -741,8 +741,8 @@ public class IndexCommandsDUnitTest extends CliCommandTestBase {
   }
 
   private void writeToLog(String text, String resultAsString) {
-    LogWriterSupport.getLogWriter().info(getTestMethodName() + "\n");
-    LogWriterSupport.getLogWriter().info(resultAsString);
+    LogWriterUtils.getLogWriter().info(getTestMethodName() + "\n");
+    LogWriterUtils.getLogWriter().info(resultAsString);
   }
 
   private void setupSystem() {

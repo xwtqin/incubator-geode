@@ -39,8 +39,8 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -116,9 +116,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
   {
     Integer port1 = initServerCache(server1);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -153,9 +153,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -191,9 +191,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port2 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -227,9 +227,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
   {
     Integer port1 = initServerCache(server1);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -256,9 +256,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -288,9 +288,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port2 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -320,9 +320,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
   {
     Integer port1 = initServerCache(server1);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     Wait.pause(PAUSE);
 
     server1.invoke(resetFlags());
@@ -349,9 +349,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1, port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1, port2 });
     Wait.pause(PAUSE);
     
     server1.invoke(resetFlags());
@@ -381,9 +381,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port1 = initServerCache(server1);
     Integer port2 = initServerCache(server2);
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port2 });
     Wait.pause(PAUSE);
     
     server1.invoke(resetFlags());
@@ -414,9 +414,9 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     Integer port2 = ((Integer)server2.invoke(
         CacheServerTransactionsDUnitTest.class, "createServerCache"));
     client1.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port1 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port1 });
     client2.invoke(CacheServerTransactionsDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(server1.getHost()), port2 });
+        new Object[] { NetworkUtils.getServerHostName(server1.getHost()), port2 });
     client1.invoke(CacheServerTransactionsDUnitTest.class, "commitTransactionOnClient");
     Wait.pause(PAUSE);
     
@@ -460,7 +460,7 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     final Region r1 = cache.getRegion(Region.SEPARATOR + REGION_NAME);
     assertNotNull(r1);
     try {
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "vlaue for the key k1" + r1.getEntry(k1).getValue());
       WaitCriterion ev = new WaitCriterion() {
         public boolean done() {
@@ -570,7 +570,7 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     final Region r1 = cache.getRegion(Region.SEPARATOR + REGION_NAME);
     assertNotNull(r1);
     try {
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "vlaue for the key k1" + r1.getEntry(k1).getValue());
       // wait until
       // condition is

@@ -260,7 +260,7 @@ public abstract class RegionTestCase extends CacheTestCase {
       assertEquals(value, values.iterator().next());
     }
     catch (UnsupportedOperationException uoe) {
-      com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Region.values() reported UnsupportedOperation");
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Region.values() reported UnsupportedOperation");
     }
   }
   
@@ -464,7 +464,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.destroy(key);
     
     Region.Entry entry2 = region.getEntry(key);
-    com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Found entry for destroyed key: " + entry2);
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Found entry for destroyed key: " + entry2);
     assertNull(entry2);
     if (entry.isLocal()) {
       assertTrue(entry.isDestroyed());
@@ -1975,7 +1975,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         continue;
       }
       if (now >= tilt - SLOP) {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().warning("Entry invalidated sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Entry invalidated sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }
@@ -2046,7 +2046,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         continue;
       }
       if (now >= tilt - SLOP) {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().warning("Entry destroyed sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Entry destroyed sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }
@@ -2090,7 +2090,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         continue;
       }
       if (now >= tilt - SLOP) {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().warning("Region destroyed sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Region destroyed sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }

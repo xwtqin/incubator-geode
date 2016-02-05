@@ -44,9 +44,8 @@ import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
 import com.gemstone.gemfire.test.dunit.RMIException;
-import com.gemstone.gemfire.test.dunit.Threads;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -253,11 +252,11 @@ public class LoginTimeOutDUnitTest extends DistributedTestCase {
     VM vm0 = host.getVM(0);
     AsyncInvocation test1 = vm0.invokeAsync(LoginTimeOutDUnitTest.class, "runTest1");
     AsyncInvocation test2 = vm0.invokeAsync(LoginTimeOutDUnitTest.class, "runTest2");
-    Threads.join(test2, 120 * 1000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(test2, 120 * 1000);
     if(test2.exceptionOccurred()){
       Assert.fail("asyncObj failed", test2.getException());
     }
-    Threads.join(test1, 30000, LogWriterSupport.getLogWriter());
+    ThreadUtils.join(test1, 30000);
   }
 
   public static void runTest1() throws Exception {

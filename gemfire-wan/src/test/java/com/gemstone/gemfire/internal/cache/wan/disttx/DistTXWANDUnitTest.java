@@ -22,7 +22,7 @@ import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class DistTXWANDUnitTest extends WANTestBase {
@@ -39,7 +39,7 @@ public class DistTXWANDUnitTest extends WANTestBase {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
-        System.setProperty("gemfire.log-level", LogWriterSupport.getDUnitLogLevel());
+        System.setProperty("gemfire.log-level", LogWriterUtils.getDUnitLogLevel());
         return null;
       }
     }); 

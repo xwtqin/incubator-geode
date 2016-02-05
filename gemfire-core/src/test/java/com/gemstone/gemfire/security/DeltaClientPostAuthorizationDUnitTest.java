@@ -43,7 +43,7 @@ import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
 /**
@@ -137,11 +137,11 @@ public class DeltaClientPostAuthorizationDUnitTest extends
       String accessor = gen.getAuthorizationCallback();
       TestAuthzCredentialGenerator tgen = new TestAuthzCredentialGenerator(gen);
 
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using authinit: " + authInit);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using authenticator: " + authenticator);
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "testAllOpsNotifications: Using accessor: " + accessor);
 
       // Start servers with all required properties
@@ -220,7 +220,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
           fail("executeOpBlock: Unknown client number " + clientNum);
           break;
       }
-      LogWriterSupport.getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "executeOpBlock: performing operation number ["
               + currentOp.getOpNum() + "]: " + currentOp);
       if ((opFlags & OpFlags.USE_OLDCONN) == 0) {
@@ -256,7 +256,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
                 extraAuthzProps });
         // Start the client with valid credentials but allowed or disallowed to
         // perform an operation
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "executeOpBlock: For client" + clientNum + credentialsTypeStr
                 + " credentials: " + opCredentials);
         boolean setupDynamicRegionFactory = (opFlags & OpFlags.ENABLE_DRF) > 0;
@@ -377,7 +377,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
       policy = InterestResultPolicy.NONE;
     }
     final int numOps = indices.length;
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Got doOp for op: " + op.toString() + ", numOps: " + numOps
             + ", indices: " + indicesToString(indices) + ", expect: " + expectedResult);
     boolean exceptionOccured = false;
@@ -515,14 +515,14 @@ public class DeltaClientPostAuthorizationDUnitTest extends
             || ex instanceof QueryInvocationTargetException || ex instanceof CqException)
             && (expectedResult.intValue() == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
             && (ex.getCause() instanceof NotAuthorizedException)) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "doOp: Got expected NotAuthorizedException when doing operation ["
                   + op + "] with flags " + OpFlags.description(flags) 
                   + ": " + ex.getCause());
           continue;
         }
         else if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "doOp: Got expected exception when doing operation: "
                   + ex.toString());
           continue;

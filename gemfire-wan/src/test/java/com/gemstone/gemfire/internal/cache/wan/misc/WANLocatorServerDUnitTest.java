@@ -37,7 +37,7 @@ import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.internal.cache.wan.WANTestBase;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 
 public class WANLocatorServerDUnitTest extends WANTestBase {
 
@@ -151,7 +151,7 @@ public class WANLocatorServerDUnitTest extends WANTestBase {
       fail("Test " + test.getName() + " failed to start CacheServer on port "
           + port);
     }
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Server Started on port : " + port + " : server : " + server);
   }
 

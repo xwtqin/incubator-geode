@@ -36,7 +36,7 @@ import com.gemstone.gemfire.management.internal.cli.i18n.CliStrings;
 import com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor;
 import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -101,7 +101,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
         CommandProcessor commandProcessor = new CommandProcessor();
         Result result = commandProcessor.createCommandStatement("show metrics", Collections.EMPTY_MAP).process();
         String resultStr = commandResultToString((CommandResult) result);
-        LogWriterSupport.getLogWriter().info(resultStr);
+        LogWriterUtils.getLogWriter().info(resultStr);
         assertEquals(resultStr, true, result.getStatus().equals(Status.OK));
         return resultStr;
       }
@@ -113,8 +113,8 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
 
     String managerResult = (String) managerResultObj;
 
-    LogWriterSupport.getLogWriter().info("#SB Manager");
-    LogWriterSupport.getLogWriter().info(managerResult);
+    LogWriterUtils.getLogWriter().info("#SB Manager");
+    LogWriterUtils.getLogWriter().info(managerResult);
   }
 
   public void systemSetUp() {
@@ -160,8 +160,8 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
 
     String managerResult = (String) managerResultObj;
 
-    LogWriterSupport.getLogWriter().info("#SB Manager");
-    LogWriterSupport.getLogWriter().info(managerResult);
+    LogWriterUtils.getLogWriter().info("#SB Manager");
+    LogWriterUtils.getLogWriter().info(managerResult);
   }
 
   /***
@@ -258,8 +258,8 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
 
     String managerResult = (String) managerResultObj;
 
-    LogWriterSupport.getLogWriter().info("#SB Manager");
-    LogWriterSupport.getLogWriter().info(managerResult);
+    LogWriterUtils.getLogWriter().info("#SB Manager");
+    LogWriterUtils.getLogWriter().info(managerResult);
     cs.stop();
   }
 
@@ -299,8 +299,8 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
 
     String managerResult = (String) managerResultObj;
 
-    LogWriterSupport.getLogWriter().info("#SB Manager");
-    LogWriterSupport.getLogWriter().info(managerResult);
+    LogWriterUtils.getLogWriter().info("#SB Manager");
+    LogWriterUtils.getLogWriter().info(managerResult);
   }
 
   public void testShowMetricsRegionFromMemberWithCategories() throws ClassNotFoundException, IOException, InterruptedException {
@@ -339,7 +339,7 @@ public class ShowMetricsDUnitTest extends CliCommandTestBase {
 
     String managerResult = (String) managerResultObj;
 
-    LogWriterSupport.getLogWriter().info("#SB Manager");
-    LogWriterSupport.getLogWriter().info(managerResult);
+    LogWriterUtils.getLogWriter().info("#SB Manager");
+    LogWriterUtils.getLogWriter().info(managerResult);
   }
 }

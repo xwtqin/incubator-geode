@@ -44,7 +44,7 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.execute.CustomerIDPartitionResolver;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -127,7 +127,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     assertNotNull(cache);
     Region pr = cache.createRegion(partitionedRegionName, attr.create());
     assertNotNull(pr);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + partitionedRegionName
             + " created Successfully :" + pr.toString());
   }
@@ -148,7 +148,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     assertNotNull(cache);
     Region pr = cache.getRegion(partitionedRegionName);
     assertNotNull(pr);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Destroying Partitioned Region " + partitionedRegionName);
     pr.destroyRegion();
   }
@@ -165,7 +165,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     // af.create());
     Region rr = cache.createRegion(replicatedRegionName, af.create());
     assertNotNull(rr);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Replicated Region " + replicatedRegionName + " created Successfully :"
             + rr.toString());
   }
@@ -196,7 +196,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put");
+          LogWriterUtils.getLogWriter().info(" calling pr.put");
           pr1.put(dummy, "1_entry__" + i);
         }
 
@@ -209,7 +209,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put in tx 1");
+          LogWriterUtils.getLogWriter().info(" calling pr.put in tx 1");
           pr1.put(dummy, "2_entry__" + i);
         }
         ctx.commit();
@@ -218,7 +218,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get");
+          LogWriterUtils.getLogWriter().info(" calling pr.get");
           assertEquals("2_entry__" + i, pr1.get(dummy));
         }
 
@@ -227,7 +227,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put in tx 2");
+          LogWriterUtils.getLogWriter().info(" calling pr.put in tx 2");
           pr1.put(dummy, "3_entry__" + i);
         }
         ctx.rollback();
@@ -236,7 +236,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get");
+          LogWriterUtils.getLogWriter().info(" calling pr.get");
           assertEquals("2_entry__" + i, pr1.get(dummy));
         }
 
@@ -245,7 +245,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.destroy in tx 3");
+          LogWriterUtils.getLogWriter().info(" calling pr.destroy in tx 3");
           pr1.destroy(dummy);
         }
         ctx.commit();
@@ -254,7 +254,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get");
+          LogWriterUtils.getLogWriter().info(" calling pr.get");
           assertEquals(null, pr1.get(dummy));
         }
 
@@ -264,7 +264,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
           public Object call() throws CacheException {
             PartitionedRegion pr1 = (PartitionedRegion) cache
                 .getRegion("pregion1");
-            LogWriterSupport.getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 " calling pr.getLocalSize " + pr1.getLocalSize());
             assertEquals(0, pr1.getLocalSize());
             return null;
@@ -303,7 +303,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 6; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling non-tx put");
+          LogWriterUtils.getLogWriter().info(" calling non-tx put");
           pr1.put(dummy, "1_entry__" + i);
           rr1.put(dummy, "1_entry__" + i);
         }
@@ -315,19 +315,19 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling pr1.destroy in tx key=" + dummy);
           pr1.destroy(dummy);
-          LogWriterSupport.getLogWriter().info(" calling rr1.destroy in tx key=" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr1.destroy in tx key=" + i);
           rr1.destroy(dummy);
         }
         for (int i = 4; i <= 6; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling pr1.invalidate in tx key=" + dummy);
           pr1.invalidate(dummy);
-          LogWriterSupport.getLogWriter().info(" calling rr1.invalidate in tx key=" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr1.invalidate in tx key=" + i);
           rr1.invalidate(dummy);
         }
         ctx.commit();
@@ -336,9 +336,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 6; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr1.get");
+          LogWriterUtils.getLogWriter().info(" calling pr1.get");
           assertEquals(null, pr1.get(dummy));
-          LogWriterSupport.getLogWriter().info(" calling rr1.get");
+          LogWriterUtils.getLogWriter().info(" calling rr1.get");
           assertEquals(null, rr1.get(i));
         }
         return null;
@@ -353,10 +353,10 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       public Object call() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr1.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
-        LogWriterSupport.getLogWriter().info(" calling rr1.size " + rr1.size());
+        LogWriterUtils.getLogWriter().info(" calling rr1.size " + rr1.size());
         assertEquals(3, rr1.size());
         return null;
       }
@@ -391,9 +391,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put non-tx PR1_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling pr.put non-tx PR1_entry__" + i);
           pr1.put(dummy, "PR1_entry__" + i);
-          LogWriterSupport.getLogWriter().info(" calling rr.put non-tx RR1_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr.put non-tx RR1_entry__" + i);
           rr1.put(new Integer(i), "RR1_entry__" + i);
         }
 
@@ -406,9 +406,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put in tx PR2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling pr.put in tx PR2_entry__" + i);
           pr1.put(dummy, "PR2_entry__" + i);
-          LogWriterSupport.getLogWriter().info(" calling rr.put in tx RR2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr.put in tx RR2_entry__" + i);
           rr1.put(new Integer(i), "RR2_entry__" + i);
         }
         ctx.commit();
@@ -417,9 +417,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get PR2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling pr.get PR2_entry__" + i);
           assertEquals("PR2_entry__" + i, pr1.get(dummy));
-          LogWriterSupport.getLogWriter().info(" calling rr.get RR2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr.get RR2_entry__" + i);
           assertEquals("RR2_entry__" + i, rr1.get(new Integer(i)));
         }
         return null;
@@ -433,12 +433,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
 
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         return null;
@@ -475,7 +475,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.put in tx 1");
+          LogWriterUtils.getLogWriter().info(" calling pr.put in tx 1");
           pr1.put(dummy, "2_entry__" + i);
         }
         ctx.commit();
@@ -484,7 +484,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
+          LogWriterUtils.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
           assertEquals("2_entry__" + i, pr1.get(dummy));
         }
         return null;
@@ -498,7 +498,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       public Object call() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
         CacheTransactionManager ctx = cache.getCacheTransactionManager();
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
         return null;
@@ -526,7 +526,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling pr.put in tx for rollback no_entry__" + i);
           pr1.put(dummy, "no_entry__" + i);
         }
@@ -536,7 +536,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling pr.get after rollback " + pr1.get(dummy));
           assertEquals("2_entry__" + i, pr1.get(dummy));
         }
@@ -570,10 +570,10 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.create in tx 1");
+          LogWriterUtils.getLogWriter().info(" calling pr.create in tx 1");
           pr1.create(dummy, "2_entry__" + i);
           
-          LogWriterSupport.getLogWriter().info(" calling rr.create " + "2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr.create " + "2_entry__" + i);
           rr1.create(new Integer(i), "2_entry__" + i);
         }
         ctx.commit();
@@ -582,10 +582,10 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
+          LogWriterUtils.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
           assertEquals("2_entry__" + i, pr1.get(dummy));
           
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.get " + rr1.get(new Integer(i)));
           assertEquals("2_entry__" + i, rr1.get(new Integer(i)));
         }
@@ -600,12 +600,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
         return null;
@@ -650,10 +650,10 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
+          LogWriterUtils.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
           assertEquals("2_entry__" + i, pr1.get(dummy));
           
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.get " + rr1.get(new Integer(i)));
           assertEquals("2_entry__" + i, rr1.get(new Integer(i)));
         }
@@ -668,12 +668,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
         return null;
@@ -714,7 +714,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
+          LogWriterUtils.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
           assertEquals("2_entry__" + i, pr1.get(dummy));
           
         }
@@ -730,7 +730,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
         return null;
@@ -781,7 +781,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
 
         // verify the data
         for (int i = 1; i <= 3; i++) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.get " + rr1.get(new Integer(i)));
           assertEquals(null, rr1.get(new Integer(i)));
         }
@@ -800,7 +800,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(0, rr1.size());
         return null;
@@ -841,7 +841,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
               i);
-          LogWriterSupport.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
+          LogWriterUtils.getLogWriter().info(" calling pr.get " + pr1.get(dummy));
           assertEquals(null, pr1.get(dummy));
         }
         return null;
@@ -855,7 +855,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        LogWriterSupport.getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(0, pr1.getLocalSize());
         return null;
@@ -886,14 +886,14 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
-          LogWriterSupport.getLogWriter().info(" calling rr.put " + "2_entry__" + i);
+          LogWriterUtils.getLogWriter().info(" calling rr.put " + "2_entry__" + i);
           rr1.put(new Integer(i), "2_entry__" + i);
         }
         ctx.commit();
 
         // verify the data
         for (int i = 1; i <= 3; i++) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.get " + rr1.get(new Integer(i)));
           assertEquals("2_entry__" + i, rr1.get(new Integer(i)));
         }
@@ -912,7 +912,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws CacheException {
         Region rr1 = cache.getRegion("rregion1");
-        LogWriterSupport.getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         return null;
@@ -930,7 +930,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.put for rollback no_entry__" + i);
           rr1.put(new Integer(i), "no_entry__" + i);
         }
@@ -939,7 +939,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
 
         // verify the data
         for (int i = 1; i <= 3; i++) {
-          LogWriterSupport.getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               " calling rr.get after rollback "
                   + rr1.get(new Integer(i)));
           assertEquals("2_entry__" + i, rr1.get(new Integer(i)));

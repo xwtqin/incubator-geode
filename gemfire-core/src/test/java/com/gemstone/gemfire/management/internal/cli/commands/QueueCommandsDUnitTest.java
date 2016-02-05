@@ -31,7 +31,7 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -378,7 +378,7 @@ public class QueueCommandsDUnitTest extends CliCommandTestBase {
           executeCommand("undeploy --jar=" + fileToDelete.getName());
         }
       } catch (IOException e) {
-        LogWriterSupport.getLogWriter().error("Unable to delete file", e);
+        LogWriterUtils.getLogWriter().error("Unable to delete file", e);
       }
     }
     this.filesToBeDeleted.clear();

@@ -39,7 +39,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 
@@ -115,7 +115,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
     while (itr.hasNext()) {
       Object key = itr.next();
       ClientUpdateMessage value = (ClientUpdateMessage)region.get(key);
-      LogWriterSupport.getLogWriter().info("key : " + key + "Value " + value.getValue());
+      LogWriterUtils.getLogWriter().info("key : " + key + "Value " + value.getValue());
 
     }
 
@@ -163,7 +163,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
             new EventID(("memberID" + i).getBytes(), i, i));
 
         haRegion.put(new Long(i), clientMessage);
-        LogWriterSupport.getLogWriter().info("Putting in the message Queue");
+        LogWriterUtils.getLogWriter().info("Putting in the message Queue");
 
       }
     }
@@ -192,7 +192,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
     HARegion region = (HARegion)cache.getRegion(Region.SEPARATOR
         + HAHelper.getRegionQueueName(HAREGION_NAME));
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info("Size of the Queue : " + region.size());
+    LogWriterUtils.getLogWriter().info("Size of the Queue : " + region.size());
 
   }
 }

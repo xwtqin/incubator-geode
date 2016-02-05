@@ -42,8 +42,8 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -186,14 +186,14 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
     
     // Create a feeder.
     vm0.invoke(ClientInterestNotifyDUnitTest.class, "createClientCacheFeeder",
-        new Object[] {NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT)});
+        new Object[] {NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT)});
     
     // Client 1 overrides NBS to true.
     // Client 2 "overrides" NSB to false.
     // Client 3 uses the default NBS which is false on the server.
     
     vm1.invoke(ClientInterestNotifyDUnitTest.class, "createClientCache",
-        new Object[] { NetworkSupport.getServerHostName(Host.getHost(0)), new Integer(PORT), "ClientOn"});
+        new Object[] { NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT), "ClientOn"});
     /*
     vm2.invoke(ClientInterestNotifyDUnitTest.class, "createClientCache",
         new Object[] { getServerHostName(Host.getHost(0)), new Integer(PORT), 
@@ -572,7 +572,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
   public static void doEntryOps()
   {
     try {
-      LogWriterSupport.getLogWriter().info("Putting entries...");
+      LogWriterUtils.getLogWriter().info("Putting entries...");
       Cache cacheClient = GemFireCacheImpl.getInstance();
       Region r1 = cacheClient.getRegion(Region.SEPARATOR +REGION_NAME1);
       Region r2 = cacheClient.getRegion(Region.SEPARATOR +REGION_NAME2);
@@ -602,7 +602,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
   public static void doFeed()
   {
     try {
-      LogWriterSupport.getLogWriter().info("Putting entries...");
+      LogWriterUtils.getLogWriter().info("Putting entries...");
       Cache cacheClient = GemFireCacheImpl.getInstance();
       Region r1 = cacheClient.getRegion(Region.SEPARATOR +REGION_NAME1);
       Region r2 = cacheClient.getRegion(Region.SEPARATOR +REGION_NAME2);
@@ -623,7 +623,7 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
   public static void getEntries()
   {
     try {
-      LogWriterSupport.getLogWriter().info("Getting entries...");
+      LogWriterUtils.getLogWriter().info("Getting entries...");
       Cache cacheClient = GemFireCacheImpl.getInstance();
       Region r3 = cacheClient.getRegion(Region.SEPARATOR +REGION_NAME3);
       r3.get("key-1");

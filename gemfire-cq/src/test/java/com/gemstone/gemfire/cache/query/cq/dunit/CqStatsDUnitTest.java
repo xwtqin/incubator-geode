@@ -36,8 +36,8 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
@@ -78,7 +78,7 @@ public class CqStatsDUnitTest extends CacheTestCase {
       final int cqListenerInvocations) {
     vm.invoke(new CacheSerializableRunnable("Validate CQs") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Validating CQ Stats. ### " + cqName);
+        LogWriterUtils.getLogWriter().info("### Validating CQ Stats. ### " + cqName);
 //      Get CQ Service.
         QueryService qService = null;
         try {          
@@ -161,7 +161,7 @@ public class CqStatsDUnitTest extends CacheTestCase {
       final int clientsWithCqs) {
     vm.invoke(new CacheSerializableRunnable("Validate CQ Service Stats") {
       public void run2() throws CacheException {
-        LogWriterSupport.getLogWriter().info("### Validating CQ Service Stats. ### ");
+        LogWriterUtils.getLogWriter().info("### Validating CQ Service Stats. ### ");
 //      Get CQ Service.
         QueryService qService = null;
         try {          
@@ -249,7 +249,7 @@ public class CqStatsDUnitTest extends CacheTestCase {
     /* Init Server and Client */
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client, port, host0);
     
     /* Create CQs. */
@@ -340,7 +340,7 @@ public class CqStatsDUnitTest extends CacheTestCase {
     /* Init Server and Client */
     cqDUnitTest.createServer(server);
     final int port = server.invokeInt(CqQueryDUnitTest.class, "getCacheServerPort");
-    final String host0 = NetworkSupport.getServerHostName(server.getHost());
+    final String host0 = NetworkUtils.getServerHostName(server.getHost());
     cqDUnitTest.createClient(client1, port, host0);
     cqDUnitTest.createClient(client2, port, host0);
     

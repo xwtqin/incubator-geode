@@ -67,11 +67,11 @@ import com.gemstone.gemfire.internal.cache.execute.data.ShipmentId;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestSupport;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.LogWriterSupport;
-import com.gemstone.gemfire.test.dunit.NetworkSupport;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -130,7 +130,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 
     }
     finally {
-      DistributedTestSupport.unregisterAllDataSerializersFromAllVms();
+      DistributedTestUtils.unregisterAllDataSerializersFromAllVms();
     }
   }
 
@@ -196,7 +196,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -210,7 +210,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -224,7 +224,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -238,7 +238,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     return port;
@@ -603,7 +603,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 
   public void test_SingleHopWithHAWithLocator() {
     int port3 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String host0 = NetworkSupport.getServerHostName(member3.getHost());
+    final String host0 = NetworkUtils.getServerHostName(member3.getHost());
     final String locator = host0 + "[" + port3 + "]";
     member3.invoke(PartitionedRegionSingleHopDUnitTest.class,
         "startLocatorInVM", new Object[] { port3 });
@@ -989,7 +989,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
         for (Entry entry : clientMap.entrySet()) {
           List list = (List)entry.getValue();
           if(list.size()<4){
-            LogWriterSupport.getLogWriter().info("still waiting for 4 bucket owners in " + entry.getKey() + ": " + list);
+            LogWriterUtils.getLogWriter().info("still waiting for 4 bucket owners in " + entry.getKey() + ": " + list);
             finished = false;
             break;
           }
@@ -1090,7 +1090,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
           member2.invoke(PartitionedRegionSingleHopDUnitTest.class, "verifyMetadata", new Object[]{fclientMap});
           member3.invoke(PartitionedRegionSingleHopDUnitTest.class, "verifyMetadata", new Object[]{fclientMap});
         } catch (Exception e) {
-          LogWriterSupport.getLogWriter().info("verification failed", e);
+          LogWriterUtils.getLogWriter().info("verification failed", e);
           return false;
         }
         return true;
@@ -1414,7 +1414,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     region = cache.createRegion(PR_NAME, attr.create());
 
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1428,7 +1428,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1441,7 +1441,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1454,7 +1454,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     replicatedRegion = cache.createRegion("rr", new AttributesFactory().create());
@@ -1484,7 +1484,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1498,7 +1498,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1512,7 +1512,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1526,7 +1526,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());    
     
@@ -1554,7 +1554,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1570,7 +1570,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1586,7 +1586,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1602,7 +1602,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());    
     
@@ -1638,7 +1638,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1654,7 +1654,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1670,7 +1670,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1686,7 +1686,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
 //    attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());    
     
@@ -1724,7 +1724,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1738,7 +1738,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1752,7 +1752,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1766,7 +1766,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());    
     
@@ -1802,7 +1802,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     region = cache.createRegion(PR_NAME, attr.create());
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1815,7 +1815,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     customerRegion = cache.createRegion("CUSTOMER", attr.create());
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1828,7 +1828,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     orderRegion = cache.createRegion("ORDER", attr.create());
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1841,7 +1841,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attr.setConcurrencyChecksEnabled(true);
     shipmentRegion = cache.createRegion("SHIPMENT", attr.create());
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Partitioned Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     replicatedRegion = cache.createRegion("rr", new AttributesFactory().create());
@@ -1957,7 +1957,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     RegionAttributes attrs = factory.create();
     region = cache.createRegion(PR_NAME, attrs);
     assertNotNull(region);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region " + PR_NAME + " created Successfully :"
             + region.toString());
 
@@ -1968,7 +1968,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attrs = factory.create();
     customerRegion = cache.createRegion("CUSTOMER", attrs);
     assertNotNull(customerRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region CUSTOMER created Successfully :"
             + customerRegion.toString());
 
@@ -1979,7 +1979,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attrs = factory.create();
     orderRegion = cache.createRegion("ORDER", attrs);
     assertNotNull(orderRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region ORDER created Successfully :"
             + orderRegion.toString());
 
@@ -1990,7 +1990,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     attrs = factory.create();
     shipmentRegion = cache.createRegion("SHIPMENT", attrs);
     assertNotNull(shipmentRegion);
-    LogWriterSupport.getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Distributed Region SHIPMENT created Successfully :"
             + shipmentRegion.toString());
     factory = new AttributesFactory();

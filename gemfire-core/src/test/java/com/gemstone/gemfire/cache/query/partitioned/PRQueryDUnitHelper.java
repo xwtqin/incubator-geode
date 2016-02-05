@@ -137,7 +137,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           localRegion = cache.createRegion(regionName, attr.create());
         }
         catch (IllegalStateException ex) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .warning(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreate: Creation caught IllegalStateException",
                   ex);
@@ -174,7 +174,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           localRegion = cache.createRegion(regionName, attr.create());
         }
         catch (IllegalStateException ex) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .warning(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreate: Creation caught IllegalStateException",
                   ex);
@@ -218,7 +218,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           localRegion = cache.createRegionFactory(RegionShortcut.REPLICATE).create(regionName);
         }
         catch (IllegalStateException ex) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .warning(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreate: Creation caught IllegalStateException",
                   ex);
@@ -311,7 +311,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             partitionedregion = cache.createRegion(regionName, attr.create());
           }
           catch (IllegalStateException ex) {
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
                 .warning(
                     "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreateWithRedundancy: Creation caught IllegalStateException",
                     ex);
@@ -360,7 +360,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             partitionedregion = cache.createRegion(regionName, attr.create());
           }
           catch (IllegalStateException ex) {
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
                 .warning(
                     "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreateWithRedundancy: Creation caught IllegalStateException",
                     ex);
@@ -415,7 +415,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             partitionedregion = cache.createRegion(regionName, attr.create());
           }
           catch (IllegalStateException ex) {
-            com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
                 .warning(
                     "PRQueryDUnitHelper#getCacheSerializableRunnableForPRCreateWithRedundancy: Creation caught IllegalStateException",
                     ex);
@@ -533,10 +533,10 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               }
             } catch (EntryExistsException e) {
               // Do nothing let it go
-              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("EntryExistsException was thrown for key "+ j);
+              com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("EntryExistsException was thrown for key "+ j);
             } catch (EntryNotFoundException e) {
               // Do nothing let it go
-              com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("EntryNotFoundException was thrown for key "+ j);
+              com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("EntryNotFoundException was thrown for key "+ j);
             }
           }
         }
@@ -742,7 +742,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -751,14 +751,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
                   rde);
 
         }
         catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
                   cce);
@@ -869,7 +869,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             }
           }
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -885,7 +885,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .error(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
               + e, e);
@@ -894,14 +894,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
               rde);
 
         }
         catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
               cce);
@@ -1002,7 +1002,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             }
           }
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
         }
@@ -1013,7 +1013,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .error(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
               + e, e);
@@ -1022,14 +1022,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
               rde);
 
         }
         catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
               cce);
@@ -1142,7 +1142,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             ssORrs.CompareQueryResultsWithoutAndWithIndexes(r, queries.length,true,rq);
 
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -1156,7 +1156,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .error(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
               + e, e);
@@ -1165,14 +1165,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
 
         catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
               rde);
 
         }
         catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
           .info(
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
               cce);
@@ -1268,7 +1268,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
 //                  "Finished executing PR query: " + qStr);
             }
           }
-         com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
          .info(
              "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -1284,7 +1284,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
        }
 
        catch (QueryException e) {
-         com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
          .error(
              "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
              + e, e);
@@ -1293,14 +1293,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
        }
 
        catch (RegionDestroyedException rde) {
-         com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
          .info(
              "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
              rde);
 
        }
        catch (CancelException cce) {
-         com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
          .info(
              "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
              cce);
@@ -1414,7 +1414,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             r[j][1] = region.query(query[j]);
           }
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryWithConstantsAndComparingResults: Queries Executed successfully on Local region & PR Region");
 
@@ -1424,7 +1424,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         catch (QueryException e) {
           // assertTrue("caught Exception"+ e.getMessage(),false);
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryWithConstantsAndComparingResults: Caught an Exception while querying Constants"
                       + e, e);
@@ -1544,7 +1544,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             "PRQueryDUnitHelper#compareTwoQueryResults: Type 2 is NULL "
                 + type2, type2);
         if ((type1.getClass().getName()).equals(type2.getClass().getName())) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#compareTwoQueryResults: Both Search Results are of the same Type i.e.--> "
                       + ((SelectResults)r[j][0]).getCollectionType()
@@ -1552,7 +1552,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
 
         }
         else {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().error(
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().error(
               "PRQueryDUnitHelper#compareTwoQueryResults: Classes are : "
                   + type1.getClass().getName() + " "
                   + type2.getClass().getName());
@@ -1562,14 +1562,14 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         int size0 = ((SelectResults)r[j][0]).size();
         int size1 = ((SelectResults)r[j][1]).size();
         if (size0 == size1) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#compareTwoQueryResults: Both Search Results are non-zero and are of Same Size i.e.  Size= "
                       + size1 + ";j=" + j);
 
         }
         else {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#compareTwoQueryResults: FAILED:Search resultSet size are different in both cases; size0=" +
                      size0 + ";size1=" + size1 + ";j=" + j);
@@ -1682,7 +1682,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         }
         catch (QueryException qe) {
 
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRInvalidQuery: Caught another Exception while querying , Exception is "
                       + qe, qe);
@@ -1723,11 +1723,11 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
                 + "</ExpectedException>");
 
         Region region = cache.getRegion(regionName);
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForRegionClose: Closing region");
         region.close();
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForRegionClose: Region Closed on VM ");
 //        Region partitionedregion = null;
@@ -1741,7 +1741,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             .create();
         attr.setPartitionAttributes(prAttr);
         cache.createRegion(regionName, attr.create());
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForRegionClose: Region Recreated on VM ");
         getCache().getLogger().info(
@@ -1782,17 +1782,17 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
             "<ExpectedException action=add>" + expectedReplyException
                 + "</ExpectedException>");
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForCacheClose: Closing cache");
         closeCache();
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForCacheClose: cache Closed on VM ");
         cache = getCache();
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForCacheClose: Recreating the cache ");
 //        Region partitionedregion = null;
@@ -1822,7 +1822,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
         } finally {
           InternalResourceManager.setResourceObserver(null);
         }
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PROperationWithQueryDUnitTest#getCacheSerializableRunnableForCacheClose: cache Recreated on VM ");
         getCache().getLogger().info(
@@ -1891,7 +1891,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
 
         Region region = cache.getRegion(regionName);
 
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
             .info(
                 "PRQueryRegionDestroyedDUnitTest#getCacheSerializableRunnableForRegionClose: Destroying region "
                     + region);
@@ -1946,7 +1946,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           }
           long endTimeLocal=System.currentTimeMillis();
           long queryTimeLocal = endTimeLocal-startTimeLocal;
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Time to Query Local cache "+queryTimeLocal + " ms");
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Time to Query Local cache "+queryTimeLocal + " ms");
           
           long startTimePR = System.currentTimeMillis();
           for (int k = 0; k < query.length; k++) {
@@ -1956,8 +1956,8 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           long endTimePR = System.currentTimeMillis();
           long queryTimePR = endTimePR-startTimePR;
           
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Time to Query PR "+queryTimePR+" ms");
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Time to Query PR "+queryTimePR+" ms");
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Queries Executed successfully on Local region & PR Region");
 
@@ -1969,7 +1969,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
           
         }
         catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#PRQueryingVsLocalQuerying: Caught QueryException while querying"
                       + e, e);
@@ -2004,34 +2004,34 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
     public void displayResults(){
       
       try {
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("PRQueryDUnitHelper:PerfResultsObject#displayResults");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("PRQueryDUnitHelper:PerfResultsObject#displayResults");
         BufferedWriter out = new BufferedWriter(new FileWriter("PRQueryPerfDUnitTest.txt", true));
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("~~~~~~~~~~~~~~~~~~~~~~~PR Querying Performance Results~~~~~~~~~~~~~~~~~~~~~~~");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("~~~~~~~~~~~~~~~~~~~~~~~PR Querying Performance Results~~~~~~~~~~~~~~~~~~~~~~~");
         out.write("~~~~~~~~~~~~~~~~~~~~~~~PR Querying Performance Results~~~~~~~~~~~~~~~~~~~~~~~\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info(this.OperationDescription);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(this.OperationDescription);
         out.write("\t"+this.OperationDescription+"\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Scope                    : "+this.Scope);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Scope                    : "+this.Scope);
         out.write("Scope                    : "+this.Scope+"\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Redundancy Level         : "+this.redundancy);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Redundancy Level         : "+this.redundancy);
         out.write("Redundancy Level         : "+this.redundancy+"\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Number of Accessor       : "+this.NumberOfAccessors);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Number of Accessor       : "+this.NumberOfAccessors);
         out.write("Number of Accessor       : "+this.NumberOfAccessors+"\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("Number of Datastore/s    : "+this.NumberOfDataStores);
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Number of Datastore/s    : "+this.NumberOfDataStores);
         out.write("Number of Datastore/s    : "+this.NumberOfDataStores+"\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("QueryingTime Local       : "+this.QueryingTimeLocal+" ms");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("QueryingTime Local       : "+this.QueryingTimeLocal+" ms");
         out.write("QueryingTime Local       : "+this.QueryingTimeLocal+" ms\n\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("QueryingTime PR          : "+this.QueryingTimePR+" ms");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("QueryingTime PR          : "+this.QueryingTimePR+" ms");
         out.write("QueryingTime PR          : "+this.QueryingTimePR+" ms\n");
         
-        com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter().info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         out.write("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
         out.close();
     } catch (IOException e) {
@@ -2546,7 +2546,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
                     + " r2 where " + queries[j]).execute();
             r[j][1] = r2.asList();
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -2562,7 +2562,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -2570,13 +2570,13 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
                   rde);
 
         } catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
                   cce);
@@ -2675,7 +2675,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
                     + " r2, r2.positions.values pos2 where " + queries[j]).execute();
             r[j][1] = r2.asList();
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -2691,7 +2691,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -2699,13 +2699,13 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
                   rde);
 
         } catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
                   cce);
@@ -2805,7 +2805,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
                     + " r2, r2.positions.values pos2 where " + queries[j]).execute();
             r[j][1] = r2.asList();
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -2821,7 +2821,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -2829,13 +2829,13 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
                   rde);
 
         } catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
                   cce);
@@ -2935,7 +2935,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
                     + " r2 where " + queries[j]).execute();
             r[j][1] = r2.asList();
           }
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Queries Executed successfully on Local region & PR Region");
 
@@ -2951,7 +2951,7 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (QueryException e) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .error(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught QueryException while querying"
                       + e, e);
@@ -2959,13 +2959,13 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
               "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught unexpected query exception",
               e);
         } catch (RegionDestroyedException rde) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a RegionDestroyedException while querying as expected ",
                   rde);
 
         } catch (CancelException cce) {
-          com.gemstone.gemfire.test.dunit.LogWriterSupport.getLogWriter()
+          com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter()
               .info(
                   "PRQueryDUnitHelper#getCacheSerializableRunnableForPRQueryAndCompareResults: Caught a CancelException while querying as expected ",
                   cce);
