@@ -116,11 +116,6 @@ public class DistributedSystemDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-    
-  }
-
   /**
    * Tests each and every operations that is defined on the MemberMXBean
    * 

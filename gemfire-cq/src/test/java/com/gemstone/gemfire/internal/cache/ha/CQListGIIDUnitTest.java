@@ -175,8 +175,8 @@ public class CQListGIIDUnitTest extends DistributedTestCase {
   /**
    * Tears down the test.
    */
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     serverVM0.invoke(ConflationDUnitTest.class, "unsetIsSlowStart");
     serverVM1.invoke(ConflationDUnitTest.class, "unsetIsSlowStart");
     closeCache();

@@ -59,11 +59,6 @@ public class TestRemoteClusterDUnitTest extends ManagementTestBase {
     super(name);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-
-  }
-
   public void testMBeanCallback() throws Exception {
 
     VM nyLocator = getManagedNodeList().get(0);

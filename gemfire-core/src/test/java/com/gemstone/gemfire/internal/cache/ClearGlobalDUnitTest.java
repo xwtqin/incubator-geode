@@ -85,8 +85,8 @@ public class ClearGlobalDUnitTest extends DistributedTestCase
     LogWriterUtils.getLogWriter().fine("Cache created in successfully");
   }
 
-  public void preTearDown()
-  {        
+  @Override
+  protected final void preTearDown() throws Exception {
     server1.invoke(ClearGlobalDUnitTest.class, "closeCache");
     resetClearCallBack();
     closeCache();

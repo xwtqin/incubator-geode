@@ -45,10 +45,6 @@ public class TestServerDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   public static int getNumOfServersFromMBean() {
    
    final WaitCriterion waitCriteria = new WaitCriterion() {

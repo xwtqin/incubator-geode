@@ -133,8 +133,8 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
   /**
    * Tears down the test.
    */
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "closeCache");
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "closeCache");

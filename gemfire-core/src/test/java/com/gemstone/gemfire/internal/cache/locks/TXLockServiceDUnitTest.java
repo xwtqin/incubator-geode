@@ -88,7 +88,8 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
     com.gemstone.gemfire.internal.OSProcess.printStacks(0);
   }
 
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
 //    invokeInEveryVM(TXLockServiceDUnitTest.class,
 //                    "remoteDumpAllDLockServices");
                     
@@ -105,9 +106,6 @@ public class TXLockServiceDUnitTest extends DistributedTestCase {
 
     testTXRecoverGrantor_replyCode_PASS = false;
     testTXRecoverGrantor_heldLocks_PASS = false;
-  
-    // Disconnects from GemFire if using shared memory
-    super.preTearDown();
   }
   
   // -------------------------------------------------------------------------

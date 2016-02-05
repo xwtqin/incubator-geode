@@ -66,13 +66,13 @@ public class CacheMapTxnDUnitTest extends DistributedTestCase{
       vm1.invoke(CacheMapTxnDUnitTest.class, "createCache");
     }
     
-    public void preTearDown(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(CacheMapTxnDUnitTest.class, "closeCache");
-        vm1.invoke(CacheMapTxnDUnitTest.class, "closeCache");
-        
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(CacheMapTxnDUnitTest.class, "closeCache");
+      vm1.invoke(CacheMapTxnDUnitTest.class, "closeCache");
     }
     
     public static void createCache(){

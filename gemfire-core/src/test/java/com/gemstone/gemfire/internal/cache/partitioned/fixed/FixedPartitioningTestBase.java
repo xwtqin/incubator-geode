@@ -1317,7 +1317,8 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     PartitionedRegion.BEFORE_CALCULATE_STARTING_BUCKET_FLAG = false;
   }
   
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     try {
       closeCache();
       member1.invoke(FixedPartitioningTestBase.class, "closeCache");
@@ -1336,7 +1337,6 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           vm.invoke(FixedPartitioningTestBase.class, "remoteTearDown");
         }
       }
-      super.preTearDown();
     }
   }
 

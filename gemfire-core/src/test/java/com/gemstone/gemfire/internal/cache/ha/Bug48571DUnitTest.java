@@ -69,7 +69,8 @@ public class Bug48571DUnitTest extends DistributedTestCase {
     client = host.getVM(1);
   }
   
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     reset();
     server.invoke(Bug48571DUnitTest.class, "reset");
     client.invoke(Bug48571DUnitTest.class, "reset");

@@ -732,8 +732,7 @@ public class DurableClientReconnectDUnitTest extends DistributedTestCase
   }
 
   @Override
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  protected final void preTearDown() throws Exception {
     // close the clients first
     closeCache();
 

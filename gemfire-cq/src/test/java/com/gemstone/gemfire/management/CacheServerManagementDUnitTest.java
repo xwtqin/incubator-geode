@@ -93,8 +93,8 @@ public class CacheServerManagementDUnitTest extends LocatorTestBase {
     super.setUp();
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void postTearDownLocatorTestBase() throws Exception {
     disconnectAllFromDS();
   }
 

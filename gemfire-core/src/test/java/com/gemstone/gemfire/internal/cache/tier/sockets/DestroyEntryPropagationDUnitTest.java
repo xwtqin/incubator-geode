@@ -499,15 +499,13 @@ public class DestroyEntryPropagationDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     //close client
     vm2.invoke(DestroyEntryPropagationDUnitTest.class, "closeCache");
     vm3.invoke(DestroyEntryPropagationDUnitTest.class, "closeCache");
     //close server
     vm0.invoke(DestroyEntryPropagationDUnitTest.class, "closeCache");
     vm1.invoke(DestroyEntryPropagationDUnitTest.class, "closeCache");
-
   }
-
 }

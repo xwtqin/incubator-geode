@@ -49,10 +49,6 @@ public class TestFunctionsDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   public static Integer getNumOfRunningFunction() {
 
     final WaitCriterion waitCriteria = new WaitCriterion() {

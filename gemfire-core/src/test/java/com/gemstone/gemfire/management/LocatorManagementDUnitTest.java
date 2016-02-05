@@ -73,10 +73,9 @@ public class LocatorManagementDUnitTest extends ManagementTestBase {
     locator = managedNode1;
   }
 
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDownManagementTestBase() throws Exception {
     stopLocator(locator);
-    super.preTearDown();
-
   }
 
   /**

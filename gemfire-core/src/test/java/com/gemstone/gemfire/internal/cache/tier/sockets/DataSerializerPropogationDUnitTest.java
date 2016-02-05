@@ -156,7 +156,7 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void preTearDown() throws Exception {
+  protected final void preTearDown() throws Exception {
     try {
       // close the clients first
       client1.invoke(DataSerializerPropogationDUnitTest.class, "closeCache");
@@ -165,8 +165,6 @@ public class DataSerializerPropogationDUnitTest extends DistributedTestCase {
 
       server1.invoke(DataSerializerPropogationDUnitTest.class, "closeCache");
       server2.invoke(DataSerializerPropogationDUnitTest.class, "closeCache");
-
-      super.preTearDown();
 
       client1 = null;
       client2 = null;

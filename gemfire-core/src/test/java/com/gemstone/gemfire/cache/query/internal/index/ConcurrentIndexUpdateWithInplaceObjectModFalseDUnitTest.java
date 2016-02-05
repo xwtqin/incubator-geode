@@ -107,21 +107,18 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
    * Tear down a PartitionedRegionTestCase by cleaning up the existing cache
    * (mainly because we want to destroy any existing PartitionedRegions)
    */
-  public void preTearDown() throws Exception {
-    try {
-      Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set INPLACE_OBJECT_MODIFICATION false") {
-        
-        @Override
-        public void run2() throws CacheException {
-          //System.setProperty("gemfire.index.INPLACE_OBJECT_MODIFICATION", "false");
-          IndexManager.INPLACE_OBJECT_MODIFICATION_FOR_TEST = false;
-        }
-      });
-      Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest.class, "destroyRegions");
-      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
-    } finally {
-      super.preTearDown();
-    }
+  @Override
+  protected final void preTearDown() throws Exception {
+    Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set INPLACE_OBJECT_MODIFICATION false") {
+      
+      @Override
+      public void run2() throws CacheException {
+        //System.setProperty("gemfire.index.INPLACE_OBJECT_MODIFICATION", "false");
+        IndexManager.INPLACE_OBJECT_MODIFICATION_FOR_TEST = false;
+      }
+    });
+    Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest.class, "destroyRegions");
+    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
 
   public static synchronized void destroyRegions() {

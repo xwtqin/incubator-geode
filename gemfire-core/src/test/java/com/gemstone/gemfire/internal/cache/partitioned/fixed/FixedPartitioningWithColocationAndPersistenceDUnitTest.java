@@ -44,10 +44,6 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   /**
    * This tests validates that in colocation of FPRs child region cannot specify
    * FixedPartitionAttributes

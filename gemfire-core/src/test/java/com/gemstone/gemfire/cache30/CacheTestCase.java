@@ -387,7 +387,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   }
 
   @Override
-  public final void preTearDown() throws Exception {
+  protected final void preTearDown() throws Exception {
     preTearDownCacheTestCase();
     
     // locally destroy all root regions and close the cache

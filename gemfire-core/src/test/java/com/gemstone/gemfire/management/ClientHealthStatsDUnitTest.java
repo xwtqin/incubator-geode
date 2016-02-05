@@ -107,8 +107,8 @@ public class ClientHealthStatsDUnitTest extends DistributedTestCase {
     IgnoredException.addIgnoredException("Connection reset");
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     reset();
     helper.closeCache(managingNode);
     helper.closeCache(client);

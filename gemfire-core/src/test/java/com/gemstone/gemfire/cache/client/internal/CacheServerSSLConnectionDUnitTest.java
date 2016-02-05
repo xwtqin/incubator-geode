@@ -412,15 +412,13 @@ public class CacheServerSSLConnectionDUnitTest extends DistributedTestCase {
     }
   }
   
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     final Host host = Host.getHost(0);
     VM serverVM = host.getVM(1);
     VM clientVM = host.getVM(2);
     clientVM.invoke(CacheServerSSLConnectionDUnitTest.class, "closeClientCacheTask");
     serverVM.invoke(CacheServerSSLConnectionDUnitTest.class, "closeCacheTask");
-    super.preTearDown();
   }
-
 }
 

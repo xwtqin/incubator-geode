@@ -528,8 +528,8 @@ public class ClientConflationDUnitTest extends DistributedTestCase
   /**
    * close the cache in tearDown
    */
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     // close client
     closeCacheFeeder();
     vm1.invoke(ClientConflationDUnitTest.class, "closeCacheClient");

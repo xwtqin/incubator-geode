@@ -160,16 +160,13 @@ public class HADispatcherDUnitTest extends DistributedTestCase
   }
 
   @Override
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  protected final void preTearDown() throws Exception {
     client1.invoke(HADispatcherDUnitTest.class, "closeCache");
     client2.invoke(HADispatcherDUnitTest.class, "closeCache");
     // close server
     server1.invoke(HADispatcherDUnitTest.class, "resetQRMslow");
     server1.invoke(HADispatcherDUnitTest.class, "closeCache");
     server2.invoke(HADispatcherDUnitTest.class, "closeCache");
-
   }
 
   public static void closeCache()

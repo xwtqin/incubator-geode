@@ -73,8 +73,7 @@ public class ClientServerRegisterInterestsDUnitTest extends DistributedTestCase 
   }
 
   @Override
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  protected final void preTearDown() throws Exception {
     serverPort.set(0);
     entryEvents.clear();
     gemfireServerVm.invoke(new SerializableRunnable() {

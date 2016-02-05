@@ -44,8 +44,7 @@ public class Bug47667DUnitTest extends LocatorTestBase {
   }
 
   @Override
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  protected final void postTearDownLocatorTestBase() throws Exception {
     disconnectAllFromDS();
   }
 

@@ -105,7 +105,8 @@ public abstract class DistributedCacheTestCase
   /**
    * Closes the cache in this VM and each remote VM
    */
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     StringBuffer problems = new StringBuffer();
 
     if (cache != null) {
@@ -138,8 +139,6 @@ public abstract class DistributedCacheTestCase
 
     assertEquals("Problems while tearing down", 
                  "", problems.toString().trim());
-
-    super.preTearDown();
   }
 
   /**

@@ -58,11 +58,6 @@ public class DLockManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-    
-  }
-
   /**
    * Distributed Lock Service test
    * 

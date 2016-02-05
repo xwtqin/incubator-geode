@@ -637,8 +637,8 @@ public class ClientInterestNotifyDUnitTest extends DistributedTestCase
   /**
    * close the caches in tearDown
    */
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     vm0.invoke(ClientInterestNotifyDUnitTest.class, "closeCache");
     vm1.invoke(ClientInterestNotifyDUnitTest.class, "closeCache");
     /*

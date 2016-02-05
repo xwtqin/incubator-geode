@@ -302,7 +302,8 @@ public class InterestListFailoverDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     closeAll();
   }
 

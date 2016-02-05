@@ -91,8 +91,7 @@ public class HASlowReceiverDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  protected final void preTearDown() throws Exception {
     clientVM.invoke(HASlowReceiverDUnitTest.class, "closeCache");
 
     // then close the servers

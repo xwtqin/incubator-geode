@@ -92,14 +92,15 @@ public class PutAllGlobalDUnitTest extends DistributedTestCase {
       LogWriterUtils.getLogWriter().fine("Cache created successfully");
     }
     
-    public void preTearDown(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(PutAllGlobalDUnitTest.class, "closeCache");
-        vm1.invoke(PutAllGlobalDUnitTest.class, "closeCache");
-        cache = null;
-        Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(PutAllGlobalDUnitTest.class, "closeCache");
+      vm1.invoke(PutAllGlobalDUnitTest.class, "closeCache");
+      cache = null;
+      Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCacheForVM0(){

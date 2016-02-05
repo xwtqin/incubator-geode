@@ -115,8 +115,8 @@ public class DeltaClientAuthorizationDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");

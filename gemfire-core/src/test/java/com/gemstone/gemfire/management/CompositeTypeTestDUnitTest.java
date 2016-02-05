@@ -48,11 +48,6 @@ public class CompositeTypeTestDUnitTest extends ManagementTestBase {
     
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-    
-  }
-  
   public void testCompositeTypeGetters() throws Exception{
     
     initManagement(false);

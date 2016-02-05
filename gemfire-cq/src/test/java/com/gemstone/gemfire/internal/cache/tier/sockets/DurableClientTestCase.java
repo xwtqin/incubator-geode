@@ -106,11 +106,17 @@ public class DurableClientTestCase extends DistributedTestCase {
     System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+ getTestMethodName()+"\n\n");
   }
   
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
+    preTearDownDurableClientTestCase();
+    
     this.durableClientVM.invoke(CacheServerTestUtil.class, "closeCache");
     this.publisherClientVM.invoke(CacheServerTestUtil.class, "closeCache");
     this.server1VM.invoke(CacheServerTestUtil.class, "closeCache");
     this.server2VM.invoke(CacheServerTestUtil.class, "closeCache");
+  }
+  
+  protected void preTearDownDurableClientTestCase() throws Exception {
   }
 
   /**

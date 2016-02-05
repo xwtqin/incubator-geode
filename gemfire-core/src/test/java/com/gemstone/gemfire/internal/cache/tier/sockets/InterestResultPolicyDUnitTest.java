@@ -94,8 +94,7 @@ public class InterestResultPolicyDUnitTest extends DistributedTestCase
    * Closes the cache on server and client
    */
   @Override
-  public void preTearDown() throws Exception
-  {
+  protected final void preTearDown() throws Exception {
     // might get ServerConnectivityExceptions during shutdown
     this.expectedEx = IgnoredException.addIgnoredException(ServerConnectivityException.class
         .getName());

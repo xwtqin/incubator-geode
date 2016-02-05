@@ -116,9 +116,8 @@ public class HAGIIBugDUnitTest extends DistributedTestCase
 
   }
 
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     vm0.invoke(HAGIIBugDUnitTest.class, "closeCache");
     vm1.invoke(HAGIIBugDUnitTest.class, "closeCache");
     vm2.invoke(HAGIIBugDUnitTest.class, "closeCache");

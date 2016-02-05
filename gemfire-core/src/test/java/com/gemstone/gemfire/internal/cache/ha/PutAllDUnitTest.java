@@ -102,9 +102,8 @@ public class PutAllDUnitTest extends DistributedTestCase
   }
 
   /** close the caches**/
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     client1.invoke(PutAllDUnitTest.class, "closeCache");
     client2.invoke(PutAllDUnitTest.class, "closeCache");
     // close server

@@ -1142,14 +1142,13 @@ public class PRDeltaPropagationDUnitTest extends DistributedTestCase {
     ConflationDUnitTest.unsetIsSlowStart();
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();    
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
     client1.invoke(PRDeltaPropagationDUnitTest.class, "closeCache");
     dataStore1.invoke(PRDeltaPropagationDUnitTest.class, "closeCache");
     dataStore2.invoke(PRDeltaPropagationDUnitTest.class, "closeCache");
     dataStore3.invoke(PRDeltaPropagationDUnitTest.class, "closeCache");
-    
   }
 
   public static void closeCache() {

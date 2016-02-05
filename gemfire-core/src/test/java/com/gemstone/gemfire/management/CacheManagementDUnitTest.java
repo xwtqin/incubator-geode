@@ -101,12 +101,6 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-  
-  
-
   public void testGemFireConfigData() throws Exception {
      initManagement(false);
    

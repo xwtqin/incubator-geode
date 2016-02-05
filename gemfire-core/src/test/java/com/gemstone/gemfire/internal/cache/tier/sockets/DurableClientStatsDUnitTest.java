@@ -80,7 +80,7 @@ public class DurableClientStatsDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void preTearDown() throws Exception {
+  protected final void preTearDown() throws Exception {
     // Stop server 1
     this.server1VM.invoke(CacheServerTestUtil.class, "closeCache");
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();

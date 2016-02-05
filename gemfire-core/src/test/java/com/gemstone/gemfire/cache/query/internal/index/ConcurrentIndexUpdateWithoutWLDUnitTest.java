@@ -92,13 +92,10 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
    * Tear down a PartitionedRegionTestCase by cleaning up the existing cache
    * (mainly because we want to destroy any existing PartitionedRegions)
    */
-  public void preTearDown() throws Exception {
-    try {
-      Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithoutWLDUnitTest.class, "destroyRegions");
-      Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
-    } finally {
-      super.preTearDown();
-    }
+  @Override
+  protected final void preTearDown() throws Exception {
+    Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithoutWLDUnitTest.class, "destroyRegions");
+    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
 
   public static synchronized void destroyRegions() {

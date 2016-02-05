@@ -522,9 +522,8 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
 
   // End Region: Tests
 
-  public void preTearDown() throws Exception {
-
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // close the clients first
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");
@@ -533,5 +532,4 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     server1.invoke(SecurityTestUtil.class, "closeCache");
     server2.invoke(SecurityTestUtil.class, "closeCache");
   }
-
 }

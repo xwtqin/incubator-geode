@@ -116,7 +116,7 @@ public class HAInterestTestCase extends DistributedTestCase {
   }
 
   @Override
-  public void preTearDown() throws Exception {
+  protected final void preTearDown() throws Exception {
     // close the clients first
     closeCache();
 

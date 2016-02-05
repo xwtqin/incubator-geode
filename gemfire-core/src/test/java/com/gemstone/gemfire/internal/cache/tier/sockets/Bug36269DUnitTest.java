@@ -218,13 +218,11 @@ public class Bug36269DUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
     // close server
     server1.invoke(Bug36269DUnitTest.class, "closeCache");
     server2.invoke(Bug36269DUnitTest.class, "closeCache");
-
   }
-
 }

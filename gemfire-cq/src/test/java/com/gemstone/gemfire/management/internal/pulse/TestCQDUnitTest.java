@@ -51,10 +51,6 @@ public class TestCQDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   public static long getNumOfCQ() {
     
     final WaitCriterion waitCriteria = new WaitCriterion() {

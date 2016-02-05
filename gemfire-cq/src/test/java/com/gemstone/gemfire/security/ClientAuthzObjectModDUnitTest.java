@@ -140,8 +140,8 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     server2.invoke(registerInstantiator);
   }
   
-  public void preTearDown() throws Exception  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     DistributedTestCase.cleanupAllVms();
   }
 

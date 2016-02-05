@@ -194,8 +194,8 @@ public class CacheRegionClearStatsDUnitTest extends DistributedTestCase {
     "validationClearStat");
   }
   
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     client1.invoke(CacheRegionClearStatsDUnitTest.class, "closeCache");
     // then close the servers
     server1.invoke(CacheRegionClearStatsDUnitTest.class, "closeCache");

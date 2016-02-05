@@ -253,11 +253,9 @@ public class IdleTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(IdleTimeOutDUnitTest.class, "init", o);
   }
 
-  public void preTearDown() throws NamingException, SQLException {
+  @Override
+  protected final void preTearDown() throws Exception {
     VM vm0 = Host.getHost(0).getVM(0);
-    // destroyTable call disabled due to high rate of failure - see internal ticket #52274
-//    vm0.invoke(IdleTimeOutDUnitTest.class, "destroyTable");
-    // if destroyTable is fixed then this closeCache is not necessary and can be removed
     vm0.invoke(IdleTimeOutDUnitTest.class, "closeCache");
   }
 

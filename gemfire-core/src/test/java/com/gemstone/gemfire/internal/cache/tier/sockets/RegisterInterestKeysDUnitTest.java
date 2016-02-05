@@ -236,15 +236,13 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     //close client
     client1.invoke(impl.getClass(), "closeCache");
     client2.invoke(impl.getClass(), "closeCache");
     //close server
     server1.invoke(impl.getClass(), "closeCache");
     server2.invoke(impl.getClass(), "closeCache");
-
   }
-
 }

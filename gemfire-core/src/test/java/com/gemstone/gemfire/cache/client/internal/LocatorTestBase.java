@@ -71,7 +71,8 @@ public abstract class LocatorTestBase  extends DistributedTestCase {
     super(name);
   }
   
-  public void preTearDown() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     
     SerializableRunnable tearDown = new SerializableRunnable("tearDown") {
       public void run() {
@@ -100,7 +101,11 @@ public abstract class LocatorTestBase  extends DistributedTestCase {
     //speed, but lets at least destroy our cache and locator.
     Invoke.invokeInEveryVM(tearDown);
     tearDown.run();
-    super.preTearDown();
+    
+    postTearDownLocatorTestBase();
+  }
+  
+  protected void postTearDownLocatorTestBase() throws Exception {
   }
   
   protected void startLocatorInVM(final VM vm, final int locatorPort, final String otherLocators) {

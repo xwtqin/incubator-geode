@@ -5119,8 +5119,8 @@ public class WANTestBase extends DistributedTestCase{
     }
   }*/
   
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+ @Override
+ protected final void preTearDown() throws Exception {
     cleanupVM();
     vm0.invoke(WANTestBase.class, "cleanupVM");
     vm1.invoke(WANTestBase.class, "cleanupVM");

@@ -717,9 +717,8 @@ public class HAStartupAndFailoverDUnitTest extends DistributedTestCase
   }
 
 
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // close the clients first
     closeCache();
 

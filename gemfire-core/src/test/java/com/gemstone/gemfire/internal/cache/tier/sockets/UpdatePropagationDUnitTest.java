@@ -588,17 +588,15 @@ public class UpdatePropagationDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     //close client
     client1.invoke(getClass(), "closeCache");
     client2.invoke(getClass(), "closeCache");
     //close server
     server1.invoke(getClass(), "closeCache");
     server2.invoke(getClass(), "closeCache");
-
   }
-
 }
 
 

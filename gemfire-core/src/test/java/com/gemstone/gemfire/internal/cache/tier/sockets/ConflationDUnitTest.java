@@ -908,8 +908,8 @@ public class ConflationDUnitTest extends DistributedTestCase
   /**
    * close the cache in tearDown
    */
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     // close client
     closeCache();
     vm2.invoke(ConflationDUnitTest.class, "closeCache");

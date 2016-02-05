@@ -863,9 +863,8 @@ public class DurableRegistrationDUnitTest extends DistributedTestCase {
     this.regionName = regionName;
   }
   
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();
   }
 }

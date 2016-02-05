@@ -508,9 +508,8 @@ public class DurableResponseMatrixDUnitTest extends DistributedTestCase
     return properties;
   }
 
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // close the clients first
     closeCache();
     // then close the servers

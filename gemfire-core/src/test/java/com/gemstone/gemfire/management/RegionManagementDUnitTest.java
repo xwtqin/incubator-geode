@@ -111,11 +111,6 @@ public class RegionManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-    
-  }
-
   /**
    * Tests all Region MBean related Management APIs
    * 

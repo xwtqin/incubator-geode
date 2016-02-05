@@ -481,9 +481,8 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
      .getProfile(regionName).getKeysOfInterestFor(proxy.getProxyID());
  }
 
-  @Override
-  public void preTearDown() throws Exception
-  {
+ @Override
+ protected final void preTearDown() throws Exception {
     // close the clients first
     server2.invoke(InterestListRecoveryDUnitTest.class, "closeCache");
     closeCache();

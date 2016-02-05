@@ -202,8 +202,8 @@ public class Bug40396DUnitTest extends DistributedTestCase {
     assertTrue("pattern not found", matched);
   }
   
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // then close the servers
     server.invoke(Bug40396DUnitTest.class, "removeExceptions");
     server.invoke(Bug40396DUnitTest.class, "closeCache");

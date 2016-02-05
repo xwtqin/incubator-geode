@@ -32,10 +32,9 @@ public class DurableClientNetDownDUnitTest extends DurableClientCrashDUnitTest {
   }
   
   @Override
-  public void preTearDown() throws Exception {
+  protected final void preTearDownDurableClientTestCase() throws Exception {
     //ensure that the test flag is no longer set in this vm
     this.durableClientVM.invoke(CacheServerTestUtil.class, "reconnectClient");
-    super.preTearDown();
   }
 
   public void setPrimaryRecoveryCheck() {}

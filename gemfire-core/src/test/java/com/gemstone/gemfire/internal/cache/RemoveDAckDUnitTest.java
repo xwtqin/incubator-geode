@@ -69,13 +69,13 @@ public class RemoveDAckDUnitTest extends DistributedTestCase {
       LogWriterUtils.getLogWriter().fine("Cache created in successfully");
     }
     
-    public void preTearDown(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(RemoveDAckDUnitTest.class, "closeCache");
-        vm1.invoke(RemoveDAckDUnitTest.class, "closeCache");
-        
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(RemoveDAckDUnitTest.class, "closeCache");
+      vm1.invoke(RemoveDAckDUnitTest.class, "closeCache");
     }
     
     public static void createCacheVM0(){

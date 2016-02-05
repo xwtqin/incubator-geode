@@ -135,8 +135,7 @@ public class BackwardCompatibilityHigherVersionClientDUnitTest extends
   }
 
   @Override
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  protected final void postTearDown() throws Exception {
     client1.invoke(BackwardCompatibilityHigherVersionClientDUnitTest.class,
         "unsetHandshakeVersionForTesting");
     client1.invoke(BackwardCompatibilityHigherVersionClientDUnitTest.class,

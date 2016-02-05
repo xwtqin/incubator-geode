@@ -124,16 +124,25 @@ public class ManagementTestBase extends DistributedTestCase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
+    preTearDownManagementTestBase();
+    
     closeAllCache();
     managementService = null;
 
     mcastPort = 0;
     disconnectAllFromDS();
     props.clear();
+    
+    postTearDownManagementTestBase();
   }
 
+  protected void preTearDownManagementTestBase() throws Exception {
+  }
+
+  protected void postTearDownManagementTestBase() throws Exception {
+  }
 
   public void closeAllCache() throws Exception{
     closeCache(managingNode);

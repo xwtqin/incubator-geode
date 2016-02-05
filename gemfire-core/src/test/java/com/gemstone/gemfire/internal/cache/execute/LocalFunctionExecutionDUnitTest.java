@@ -169,8 +169,8 @@ public class LocalFunctionExecutionDUnitTest extends DistributedTestCase{
     }    
   }
   
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     if(cache != null) {
       cache.close();
     }

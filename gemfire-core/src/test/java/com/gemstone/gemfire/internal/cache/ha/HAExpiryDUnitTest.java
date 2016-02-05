@@ -96,16 +96,14 @@ public class HAExpiryDUnitTest extends DistributedTestCase
 
   }
 
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     vm0.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm1.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm2.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm3.invoke(HAExpiryDUnitTest.class, "closeCache");
     cache = null;
     Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
-
   }
 
   public void testExpiryPeriod() throws Exception

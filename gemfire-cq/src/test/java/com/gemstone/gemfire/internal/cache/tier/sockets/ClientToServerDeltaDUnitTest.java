@@ -133,8 +133,8 @@ public class ClientToServerDeltaDUnitTest extends DistributedTestCase {
     client2 = host.getVM(3);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // reset all flags
     DeltaTestImpl.resetDeltaInvokationCounters();
     server.invoke(DeltaTestImpl.class, "resetDeltaInvokationCounters");

@@ -91,7 +91,6 @@ public class DynamicRegionDUnitTest extends CacheTestCase {
       if(dr != null) {
           dr.localDestroyRegion();      
       }
-      // TODO: attempted to call super.preTearDown(); here
     } 
     catch (VirtualMachineError e) {
       SystemFailure.initiateFailure(e);

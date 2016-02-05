@@ -843,9 +843,8 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     // close the clients first
     client1.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");
     client2.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");
@@ -853,5 +852,4 @@ public class CacheServerTransactionsDUnitTest extends DistributedTestCase
     server1.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");
     server2.invoke(CacheServerTransactionsDUnitTest.class, "closeCache");
   }
-
 }

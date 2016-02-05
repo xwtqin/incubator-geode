@@ -168,9 +168,8 @@ public class Bug36829DUnitTest extends DistributedTestCase {
     return properties;
   }
   
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();
   }
 }

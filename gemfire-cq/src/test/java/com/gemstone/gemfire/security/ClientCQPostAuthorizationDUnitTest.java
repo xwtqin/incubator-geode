@@ -95,8 +95,8 @@ public class ClientCQPostAuthorizationDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     client1.invoke(SecurityTestUtil.class, "closeCache");
     client2.invoke(SecurityTestUtil.class, "closeCache");
     server1.invoke(SecurityTestUtil.class, "closeCache");

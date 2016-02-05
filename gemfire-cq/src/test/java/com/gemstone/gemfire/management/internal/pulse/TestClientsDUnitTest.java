@@ -48,10 +48,6 @@ public class TestClientsDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   public static Integer getNumOfClients() {
     final WaitCriterion waitCriteria = new WaitCriterion() {
       @Override

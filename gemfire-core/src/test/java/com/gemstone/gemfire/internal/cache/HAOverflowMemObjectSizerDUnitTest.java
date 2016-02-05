@@ -94,8 +94,8 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     serverVM = host.getVM(3);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     serverVM.invoke(ConflationDUnitTest.class, "unsetIsSlowStart");
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");

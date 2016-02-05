@@ -246,14 +246,12 @@ public class VerifyUpdatesFromNonInterestEndPointDUnitTest extends DistributedTe
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     //close client
     vm2.invoke(VerifyUpdatesFromNonInterestEndPointDUnitTest.class, "closeCache");
     //close server
     vm0.invoke(VerifyUpdatesFromNonInterestEndPointDUnitTest.class, "closeCache");
     vm1.invoke(VerifyUpdatesFromNonInterestEndPointDUnitTest.class, "closeCache");
-
   }
-
 }

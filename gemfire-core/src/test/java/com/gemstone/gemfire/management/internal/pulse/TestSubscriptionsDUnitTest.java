@@ -83,14 +83,13 @@ public class TestSubscriptionsDUnitTest extends DistributedTestCase {
     client2 = host.getVM(3);
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void preTearDown() throws Exception {
     helper.closeCache(managingNode);
     helper.closeCache(server);
     helper.closeCache(client);
     helper.closeCache(client2);
     disconnectFromDS();
-    
   }
 
   private static final long serialVersionUID = 1L;

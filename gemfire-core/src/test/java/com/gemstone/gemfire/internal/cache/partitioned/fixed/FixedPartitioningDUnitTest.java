@@ -55,10 +55,6 @@ public class FixedPartitioningDUnitTest extends FixedPartitioningTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   /**
    * This test validates that null partition name cannot be added in
    * FixedPartitionAttributes

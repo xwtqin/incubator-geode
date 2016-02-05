@@ -490,8 +490,8 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     }
   }
 
-  public void preTearDown() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     // Close client cache first, then server caches
     client1.invoke(impl.getClass(), "closeCache");
     server2.invoke(impl.getClass(), "closeCache");
@@ -500,5 +500,4 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     cache = null;
     Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
   }
-
 }

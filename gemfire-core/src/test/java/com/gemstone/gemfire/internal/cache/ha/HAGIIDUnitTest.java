@@ -451,9 +451,9 @@ public class HAGIIDUnitTest extends DistributedTestCase
   {
       System.setProperty("slowStartTimeForTesting", "120000");
   }
-  public void preTearDown() throws Exception
-  {
-    super.preTearDown();
+
+  @Override
+  protected final void preTearDown() throws Exception {
     ConflationDUnitTest.unsetIsSlowStart();
     Invoke.invokeInEveryVM(ConflationDUnitTest.class, "unsetIsSlowStart");
     // close the clients first

@@ -43,10 +43,6 @@ public class TestHeapDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-  }
-
   public static long getHeapSizeOfClient() {    
     return (Runtime.getRuntime().totalMemory() -   Runtime.getRuntime().freeMemory());
   }

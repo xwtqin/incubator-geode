@@ -149,11 +149,6 @@ public class QueryDataDUnitTest extends ManagementTestBase {
 
   }
 
-  public void preTearDown() throws Exception {
-    super.preTearDown();
-
-  }
-  
   private void initCommonRegions(){
     createRegionsInNodes();
     fillValuesInRegions();

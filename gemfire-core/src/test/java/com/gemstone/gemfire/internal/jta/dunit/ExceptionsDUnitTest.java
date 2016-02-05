@@ -185,7 +185,8 @@ public class ExceptionsDUnitTest extends DistributedTestCase {
     vm0.invoke(ExceptionsDUnitTest.class, "init");
   }
 
-  public void preTearDown() throws NamingException, SQLException {
+  @Override
+  protected final void preTearDown() throws Exception {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     vm0.invoke(ExceptionsDUnitTest.class, "closeCache");

@@ -1571,8 +1571,8 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     }
   }
   
-  public void preTearDown() throws Exception {
-    super.preTearDown();
+  @Override
+  protected final void postTearDown() throws Exception {
     cleanupVM();
     vm0.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
     vm1.invoke(AsyncEventQueueTestBase.class, "cleanupVM");
