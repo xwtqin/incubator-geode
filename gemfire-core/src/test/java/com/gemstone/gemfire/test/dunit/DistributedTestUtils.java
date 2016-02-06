@@ -98,17 +98,15 @@ public class DistributedTestUtils {
    * NOTE: if you use this method be sure that you clean up the VM before the end of your
    * test with disconnectFromDS() or disconnectAllFromDS().
    */
-  @SuppressWarnings("serial")
   public static boolean crashDistributedSystem(final VM vm) {
-    return vm.invoke(new SerializableCallable<Boolean>(DistributedTestUtils.class.getSimpleName() + " crashDistributedSystem") {
-      public Boolean call() throws Exception {
+    return vm.invoke(()->{
         DistributedSystem system = InternalDistributedSystem.getAnyInstance();
         crashDistributedSystem(system);
         return true;
       }
-    });
+    );
   }
-
+  
   /** 
    * Delete locator state files.  Use this after getting a random port
    * to ensure that an old locator state file isn't picked up by the
