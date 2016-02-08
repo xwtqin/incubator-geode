@@ -484,6 +484,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     QueryObserverHolder.reset();
     QueryTestUtils.setCache(null);
     RegionTestCase.preSnapshotRegion = null;
+    SocketCreator.resetHostNameCache();
     SocketCreator.resolve_dns = true;
 
     // clear system properties -- keep alphabetized

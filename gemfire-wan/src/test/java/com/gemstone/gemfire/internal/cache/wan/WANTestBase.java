@@ -81,7 +81,6 @@ import com.gemstone.gemfire.cache.wan.GatewaySender.OrderPolicy;
 import com.gemstone.gemfire.cache.wan.GatewaySenderFactory;
 import com.gemstone.gemfire.cache.wan.GatewayTransportFilter;
 import com.gemstone.gemfire.cache30.CacheTestCase;
-import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.Locator;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
@@ -124,8 +123,6 @@ import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.util.test.TestUtil;
 import com.jayway.awaitility.Awaitility;
-
-import junit.framework.Assert;
 
 public class WANTestBase extends DistributedTestCase{
 
@@ -2167,6 +2164,8 @@ public class WANTestBase extends DistributedTestCase{
         }
       }
       sender.pause();
+      ((AbstractGatewaySender) sender).getEventProcessor().waitForDispatcherToPause();
+      
     }
     finally {
       exp.remove();
@@ -4364,7 +4363,7 @@ public class WANTestBase extends DistributedTestCase{
         .getLocatorDiscoveryCallback();
      
     boolean discovered = callback.waitForDiscovery(locatorToWaitFor, MAX_WAIT);
-    Assert.assertTrue(
+    assertTrue(
         "Waited " + MAX_WAIT + " for " + locatorToWaitFor
             + " to be discovered on client. List is now: "
             + callback.getDiscovered(), discovered);
