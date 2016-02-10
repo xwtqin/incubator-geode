@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import java.util.Properties;
 
@@ -49,8 +48,8 @@ public class UserPasswordAuthInit implements AuthInitialize {
     return new UserPasswordAuthInit();
   }
 
-  public void init(LogWriter systemLogger, LogWriter securityLogger)
-      throws AuthenticationFailedException {
+  @Override
+  public void init(LogWriter systemLogger, LogWriter securityLogger) throws AuthenticationFailedException {
     this.systemlog = systemLogger;
     this.securitylog = securityLogger;
   }
@@ -58,15 +57,13 @@ public class UserPasswordAuthInit implements AuthInitialize {
   public UserPasswordAuthInit() {
   }
 
-  public Properties getCredentials(Properties props, DistributedMember server,
-      boolean isPeer) throws AuthenticationFailedException {
+  @Override
+  public Properties getCredentials(Properties props, DistributedMember server, boolean isPeer) throws AuthenticationFailedException {
 
     Properties newProps = new Properties();
     String userName = props.getProperty(USER_NAME);
     if (userName == null) {
-      throw new AuthenticationFailedException(
-          "UserPasswordAuthInit: user name property [" + USER_NAME
-              + "] not set.");
+      throw new AuthenticationFailedException("UserPasswordAuthInit: user name property [" + USER_NAME + "] not set.");
     }
     newProps.setProperty(USER_NAME, userName);
     String passwd = props.getProperty(PASSWORD);
@@ -78,6 +75,7 @@ public class UserPasswordAuthInit implements AuthInitialize {
     return newProps;
   }
 
+  @Override
   public void close() {
   }
 

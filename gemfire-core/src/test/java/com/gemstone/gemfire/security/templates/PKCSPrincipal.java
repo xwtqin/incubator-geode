@@ -14,33 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.gemstone.gemfire.security.templates;
 
-package templates.security;
-
-import java.io.Serializable;
 import java.security.Principal;
 
 /**
- * An implementation of {@link Principal} class for a simple user name.
+ * @author kneeraj
  * 
- * @author Kumar Neeraj
- * @since 5.5
  */
-public class UsernamePrincipal implements Principal, Serializable {
+public class PKCSPrincipal implements Principal {
 
-  private final String userName;
+  private String alias;
 
-  public UsernamePrincipal(String userName) {
-    this.userName = userName;
+  public PKCSPrincipal(String alias) {
+    this.alias = alias;
   }
 
+  @Override
   public String getName() {
-    return this.userName;
+    return this.alias;
   }
 
   @Override
   public String toString() {
-    return this.userName;
+    return this.alias;
   }
-
 }

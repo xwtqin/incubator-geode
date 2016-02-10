@@ -26,10 +26,6 @@ import java.util.Properties;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import security.CredentialGenerator;
-import security.DummyCredentialGenerator;
-import security.LdapUserCredentialGenerator;
-
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.Locator;
@@ -38,6 +34,9 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
+import com.gemstone.gemfire.security.util.DummyCredentialGenerator;
+import com.gemstone.gemfire.security.util.LdapUserCredentialGenerator;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;

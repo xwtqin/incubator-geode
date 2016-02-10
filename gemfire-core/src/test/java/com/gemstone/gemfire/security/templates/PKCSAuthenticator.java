@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -50,7 +49,7 @@ public class PKCSAuthenticator implements Authenticator {
 
   private String pubKeyPass;
 
-  private Map aliasCertificateMap;
+  private Map<Object, Certificate> aliasCertificateMap;
 
   protected LogWriter systemlog;
 
@@ -74,8 +73,7 @@ public class PKCSAuthenticator implements Authenticator {
       finally {
         keystorefile.close();
       }
-      Enumeration e = ks.aliases();
-      while (e.hasMoreElements()) {
+      for (Enumeration<String> e = ks.aliases(); e.hasMoreElements();) {
         Object alias = e.nextElement();
         Certificate cert = ks.getCertificate((String)alias);
         if (cert instanceof X509Certificate) {
@@ -84,30 +82,26 @@ public class PKCSAuthenticator implements Authenticator {
       }
     }
     catch (Exception e) {
-      throw new AuthenticationFailedException(
-          "Exception while getting public keys: " + e.getMessage());
+      throw new AuthenticationFailedException("Exception while getting public keys: " + e.getMessage());
     }
   }
 
-  public void init(Properties systemProps, LogWriter systemLogger,
-      LogWriter securityLogger) throws AuthenticationFailedException {
+  @Override
+  public void init(Properties systemProps, LogWriter systemLogger, LogWriter securityLogger) throws AuthenticationFailedException {
     this.systemlog = systemLogger;
     this.securitylog = securityLogger;
     this.pubKeyFilePath = systemProps.getProperty(PUBLIC_KEY_FILE);
     if (this.pubKeyFilePath == null) {
-      throw new AuthenticationFailedException("PKCSAuthenticator: property "
-          + PUBLIC_KEY_FILE + " not specified as the public key file.");
+      throw new AuthenticationFailedException("PKCSAuthenticator: property " + PUBLIC_KEY_FILE + " not specified as the public key file.");
     }
     this.pubKeyPass = systemProps.getProperty(PUBLIC_KEYSTORE_PASSWORD);
-    this.aliasCertificateMap = new HashMap();
+    this.aliasCertificateMap = new HashMap<Object, Certificate>();
     populateMap();
   }
 
-  private AuthenticationFailedException getException(String exStr,
-      Exception cause) {
+  private AuthenticationFailedException getException(String exStr, Exception cause) {
 
-    String exMsg = "PKCSAuthenticator: Authentication of client failed due to: "
-        + exStr;
+    String exMsg = "PKCSAuthenticator: Authentication of client failed due to: " + exStr;
     if (cause != null) {
       return new AuthenticationFailedException(exMsg, cause);
     }
@@ -120,16 +114,15 @@ public class PKCSAuthenticator implements Authenticator {
     return getException(exStr, null);
   }
 
-  private X509Certificate getCertificate(String alias)
-      throws NoSuchAlgorithmException, InvalidKeySpecException {
+  private X509Certificate getCertificate(String alias) throws NoSuchAlgorithmException, InvalidKeySpecException {
     if (this.aliasCertificateMap.containsKey(alias)) {
       return (X509Certificate)this.aliasCertificateMap.get(alias);
     }
     return null;
   }
 
-  public Principal authenticate(Properties props, DistributedMember member)
-      throws AuthenticationFailedException {
+  @Override
+  public Principal authenticate(Properties props, DistributedMember member) throws AuthenticationFailedException {
     String alias = (String)props.get(PKCSAuthInit.KEYSTORE_ALIAS);
     if (alias == null || alias.length() <= 0) {
       throw new AuthenticationFailedException("No alias received");
@@ -141,8 +134,7 @@ public class PKCSAuthenticator implements Authenticator {
       }
       byte[] signatureBytes = (byte[])props.get(PKCSAuthInit.SIGNATURE_DATA);
       if (signatureBytes == null) {
-        throw getException("signature data property ["
-            + PKCSAuthInit.SIGNATURE_DATA + "] not provided");
+        throw getException("signature data property [" + PKCSAuthInit.SIGNATURE_DATA + "] not provided");
       }
       Signature sig = Signature.getInstance(cert.getSigAlgName());
       sig.initVerify(cert);
@@ -161,6 +153,7 @@ public class PKCSAuthenticator implements Authenticator {
     }
   }
 
+  @Override
   public void close() {
   }
 

@@ -24,7 +24,7 @@ import java.util.Properties;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
-import security.CredentialGenerator;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
 
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.client.Pool;
@@ -41,7 +41,7 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
-import security.DummyCredentialGenerator;
+import com.gemstone.gemfire.security.util.DummyCredentialGenerator;
 
 public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
 

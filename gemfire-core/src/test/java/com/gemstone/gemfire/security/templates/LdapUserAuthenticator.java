@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -53,19 +52,15 @@ public class LdapUserAuthenticator implements Authenticator {
   public LdapUserAuthenticator() {
   }
 
-  public void init(Properties securityProps, LogWriter systemLogger,
-      LogWriter securityLogger) throws AuthenticationFailedException {
+  @Override
+  public void init(Properties securityProps, LogWriter systemLogger, LogWriter securityLogger) throws AuthenticationFailedException {
     this.ldapServer = securityProps.getProperty(LDAP_SERVER_NAME);
     if (this.ldapServer == null || this.ldapServer.length() == 0) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: LDAP server property [" + LDAP_SERVER_NAME
-              + "] not specified");
+      throw new AuthenticationFailedException("LdapUserAuthenticator: LDAP server property [" + LDAP_SERVER_NAME + "] not specified");
     }
     this.basedn = securityProps.getProperty(LDAP_BASEDN_NAME);
     if (this.basedn == null || this.basedn.length() == 0) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: LDAP base DN property [" + LDAP_BASEDN_NAME
-              + "] not specified");
+      throw new AuthenticationFailedException("LdapUserAuthenticator: LDAP base DN property [" + LDAP_BASEDN_NAME + "] not specified");
     }
     String sslStr = securityProps.getProperty(LDAP_SSL_NAME);
     if (sslStr != null && sslStr.toLowerCase().equals("true")) {
@@ -76,13 +71,12 @@ public class LdapUserAuthenticator implements Authenticator {
     }
   }
 
+  @Override
   public Principal authenticate(Properties props, DistributedMember member) {
 
     String userName = props.getProperty(UserPasswordAuthInit.USER_NAME);
     if (userName == null) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: user name property ["
-              + UserPasswordAuthInit.USER_NAME + "] not provided");
+      throw new AuthenticationFailedException("LdapUserAuthenticator: user name property [" + UserPasswordAuthInit.USER_NAME + "] not provided");
     }
     String passwd = props.getProperty(UserPasswordAuthInit.PASSWORD);
     if (passwd == null) {
@@ -90,11 +84,8 @@ public class LdapUserAuthenticator implements Authenticator {
     }
 
     Properties env = new Properties();
-    env
-        .put(Context.INITIAL_CONTEXT_FACTORY,
-            "com.sun.jndi.ldap.LdapCtxFactory");
-    env.put(Context.PROVIDER_URL, this.ldapUrlScheme + this.ldapServer + '/'
-        + this.basedn);
+    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+    env.put(Context.PROVIDER_URL, this.ldapUrlScheme + this.ldapServer + '/' + this.basedn);
     String fullentry = "uid=" + userName + "," + this.basedn;
     env.put(Context.SECURITY_PRINCIPAL, fullentry);
     env.put(Context.SECURITY_CREDENTIALS, passwd);
@@ -104,13 +95,12 @@ public class LdapUserAuthenticator implements Authenticator {
     }
     catch (Exception e) {
       //TODO:hitesh need to add getCause message
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: Failure with provided username, password "
-              + "combination for user name: " + userName);
+      throw new AuthenticationFailedException("LdapUserAuthenticator: Failure with provided username, password combination for user name: " + userName);
     }
     return new UsernamePrincipal(userName);
   }
 
+  @Override
   public void close() {
   }
 

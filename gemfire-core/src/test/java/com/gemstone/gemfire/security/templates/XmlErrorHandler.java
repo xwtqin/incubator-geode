@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -50,33 +49,30 @@ public class XmlErrorHandler implements ErrorHandler {
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
+  @Override
   public void error(SAXParseException exception) throws SAXException {
 
-    throw new SAXParseException("Error while parsing XML at line "
-        + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null);
+    throw new SAXParseException("Error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null);
   }
 
   /**
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
+  @Override
   public void fatalError(SAXParseException exception) throws SAXException {
 
-    throw new SAXParseException("Fatal error while parsing XML at line "
-        + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null);
+    throw new SAXParseException("Fatal error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null);
   }
 
   /**
    * Log the exception at {@link LogWriter#warning(String)} level with XML
    * filename and the position of exception in the file.
    */
+  @Override
   public void warning(SAXParseException exception) throws SAXException {
 
-    this.logger.warning("Warning while parsing XML [" + this.xmlFileName
-        + "] at line " + exception.getLineNumber() + " column "
-        + exception.getColumnNumber() + ": " + exception.getMessage());
+    this.logger.warning("Warning while parsing XML [" + this.xmlFileName + "] at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage());
   }
 
 }

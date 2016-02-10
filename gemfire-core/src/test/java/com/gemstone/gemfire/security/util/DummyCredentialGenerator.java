@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,36 +16,45 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-
-import security.CredentialGenerator;
-import templates.security.DummyAuthenticator;
-import templates.security.UserPasswordAuthInit;
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.Properties;
 
+import com.gemstone.gemfire.security.templates.DummyAuthenticator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
+
 public class DummyCredentialGenerator extends CredentialGenerator {
 
+  private static final String DUMMY_AUTHENTICATOR_CREATE_NAME = DummyAuthenticator.class.getName() + ".create";
+
+  private static final String USER_PASSWORD_AUTH_INIT_CREATE_NAME = UserPasswordAuthInit.class.getName() + ".create";
+  
   public DummyCredentialGenerator() {
   }
 
+  @Override
   protected Properties initialize() throws IllegalArgumentException {
     return null;
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.DUMMY;
   }
 
+  @Override
   public String getAuthInit() {
-    return "templates.security.UserPasswordAuthInit.create";
+    return USER_PASSWORD_AUTH_INIT_CREATE_NAME;
   }
 
+  @Override
   public String getAuthenticator() {
-    return "templates.security.DummyAuthenticator.create";
+    return DUMMY_AUTHENTICATOR_CREATE_NAME;
   }
 
+  @Override
   public Properties getValidCredentials(int index) {
 
     String[] validGroups = new String[] { "admin", "user", "reader", "writer" };
@@ -68,6 +74,7 @@ public class DummyCredentialGenerator extends CredentialGenerator {
     return props;
   }
 
+  @Override
   public Properties getValidCredentials(Principal principal) {
 
     String userName = principal.getName();
@@ -78,11 +85,11 @@ public class DummyCredentialGenerator extends CredentialGenerator {
       return props;
     }
     else {
-      throw new IllegalArgumentException("Dummy: [" + userName
-          + "] is not a valid user");
+      throw new IllegalArgumentException("Dummy: [" + userName + "] is not a valid user");
     }
   }
 
+  @Override
   public Properties getInvalidCredentials(int index) {
 
     Properties props = new Properties();

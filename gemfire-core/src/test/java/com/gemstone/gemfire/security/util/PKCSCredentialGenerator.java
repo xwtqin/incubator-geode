@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,16 +16,16 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
 
+import com.gemstone.gemfire.security.templates.PKCSAuthInit;
+import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.PKCSAuthInit;
-import templates.security.PKCSAuthenticator;
 
 /**
  * @author kneeraj
@@ -40,6 +37,10 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
 
   public static boolean usesIBMJSSE;
 
+  private static final String PKCS_AUTH_INIT_CREATE_NAME = PKCSAuthInit.class.getName() + ".create";
+  
+  private static final String PKCS_AUTHENTICATOR_CREATE_NAME = PKCSAuthenticator.class.getName() + ".create";
+  
   // Checks if the current JVM uses only IBM JSSE providers.
   private static boolean usesIBMProviders() {
     Provider[] providers = Security.getProviders();
@@ -61,18 +62,23 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
     }
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.PKCS;
   }
 
+  
+  @Override
   public String getAuthInit() {
-    return "templates.security.PKCSAuthInit.create";
+    return PKCS_AUTH_INIT_CREATE_NAME;
   }
 
+  @Override
   public String getAuthenticator() {
-    return "templates.security.PKCSAuthenticator.create";
+    return PKCS_AUTHENTICATOR_CREATE_NAME;
   }
 
+  @Override
   public Properties getInvalidCredentials(int index) {
     Properties props = new Properties();
     String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/gemfire11.keystore");
@@ -82,6 +88,7 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
     return props;
   }
 
+  @Override
   public Properties getValidCredentials(int index) {
     Properties props = new Properties();
     int aliasnum = (index % 10) + 1;
@@ -92,6 +99,7 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
     return props;
   }
 
+  @Override
   public Properties getValidCredentials(Principal principal) {
     Properties props = new Properties();
     String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + principal.getName() + ".keystore");
@@ -101,6 +109,7 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
     return props;
   }
 
+  @Override
   protected Properties initialize() throws IllegalArgumentException {
     Properties props = new Properties();
     String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/publickeyfile");

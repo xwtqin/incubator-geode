@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,18 +16,19 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.security.AccessControl;
+import com.gemstone.gemfire.security.templates.DummyAuthorization;
+import com.gemstone.gemfire.security.templates.XmlAuthorization;
 
 /**
  * Encapsulates obtaining authorized and unauthorized credentials for a given
@@ -87,13 +85,11 @@ public abstract class AuthzCredentialGenerator {
 
     private static final ClassCode[] VALUES = new ClassCode[10];
 
-    private static final Map CodeNameMap = new HashMap();
+    private static final Map<String, ClassCode> nameToClassCodeMap = new HashMap<String, ClassCode>();
 
-    public static final ClassCode DUMMY = new ClassCode(
-        "templates.security.DummyAuthorization.create", ID_DUMMY);
+    public static final ClassCode DUMMY = new ClassCode(DummyAuthorization.class.getName() + ".create", ID_DUMMY);
 
-    public static final ClassCode XML = new ClassCode(
-        "templates.security.XmlAuthorization.create", ID_XML);
+    public static final ClassCode XML = new ClassCode(XmlAuthorization.class.getName() + ".create", ID_XML);
 
     /** The name of this class. */
     private final String name;
@@ -111,16 +107,16 @@ public abstract class AuthzCredentialGenerator {
       this.name = name;
       this.classType = classType;
       this.ordinal = nextOrdinal++;
-      VALUES[this.ordinal] = this;
-      CodeNameMap.put(name, this);
+      VALUES[this.ordinal] = this; // TODO: ctor instance leak
+      nameToClassCodeMap.put(name, this); // TODO: ctor instance leak
     }
 
     public boolean isDummy() {
-      return (this.classType == ID_DUMMY);
+      return this.classType == ID_DUMMY;
     }
 
     public boolean isXml() {
-      return (this.classType == ID_XML);
+      return this.classType == ID_XML;
     }
 
     /**
@@ -134,17 +130,16 @@ public abstract class AuthzCredentialGenerator {
      * Returns the <code>ClassCode</code> represented by specified string.
      */
     public static ClassCode parse(String operationName) {
-      return (ClassCode)CodeNameMap.get(operationName);
+      return nameToClassCodeMap.get(operationName);
     }
 
     /**
      * Returns all the possible values.
      */
-    public static List getAll() {
-      List codes = new ArrayList();
-      Iterator iter = CodeNameMap.values().iterator();
-      while (iter.hasNext()) {
-        codes.add(iter.next());
+    public static List<ClassCode> getAll() {
+      List<ClassCode> codes = new ArrayList<ClassCode>();
+      for (ClassCode classCode : nameToClassCodeMap.values()) {
+        codes.add(classCode);
       }
       return codes;
     }
@@ -163,7 +158,8 @@ public abstract class AuthzCredentialGenerator {
      * 
      * @return the name of this class code.
      */
-    final public String toString() {
+    @Override
+    public final String toString() {
       return this.name;
     }
 
@@ -173,7 +169,7 @@ public abstract class AuthzCredentialGenerator {
      * @return true if other object is same as this one.
      */
     @Override
-    final public boolean equals(final Object obj) {
+    public final boolean equals(final Object obj) {
       if (obj == this) {
         return true;
       }
@@ -189,7 +185,7 @@ public abstract class AuthzCredentialGenerator {
      * 
      * @return true if other <code>ClassCode</code> is same as this one.
      */
-    final public boolean equals(final ClassCode opCode) {
+    public final boolean equals(final ClassCode opCode) {
       return (opCode != null && opCode.ordinal == this.ordinal);
     }
 
@@ -200,7 +196,7 @@ public abstract class AuthzCredentialGenerator {
      * @return the ordinal of this <code>ClassCode</code>.
      */
     @Override
-    final public int hashCode() {
+    public final int hashCode() {
       return this.ordinal;
     }
 
@@ -311,16 +307,13 @@ public abstract class AuthzCredentialGenerator {
    * @return the set of credentials authorized to perform the given operation in
    *         the given regions
    */
-  public Properties getAllowedCredentials(OperationCode[] opCodes,
-      String[] regionNames, int index) {
-
+  public Properties getAllowedCredentials(OperationCode[] opCodes, String[] regionNames, int index) {
     int numTries = getNumPrincipalTries(opCodes, regionNames);
     if (numTries <= 0) {
       numTries = 1;
     }
     for (int tries = 0; tries < numTries; tries++) {
-      Principal principal = getAllowedPrincipal(opCodes, regionNames,
-          (index + tries) % numTries);
+      Principal principal = getAllowedPrincipal(opCodes, regionNames, (index + tries) % numTries);
       try {
         return this.cGen.getValidCredentials(principal);
       }
@@ -348,8 +341,7 @@ public abstract class AuthzCredentialGenerator {
    * @return the set of credentials that are not authorized to perform the given
    *         operation in the given region
    */
-  public Properties getDisallowedCredentials(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  public Properties getDisallowedCredentials(OperationCode[] opCodes, String[] regionNames, int index) {
 
     // This may not be very correct since we use the value of
     // getNumPrincipalTries() but is used to avoid adding another method.
@@ -361,8 +353,7 @@ public abstract class AuthzCredentialGenerator {
       numTries = 1;
     }
     for (int tries = 0; tries < numTries; tries++) {
-      Principal principal = getDisallowedPrincipal(opCodes, regionNames,
-          (index + tries) % numTries);
+      Principal principal = getDisallowedPrincipal(opCodes, regionNames, (index + tries) % numTries);
       try {
         return this.cGen.getValidCredentials(principal);
       }
@@ -411,8 +402,7 @@ public abstract class AuthzCredentialGenerator {
    * @return the number of principals allowed to perform the given operation in
    *         the given region
    */
-  protected abstract int getNumPrincipalTries(OperationCode[] opCodes,
-      String[] regionNames);
+  protected abstract int getNumPrincipalTries(OperationCode[] opCodes, String[] regionNames);
 
   /**
    * Get a {@link Principal} generated using the given index allowed to perform
@@ -434,8 +424,7 @@ public abstract class AuthzCredentialGenerator {
    * @return the {@link Principal} authorized to perform the given operation in
    *         the given region
    */
-  protected abstract Principal getAllowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index);
+  protected abstract Principal getAllowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index);
 
   /**
    * Get a {@link Principal} generated using the given index not allowed to
@@ -457,6 +446,5 @@ public abstract class AuthzCredentialGenerator {
    * @return a {@link Principal} not authorized to perform the given operation
    *         in the given region
    */
-  protected abstract Principal getDisallowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index);
+  protected abstract Principal getDisallowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index);
 }

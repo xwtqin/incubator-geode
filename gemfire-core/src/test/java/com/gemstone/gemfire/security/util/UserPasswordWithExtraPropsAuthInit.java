@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,15 +16,14 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.util.Properties;
-import java.util.Iterator;
 
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 /**
  * An {@link AuthInitialize} implementation that obtains the user name and
@@ -53,23 +49,22 @@ public class UserPasswordWithExtraPropsAuthInit extends UserPasswordAuthInit {
     super();
   }
 
-  public Properties getCredentials(Properties props, DistributedMember server,
-      boolean isPeer) throws AuthenticationFailedException {
+  @Override
+  public Properties getCredentials(Properties props, DistributedMember server, boolean isPeer) throws AuthenticationFailedException {
 
     Properties newProps = super.getCredentials(props, server, isPeer);
     String extraProps = props.getProperty(EXTRA_PROPS);
-    if(extraProps != null) {
-    	for(Iterator it = props.keySet().iterator(); it.hasNext();) {
-    		String key = (String)it.next();
-    		if( key.startsWith(SECURITY_PREFIX) && 
+    if (extraProps != null) {
+      for (Object keyObject : props.keySet()) {
+    		String key = (String)keyObject;
+    		if (key.startsWith(SECURITY_PREFIX) && 
     		    key.equalsIgnoreCase(USER_NAME) == false &&
     		    key.equalsIgnoreCase(PASSWORD) == false &&
     		    key.equalsIgnoreCase(EXTRA_PROPS) == false) {
     			newProps.setProperty(key, props.getProperty(key));
     		}
     	}
-    	this.securitylog.fine("got everything and now have: "
-          + newProps.keySet().toString());
+    	this.securitylog.fine("got everything and now have: " + newProps.keySet().toString());
     }
     return newProps;
   }

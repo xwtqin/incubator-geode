@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,18 +16,20 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.Authenticator;
+import com.gemstone.gemfire.security.templates.DummyAuthenticator;
+import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
+import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
 
 /**
  * Encapsulates obtaining valid and invalid credentials. Implementations will be
@@ -82,16 +81,13 @@ public abstract class CredentialGenerator {
 
     private static final ClassCode[] VALUES = new ClassCode[10];
 
-    private static final Map CodeNameMap = new HashMap();
+    private static final Map<String, ClassCode> nameToClassCodeMap = new HashMap<String, ClassCode>();
 
-    public static final ClassCode DUMMY = new ClassCode(
-        "templates.security.DummyAuthenticator.create", ID_DUMMY);
+    public static final ClassCode DUMMY = new ClassCode(DummyAuthenticator.class.getName() + ".create", ID_DUMMY);
 
-    public static final ClassCode LDAP = new ClassCode(
-        "templates.security.LdapUserAuthenticator.create", ID_LDAP);
+    public static final ClassCode LDAP = new ClassCode(LdapUserAuthenticator.class.getName() + ".create", ID_LDAP);
 
-    public static final ClassCode PKCS = new ClassCode(
-        "templates.security.PKCSAuthenticator.create", ID_PKCS);
+    public static final ClassCode PKCS = new ClassCode(PKCSAuthenticator.class.getName() + ".create", ID_PKCS);
 
     public static final ClassCode SSL = new ClassCode("SSL", ID_SSL);
 
@@ -111,24 +107,24 @@ public abstract class CredentialGenerator {
       this.name = name;
       this.classType = classType;
       this.ordinal = nextOrdinal++;
-      VALUES[this.ordinal] = this;
-      CodeNameMap.put(name, this);
+      VALUES[this.ordinal] = this; // TODO: ctor instance leak
+      nameToClassCodeMap.put(name, this); // TODO: ctor instance leak
     }
 
     public boolean isDummy() {
-      return (this.classType == ID_DUMMY);
+      return this.classType == ID_DUMMY;
     }
 
     public boolean isLDAP() {
-      return (this.classType == ID_LDAP);
+      return this.classType == ID_LDAP;
     }
 
     public boolean isPKCS() {
-      return (this.classType == ID_PKCS);
+      return this.classType == ID_PKCS;
     }
 
     public boolean isSSL() {
-      return (this.classType == ID_SSL);
+      return this.classType == ID_SSL;
     }
 
     /**
@@ -142,17 +138,16 @@ public abstract class CredentialGenerator {
      * Returns the <code>ClassCode</code> represented by specified string.
      */
     public static ClassCode parse(String operationName) {
-      return (ClassCode)CodeNameMap.get(operationName);
+      return nameToClassCodeMap.get(operationName);
     }
 
     /**
      * Returns all the possible values.
      */
-    public static List getAll() {
-      List codes = new ArrayList();
-      Iterator iter = CodeNameMap.values().iterator();
-      while (iter.hasNext()) {
-        codes.add(iter.next());
+    public static List<ClassCode> getAll() {
+      List<ClassCode> codes = new ArrayList<ClassCode>();
+      for (ClassCode classCode : nameToClassCodeMap.values()) {
+        codes.add(classCode);
       }
       return codes;
     }
@@ -171,7 +166,8 @@ public abstract class CredentialGenerator {
      * 
      * @return the name of this operation.
      */
-    final public String toString() {
+    @Override
+    public final String toString() {
       return this.name;
     }
 
@@ -181,7 +177,7 @@ public abstract class CredentialGenerator {
      * @return true if other object is same as this one.
      */
     @Override
-    final public boolean equals(final Object obj) {
+    public final boolean equals(final Object obj) {
       if (obj == this) {
         return true;
       }
@@ -197,8 +193,8 @@ public abstract class CredentialGenerator {
      * 
      * @return true if other <code>ClassCode</code> is same as this one.
      */
-    final public boolean equals(final ClassCode opCode) {
-      return (opCode != null && opCode.ordinal == this.ordinal);
+    public final boolean equals(final ClassCode opCode) {
+      return opCode != null && opCode.ordinal == this.ordinal;
     }
 
     /**
@@ -208,7 +204,7 @@ public abstract class CredentialGenerator {
      * @return the ordinal of this operation.
      */
     @Override
-    final public int hashCode() {
+    public final int hashCode() {
       return this.ordinal;
     }
 

@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +16,7 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -27,9 +24,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import security.AuthzCredentialGenerator;
-import templates.security.DummyAuthorization;
-import templates.security.UsernamePrincipal;
+import com.gemstone.gemfire.security.templates.DummyAuthorization;
+import com.gemstone.gemfire.security.templates.UsernamePrincipal;
 
 public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
@@ -39,17 +35,19 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   public static final byte ADMIN_ROLE = 3;
 
-  private static Set readerOpsSet;
+  private static final String DUMMY_AUTHORIZATION_CREATE_NAME = DummyAuthorization.class.getName() + ".create";
+  
+  private static Set<OperationCode> readerOpsSet;
 
-  private static Set writerOpsSet;
+  private static Set<OperationCode> writerOpsSet;
 
   static {
 
-    readerOpsSet = new HashSet();
+    readerOpsSet = new HashSet<OperationCode>();
     for (int index = 0; index < DummyAuthorization.READER_OPS.length; index++) {
       readerOpsSet.add(DummyAuthorization.READER_OPS[index]);
     }
-    writerOpsSet = new HashSet();
+    writerOpsSet = new HashSet<OperationCode>();
     for (int index = 0; index < DummyAuthorization.WRITER_OPS.length; index++) {
       writerOpsSet.add(DummyAuthorization.WRITER_OPS[index]);
     }
@@ -58,21 +56,23 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
   public DummyAuthzCredentialGenerator() {
   }
 
+  @Override
   protected Properties init() throws IllegalArgumentException {
 
     if (!this.cGen.classCode().isDummy()) {
-      throw new IllegalArgumentException(
-          "DummyAuthorization module only works with DummyAuthenticator");
+      throw new IllegalArgumentException("DummyAuthorization module only works with DummyAuthenticator");
     }
     return null;
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.DUMMY;
   }
 
+  @Override
   public String getAuthorizationCallback() {
-    return "templates.security.DummyAuthorization.create";
+    return DUMMY_AUTHORIZATION_CREATE_NAME;
   }
 
   public static byte getRequiredRole(OperationCode[] opCodes) {
@@ -111,15 +111,15 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
     }
   }
 
-  protected Principal getAllowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  @Override
+  protected Principal getAllowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index) {
 
     byte roleType = getRequiredRole(opCodes);
     return getPrincipal(roleType, index);
   }
 
-  protected Principal getDisallowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  @Override
+  protected Principal getDisallowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index) {
 
     byte roleType = getRequiredRole(opCodes);
     byte disallowedRoleType;
@@ -137,8 +137,8 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return getPrincipal(disallowedRoleType, index);
   }
 
-  protected int getNumPrincipalTries(OperationCode[] opCodes,
-      String[] regionNames) {
+  @Override
+  protected int getNumPrincipalTries(OperationCode[] opCodes, String[] regionNames) {
     return 5;
   }
 

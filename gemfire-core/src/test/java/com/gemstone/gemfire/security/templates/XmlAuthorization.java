@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,8 +122,7 @@ public class XmlAuthorization implements AccessControl {
 
   private static final String ATTR_FUNCTION_IDS = "functionIds";
 
-  private static final String ATTR_FUNCTION_OPTIMIZE_FOR_WRITE =
-    "optimizeForWrite";
+  private static final String ATTR_FUNCTION_OPTIMIZE_FOR_WRITE = "optimizeForWrite";
 
   private static final String ATTR_FUNCTION_KEY_SET = "keySet";
 
@@ -132,8 +130,7 @@ public class XmlAuthorization implements AccessControl {
 
   private static Map<String, HashSet<String>> userRoles = null;
 
-  private static Map<String, Map<String,
-    Map<OperationCode, FunctionSecurityPrmsHolder>>> rolePermissions = null;
+  private static Map<String, Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>>> rolePermissions = null;
 
   private static NotAuthorizedException xmlLoadFailure = null;
 
@@ -141,8 +138,7 @@ public class XmlAuthorization implements AccessControl {
 
   private static final String EMPTY_VALUE = "";
 
-  private final Map<String, Map<OperationCode,
-    FunctionSecurityPrmsHolder>> allowedOps;
+  private final Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>> allowedOps;
 
   protected LogWriter logger;
 
@@ -150,8 +146,7 @@ public class XmlAuthorization implements AccessControl {
 
   private XmlAuthorization() {
 
-    this.allowedOps = new HashMap<String, Map<OperationCode,
-        FunctionSecurityPrmsHolder>>();
+    this.allowedOps = new HashMap<String, Map<OperationCode, FunctionSecurityPrmsHolder>>();
     this.logger = null;
     this.securityLogger = null;
   }
@@ -257,12 +252,10 @@ public class XmlAuthorization implements AccessControl {
   private static void init(Cache cache) throws NotAuthorizedException {
 
     LogWriter logger = cache.getLogger();
-    String xmlDocumentUri = (String)cache.getDistributedSystem()
-        .getSecurityProperties().get(DOC_URI_PROP_NAME);
+    String xmlDocumentUri = (String)cache.getDistributedSystem().getSecurityProperties().get(DOC_URI_PROP_NAME);
     try {
       if (xmlDocumentUri == null) {
-        throw new NotAuthorizedException("No ACL file defined using tag ["
-            + DOC_URI_PROP_NAME + "] in system properties");
+        throw new NotAuthorizedException("No ACL file defined using tag [" + DOC_URI_PROP_NAME + "] in system properties");
       }
       if (xmlDocumentUri.equals(XmlAuthorization.currentDocUri)) {
         if (XmlAuthorization.xmlLoadFailure != null) {
@@ -281,21 +274,17 @@ public class XmlAuthorization implements AccessControl {
       Document xmlDocument = builder.parse(xmlDocumentUri);
 
       XmlAuthorization.userRoles = new HashMap<String, HashSet<String>>();
-      XmlAuthorization.rolePermissions = new HashMap<String, Map<String,
-          Map<OperationCode, FunctionSecurityPrmsHolder>>>();
+      XmlAuthorization.rolePermissions = new HashMap<String, Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>>>();
       NodeList roleUserNodes = xmlDocument.getElementsByTagName(TAG_ROLE);
-      for (int roleIndex = 0; roleIndex < roleUserNodes.getLength();
-          roleIndex++) {
+      for (int roleIndex = 0; roleIndex < roleUserNodes.getLength(); roleIndex++) {
         Node roleUserNode = roleUserNodes.item(roleIndex);
         String roleName = getAttributeValue(roleUserNode, ATTR_ROLENAME);
         NodeList userNodes = roleUserNode.getChildNodes();
-        for (int userIndex = 0; userIndex < userNodes.getLength();
-            userIndex++) {
+        for (int userIndex = 0; userIndex < userNodes.getLength(); userIndex++) {
           Node userNode = userNodes.item(userIndex);
           if (userNode.getNodeName() == TAG_USER) {
             String userName = getNodeValue(userNode);
-            HashSet<String> userRoleSet = XmlAuthorization.userRoles
-                .get(userName);
+            HashSet<String> userRoleSet = XmlAuthorization.userRoles.get(userName);
             if (userRoleSet == null) {
               userRoleSet = new HashSet<String>();
               XmlAuthorization.userRoles.put(userName, userRoleSet);
@@ -303,47 +292,36 @@ public class XmlAuthorization implements AccessControl {
             userRoleSet.add(roleName);
           }
           else {
-            throw new SAXParseException("Unknown tag ["
-                + userNode.getNodeName() + "] as child of tag [" + TAG_ROLE
-                + ']', null);
+            throw new SAXParseException("Unknown tag [" + userNode.getNodeName() + "] as child of tag [" + TAG_ROLE + ']', null);
           }
         }
       }
-      NodeList rolePermissionNodes = xmlDocument
-          .getElementsByTagName(TAG_PERMS);
-      for (int permIndex = 0; permIndex < rolePermissionNodes.getLength();
-          permIndex++) {
+      NodeList rolePermissionNodes = xmlDocument.getElementsByTagName(TAG_PERMS);
+      for (int permIndex = 0; permIndex < rolePermissionNodes.getLength(); permIndex++) {
         Node rolePermissionNode = rolePermissionNodes.item(permIndex);
         String roleName = getAttributeValue(rolePermissionNode, ATTR_ROLE);
-        Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>>
-          regionOperationMap = XmlAuthorization.rolePermissions.get(roleName);
+        Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>> regionOperationMap = XmlAuthorization.rolePermissions.get(roleName);
         if (regionOperationMap == null) {
-          regionOperationMap = new HashMap<String,
-            Map<OperationCode, FunctionSecurityPrmsHolder>>();
+          regionOperationMap = new HashMap<String, Map<OperationCode, FunctionSecurityPrmsHolder>>();
           XmlAuthorization.rolePermissions.put(roleName, regionOperationMap);
         }
         NodeList operationNodes = rolePermissionNode.getChildNodes();
-        HashMap<OperationCode, FunctionSecurityPrmsHolder> operationMap =
-          new HashMap<OperationCode, FunctionSecurityPrmsHolder>();
+        HashMap<OperationCode, FunctionSecurityPrmsHolder> operationMap = new HashMap<OperationCode, FunctionSecurityPrmsHolder>();
         for (int opIndex = 0; opIndex < operationNodes.getLength(); opIndex++) {
           Node operationNode = operationNodes.item(opIndex);
           if (operationNode.getNodeName() == TAG_OP) {
             String operationName = getNodeValue(operationNode);
             OperationCode code = OperationCode.parse(operationName);
             if (code == null) {
-              throw new SAXParseException("Unknown operation [" + operationName
-                  + ']', null);
+              throw new SAXParseException("Unknown operation [" + operationName + ']', null);
             }
             if (code != OperationCode.EXECUTE_FUNCTION) {
               operationMap.put(code, null);
             }
             else {
-              String optimizeForWrite = getAttributeValue(operationNode,
-                  ATTR_FUNCTION_OPTIMIZE_FOR_WRITE);
-              String functionAttr = getAttributeValue(operationNode,
-                  ATTR_FUNCTION_IDS);
-              String keysAttr = getAttributeValue(operationNode,
-                  ATTR_FUNCTION_KEY_SET);
+              String optimizeForWrite = getAttributeValue(operationNode, ATTR_FUNCTION_OPTIMIZE_FOR_WRITE);
+              String functionAttr = getAttributeValue(operationNode, ATTR_FUNCTION_IDS);
+              String keysAttr = getAttributeValue(operationNode, ATTR_FUNCTION_KEY_SET);
 
               Boolean isOptimizeForWrite;
               HashSet<String> functionIds;
@@ -362,8 +340,7 @@ public class XmlAuthorization implements AccessControl {
               else {
                 String[] functionArray = functionAttr.split(",");
                 functionIds = new HashSet<String>();
-                for (int strIndex = 0; strIndex < functionArray.length;
-                    ++strIndex) {
+                for (int strIndex = 0; strIndex < functionArray.length; ++strIndex) {
                   functionIds.add((functionArray[strIndex]));
                 }
               }
@@ -374,21 +351,16 @@ public class XmlAuthorization implements AccessControl {
               else {
                 String[] keySetArray = keysAttr.split(",");
                 keySet = new HashSet<String>();
-                for (int strIndex = 0; strIndex < keySetArray.length;
-                    ++strIndex) {
+                for (int strIndex = 0; strIndex < keySetArray.length; ++strIndex) {
                   keySet.add((keySetArray[strIndex]));
                 }
               }
-              FunctionSecurityPrmsHolder functionContext =
-                new FunctionSecurityPrmsHolder(isOptimizeForWrite,
-                    functionIds, keySet);
+              FunctionSecurityPrmsHolder functionContext = new FunctionSecurityPrmsHolder(isOptimizeForWrite, functionIds, keySet);
               operationMap.put(code, functionContext);
             }
           }
           else {
-            throw new SAXParseException("Unknown tag ["
-                + operationNode.getNodeName() + "] as child of tag ["
-                + TAG_PERMS + ']', null);
+            throw new SAXParseException("Unknown tag [" + operationNode.getNodeName() + "] as child of tag [" + TAG_PERMS + ']', null);
           }
         }
         String regionNames = getAttributeValue(rolePermissionNode, ATTR_REGIONS);
@@ -397,10 +369,8 @@ public class XmlAuthorization implements AccessControl {
         }
         else {
           String[] regionNamesSplit = regionNames.split(",");
-          for (int strIndex = 0; strIndex < regionNamesSplit.length;
-              ++strIndex) {
-            regionOperationMap.put(
-                normalizeRegionName(regionNamesSplit[strIndex]), operationMap);
+          for (int strIndex = 0; strIndex < regionNamesSplit.length; ++strIndex) {
+            regionOperationMap.put(normalizeRegionName(regionNamesSplit[strIndex]), operationMap);
           }
         }
       }
@@ -446,8 +416,8 @@ public class XmlAuthorization implements AccessControl {
    *                 subsequent client operations will throw
    *                 <code>NotAuthorizedException</code>
    */
-  public void init(Principal principal, DistributedMember remoteMember,
-      Cache cache) throws NotAuthorizedException {
+  @Override
+  public void init(Principal principal, DistributedMember remoteMember, Cache cache) throws NotAuthorizedException {
 
     synchronized (sync) {
       XmlAuthorization.init(cache);
@@ -465,17 +435,13 @@ public class XmlAuthorization implements AccessControl {
     HashSet<String> roles = XmlAuthorization.userRoles.get(name);
     if (roles != null) {
       for (String roleName : roles) {
-        Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>>
-          regionOperationMap = XmlAuthorization.rolePermissions.get(roleName);
+        Map<String, Map<OperationCode, FunctionSecurityPrmsHolder>> regionOperationMap = XmlAuthorization.rolePermissions.get(roleName);
         if (regionOperationMap != null) {
-          for (Map.Entry<String, Map<OperationCode, FunctionSecurityPrmsHolder>>
-              regionEntry : regionOperationMap.entrySet()) {
+          for (Map.Entry<String, Map<OperationCode, FunctionSecurityPrmsHolder>> regionEntry : regionOperationMap.entrySet()) {
             String regionName = regionEntry.getKey();
-            Map<OperationCode, FunctionSecurityPrmsHolder> regionOperations =
-              this.allowedOps.get(regionName);
+            Map<OperationCode, FunctionSecurityPrmsHolder> regionOperations = this.allowedOps.get(regionName);
             if (regionOperations == null) {
-              regionOperations =
-                new HashMap<OperationCode, FunctionSecurityPrmsHolder>();
+              regionOperations = new HashMap<OperationCode, FunctionSecurityPrmsHolder>();
               this.allowedOps.put(regionName, regionOperations);
             }
             regionOperations.putAll(regionEntry.getValue());
@@ -502,8 +468,8 @@ public class XmlAuthorization implements AccessControl {
    * @return true if the operation is authorized and false otherwise
    * 
    */
-  public boolean authorizeOperation(String regionName,
-      final OperationContext context) {
+  @Override
+  public boolean authorizeOperation(String regionName, final OperationContext context) {
 
     Map<OperationCode, FunctionSecurityPrmsHolder> operationMap;
     // Check GET permissions for updates from server to client
@@ -519,14 +485,11 @@ public class XmlAuthorization implements AccessControl {
     }
 
     OperationCode opCode = context.getOperationCode();
-    if (opCode.isQuery() || opCode.isExecuteCQ() || opCode.isCloseCQ()
-        || opCode.isStopCQ()) {
+    if (opCode.isQuery() || opCode.isExecuteCQ() || opCode.isCloseCQ() || opCode.isStopCQ()) {
       // First check if cache-level permission has been provided
       operationMap = this.allowedOps.get(EMPTY_VALUE);
-      boolean globalPermission = (operationMap != null && operationMap
-          .containsKey(opCode));
-      Set<String> regionNames = ((QueryOperationContext)context)
-          .getRegionNames();
+      boolean globalPermission = (operationMap != null && operationMap.containsKey(opCode));
+      Set<String> regionNames = ((QueryOperationContext)context).getRegionNames();
       if (regionNames == null || regionNames.size() == 0) {
         return globalPermission;
       }
@@ -553,57 +516,42 @@ public class XmlAuthorization implements AccessControl {
     if (operationMap != null) {
       if (context.getOperationCode() != OperationCode.EXECUTE_FUNCTION) {
         return operationMap.containsKey(context.getOperationCode());
-      }else {
+      } else {
         if (!operationMap.containsKey(context.getOperationCode())) {
           return false;
         }
         else {
           if (!context.isPostOperation()) {
-            FunctionSecurityPrmsHolder functionParameter =
-              operationMap.get(
-                context.getOperationCode());
-            ExecuteFunctionOperationContext functionContext =
-              (ExecuteFunctionOperationContext)context;
+            FunctionSecurityPrmsHolder functionParameter = operationMap.get(context.getOperationCode());
+            ExecuteFunctionOperationContext functionContext = (ExecuteFunctionOperationContext)context;
             // OnRegion execution
             if (functionContext.getRegionName() != null) {
-              if (functionParameter.isOptimizeForWrite() != null
-                  && functionParameter.isOptimizeForWrite().booleanValue()
-                    != functionContext.isOptimizeForWrite()) {
+              if (functionParameter.isOptimizeForWrite() != null && functionParameter.isOptimizeForWrite().booleanValue() != functionContext.isOptimizeForWrite()) {
                 return false;
               }
-              if (functionParameter.getFunctionIds() != null
-                  && !functionParameter.getFunctionIds().contains(
-                      functionContext.getFunctionId())) {
+              if (functionParameter.getFunctionIds() != null && !functionParameter.getFunctionIds().contains(functionContext.getFunctionId())) {
                 return false;
               }
-              if (functionParameter.getKeySet() != null
-                  && functionContext.getKeySet() != null) {
-                if (functionContext.getKeySet().containsAll(
-                    functionParameter.getKeySet())) {
+              if (functionParameter.getKeySet() != null && functionContext.getKeySet() != null) {
+                if (functionContext.getKeySet().containsAll(functionParameter.getKeySet())) {
                   return false;
                 }
               }
               return true;
             }
             else {// On Server execution
-              if (functionParameter.getFunctionIds() != null
-                  && !functionParameter.getFunctionIds().contains(
-                      functionContext.getFunctionId())) {
+              if (functionParameter.getFunctionIds() != null && !functionParameter.getFunctionIds().contains(functionContext.getFunctionId())) {
                 return false;
               }
               return true;
             }
           }
           else {
-            ExecuteFunctionOperationContext functionContext =
-              (ExecuteFunctionOperationContext)context;
-            FunctionSecurityPrmsHolder functionParameter = operationMap.get(
-                context.getOperationCode());
+            ExecuteFunctionOperationContext functionContext = (ExecuteFunctionOperationContext)context;
+            FunctionSecurityPrmsHolder functionParameter = operationMap.get(context.getOperationCode());
             if (functionContext.getRegionName() != null) {
-              if (functionContext.getResult() instanceof ArrayList
-                  && functionParameter.getKeySet() != null) {
-                ArrayList<String> resultList = (ArrayList)functionContext
-                    .getResult();
+              if (functionContext.getResult() instanceof ArrayList && functionParameter.getKeySet() != null) {
+                ArrayList<String> resultList = (ArrayList)functionContext.getResult();
                 HashSet<String> nonAllowedKeys = functionParameter.getKeySet();
                 if (resultList.containsAll(nonAllowedKeys)) {
                   return false;
@@ -612,8 +560,7 @@ public class XmlAuthorization implements AccessControl {
               return true;
             }
             else {
-              ArrayList<String> resultList = (ArrayList)functionContext
-                  .getResult();
+              ArrayList<String> resultList = (ArrayList)functionContext.getResult();
               final String inSecureItem = "Insecure item";
               if (resultList.contains(inSecureItem)) {
                 return false;
@@ -630,6 +577,7 @@ public class XmlAuthorization implements AccessControl {
   /**
    * Clears the cached information for this principal.
    */
+  @Override
   public void close() {
 
     this.allowedOps.clear();
@@ -656,11 +604,10 @@ public class XmlAuthorization implements AccessControl {
     Pattern authzPattern = Pattern.compile("authz.*\\.dtd");
 
     @Override
-    public InputSource resolveEntity(String publicId, String systemId)
-        throws SAXException, IOException {
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
       try {
         Matcher matcher = authzPattern.matcher(systemId);
-        if(matcher.find()) {
+        if (matcher.find()) {
           String dtdName = matcher.group(0);
           InputStream stream = XmlAuthorization.class.getResourceAsStream(dtdName);
           return new InputSource(stream);

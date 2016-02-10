@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import security.CredentialGenerator;
-import security.DummyAuthzCredentialGenerator;
-import security.DummyCredentialGenerator;
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
+import com.gemstone.gemfire.security.util.DummyAuthzCredentialGenerator;
+import com.gemstone.gemfire.security.util.DummyCredentialGenerator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;

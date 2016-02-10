@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,16 +16,16 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.Properties;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HandShake;
+import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.LdapUserAuthenticator;
-import templates.security.UserPasswordAuthInit;
 
 import java.util.Random;
 
@@ -42,9 +39,12 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
 
   private static final Random prng = new Random();
 
-  private static final String[] algos = new String[] { "", "DESede", "AES:128",
-      "Blowfish:128" };
+  private static final String[] algos = new String[] { "", "DESede", "AES:128", "Blowfish:128" };
 
+  private static final String USER_PASSWORD_AUTH_INIT_CREATE_NAME = UserPasswordAuthInit.class.getName() + ".create";
+  
+  private static final String LDAP_USER_AUTHENTICATOR_CREATE_NAME = LdapUserAuthenticator.class.getName() + ".create";
+  
   public LdapUserCredentialGenerator() {
     // Toggle server authentication enabled for each test
     // This is done instead of running all the tests with both
@@ -81,24 +81,21 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
 
   @Override
   public String getAuthInit() {
-    return "templates.security.UserPasswordAuthInit.create";
+    return USER_PASSWORD_AUTH_INIT_CREATE_NAME;
   }
 
   @Override
   public String getAuthenticator() {
-    return "templates.security.LdapUserAuthenticator.create";
+    return LDAP_USER_AUTHENTICATOR_CREATE_NAME;
   }
 
   @Override
   public Properties getValidCredentials(int index) {
 
     Properties props = new Properties();
-    props.setProperty(UserPasswordAuthInit.USER_NAME, USER_PREFIX
-        + ((index % 10) + 1));
-    props.setProperty(UserPasswordAuthInit.PASSWORD, USER_PREFIX
-        + ((index % 10) + 1));
-    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME,
-        algos[prng.nextInt(algos.length)]);
+    props.setProperty(UserPasswordAuthInit.USER_NAME, USER_PREFIX + ((index % 10) + 1));
+    props.setProperty(UserPasswordAuthInit.PASSWORD, USER_PREFIX + ((index % 10) + 1));
+    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME, algos[prng.nextInt(algos.length)]);
     if (serverAuthEnabled) {
       String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, PKCSCredentialGenerator.keyStoreDir + "/publickeyfile");
       props.setProperty(HandShake.PUBLIC_KEY_FILE_PROP, keyStoreFile);
@@ -128,11 +125,9 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
       }
     }
     if (props == null) {
-      throw new IllegalArgumentException("LDAP: [" + userName
-          + "] not a valid user");
+      throw new IllegalArgumentException("LDAP: [" + userName + "] not a valid user");
     }
-    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME,
-        algos[prng.nextInt(algos.length)]);
+    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME, algos[prng.nextInt(algos.length)]);
     if (serverAuthEnabled) {
       String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, PKCSCredentialGenerator.keyStoreDir + "/publickeyfile");
       props.setProperty(HandShake.PUBLIC_KEY_FILE_PROP, keyStoreFile);
@@ -147,8 +142,7 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
     Properties props = new Properties();
     props.setProperty(UserPasswordAuthInit.USER_NAME, "invalid" + index);
     props.setProperty(UserPasswordAuthInit.PASSWORD, "none");
-    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME,
-        algos[prng.nextInt(algos.length)]);
+    props.setProperty(DistributionConfig.SECURITY_CLIENT_DHALGO_NAME, algos[prng.nextInt(algos.length)]);
     if (serverAuthEnabled) {
       String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, PKCSCredentialGenerator.keyStoreDir + "/publickeyfile");
       props.setProperty(HandShake.PUBLIC_KEY_FILE_PROP, keyStoreFile);

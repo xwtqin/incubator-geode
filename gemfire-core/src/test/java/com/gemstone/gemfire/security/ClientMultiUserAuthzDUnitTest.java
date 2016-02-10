@@ -24,9 +24,6 @@ package com.gemstone.gemfire.security;
 import java.util.Iterator;
 import java.util.Properties;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
@@ -34,6 +31,8 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.execute.PRClientServerTestBase;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
+import com.gemstone.gemfire.security.util.AuthzCredentialGenerator;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 

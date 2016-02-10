@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import java.util.HashSet;
 
@@ -34,8 +33,7 @@ public class FunctionSecurityPrmsHolder {
 
   private final HashSet<String> keySet;
 
-  public FunctionSecurityPrmsHolder(Boolean isOptimizeForWrite,
-      HashSet<String> functionIds, HashSet<String> keySet) {
+  public FunctionSecurityPrmsHolder(Boolean isOptimizeForWrite, HashSet<String> functionIds, HashSet<String> keySet) {
     this.isOptimizeForWrite = isOptimizeForWrite;
     this.functionIds = functionIds;
     this.keySet = keySet;

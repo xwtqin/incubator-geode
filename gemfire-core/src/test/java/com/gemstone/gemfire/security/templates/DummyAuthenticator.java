@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import java.security.Principal;
 import java.util.Properties;
@@ -24,8 +23,8 @@ import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 import com.gemstone.gemfire.security.Authenticator;
-import templates.security.UserPasswordAuthInit;
-import templates.security.UsernamePrincipal;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.UsernamePrincipal;
 
 /**
  * A dummy implementation of the {@link Authenticator} interface that expects a
@@ -44,8 +43,8 @@ public class DummyAuthenticator implements Authenticator {
   public DummyAuthenticator() {
   }
 
-  public void init(Properties systemProps, LogWriter systemLogger,
-      LogWriter securityLogger) throws AuthenticationFailedException {
+  @Override
+  public void init(Properties systemProps, LogWriter systemLogger, LogWriter securityLogger) throws AuthenticationFailedException {
   }
 
   public static boolean testValidName(String userName) {
@@ -55,32 +54,27 @@ public class DummyAuthenticator implements Authenticator {
         || userName.equals("root") || userName.equals("administrator"));
   }
 
-  public Principal authenticate(Properties props, DistributedMember member)
-      throws AuthenticationFailedException {
+  @Override
+  public Principal authenticate(Properties props, DistributedMember member) throws AuthenticationFailedException {
 
     String userName = props.getProperty(UserPasswordAuthInit.USER_NAME);
     if (userName == null) {
-      throw new AuthenticationFailedException(
-          "DummyAuthenticator: user name property ["
-              + UserPasswordAuthInit.USER_NAME + "] not provided");
+      throw new AuthenticationFailedException("DummyAuthenticator: user name property [" + UserPasswordAuthInit.USER_NAME + "] not provided");
     }
     String password = props.getProperty(UserPasswordAuthInit.PASSWORD);
     if (password == null) {
-      throw new AuthenticationFailedException(
-          "DummyAuthenticator: password property ["
-              + UserPasswordAuthInit.PASSWORD + "] not provided");
+      throw new AuthenticationFailedException("DummyAuthenticator: password property [" + UserPasswordAuthInit.PASSWORD + "] not provided");
     }
 
     if (userName.equals(password) && testValidName(userName)) {
       return new UsernamePrincipal(userName);
     }
     else {
-      throw new AuthenticationFailedException(
-          "DummyAuthenticator: Invalid user name [" + userName
-              + "], password supplied.");
+      throw new AuthenticationFailedException("DummyAuthenticator: Invalid user name [" + userName + "], password supplied.");
     }
   }
 
+  @Override
   public void close() {
   }
 

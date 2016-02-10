@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +16,7 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -27,9 +24,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
+import com.gemstone.gemfire.security.templates.UsernamePrincipal;
+import com.gemstone.gemfire.security.templates.XmlAuthorization;
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.UsernamePrincipal;
-import templates.security.XmlAuthorization;
 
 public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
@@ -41,18 +38,32 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   private static final String sslXml = "authz-ssl.xml";
 
-  private static final String[] QUERY_REGIONS = { "/Portfolios", "/Positions",
-      "/AuthRegion" };
+  private static final String[] QUERY_REGIONS = { "/Portfolios", "/Positions", "/AuthRegion" };
 
-  public static OperationCode[] READER_OPS = { OperationCode.GET,
-      OperationCode.REGISTER_INTEREST, OperationCode.UNREGISTER_INTEREST,
-      OperationCode.KEY_SET, OperationCode.CONTAINS_KEY, OperationCode.EXECUTE_FUNCTION };
+  private static final String XML_AUTHORIZATION_CREATE_NAME = XmlAuthorization.class.getName() + ".create";
+  
+  public static OperationCode[] READER_OPS = { 
+      OperationCode.GET,
+      OperationCode.REGISTER_INTEREST, 
+      OperationCode.UNREGISTER_INTEREST,
+      OperationCode.KEY_SET, 
+      OperationCode.CONTAINS_KEY, 
+      OperationCode.EXECUTE_FUNCTION 
+  };
 
-  public static OperationCode[] WRITER_OPS = { OperationCode.PUT,
-      OperationCode.DESTROY, OperationCode.INVALIDATE, OperationCode.REGION_CLEAR };
+  public static OperationCode[] WRITER_OPS = { 
+      OperationCode.PUT,
+      OperationCode.DESTROY, 
+      OperationCode.INVALIDATE, 
+      OperationCode.REGION_CLEAR 
+  };
 
-  public static OperationCode[] QUERY_OPS = { OperationCode.QUERY,
-      OperationCode.EXECUTE_CQ, OperationCode.STOP_CQ, OperationCode.CLOSE_CQ };
+  public static OperationCode[] QUERY_OPS = { 
+      OperationCode.QUERY,
+      OperationCode.EXECUTE_CQ, 
+      OperationCode.STOP_CQ, 
+      OperationCode.CLOSE_CQ 
+  };
 
   private static final byte READER_ROLE = 1;
 
@@ -62,29 +73,29 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   private static final byte ADMIN_ROLE = 4;
 
-  private static Set readerOpsSet;
+  private static Set<OperationCode> readerOpsSet;
 
-  private static Set writerOpsSet;
+  private static Set<OperationCode> writerOpsSet;
 
-  private static Set queryOpsSet;
+  private static Set<OperationCode> queryOpsSet;
 
-  private static Set queryRegionSet;
+  private static Set<String> queryRegionSet;
 
   static {
 
-    readerOpsSet = new HashSet();
+    readerOpsSet = new HashSet<OperationCode>();
     for (int index = 0; index < READER_OPS.length; index++) {
       readerOpsSet.add(READER_OPS[index]);
     }
-    writerOpsSet = new HashSet();
+    writerOpsSet = new HashSet<OperationCode>();
     for (int index = 0; index < WRITER_OPS.length; index++) {
       writerOpsSet.add(WRITER_OPS[index]);
     }
-    queryOpsSet = new HashSet();
+    queryOpsSet = new HashSet<OperationCode>();
     for (int index = 0; index < QUERY_OPS.length; index++) {
       queryOpsSet.add(QUERY_OPS[index]);
     }
-    queryRegionSet = new HashSet();
+    queryRegionSet = new HashSet<String>();
     for (int index = 0; index < QUERY_REGIONS.length; index++) {
       queryRegionSet.add(QUERY_REGIONS[index]);
     }
@@ -93,6 +104,7 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
   public XmlAuthzCredentialGenerator() {
   }
 
+  @Override
   protected Properties init() throws IllegalArgumentException {
 
     Properties sysProps = new Properties();
@@ -114,19 +126,19 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
     // .setProperty(XmlAuthorization.DOC_URI_PROP_NAME, dirName + sslXml);
     // }
     else {
-      throw new IllegalArgumentException(
-          "No XML defined for XmlAuthorization module to work with "
-              + this.cGen.getAuthenticator());
+      throw new IllegalArgumentException("No XML defined for XmlAuthorization module to work with " + this.cGen.getAuthenticator());
     }
     return sysProps;
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.XML;
   }
 
+  @Override
   public String getAuthorizationCallback() {
-    return "templates.security.XmlAuthorization.create";
+    return XML_AUTHORIZATION_CREATE_NAME;
   }
 
   private Principal getDummyPrincipal(byte roleType, int index) {
@@ -199,8 +211,7 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
     else if (requiresQuery) {
       if (regionNames != null && regionNames.length > 0) {
         for (int index = 0; index < regionNames.length; index++) {
-          String regionName = XmlAuthorization
-              .normalizeRegionName(regionNames[index]);
+          String regionName = XmlAuthorization.normalizeRegionName(regionNames[index]);
           if (requiresQuery && !queryRegionSet.contains(regionName)) {
             requiresQuery = false;
             break;
@@ -214,8 +225,8 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return roleType;
   }
 
-  protected Principal getAllowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  @Override
+  protected Principal getAllowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index) {
 
     if (this.cGen.classCode().isDummy()) {
       byte roleType = getRequiredRole(opCodes, regionNames);
@@ -228,8 +239,8 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return null;
   }
 
-  protected Principal getDisallowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  @Override
+  protected Principal getDisallowedPrincipal(OperationCode[] opCodes, String[] regionNames, int index) {
 
     byte roleType = getRequiredRole(opCodes, regionNames);
     byte disallowedRoleType = READER_ROLE;
@@ -256,8 +267,8 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return null;
   }
 
-  protected int getNumPrincipalTries(OperationCode[] opCodes,
-      String[] regionNames) {
+  @Override
+  protected int getNumPrincipalTries(OperationCode[] opCodes, String[] regionNames) {
     return 5;
   }
 

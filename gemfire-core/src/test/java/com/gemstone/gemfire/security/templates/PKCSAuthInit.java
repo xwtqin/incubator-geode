@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -56,6 +55,7 @@ public class PKCSAuthInit implements AuthInitialize {
 
   protected LogWriter systemlog;
 
+  @Override
   public void close() {
   }
 
@@ -66,32 +66,27 @@ public class PKCSAuthInit implements AuthInitialize {
   public PKCSAuthInit() {
   }
 
-  public void init(LogWriter systemLogger, LogWriter securityLogger)
-      throws AuthenticationFailedException {
+  @Override
+  public void init(LogWriter systemLogger, LogWriter securityLogger) throws AuthenticationFailedException {
     this.systemlog = systemLogger;
     this.securitylog = securityLogger;
   }
 
-  public Properties getCredentials(Properties props, DistributedMember server,
-      boolean isPeer) throws AuthenticationFailedException {
+  @Override
+  public Properties getCredentials(Properties props, DistributedMember server, boolean isPeer) throws AuthenticationFailedException {
     String keyStorePath = props.getProperty(KEYSTORE_FILE_PATH);
     if (keyStorePath == null) {
-      throw new AuthenticationFailedException(
-          "PKCSAuthInit: key-store file path property [" + KEYSTORE_FILE_PATH
-              + "] not set.");
+      throw new AuthenticationFailedException("PKCSAuthInit: key-store file path property [" + KEYSTORE_FILE_PATH + "] not set.");
     }
     String alias = props.getProperty(KEYSTORE_ALIAS);
     if (alias == null) {
-      throw new AuthenticationFailedException(
-          "PKCSAuthInit: key alias name property [" + KEYSTORE_ALIAS
-              + "] not set.");
+      throw new AuthenticationFailedException("PKCSAuthInit: key alias name property [" + KEYSTORE_ALIAS + "] not set.");
     }
     String keyStorePass = props.getProperty(KEYSTORE_PASSWORD);
 
     try {
       KeyStore ks = KeyStore.getInstance("PKCS12");
-      char[] passPhrase = (keyStorePass != null ? keyStorePass.toCharArray()
-          : null);
+      char[] passPhrase = keyStorePass != null ? keyStorePass.toCharArray() : null;
       FileInputStream certificatefile = new FileInputStream(keyStorePath);
       try {
         ks.load(certificatefile, passPhrase);
@@ -118,16 +113,14 @@ public class PKCSAuthInit implements AuthInitialize {
         return newprops;
       }
       else {
-        throw new AuthenticationFailedException("PKCSAuthInit: "
-            + "Failed to load private key from the given file: " + keyStorePath);
+        throw new AuthenticationFailedException("PKCSAuthInit: " + "Failed to load private key from the given file: " + keyStorePath);
       }
     }
     catch (GemFireSecurityException ex) {
       throw ex;
     }
     catch (Exception ex) {
-      throw new AuthenticationFailedException(
-          "PKCSAuthInit: Exception while getting credentials: " + ex, ex);
+      throw new AuthenticationFailedException("PKCSAuthInit: Exception while getting credentials: " + ex, ex);
     }
   }
 }

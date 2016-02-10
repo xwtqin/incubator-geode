@@ -1,6 +1,3 @@
-
-package security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +16,7 @@ package security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +24,7 @@ import java.security.Principal;
 import java.util.Properties;
 
 import com.gemstone.gemfire.security.AuthenticationFailedException;
-import security.CredentialGenerator;
+import com.gemstone.gemfire.security.util.CredentialGenerator;
 
 public class SSLCredentialGenerator extends CredentialGenerator {
 
@@ -52,8 +49,7 @@ public class SSLCredentialGenerator extends CredentialGenerator {
       return props;
     }
     catch (IOException ex) {
-      throw new AuthenticationFailedException(
-          "SSL: Exception while opening the key store: " + ex);
+      throw new AuthenticationFailedException("SSL: Exception while opening the key store: " + ex);
     }
   }
 
@@ -68,8 +64,7 @@ public class SSLCredentialGenerator extends CredentialGenerator {
       return props;
     }
     catch (IOException ex) {
-      throw new AuthenticationFailedException(
-          "SSL: Exception while opening the key store: " + ex);
+      throw new AuthenticationFailedException("SSL: Exception while opening the key store: " + ex);
     }
   }
 
@@ -82,33 +77,40 @@ public class SSLCredentialGenerator extends CredentialGenerator {
     return props;
   }
 
+  @Override
   protected Properties initialize() throws IllegalArgumentException {
     this.javaProps = getValidJavaSSLProperties();
     return getSSLProperties();
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.SSL;
   }
 
+  @Override
   public String getAuthInit() {
     return null;
   }
 
+  @Override
   public String getAuthenticator() {
     return null;
   }
 
+  @Override
   public Properties getValidCredentials(int index) {
     this.javaProps = getValidJavaSSLProperties();
     return getSSLProperties();
   }
 
+  @Override
   public Properties getValidCredentials(Principal principal) {
     this.javaProps = getValidJavaSSLProperties();
     return getSSLProperties();
   }
 
+  @Override
   public Properties getInvalidCredentials(int index) {
     this.javaProps = getInvalidJavaSSLProperties();
     return getSSLProperties();

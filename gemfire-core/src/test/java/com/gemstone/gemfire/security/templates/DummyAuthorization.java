@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package templates.security;
+package com.gemstone.gemfire.security.templates;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -39,23 +38,35 @@ import com.gemstone.gemfire.security.NotAuthorizedException;
  */
 public class DummyAuthorization implements AccessControl {
 
-  private Set allowedOps;
+  private Set<OperationCode> allowedOps;
 
   private DistributedMember remoteDistributedMember;
 
   private LogWriter logger;
 
-  public static final OperationCode[] READER_OPS = { OperationCode.GET,
-      OperationCode.QUERY, OperationCode.EXECUTE_CQ, OperationCode.CLOSE_CQ,
-      OperationCode.STOP_CQ, OperationCode.REGISTER_INTEREST,
-      OperationCode.UNREGISTER_INTEREST, OperationCode.KEY_SET,
-      OperationCode.CONTAINS_KEY, OperationCode.EXECUTE_FUNCTION };
+  public static final OperationCode[] READER_OPS = { 
+      OperationCode.GET,
+      OperationCode.QUERY, 
+      OperationCode.EXECUTE_CQ, 
+      OperationCode.CLOSE_CQ,
+      OperationCode.STOP_CQ, 
+      OperationCode.REGISTER_INTEREST,
+      OperationCode.UNREGISTER_INTEREST, 
+      OperationCode.KEY_SET,
+      OperationCode.CONTAINS_KEY, 
+      OperationCode.EXECUTE_FUNCTION 
+  };
 
-  public static final OperationCode[] WRITER_OPS = { OperationCode.PUT, OperationCode.PUTALL, 
-      OperationCode.DESTROY, OperationCode.INVALIDATE, OperationCode.REGION_CLEAR };
+  public static final OperationCode[] WRITER_OPS = { 
+      OperationCode.PUT, 
+      OperationCode.PUTALL, 
+      OperationCode.DESTROY, 
+      OperationCode.INVALIDATE, 
+      OperationCode.REGION_CLEAR 
+  };
 
   public DummyAuthorization() {
-    this.allowedOps = new HashSet(20);
+    this.allowedOps = new HashSet<OperationCode>(20);
   }
 
   public static AccessControl create() {
@@ -76,9 +87,8 @@ public class DummyAuthorization implements AccessControl {
     }
   }
 
-  public void init(Principal principal, 
-                   DistributedMember remoteMember,
-                   Cache cache) throws NotAuthorizedException {
+  @Override
+  public void init(Principal principal, DistributedMember remoteMember, Cache cache) throws NotAuthorizedException {
 
     if (principal != null) {
       String name = principal.getName().toLowerCase();
@@ -102,14 +112,15 @@ public class DummyAuthorization implements AccessControl {
     this.logger = cache.getSecurityLogger();
   }
 
+  @Override
   public boolean authorizeOperation(String regionName, OperationContext context) {
 
     OperationCode opCode = context.getOperationCode();
-    this.logger.fine("Invoked authorize operation for [" + opCode
-        + "] in region [" + regionName + "] for client: " + remoteDistributedMember);
+    this.logger.fine("Invoked authorize operation for [" + opCode + "] in region [" + regionName + "] for client: " + remoteDistributedMember);
     return this.allowedOps.contains(opCode);
   }
 
+  @Override
   public void close() {
 
     this.allowedOps.clear();
