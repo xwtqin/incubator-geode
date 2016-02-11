@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gemstone.gemfire.cache.FixedPartitionAttributes;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
     FixedPartitioningTestBase {
@@ -41,10 +42,6 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
     member3 = host.getVM(2);
     member4 = host.getVM(3);
 
-  }
-
-  public void tearDown2() throws Exception {
-    super.tearDown2();
   }
 
   /**
@@ -76,7 +73,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
       if (!((illegal.getCause() instanceof IllegalStateException) && (illegal
           .getCause().getMessage()
           .contains("not be specified in PartitionAttributesFactory if colocated-with is specified")))) {
-        fail("Expected IllegalStateException ", illegal);
+        Assert.fail("Expected IllegalStateException ", illegal);
       }
     }
   }
@@ -233,7 +230,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -374,7 +371,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -492,7 +489,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               "Customer", "Order", "Shipment" });
 
       member3.invoke(FixedPartitioningTestBase.class, "closeCache");
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocationAfterCacheClosed", new Object[] {
@@ -522,7 +519,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -553,7 +550,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -574,7 +571,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -687,7 +684,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               "Customer", "Order", "Shipment" });
 
       member3.invoke(FixedPartitioningTestBase.class, "closeCache");
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocationAfterCacheClosed", new Object[] {
@@ -717,7 +714,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -748,7 +745,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 2, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
 
       member1.invoke(FixedPartitioningTestBase.class,
           "validateAfterPutPartitionedRegion", new Object[] { "Customer",
@@ -769,114 +766,8 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
-  }
-
-  /**
-   * Create bucket on an empty FPR and see if and check if it gets created or
-   * exceptions are thrown. IllegalArguementException is expected for bucketId
-   * which is out of range or doesn't belong to the FPR node.
-   * 
-   */
-  public void testPartitionManagerWithFPR_NoBucketsCreatedYet() {
-    member1.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    FixedPartitionAttributes fpa1 = FixedPartitionAttributes
-        .createFixedPartition(Quarter1, true, 3);
-    FixedPartitionAttributes fpa2 = FixedPartitionAttributes
-        .createFixedPartition(Quarter2, false, 3);
-    List<FixedPartitionAttributes> fpaList = new ArrayList<FixedPartitionAttributes>();
-
-    fpaList.add(fpa1);
-    fpaList.add(fpa2);
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 6, new QuarterPartitionResolver(), null, false });
-
-    member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter2, true, 3);
-    fpa2 = FixedPartitionAttributes.createFixedPartition(Quarter1, false, 3);
-    fpaList = new ArrayList<FixedPartitionAttributes>();
-    fpaList.add(fpa1);
-    fpaList.add(fpa2);
-    member2.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 6, new QuarterPartitionResolver(), null, false });
-
-    // create primary buckets belonging to this partition
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createPrimaryBucketsBelongingToThisPartition", new Object[] {
-            "Quarter", Boolean.FALSE, Boolean.FALSE });
-
-    // create primary buckets not belonging to this partition
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createPrimaryBucketsBelongingToOtherPartition", new Object[] {
-            "Quarter", Boolean.FALSE, Boolean.FALSE });
-
-    // try creating out of range primary buckets
-    final int outOfRangeBucketId = 13;
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createOutOfRangePrimaryBucketUsingPartitionManager", new Object[] {
-            "Quarter", outOfRangeBucketId, Boolean.FALSE, Boolean.FALSE });
-  }
-
-  /**
-   * Create bucket on FPR for which buckets are created and see if it gets
-   * created
-   */
-
-  public void testPartitionManagerWithFPR_BucketsAlreadyCreated() {
-    member1.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    FixedPartitionAttributes fpa1 = FixedPartitionAttributes
-        .createFixedPartition(Quarter1, true, 3);
-    List<FixedPartitionAttributes> fpaList = new ArrayList<FixedPartitionAttributes>();
-
-    fpaList.add(fpa1);
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, false });
-
-    member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter2, true, 3);
-    fpaList = new ArrayList<FixedPartitionAttributes>();
-    fpaList.add(fpa1);
-    member2.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, false });
-
-    member3.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter3, true, 3);
-    fpaList = new ArrayList<FixedPartitionAttributes>();
-    fpaList.add(fpa1);
-    member3.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, false });
-
-    member4.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
-    fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter4, true, 3);
-    fpaList = new ArrayList<FixedPartitionAttributes>();
-    fpaList.add(fpa1);
-    member4.invoke(FixedPartitioningTestBase.class,
-        "createRegionWithPartitionAttributes", new Object[] { "Quarter",
-            fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, false });
-
-    member1.invoke(FixedPartitioningTestBase.class, "putThroughDataStore",
-        new Object[] { "Quarter" });
-
-    // create primary buckets belonging to this partition
-    member1.invoke(FixedPartitioningTestBase.class,
-        "createPrimaryBucketsBelongingToThisPartition", new Object[] {
-            "Quarter", Boolean.FALSE, Boolean.TRUE });
-
-    member1.invoke(FixedPartitioningTestBase.class,
-        "checkPrimaryBucketsForQuarter", new Object[] { 3, 3 });
-    member2.invoke(FixedPartitioningTestBase.class,
-        "checkPrimaryBucketsForQuarter", new Object[] { 3, 3 });
-    member3.invoke(FixedPartitioningTestBase.class,
-        "checkPrimaryBucketsForQuarter", new Object[] { 3, 3 });
-    member4.invoke(FixedPartitioningTestBase.class,
-        "checkPrimaryBucketsForQuarter", new Object[] { 3, 3 });
-
   }
 
   /**
@@ -908,7 +799,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     member2.invoke(FixedPartitioningTestBase.class, "closeCache");
 
-    pause(1000);
+    Wait.pause(1000);
 
     member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
     fpa1 = FixedPartitionAttributes.createFixedPartition(Quarter2, true, 3);
@@ -1016,14 +907,14 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member2.invoke(FixedPartitioningTestBase.class, "getForQuarter",
         new Object[] { "Quarter", Quarter1 });
     member2.invoke(FixedPartitioningTestBase.class, "getForQuarter",
         new Object[] { "Quarter", Quarter2 });
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryDataPersistence", new Object[] { Quarter2 });
-    pause(2000);
+    Wait.pause(2000);
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryBucketsForQuarter", new Object[] { 6, 6 });
 
@@ -1037,7 +928,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
 
     member1.invoke(FixedPartitioningTestBase.class,
         "checkPrimaryDataPersistence", new Object[] { Quarter1 });
@@ -1171,7 +1062,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               null, 1, 50, 20, new CustomerFixedPartitionResolver(), "Order",
               false });
 
-      pause(4000);
+      Wait.pause(4000);
       member1.invoke(FixedPartitioningTestBase.class,
           "checkPrimaryBucketsForColocation", new Object[] { 10, 5, "Customer",
               "Order", "Shipment" });
@@ -1187,7 +1078,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -1285,13 +1176,13 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
               fpaList, 1, 50, 20, new CustomerFixedPartitionResolver(), null,
               true });
 
-      pause(4000);
+      Wait.pause(4000);
       member2.invoke(FixedPartitioningTestBase.class, "getForColocation",
           new Object[] { "Customer", "Order", "Shipment" });
 
     }
     catch (Exception e) {
-      fail("Unexpected Exception ", e);
+      Assert.fail("Unexpected Exception ", e);
     }
   }
 
@@ -1354,7 +1245,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 0, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member2.invoke(FixedPartitioningTestBase.class,
         "checkPrimarySecondaryData", new Object[] { Quarter3, false });
 
@@ -1481,7 +1372,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
         "createRegionWithPartitionAttributes", new Object[] { "Quarter",
             fpaList, 1, 40, 12, new QuarterPartitionResolver(), null, true });
 
-    pause(4000);
+    Wait.pause(4000);
     member4.invoke(FixedPartitioningTestBase.class,
         "checkPrimarySecondaryData", new Object[] { Quarter4, false });
 
@@ -1531,7 +1422,7 @@ public class FixedPartitioningWithColocationAndPersistenceDUnitTest extends
     member1.invoke(FixedPartitioningTestBase.class, "closeCache");
     member2.invoke(FixedPartitioningTestBase.class, "closeCache");
 
-    pause(1000);
+    Wait.pause(1000);
 
     member2.invoke(FixedPartitioningTestBase.class, "createCacheOnMember");
     member2.invoke(FixedPartitioningTestBase.class,

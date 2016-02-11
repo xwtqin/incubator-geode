@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.gemstone.gemfire.management.internal.cli.HeadlessGfsh;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import util.TestException;
 
 import com.gemstone.gemfire.cache.Cache;
@@ -26,9 +28,9 @@ import com.gemstone.gemfire.management.internal.cli.result.CommandResult;
 import com.gemstone.gemfire.management.internal.cli.shell.Gfsh;
 import com.gemstone.gemfire.management.internal.cli.util.CommandStringBuilder;
 
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
  * Base class for all the CLI/gfsh command dunit tests. Derived from CliCommandTestBase but not using
@@ -67,9 +69,8 @@ public class CommandTestBase extends CacheTestCase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void postTearDownCacheTestCase() throws Exception {
     destroyDefaultSetup();
-    super.tearDown2();
   }
   
   protected void setUseHttpOnConnect(boolean useHttpOnConnect){
@@ -572,21 +573,21 @@ public class CommandTestBase extends CacheTestCase {
   }
   
   protected void info(String string) {
-    getLogWriter().info(string);
+    LogWriterUtils.getLogWriter().info(string);
   }
 
   protected void debug(String string) {
-    getLogWriter().fine(string);
+    LogWriterUtils.getLogWriter().fine(string);
   }
 
   protected void error(String string) {
     commandError = string;
-    getLogWriter().error(string);
+    LogWriterUtils.getLogWriter().error(string);
   }
 
   protected void error(String string, Throwable e) {
     commandError = string;
-    getLogWriter().error(string, e);
+    LogWriterUtils.getLogWriter().error(string, e);
   }
   
   protected Object[] getJMXEndPoint(){

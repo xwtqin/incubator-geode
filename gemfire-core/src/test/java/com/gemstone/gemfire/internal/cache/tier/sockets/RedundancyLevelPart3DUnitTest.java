@@ -18,10 +18,11 @@ package com.gemstone.gemfire.internal.cache.tier.sockets;
 
 import com.gemstone.gemfire.internal.cache.ClientServerObserverAdapter;
 import com.gemstone.gemfire.internal.cache.ClientServerObserverHolder;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.cache.client.internal.PoolImpl;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
 
 /**
  * Tests Redundancy Level Functionality
@@ -51,7 +52,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
   {
     try {
       CacheServerTestUtil.disableShufflingOfEndpoints();
-      createClientCache(getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 3);
+      createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 3);
       createEntriesK1andK2();
       registerK1AndK2();
       assertEquals(3, pool.getRedundantNames().size());
@@ -137,7 +138,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
     }
      catch (Exception ex) {
         ex.printStackTrace();
-        fail(
+        Assert.fail(
             "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
             ex);
      }
@@ -155,7 +156,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
   {
     try {
       CacheServerTestUtil.disableShufflingOfEndpoints();
-      createClientCache(getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 0);
+      createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 0);
       createEntriesK1andK2();
       registerK1AndK2();
       assertEquals(0, pool.getRedundantNames().size());
@@ -189,7 +190,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
     }
      catch (Exception ex) {
         ex.printStackTrace();
-        fail(
+        Assert.fail(
             "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
             ex);
      }
@@ -207,7 +208,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
     try {
 //      long maxWaitTime = 60000;
       CacheServerTestUtil.disableShufflingOfEndpoints();
-      createClientCache(getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 1);
+      createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), PORT1, PORT2, PORT3, PORT4, 1);
       createEntriesK1andK2();
       registerK1AndK2();
       assertEquals(1, pool.getRedundantNames().size());
@@ -238,7 +239,7 @@ public class RedundancyLevelPart3DUnitTest extends RedundancyLevelTestBase
      }
     catch (Exception ex) {
       ex.printStackTrace();
-      fail(
+      Assert.fail(
           "test failed due to exception in test testRedundancySpecifiedMoreThanEPs ",
           ex);
     }

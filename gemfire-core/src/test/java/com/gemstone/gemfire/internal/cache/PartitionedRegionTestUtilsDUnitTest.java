@@ -36,9 +36,10 @@ import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
-
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Confirm that the utils used for testing work as advertised
@@ -55,8 +56,8 @@ public class PartitionedRegionTestUtilsDUnitTest extends
   }
 
   /**
-   * Test the {@link PartitionedRegion#getSomeKeys(Random)} method, making sure it 
-   * returns keys when there are keys and {@link Collections#EMPTY_SET} when there are none.
+   * Test the {@link PartitionedRegion#getSomeKeys(java.util.Random)} method, making sure it 
+   * returns keys when there are keys and {@link java.util.Collections#EMPTY_SET} when there are none.
    * @throws Exception
    */
   public void testGetKeys() throws Exception {
@@ -91,16 +92,16 @@ public class PartitionedRegionTestUtilsDUnitTest extends
         GsRandom rand = new GsRandom(123);
         // Assert that its empty
         for(int i=0; i<5; i++) {
-          getLogWriter().info("Invocation " + i + " of getSomeKeys");
+          LogWriterUtils.getLogWriter().info("Invocation " + i + " of getSomeKeys");
           try {
             Set s = null;
             s = pr.getSomeKeys(rand);
             assertNotNull(s);
             assertTrue(s.isEmpty());
           } catch (ClassNotFoundException cnfe) {
-            fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
+            Assert.fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
           } catch (IOException ioe) {
-            fail("GetSomeKeys failed with IOException", ioe);
+            Assert.fail("GetSomeKeys failed with IOException", ioe);
           }
         }
         
@@ -111,26 +112,26 @@ public class PartitionedRegionTestUtilsDUnitTest extends
         
         // Assert not empty and has value in an accepable range
         for(int i=0; i<5; i++) {
-          getLogWriter().info("Invocation " + i + " of getSomeKeys");
+          LogWriterUtils.getLogWriter().info("Invocation " + i + " of getSomeKeys");
           try {
             Set s = null;
             s = pr.getSomeKeys(rand);
             assertNotNull(s);
             assertFalse(s.isEmpty());
             Integer val;
-            getLogWriter().info("Invocation " + i + " got " + s.size() + " keys");
+            LogWriterUtils.getLogWriter().info("Invocation " + i + " got " + s.size() + " keys");
             for (Iterator it = s.iterator(); it.hasNext(); ) {
               Object key = it.next();
-              getLogWriter().info("Key: " + key);
+              LogWriterUtils.getLogWriter().info("Key: " + key);
               val = (Integer) pr.get(key);
               assertNotNull(val);
               assertTrue(val.intValue() >= 0);
               assertTrue(val.intValue() < MAXKEYS); 
             }
           } catch (ClassNotFoundException cnfe) {
-            fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
+            Assert.fail("GetSomeKeys failed with ClassNotFoundException", cnfe);
           } catch (IOException ioe) {
-            fail("GetSomeKeys failed with IOException", ioe);
+            Assert.fail("GetSomeKeys failed with IOException", ioe);
           }
         }
       }
@@ -141,8 +142,6 @@ public class PartitionedRegionTestUtilsDUnitTest extends
    * Test the test method PartitionedRegion.getAllNodes
    * Verify that it returns nodes after a value has been placed into the PartitionedRegion.
    * @see PartitionedRegion#getAllNodes()
-   * 
-   * @throws Exception
    */
   
   public static class TestGetNodesKey implements DataSerializable {
@@ -514,7 +513,7 @@ public class PartitionedRegionTestUtilsDUnitTest extends
               assertEquals(0, p.getBucketOwnersForValidation(i).size());
             }
           } catch (ForceReattemptException noGood) {
-            fail("Unexpected force retry", noGood);
+            Assert.fail("Unexpected force retry", noGood);
           }
         }
       }
@@ -563,7 +562,7 @@ public class PartitionedRegionTestUtilsDUnitTest extends
               assertEquals(1, primCount);
             }
           } catch (ForceReattemptException noGood) {
-            fail("Unexpected force retry", noGood);
+            Assert.fail("Unexpected force retry", noGood);
           }
         }
       }

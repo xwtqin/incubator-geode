@@ -32,8 +32,9 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class PartitionedRegionLoaderWriterDUnitTest extends CacheTestCase {
 
@@ -159,7 +160,7 @@ public class PartitionedRegionLoaderWriterDUnitTest extends CacheTestCase {
       cache.createRegion(PartitionedRegionName, attrs);
     }
     catch (Exception e) {
-      fail("Not Expected : " , e);
+      Assert.fail("Not Expected : " , e);
     }
   }
 
@@ -200,7 +201,7 @@ public class PartitionedRegionLoaderWriterDUnitTest extends CacheTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 
@@ -223,10 +224,5 @@ public class PartitionedRegionLoaderWriterDUnitTest extends CacheTestCase {
   static class CacheWriter2 extends CacheWriterAdapter implements Serializable {
     public CacheWriter2() {
     }
-  }
-
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
   }
 }

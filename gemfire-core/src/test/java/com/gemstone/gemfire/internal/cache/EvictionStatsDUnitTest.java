@@ -40,10 +40,11 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.lru.HeapLRUCapacityController;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class EvictionStatsDUnitTest extends CacheTestCase {
 
@@ -326,14 +327,14 @@ public class EvictionStatsDUnitTest extends CacheTestCase {
       @Override
       public void run2() throws CacheException {
         PartitionedRegion pr1 = (PartitionedRegion)cache.getRegion("PR1");
-        getLogWriter().info("dddd  local"+pr1.getLocalMaxMemory());
-        getLogWriter().info("dddd  local evi"+((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
+        LogWriterUtils.getLogWriter().info("dddd  local"+pr1.getLocalMaxMemory());
+        LogWriterUtils.getLogWriter().info("dddd  local evi"+((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
         .getEvictions());
-        getLogWriter().info("dddd  local entries"+((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
+        LogWriterUtils.getLogWriter().info("dddd  local entries"+((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
             .getCounter()/(1024*1024));
         HeapMemoryMonitor hmm = ((InternalResourceManager) cache.getResourceManager()).getHeapMonitor();
         long memused=hmm.getBytesUsed()/(1024*1024);
-        getLogWriter().info("dddd  local memused= "+memused);
+        LogWriterUtils.getLogWriter().info("dddd  local memused= "+memused);
         assertTrue(((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
             .getEvictions() >= extraEntries / 2);
         assertEquals(((AbstractLRURegionMap)pr1.entries)._getLruList().stats()
@@ -411,12 +412,12 @@ public class EvictionStatsDUnitTest extends CacheTestCase {
       ds = getSystem(props);
       cache = CacheFactory.create(ds);
       assertNotNull(cache);
-      getLogWriter().info("cache= " + cache);
-      getLogWriter().info("cache closed= " + cache.isClosed());
+      LogWriterUtils.getLogWriter().info("cache= " + cache);
+      LogWriterUtils.getLogWriter().info("cache closed= " + cache.isClosed());
       cache.getResourceManager().setEvictionHeapPercentage(20);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      Assert.fail("Failed while creating the cache", e);
     }
   }
 
@@ -483,7 +484,7 @@ public class EvictionStatsDUnitTest extends CacheTestCase {
 
     region = cache.createRegion(regionName, factory.create());
     assertNotNull(region);
-    getLogWriter().info("Partitioned Region created Successfully :" + region);
+    LogWriterUtils.getLogWriter().info("Partitioned Region created Successfully :" + region);
   }
 
   public static void putData(final String regionName, final int noOfElememts) {
@@ -542,7 +543,7 @@ public class EvictionStatsDUnitTest extends CacheTestCase {
       if (bucketRegion == null) {
         continue;
       }
-      getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "Size of bucket " + bucketRegion.getName() + "of Pr " + prRegionName
               + " = " + bucketRegion.getCounter() / (1000000));
       bucketSize = bucketSize + bucketRegion.getCounter();

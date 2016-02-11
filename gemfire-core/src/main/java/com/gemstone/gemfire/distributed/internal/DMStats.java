@@ -205,6 +205,7 @@ public interface DMStats {
    * returns the current value of the mcastWrites statistic
    */
   public int getMcastWrites();
+  public int getMcastReads();
 
   public long startSerialization();
   public void endSerialization(long start, int bytes);
@@ -535,4 +536,84 @@ public interface DMStats {
 
   public void endPdxInstanceDeserialization(long start);
   public void incPdxInstanceCreations();
+  
+  //Stats for GMSHealthMonitor
+  public long getHeartbeatRequestsSent();
+  
+  public void incHeartbeatRequestsSent();
+  
+  public long getHeartbeatRequestsReceived();
+  
+  public void incHeartbeatRequestsReceived();
+  
+  public long getHeartbeatsSent();
+  
+  public void incHeartbeatsSent();
+
+  public long getHeartbeatsReceived();
+  
+  public void incHeartbeatsReceived();
+  
+
+  public long getSuspectsSent();
+  
+  public void incSuspectsSent();
+
+  public long getSuspectsReceived();
+  
+  public void incSuspectsReceived();
+  
+  
+  public long getFinalCheckRequestsSent();
+  
+  public void incFinalCheckRequestsSent();
+  
+  public long getFinalCheckRequestsReceived();
+  
+  public void incFinalCheckRequestsReceived();
+  
+  public long getFinalCheckResponsesSent();
+  
+  public void incFinalCheckResponsesSent();
+  
+  public long getFinalCheckResponsesReceived();
+  
+  public void incFinalCheckResponsesReceived();
+  
+  
+  public long getTcpFinalCheckRequestsSent();
+  
+  public void incTcpFinalCheckRequestsSent();
+
+  public long getTcpFinalCheckRequestsReceived();
+  
+  public void incTcpFinalCheckRequestsReceived();
+  
+  public long getTcpFinalCheckResponsesSent();
+  
+  public void incTcpFinalCheckResponsesSent();
+
+  public long getTcpFinalCheckResponsesReceived();
+  
+  public void incTcpFinalCheckResponsesReceived();
+
+  
+  public long getUdpFinalCheckRequestsSent();
+  
+  public void incUdpFinalCheckRequestsSent();
+  
+//  UDP final check is implemented using HeartbeatRequestMessage and HeartbeatMessage
+//  So the following code is commented out.
+  
+//  public long getUdpFinalCheckRequestsReceived();
+//  
+//  public void incUdpFinalCheckRequestsReceived();
+//  
+//  public long getUdpFinalCheckResponsesSent();
+//  
+//  public void incUdpFinalCheckResponsesSent();
+
+  public long getUdpFinalCheckResponsesReceived();
+  
+  public void incUdpFinalCheckResponsesReceived();
 }

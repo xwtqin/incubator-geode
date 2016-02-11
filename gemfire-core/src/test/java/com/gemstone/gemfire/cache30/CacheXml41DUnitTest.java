@@ -16,13 +16,34 @@
  */
 package com.gemstone.gemfire.cache30;
 
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.cache.server.CacheServer;
-import com.gemstone.gemfire.internal.cache.xmlcache.*;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import org.xml.sax.SAXException;
+
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheXmlException;
+import com.gemstone.gemfire.cache.DynamicRegionFactory;
+import com.gemstone.gemfire.cache.ExpirationAction;
+import com.gemstone.gemfire.cache.ExpirationAttributes;
+import com.gemstone.gemfire.cache.MirrorType;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionExistsException;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.server.CacheServer;
+import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
+import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
+import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
+import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
+import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /**
  * Tests the declarative caching functionality introduced in GemFire 4.1.
@@ -142,6 +163,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
   {
     setXmlFile(findFile("unknownNamedAttributes.xml"));
 
+    IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.RegionAttributesCreation_CANNOT_REFERENCE_NONEXISTING_REGION_ATTRIBUTES_NAMED_0.toLocalizedString());
     try {
       getCache();
       fail("Should have thrown an IllegalStateException");
@@ -149,6 +171,8 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
     }
     catch (IllegalStateException ex) {
       // pass...
+    } finally {
+      expectedException.remove();
     }
   }
 
@@ -175,6 +199,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
 
     setXmlFile(findFile("sameRootRegion.xml"));
 
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       getCache();
       fail("Should have thrown a CacheXmlException");
@@ -185,9 +210,11 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
       assertTrue(cause instanceof SAXException);
       cause = ((SAXException)cause).getException();
       if (!(cause instanceof RegionExistsException)) {
-        fail("Expected a RegionExistsException, not a "
+        Assert.fail("Expected a RegionExistsException, not a "
             + cause.getClass().getName(), cause);
       }
+    } finally {
+      expectedException.remove();
     }
   }
 
@@ -216,6 +243,7 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
 
     setXmlFile(findFile("sameSubregion.xml"));
 
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       getCache();
       fail("Should have thrown a CacheXmlException");
@@ -226,9 +254,11 @@ public class CacheXml41DUnitTest extends CacheXml40DUnitTest
       assertTrue(cause instanceof SAXException);
       cause = ((SAXException)cause).getException();
       if (!(cause instanceof RegionExistsException)) {
-        fail("Expected a RegionExistsException, not a "
+        Assert.fail("Expected a RegionExistsException, not a "
             + cause.getClass().getName(), cause);
       }
+    } finally {
+      expectedException.remove();
     }
   }
 

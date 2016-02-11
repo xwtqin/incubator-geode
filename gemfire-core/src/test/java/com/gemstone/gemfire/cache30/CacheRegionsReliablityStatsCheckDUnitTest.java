@@ -32,10 +32,10 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.CachePerfStats;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class CacheRegionsReliablityStatsCheckDUnitTest extends CacheTestCase {
 	public CacheRegionsReliablityStatsCheckDUnitTest(String name) {
@@ -102,7 +102,7 @@ public class CacheRegionsReliablityStatsCheckDUnitTest extends CacheTestCase {
 	      {
 	        
 	        Properties props = new Properties();
-	        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+	        props.setProperty(DistributionConfig.LOG_LEVEL_NAME, LogWriterUtils.getDUnitLogLevel());
 	        props.setProperty(DistributionConfig.ROLES_NAME, rr1);
 
 	        getSystem(props);

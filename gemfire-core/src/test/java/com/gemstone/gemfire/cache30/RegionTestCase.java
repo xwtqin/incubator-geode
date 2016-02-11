@@ -58,11 +58,11 @@ import com.gemstone.gemfire.internal.cache.EntryExpiryTask;
 import com.gemstone.gemfire.internal.cache.EntrySnapshot;
 import com.gemstone.gemfire.internal.cache.ExpiryTask;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
-import dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 //import com.gemstone.gemfire.internal.util.DebuggerSupport;
 
@@ -110,23 +110,14 @@ public abstract class RegionTestCase extends CacheTestCase {
     super(name);
   }
   
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void postTearDownCacheTestCase() throws Exception {
     cleanup();
-    invokeInEveryVM(getClass(), "cleanup");
-    /*for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-      for (int v = 0; v < host.getVMCount(); v++) {
-        host.getVM(v).invoke(new SerializableRunnable("Clean up") {
-            public void run() {
-              cleanup();
-            }
-          });
-// already called in every VM in super.tearDown
-// host.getVM(v).invoke(this.getClass(), "remoteTearDown");
-      }
-    }*/
-    super.tearDown2();
+    Invoke.invokeInEveryVM(getClass(), "cleanup");
+    postTearDownRegionTestCase();
+  }
+  
+  protected void postTearDownRegionTestCase() throws Exception {
   }
   
   ////////  Helper methods
@@ -269,7 +260,7 @@ public abstract class RegionTestCase extends CacheTestCase {
       assertEquals(value, values.iterator().next());
     }
     catch (UnsupportedOperationException uoe) {
-      getLogWriter().info("Region.values() reported UnsupportedOperation");
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Region.values() reported UnsupportedOperation");
     }
   }
   
@@ -473,7 +464,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.destroy(key);
     
     Region.Entry entry2 = region.getEntry(key);
-    getLogWriter().info("Found entry for destroyed key: " + entry2);
+    com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Found entry for destroyed key: " + entry2);
     assertNull(entry2);
     if (entry.isLocal()) {
       assertTrue(entry.isDestroyed());
@@ -1980,11 +1971,11 @@ public abstract class RegionTestCase extends CacheTestCase {
         break;
       }
       if (!wasInvalidated) {
-        pause(pauseMs);
+        Wait.pause(pauseMs);
         continue;
       }
       if (now >= tilt - SLOP) {
-        getLogWriter().warning("Entry invalidated sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Entry invalidated sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }
@@ -2004,7 +1995,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         if (fetchEntryValue(entry) == null) break;
         fail("Entry failed to invalidate");
       }
-      pause(pauseMs);
+      Wait.pause(pauseMs);
     }
   }
 
@@ -2051,11 +2042,11 @@ public abstract class RegionTestCase extends CacheTestCase {
       if (now >= tilt)
         break;
       if (!isEntryDestroyed(entry)) {
-        pause(pauseMs);
+        Wait.pause(pauseMs);
         continue;
       }
       if (now >= tilt - SLOP) {
-        getLogWriter().warning("Entry destroyed sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Entry destroyed sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }
@@ -2073,7 +2064,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         break;
       Assert.assertTrue(System.currentTimeMillis() <= tilt,
           "Entry failed to destroy");
-      pause(pauseMs);
+      Wait.pause(pauseMs);
     }
   }
   
@@ -2095,11 +2086,11 @@ public abstract class RegionTestCase extends CacheTestCase {
       if (now >= tilt)
         break;
       if (!region.isDestroyed()) {
-        pause(10);
+        Wait.pause(10);
         continue;
       }
       if (now >= tilt - SLOP) {
-        getLogWriter().warning("Region destroyed sloppily "
+        com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().warning("Region destroyed sloppily "
             + "now=" + now + " tilt=" + tilt + " delta = " + (tilt - now));
         break;
       }
@@ -2117,7 +2108,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         break;
       Assert.assertTrue(System.currentTimeMillis() <= tilt,
           "Region failed to destroy");
-      pause(10);
+      Wait.pause(10);
     }
   }  
 
@@ -2202,7 +2193,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     
     // Random values should not expire
     region.put(key1, value);
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assert(region.get(key1).equals(value));
     
     // key2 *should* expire
@@ -2261,7 +2252,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.create(key1, value);
     
     // This value should NOT expire.
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assertTrue(region.get(key1).equals(value));
     
     // This value SHOULD expire
@@ -2364,7 +2355,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         ExpiryTask.permitExpiration();
       }
       waitForInvalidate(entry, tilt1, timeout1/2);
-      DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
+      Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
       eventCount = 0;
 
       // Do it again with a put (I guess)
@@ -2380,7 +2371,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         ExpiryTask.permitExpiration();
       }
       waitForInvalidate(entry, tilt1, timeout1/2);
-      DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
+      Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
       eventCount = 0;
 
       // Change custom expiry for this region now...
@@ -2406,7 +2397,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         ExpiryTask.permitExpiration();
       }
       waitForInvalidate(entry, tilt2, timeout2/2);
-      DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
+      Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 100, true);
       eventCount = 0;
       // key1 should not be invalidated since we mutated to custom expiry to only expire key2
       entry = region.getEntry(key1);
@@ -2481,7 +2472,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     assertEquals(0, eventCount);
     
     // now set it to a really short time and make sure it expires immediately
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     final Region.Entry entry = region.getEntry(key1);
     mutt = region.getAttributesMutator();
     ExpirationAttributes expire4 = new ExpirationAttributes(1, ExpirationAction.INVALIDATE);
@@ -2494,7 +2485,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "entry never became invalid";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10 * 1000, 10, true);
+    Wait.waitForCriterion(wc, 10 * 1000, 10, true);
 
     WaitCriterion waitForEventCountToBeOne = new WaitCriterion() {
       public boolean done() {
@@ -2504,7 +2495,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "eventCount never became 1";
       }
     };
-    DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
+    Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
     eventCount = 0;
   }
 
@@ -2934,7 +2925,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.create(key1, value);
     
     // This value should NOT expire.
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assertTrue(region.get(key1).equals(value));
     
     // This value SHOULD expire
@@ -3014,7 +3005,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.create(key2, value);
     
     // This value should NOT expire.
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assertTrue(region.get(key2).equals(value));
     
     // This value SHOULD expire
@@ -3115,7 +3106,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     assertEquals(0, eventCount);
     
     // now set it to a really short time and make sure it expires immediately
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     final Region.Entry entry = region.getEntry(key1);
     mutt = region.getAttributesMutator();
     ExpirationAttributes expire4 = new ExpirationAttributes(1, ExpirationAction.INVALIDATE);
@@ -3128,7 +3119,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "entry never became invalid";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10 * 1000, 10, true);
+    Wait.waitForCriterion(wc, 10 * 1000, 10, true);
 
     WaitCriterion waitForEventCountToBeOne = new WaitCriterion() {
       public boolean done() {
@@ -3138,7 +3129,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "eventCount never became 1";
       }
     };
-    DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
+    Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
     eventCount = 0;
   }
 
@@ -3202,7 +3193,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     assertEquals(0, eventCount);
     
     // now set it to a really short time and make sure it expires immediately
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     final Region.Entry entry = region.getEntry(key1);
     mutt = region.getAttributesMutator();
     ExpirationAttributes expire4 = new ExpirationAttributes(1, ExpirationAction.INVALIDATE);
@@ -3215,7 +3206,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "entry never became invalid";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 10 * 1000, 10, true);
+    Wait.waitForCriterion(wc, 10 * 1000, 10, true);
 
     WaitCriterion waitForEventCountToBeOne = new WaitCriterion() {
       public boolean done() {
@@ -3225,7 +3216,7 @@ public abstract class RegionTestCase extends CacheTestCase {
         return "eventCount never became 1";
       }
     };
-    DistributedTestCase.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
+    Wait.waitForCriterion(waitForEventCountToBeOne, 10 * 1000, 10, true);
     eventCount = 0;
   }
 
@@ -3414,7 +3405,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     
     // Random values should not expire
     region.put(key1, value);
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assert(region.get(key1).equals(value));
     
     // key2 *should* expire
@@ -3488,14 +3479,14 @@ public abstract class RegionTestCase extends CacheTestCase {
       assertNotNull(entry.getValue());
       EntryExpiryTask eet = region.getEntryExpiryTask(key1);
       final long createExpiryTime = eet.getExpirationTime();
-      waitForExpiryClockToChange(region);
+      Wait.waitForExpiryClockToChange(region);
       region.get(key1);
       assertSame(eet, region.getEntryExpiryTask(key1));
       final long getExpiryTime = eet.getExpirationTime();
       if (getExpiryTime - createExpiryTime <= 0L) {
         fail("get did not reset the expiration time. createExpiryTime=" + createExpiryTime + " getExpiryTime=" + getExpiryTime);
       }
-      waitForExpiryClockToChange(region);
+      Wait.waitForExpiryClockToChange(region);
       region.put(key1, value);
       assertSame(eet, region.getEntryExpiryTask(key1));
       final long putExpiryTime = eet.getExpirationTime();
@@ -3598,7 +3589,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     EntryExpiryTask eet = region.getEntryExpiryTask(key);
     long createExpiryTime = eet.getExpirationTime();
 
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     region.get(key); // touch
     assertSame(eet, region.getEntryExpiryTask(key));
     long getExpiryTime = eet.getExpirationTime();
@@ -3606,7 +3597,7 @@ public abstract class RegionTestCase extends CacheTestCase {
       fail("get did not reset the expiration time. createExpiryTime=" + createExpiryTime + " getExpiryTime=" + getExpiryTime);
     }
     
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     region.put(key, value); // touch
     assertSame(eet, region.getEntryExpiryTask(key));
     long putExpiryTime = eet.getExpirationTime();
@@ -3618,7 +3609,7 @@ public abstract class RegionTestCase extends CacheTestCase {
 
     // Now verify operations that do not modify the expiry time
     
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     region.invalidate(key); // touch
     assertSame(eet, region.getEntryExpiryTask(key));
     long invalidateExpiryTime = eet.getExpirationTime();
@@ -3680,7 +3671,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     region.put(key, value);
     tilt = System.currentTimeMillis() + timeout;
     entry = region.getEntry(key);
-    pause(timeout * 2);
+    Wait.pause(timeout * 2);
     assertEquals(value, entry.getValue());
     region.getAttributesMutator().setEntryIdleTimeout(expire);
     waitForInvalidate(entry, tilt);
@@ -3716,7 +3707,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     if ((firstIdleExpiryTime - firstTTLExpiryTime) >= 0) {
       fail("idle should be less than ttl: idle=" + firstIdleExpiryTime + " ttl=" + firstTTLExpiryTime);
     }
-    waitForExpiryClockToChange(region);
+    Wait.waitForExpiryClockToChange(region);
     region.get(key);
     eet = region.getEntryExpiryTask(key);
     final long secondIdleExpiryTime = eet.getIdleExpirationTime();
@@ -3866,23 +3857,23 @@ public abstract class RegionTestCase extends CacheTestCase {
           ExpiryTask expiryTask = lr.getRegionIdleExpiryTask();
           region.put(key, value);
           long createExpiry = expiryTask.getExpirationTime();
-          long changeTime = waitForExpiryClockToChange(lr, createExpiry-EXPIRATION_MS);
+          long changeTime = Wait.waitForExpiryClockToChange(lr, createExpiry-EXPIRATION_MS);
           region.put(key, "VALUE2");
           long putExpiry = expiryTask.getExpirationTime();
           assertTrue("CLOCK went back in time! Expected putBaseExpiry=" + (putExpiry-EXPIRATION_MS) + " to be >= than changeTime=" + changeTime, (putExpiry-EXPIRATION_MS - changeTime) >= 0);
           assertTrue("expected putExpiry=" + putExpiry + " to be > than createExpiry=" + createExpiry, (putExpiry - createExpiry) > 0);
-          changeTime = waitForExpiryClockToChange(lr, putExpiry-EXPIRATION_MS);
+          changeTime = Wait.waitForExpiryClockToChange(lr, putExpiry-EXPIRATION_MS);
           region.get(key);
           long getExpiry = expiryTask.getExpirationTime();
           assertTrue("CLOCK went back in time! Expected getBaseExpiry=" + (getExpiry-EXPIRATION_MS) + " to be >= than changeTime=" + changeTime, (getExpiry-EXPIRATION_MS - changeTime) >= 0);
           assertTrue("expected getExpiry=" + getExpiry + " to be > than putExpiry=" + putExpiry, (getExpiry - putExpiry) > 0);
         
-          changeTime = waitForExpiryClockToChange(lr, getExpiry-EXPIRATION_MS);
+          changeTime = Wait.waitForExpiryClockToChange(lr, getExpiry-EXPIRATION_MS);
           sub.put(key, value);
           long subPutExpiry = expiryTask.getExpirationTime();
           assertTrue("CLOCK went back in time! Expected subPutBaseExpiry=" + (subPutExpiry-EXPIRATION_MS) + " to be >= than changeTime=" + changeTime, (subPutExpiry-EXPIRATION_MS - changeTime) >= 0);
           assertTrue("expected subPutExpiry=" + subPutExpiry + " to be > than getExpiry=" + getExpiry, (subPutExpiry - getExpiry) > 0);
-          changeTime = waitForExpiryClockToChange(lr, subPutExpiry-EXPIRATION_MS);
+          changeTime = Wait.waitForExpiryClockToChange(lr, subPutExpiry-EXPIRATION_MS);
           sub.get(key);
           long subGetExpiry = expiryTask.getExpirationTime();
           assertTrue("CLOCK went back in time! Expected subGetBaseExpiry=" + (subGetExpiry-EXPIRATION_MS) + " to be >= than changeTime=" + changeTime, (subGetExpiry-EXPIRATION_MS - changeTime) >= 0);
@@ -3951,7 +3942,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     // create region in other VMs if distributed
     boolean isDistributed = getRegionAttributes().getScope().isDistributed();
     if (isDistributed) {
-      invokeInEveryVM(new CacheSerializableRunnable("create presnapshot region") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("create presnapshot region") {
         public void run2() throws CacheException {
           preSnapshotRegion = createRegion(name);
         }
@@ -3994,7 +3985,7 @@ public abstract class RegionTestCase extends CacheTestCase {
       
       // test postSnapshot behavior in other VMs if distributed
       if (isDistributed) {
-        invokeInEveryVM(new CacheSerializableRunnable("postSnapshot") {
+        Invoke.invokeInEveryVM(new CacheSerializableRunnable("postSnapshot") {
           public void run2() throws CacheException {
             RegionTestCase.this.remoteTestPostSnapshot(name, false, false);
           }
@@ -4015,7 +4006,7 @@ public abstract class RegionTestCase extends CacheTestCase {
     // create region in other VMs if distributed
     boolean isDistributed = getRegionAttributes().getScope().isDistributed();
     if (isDistributed) {
-      invokeInEveryVM(new CacheSerializableRunnable("create presnapshot region") {
+      Invoke.invokeInEveryVM(new CacheSerializableRunnable("create presnapshot region") {
         public void run2() throws CacheException {
           preSnapshotRegion = createRootRegion(name, getRegionAttributes());
         }
@@ -4064,7 +4055,7 @@ public abstract class RegionTestCase extends CacheTestCase {
       // test postSnapshot behavior in other VMs if distributed
       if (isDistributed) {
         log.info("before distributed remoteTestPostSnapshot");
-        invokeInEveryVM(new CacheSerializableRunnable("postSnapshot") {
+        Invoke.invokeInEveryVM(new CacheSerializableRunnable("postSnapshot") {
           public void run2() throws CacheException {
             RegionTestCase.this.remoteTestPostSnapshot(name, false, true);
           }

@@ -49,16 +49,16 @@ import com.gemstone.gemfire.management.internal.configuration.domain.XmlEntity.X
 import com.gemstone.gemfire.management.internal.configuration.handlers.ConfigurationRequestHandler;
 import com.gemstone.gemfire.management.internal.configuration.messages.ConfigurationRequest;
 import com.gemstone.gemfire.management.internal.configuration.messages.ConfigurationResponse;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /***
  * Tests the starting up of shared configuration, installation of {@link ConfigurationRequestHandler}
- * and {@link ConfigurationChangeHandler} 
+ * 
  * @author bansods
  *
  */
@@ -119,7 +119,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locator1Port, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -130,7 +130,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
+          Wait.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -257,7 +257,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
         try {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locator1Port, locatorLogFile, null,
               locatorProps);
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -268,7 +268,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
+          Wait.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -348,7 +348,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
           final InternalLocator locator = (InternalLocator) Locator.startLocatorAndDS(locator2Port, locatorLogFile, null,
               locatorProps);
 
-          DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+          WaitCriterion wc = new WaitCriterion() {
             @Override
             public boolean done() {
               return locator.isSharedConfigurationRunning();
@@ -359,7 +359,7 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
               return "Waiting for shared configuration to be started";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
+          Wait.waitForCriterion(wc, TIMEOUT, INTERVAL, true);
         } catch (IOException ioex) {
           fail("Unable to create a locator with a shared configuration");
         }
@@ -434,10 +434,8 @@ public class SharedConfigurationDUnitTest extends CacheTestCase {
     });
   }    
   
-  
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     for (int i=0; i<4; i++) {
       Host.getHost(0).getVM(i).invoke(SharedConfigurationDUnitTest.locatorCleanup);
     }

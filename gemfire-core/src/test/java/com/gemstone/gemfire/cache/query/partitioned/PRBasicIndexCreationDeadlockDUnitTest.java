@@ -29,12 +29,12 @@ import com.gemstone.gemfire.cache.query.internal.index.IndexUtils;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
-
-import dunit.AsyncInvocation;
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * @author rdubey
@@ -143,10 +143,10 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
           IndexUtilTestHook hook = (IndexUtilTestHook) IndexUtils.testHook;
           while (hook == null) {
             hook = (IndexUtilTestHook) IndexUtils.testHook;
-            pause(20);
+            Wait.pause(20);
           }
           while (!hook.isHooked()) {
-            pause(30);
+            Wait.pause(30);
           }
           //hook.setHooked(false);
           hook_vm1 = true;
@@ -166,7 +166,7 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
         }
       });
 
-      pause(2000);
+      Wait.pause(2000);
       
       vm0.invoke(new CacheSerializableRunnable("Checking hook in VM0 cache again") {
         
@@ -175,10 +175,10 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
           IndexUtilTestHook hook = (IndexUtilTestHook) IndexUtils.testHook;
           while (hook == null) {
             hook = (IndexUtilTestHook) IndexUtils.testHook;
-            pause(20);
+            Wait.pause(20);
           }
           while (!hook.isHooked()) {
-            pause(30);
+            Wait.pause(30);
           }
           hook.setHooked(false);
           hook_vm1 = false;
@@ -186,7 +186,7 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
       });  
 
       for (AsyncInvocation async: asyns) {
-        DistributedTestCase.join(async, 10000, null);
+        ThreadUtils.join(async, 10000);
       }
     } finally {
       
@@ -224,7 +224,7 @@ public class PRBasicIndexCreationDeadlockDUnitTest extends
       switch (spot) {
       case 0:
         hooked = true;
-        while(hooked) {pause(300);}
+        while(hooked) {Wait.pause(300);}
         break;
 
       default:

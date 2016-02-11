@@ -30,9 +30,8 @@ import com.gemstone.gemfire.cache.client.Pool;
 import com.gemstone.gemfire.cache.query.CqEvent;
 import com.gemstone.gemfire.cache.query.CqStatusListener;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author rmadduri
@@ -239,7 +238,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got create event for CQ " + CqQueryTestListener.this.cqName + " key " + key;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
 
@@ -254,7 +253,7 @@ public class CqQueryTestListener implements CqStatusListener {
           " expected: " + total + " receieved: " + CqQueryTestListener.this.totalEventCount;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -267,7 +266,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got destroy event for key " + key + " in CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -280,7 +279,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got invalidate event for CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -293,7 +292,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got update event for CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
 
@@ -306,7 +305,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got close event for CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -319,7 +318,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got region clear event for CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
 
@@ -332,7 +331,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got region invalidate event for CQ " + CqQueryTestListener.this.cqName;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -355,7 +354,7 @@ public class CqQueryTestListener implements CqStatusListener {
         return "never got create error for CQ " + CqQueryTestListener.this.cqName + " messaged " + expectedMessage;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -369,7 +368,7 @@ public class CqQueryTestListener implements CqStatusListener {
           " expected: " + total + " received: " + CqQueryTestListener.this.cqsDisconnectedCount;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   
@@ -383,7 +382,7 @@ public class CqQueryTestListener implements CqStatusListener {
           " expected: " + total + " receieved: " + CqQueryTestListener.this.cqsConnectedCount;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, MAX_TIME, 200, true);
+    Wait.waitForCriterion(ev, MAX_TIME, 200, true);
     return true;
   }
   

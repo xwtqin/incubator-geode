@@ -35,10 +35,9 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.logging.log4j.LogWriterLogger;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
 
 /**
  * Creates Locator and tests logging behavior at a high level.
@@ -104,7 +103,7 @@ public class LocatorLogFileJUnitTest {
         InternalLogWriter.INFO_LEVEL, logWriter.getLogWriterLevel());
     
     assertNotNull(this.locator);
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       @Override
       public boolean done() {
         return logFile.exists();

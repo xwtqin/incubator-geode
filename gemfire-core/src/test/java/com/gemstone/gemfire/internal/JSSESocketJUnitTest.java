@@ -48,9 +48,8 @@ import org.junit.rules.TestName;
 
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.util.test.TestUtil;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * Test creation of server sockets and client sockets with various JSSE
@@ -123,7 +122,7 @@ public class JSSESocketJUnitTest {
     oos.writeObject( expected );
     oos.flush();
     
-    DistributedTestCase.join(serverThread, 30 * 1000, null);
+    ThreadUtils.join(serverThread, 30 * 1000);
     
     client.close();
     if ( expected.equals( receiver[0] ) ) {

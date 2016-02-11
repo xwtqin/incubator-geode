@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 sourceSets {
   jca {
     compileClasspath += configurations.compile
@@ -14,7 +31,7 @@ dependencies {
    // Source Dependencies
   // External 
   provided files("${System.getProperty('java.home')}/../lib/tools.jar")
-  compile 'org.jgroups:jgroups:3.6.6.Final'
+  compile 'org.jgroups:jgroups:3.6.7.Final'
   compile 'antlr:antlr:' + project.'antlr.version'
   compile 'com.fasterxml.jackson.core:jackson-annotations:' + project.'jackson.version'
   compile 'com.fasterxml.jackson.core:jackson-core:' + project.'jackson.version'
@@ -35,7 +52,7 @@ dependencies {
   compile 'mx4j:mx4j-remote:' + project.'mx4j.version'
   compile 'mx4j:mx4j-tools:' + project.'mx4j.version'
   compile 'net.java.dev.jna:jna:' + project.'jna.version'
-  compile 'net.sourceforge.jline:jline:' + project.'jline.version'
+  compile 'jline:jline:' + project.'jline.version'
   provided 'org.apache.hadoop:hadoop-common:' + project.'hadoop.version'
   provided 'org.apache.hadoop:hadoop-annotations:' + project.'hadoop.version'
   provided 'org.apache.hadoop:hadoop-hdfs:' + project.'hadoop.version'
@@ -69,7 +86,7 @@ dependencies {
   
   jcaCompile sourceSets.main.output
 
-  provided project(path: ':gemfire-junit', configuration: 'testOutput')
+  testCompile project(':gemfire-junit')
 
   // Test Dependencies
   // External
@@ -82,6 +99,10 @@ dependencies {
   testRuntime 'commons-io:commons-io:' + project.'commons-io.version'
   testCompile 'net.spy:spymemcached:' + project.'spymemcached.version'
   testCompile 'redis.clients:jedis:' + project.'jedis.version'
+
+  testCompile 'org.powermock:powermock-core:' + project.'powermock.version'
+  testCompile 'org.powermock:powermock-module-junit4:' + project.'powermock.version'
+  testCompile 'org.powermock:powermock-api-mockito:' + project.'powermock.version'
 }
 
 def generatedResources = "$buildDir/generated-resources/main"
@@ -101,7 +122,7 @@ task createVersionPropertiesFile {
   doLast {
 
     try {
-      def grgit = org.ajoberstar.grgit.Grgit.open()
+      def grgit = org.ajoberstar.grgit.Grgit.open(currentDir: projectDir)
       ext.branch = grgit.branch.getCurrent().name
       ext.commitId = grgit.head().id
       ext.sourceDate = grgit.head().getDate().format('yyyy-MM-dd HH:mm:ss Z')
@@ -169,10 +190,6 @@ task jcaJar (type: Jar, dependsOn: raJar) {
   extension 'rar'
   metaInf { from 'src/jca/ra.xml' }
   from raJar.archivePath
-}
-
-artifacts {
-  archives webJar, raJar, jcaJar
 }
 
 configurations {

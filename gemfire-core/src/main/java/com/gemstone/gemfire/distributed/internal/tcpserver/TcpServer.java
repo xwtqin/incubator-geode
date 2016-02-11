@@ -99,7 +99,7 @@ public class TcpServer {
   public static int TESTVERSION = GOSSIPVERSION;
   public static int OLDTESTVERSION = OLDGOSSIPVERSION;
 
-  private static final long SHUTDOWN_WAIT_TIME = 60 * 1000;
+  public static final long SHUTDOWN_WAIT_TIME = 60 * 1000;
   private static int MAX_POOL_SIZE = Integer.getInteger("gemfire.TcpServer.MAX_POOL_SIZE", 100).intValue();
   private static int POOL_IDLE_TIMEOUT = 60 * 1000;
   
@@ -362,7 +362,7 @@ public class TcpServer {
             versionOrdinal = input.readShort();
           }
 
-          if (log.isDebugEnabled()) {
+          if (log.isDebugEnabled() && versionOrdinal != Version.CURRENT_ORDINAL) {
             log.debug("Locator reading request from " + sock.getInetAddress() + " with version " + Version.fromOrdinal(versionOrdinal, false));
           }
           input = new VersionedDataInputStream(input, Version.fromOrdinal(
@@ -398,7 +398,6 @@ public class TcpServer {
             DataSerializer.writeObject(response, output);
 
             output.flush();
-            output.close();
           }
 
           handler.endResponse(request,startTime);
@@ -467,24 +466,10 @@ public class TcpServer {
             t.printStackTrace();
           }
         } finally {
-          // Normal path closes input first, so let's do that here...
-          if (input != null) {
-            try {
-              input.close();
-            } catch (IOException e) {
-              log.warn(
-                "Exception closing input stream", e);
-            }
-          }
-
-          // Closing the ObjectInputStream is supposed to close
-          // the underlying InputStream, but we do it here just for
-          // good measure. Closing a closed socket is a no-op.
           try {
             sock.close();
           } catch (IOException e) {
-            log.warn(
-                "Exception closing socket", e);
+            // ignore
           }
         }
       }

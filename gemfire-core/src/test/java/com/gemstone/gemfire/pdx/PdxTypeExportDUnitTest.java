@@ -35,9 +35,9 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.pdx.internal.EnumInfo;
 import com.gemstone.gemfire.pdx.internal.PdxType;
 import com.gemstone.gemfire.pdx.internal.TypeRegistry;
-
-import dunit.Host;
-import dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
 public class PdxTypeExportDUnitTest extends CacheTestCase {
   public PdxTypeExportDUnitTest(String name) {
@@ -116,7 +116,7 @@ public class PdxTypeExportDUnitTest extends CacheTestCase {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory()
           .setPdxSerializer(new MyPdxSerializer())
-          .addPoolServer(getServerHostName(host), port);
+          .addPoolServer(NetworkUtils.getServerHostName(host), port);
     
         ClientCache cache = getClientCache(cf);
         Region r = cache.createClientRegionFactory(ClientRegionShortcut.PROXY).create("pdxtest");

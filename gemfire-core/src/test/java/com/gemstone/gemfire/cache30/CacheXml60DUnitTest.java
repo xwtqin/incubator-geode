@@ -16,6 +16,11 @@
  */
 package com.gemstone.gemfire.cache30;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.Serializable;
+
 import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.Cache;
@@ -31,13 +36,8 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.ResourceManagerCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.SerializerCreation;
-
-import dunit.DistributedTestCase;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.Serializable;
+import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /**
  * Tests 6.0 cache.xml features.
@@ -192,11 +192,13 @@ public class CacheXml60DUnitTest extends CacheXml58DUnitTest
     rmc.setEvictionHeapPercentage(high);
     rmc.setCriticalHeapPercentage(low);
     cache.setResourceManagerCreation(rmc);
+    IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.MemoryMonitor_EVICTION_PERCENTAGE_LTE_CRITICAL_PERCENTAGE.toLocalizedString());
     try {
       testXml(cache);
       assertTrue(false);
     } catch (IllegalArgumentException expected) {
     } finally {
+      expectedException.remove();
       closeCache();
     }
 
@@ -307,22 +309,28 @@ public class CacheXml60DUnitTest extends CacheXml58DUnitTest
     sc.registerInstantiator(NotDataSerializable.class, 15);
     closeCache();
     cc.setSerializerCreation(sc);
-    
+
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       testXml(cc);
       fail("Instantiator should not have registered due to bad class.");
+    } catch(Exception e) {
+    } finally {
+      expectedException.remove();
     }
-    catch(Exception e){}
     
     sc = new SerializerCreation();
     sc.registerSerializer(BadSerializer.class);
     closeCache();
     cc.setSerializerCreation(sc);
-    
+
+    IgnoredException expectedException1 = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       testXml(cc);
       fail("Serializer should not have registered due to bad class.");
+    } catch(Exception e){
+    } finally {
+      expectedException1.remove();
     }
-    catch(Exception e){}
   }
 }

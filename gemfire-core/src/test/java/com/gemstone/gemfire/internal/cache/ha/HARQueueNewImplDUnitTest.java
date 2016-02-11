@@ -52,10 +52,13 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HAEventWrapper;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 import util.TestException;
 
@@ -130,8 +133,8 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
   /**
    * Tears down the test.
    */
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "closeCache");
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "closeCache");
@@ -259,7 +262,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.registerInterest("ALL_KEYS");
     }
     catch (Exception ex) {
-      fail("failed in registerInterestListAll", ex);
+      Assert.fail("failed in registerInterestListAll", ex);
     }
   }
 
@@ -272,7 +275,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.registerInterest("k5");
     }
     catch (Exception ex) {
-      fail("failed while registering keys", ex);
+      Assert.fail("failed while registering keys", ex);
     }
   }
 
@@ -289,7 +292,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.put("k5", "pv5");
     }
     catch (Exception ex) {
-      fail("failed in putEntries()", ex);
+      Assert.fail("failed in putEntries()", ex);
     }
   }
 
@@ -305,7 +308,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       r.create("k5", "v5");
     }
     catch (Exception ex) {
-      fail("failed in createEntries()", ex);
+      Assert.fail("failed in createEntries()", ex);
     }
   }
 
@@ -318,7 +321,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in createEntries(Long)", ex);
+      Assert.fail("failed in createEntries(Long)", ex);
     }
   }
 
@@ -333,7 +336,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
       }
     }
     catch (Exception ex) {
-      fail("failed in putHeavyEntries(Long)", ex);
+      Assert.fail("failed in putHeavyEntries(Long)", ex);
     }
   }
 
@@ -351,11 +354,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM1.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -389,11 +392,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM1.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -428,11 +431,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM0.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -465,11 +468,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM0.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -507,11 +510,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM1.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -562,11 +565,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM1.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "40000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -618,11 +621,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     Integer port3 = (Integer)serverVM0.invoke(HARQueueNewImplDUnitTest.class,
         "createOneMoreBridgeServer", new Object[] { Boolean.TRUE });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), port3, "0");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), port3, "0");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -649,8 +652,8 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     Integer port3 = (Integer)serverVM0.invoke(HARQueueNewImplDUnitTest.class,
         "createOneMoreBridgeServer", new Object[] { Boolean.FALSE });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1", Boolean.TRUE);
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1", Boolean.TRUE);
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, port3, new Integer(PORT2), "1", Boolean.TRUE });
 
@@ -687,11 +690,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM0.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -737,11 +740,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM0.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -781,11 +784,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM0.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "30000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM1.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -819,11 +822,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
    */
   public void testCMRNotReturnedByRootRegionsMethod() throws Exception {
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -868,11 +871,11 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
     serverVM1.invoke(ConflationDUnitTest.class, "setIsSlowStart",
         new Object[] { "60000" });
 
-    createClientCache(getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
-    final String client1Host = getServerHostName(clientVM1.getHost());
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)), new Integer(PORT1), new Integer(PORT2), "1");
+    final String client1Host = NetworkUtils.getServerHostName(clientVM1.getHost());
     clientVM1.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client1Host, new Integer(PORT1), new Integer(PORT2), "1" });
-    final String client2Host = getServerHostName(clientVM2.getHost());
+    final String client2Host = NetworkUtils.getServerHostName(clientVM2.getHost());
     clientVM2.invoke(HARQueueNewImplDUnitTest.class, "createClientCache",
         new Object[] { client2Host, new Integer(PORT1), new Integer(PORT2), "1" });
 
@@ -1074,7 +1077,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 60 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 60 * 1000, 1000, true);
 
     Set entries = msgsRegion.entrySet();
     Iterator iter = entries.iterator();
@@ -1207,7 +1210,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 120 * 1000, 1000, true);
   }
 
   public static void verifyRegionSize(final Integer regionSize, 
@@ -1245,7 +1248,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
         return excuse;
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 120 * 1000, 1000, true);
+    Wait.waitForCriterion(wc, 120 * 1000, 1000, true);
   }
 
   public static void verifyHaContainerType(Boolean isRegion, Integer port) {
@@ -1309,7 +1312,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, waitLimit.longValue(), 200, true);
+        Wait.waitForCriterion(ev, waitLimit.longValue(), 200, true);
       }
       else {
         WaitCriterion ev = new WaitCriterion() {
@@ -1320,7 +1323,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, waitLimit.longValue(), 200, true);
+        Wait.waitForCriterion(ev, waitLimit.longValue(), 200, true);
       }
     }
     catch (Exception e) {
@@ -1352,7 +1355,7 @@ public class HARQueueNewImplDUnitTest extends DistributedTestCase {
           return null;
         }
       };
-      DistributedTestCase.waitForCriterion(ev, waitLimit.longValue(), 200, true);
+      Wait.waitForCriterion(ev, waitLimit.longValue(), 200, true);
     }
     catch (Exception e) {
       fail("failed in waitTillMessagesAreDispatched()" + e);

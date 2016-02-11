@@ -285,10 +285,6 @@ public class PersistenceAdvisorImpl implements PersistenceAdvisor {
     return memberManager.isRevoked(this.regionPath, id);
   }
 
-  /**
-   * @throws ReplyException 
-   * @throws IOException 
-   */
   public void setOnline(boolean didGII, boolean atomicCreation,
       PersistentMemberID newId) throws ReplyException {
     if(online) {
@@ -1186,7 +1182,7 @@ public class PersistenceAdvisorImpl implements PersistenceAdvisor {
     }
 
     public void memberSuspect(InternalDistributedMember id,
-        InternalDistributedMember whoSuspected) {
+        InternalDistributedMember whoSuspected, String reason) {
     }
 
     @Override

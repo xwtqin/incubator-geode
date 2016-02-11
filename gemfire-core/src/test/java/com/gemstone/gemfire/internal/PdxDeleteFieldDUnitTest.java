@@ -38,10 +38,10 @@ import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
 import com.gemstone.gemfire.pdx.internal.PdxType;
 import com.gemstone.gemfire.pdx.internal.PdxUnreadData;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
   final List<String> filesToBeDeleted = new CopyOnWriteArrayList<String>();
@@ -172,16 +172,15 @@ public class PdxDeleteFieldDUnitTest  extends CacheTestCase{
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDownCacheTestCase() throws Exception {
     for (String path : this.filesToBeDeleted) {
       try {
         FileUtil.delete(new File(path));
       } catch (IOException e) {
-        getLogWriter().error("Unable to delete file", e);
+        LogWriterUtils.getLogWriter().error("Unable to delete file", e);
       }
     }
     this.filesToBeDeleted.clear();
-    super.tearDown2();
   }
   
   public static class PdxValue implements PdxSerializable {

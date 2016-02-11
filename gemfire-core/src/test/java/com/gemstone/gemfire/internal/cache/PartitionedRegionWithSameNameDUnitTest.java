@@ -22,20 +22,26 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
-import com.gemstone.gemfire.cache.Scope;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.MirrorType;
 import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache30.*;
 import com.gemstone.gemfire.cache.RegionExistsException;
-import dunit.*;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * @author gthombar This test is to verify creation of partition region and
@@ -102,7 +108,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithPartitionRegionFirstOnSameVM() - Partition Regions successfully created ");
     // creating distributed region on same vm with same name as previouslu
@@ -113,7 +119,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createDistributedRegion(vmList, startIndexForRegion, endIndexForRegion,
         Scope.DISTRIBUTED_ACK, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithPartitionRegionFirstOnSameVM() - test completed successfully ");
   }
@@ -154,7 +160,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithPartitionRegionFirstOnSameVM() - test completed successfully ");
   }
@@ -191,7 +197,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithPartitionRegionFirstOnDifferentVM() - Partition Regions successfully created ");
     // creating distrubuted region with the scope = DISTRIBUTED_ACK on
@@ -204,7 +210,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createDistributedRegion(vmList, startIndexForRegion, endIndexForRegion,
         Scope.DISTRIBUTED_ACK, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithPartitionRegionFirstOnDifferentVM() - test completed successfully ");
   }
@@ -246,7 +252,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testNameWithLocalRegionFirstOnDifferentVM() - test completed successfully ");
   }
@@ -287,7 +293,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testPartitionRegionVsLocalRegionFirst() - test completed successfully ");
   }
@@ -329,7 +335,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createDistributedRegion(vmList, startIndexForRegion, endIndexForRegion,
         Scope.LOCAL, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testPartitionRegionVsLocalRegionSecond() - test completed successfully ");
   }
@@ -339,9 +345,6 @@ public class PartitionedRegionWithSameNameDUnitTest extends
    * 1. Creates partitoned region as parent region on all vms </br> <br>
    * 2. Creates distributed subregion of parent region </br>
    * OperationNotSupportedException is expected.
-   * 
-   * @param vmList
-   * @param firstCreationFlag
    */
   public void testWithPartitionedRegionAsParentRegionAndDistributedSubRegion()
   {
@@ -364,12 +367,12 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithPartitionedRegionAsParentRegionAndDistributedSubRegion() - Parent region as partitioned region is created ");
     // create subregion of partition region
     createSubRegionOfPartitionedRegion(vmList, DISTRIBUTED_REGION);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithPartitionedRegionAsParentRegionAndDistributedSubRegion() completed Successfully ");
   }
@@ -379,9 +382,6 @@ public class PartitionedRegionWithSameNameDUnitTest extends
    * 1. Creates partitoned region as parent region on all vms </br> <br>
    * 2. Creates partitioned subregion of parent region </br>
    * OperationNotSupportedException is expected
-   * 
-   * @param vmList
-   * @param firstCreationFlag
    */
 
   public void testWithPartitionedRegionAsParentRegionAndPartitionedSubRegion()
@@ -405,12 +405,12 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy, firstCreationFlag, multipleVMFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithPartitionedRegionAsParentRegionAndPartitionedSubRegion() - Parent region as partitioned region is created ");
     // create subregion of partition region
     createSubRegionOfPartitionedRegion(vmList, PARTITIONED_REGION);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithPartitionedRegionAsParentRegionAndPartitionedSubRegion() completed Successfully ");
   }
@@ -442,7 +442,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createDistributedRegion(vmList, startIndexForRegion, endIndexForRegion,
         Scope.DISTRIBUTED_ACK, firstCreationFlag, multipleVMFlag);
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testWithSubRegionPartitionedRegionFirst() - Parent region is created");
     // creating distributed region as subregion of parent on vm0
     prPrefix = "child_region";
@@ -450,7 +450,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     endIndexForNode = 1;
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createPartitionedSubRegion(vmList, firstCreationFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithSubRegionPartitionedRegionFirst() - Partitioned sub region on vm0 ");
     // creating partiton region as subregion of parent region with the same name
@@ -459,7 +459,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     endIndexForNode = 4;
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createDistributedSubRegion(vmList, firstCreationFlag);
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testWithSubRegionPartitionedRegionFirst() completed successfully ");
 
   }
@@ -491,7 +491,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     firstCreationFlag = true;
     createDistributedRegion(vmList, startIndexForRegion, endIndexForRegion,
         Scope.DISTRIBUTED_ACK, firstCreationFlag, multipleVMFlag);
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testWithSubRegionDistributedRegionFirst() - Parent region is created");
     // creating distributed region as subregion of parent on vm0
     prPrefix = "child_region";
@@ -499,7 +499,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     endIndexForNode = 1;
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createDistributedSubRegion(vmList, firstCreationFlag);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testWithSubRegionDistributedRegionFirst() - Distributed sub region on vm0 ");
     // creating partiton region as subregion of parent region with the same name
@@ -508,7 +508,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
     endIndexForNode = 4;
     vmList = addNodeToList(startIndexForNode, endIndexForNode);
     createPartitionedSubRegion(vmList, firstCreationFlag);
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testWithSubRegionDistributedRegionFirst() completed successfully ");
 
   }
@@ -619,7 +619,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
           case DISTRIBUTED_REGION: {
             Region childRegion = parentRegion.createSubregion("child_region",
                 ra);
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Distributed Subregion is created as : "
                     + childRegion.getName());
           }
@@ -627,7 +627,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
           case PARTITIONED_REGION: {
             Region childRegion = parentRegion.createSubregion("child_region",
                 createRegionAttrsForPR(0, 200));
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Partitioned Subregion is created as : "
                     + childRegion.getName());
 
@@ -750,7 +750,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
               cache.createRegion(innerPrPrefix + i, ra);
             }
             catch (RegionExistsException ex) {
-              fail(
+              Assert.fail(
                   "Got incorrect exception because the partition region being created prior to local region",
                   ex);
             }
@@ -881,7 +881,7 @@ public class PartitionedRegionWithSameNameDUnitTest extends
             }
           }
         }
-        getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(
                 "createMultiplePartitionRegion() - Partition Regions Successfully Completed ");
       }

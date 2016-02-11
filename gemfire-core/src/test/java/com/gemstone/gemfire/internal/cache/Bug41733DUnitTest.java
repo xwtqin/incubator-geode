@@ -34,14 +34,13 @@ import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.partitioned.ManageBucketMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.ManageBucketMessage.ManageBucketReplyMessage;
-
-import dunit.AsyncInvocation;
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.RMIException;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.RMIException;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * @author dsmith
@@ -59,9 +58,8 @@ public class Bug41733DUnitTest extends CacheTestCase {
   
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
-    super.tearDown2();
   }
 
 
@@ -166,10 +164,6 @@ public class Bug41733DUnitTest extends CacheTestCase {
     putData(vm1, 3, 4, "a");
   }
 
-  /**
-   * @param vm0
-   * @param i
-   */
   private void createPR(VM vm0, final int redundancy) {
     vm0.invoke(new SerializableRunnable("Create PR") {
 

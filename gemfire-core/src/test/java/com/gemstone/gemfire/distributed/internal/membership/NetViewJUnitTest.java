@@ -30,6 +30,22 @@ import com.gemstone.gemfire.distributed.internal.membership.NetView;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 @Category(UnitTest.class)
 public class NetViewJUnitTest {
   List<InternalDistributedMember> members;
@@ -69,7 +85,7 @@ public class NetViewJUnitTest {
   @Test
   public void testCreateView() throws Exception {
     int numMembers = members.size();
-    NetView view = new NetView(members.get(0), 2, members, Collections.emptySet(), Collections.emptySet());
+    NetView view = new NetView(members.get(0), 2, members);
     setFailureDetectionPorts(view);
     
     assertTrue(view.getCreator().equals(members.get(0)));
@@ -102,8 +118,7 @@ public class NetViewJUnitTest {
   @Test
   public void testRemoveMembers() throws Exception {
     int numMembers = members.size();
-    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members), Collections.emptySet(),
-        Collections.emptySet());
+    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members));
     setFailureDetectionPorts(view);
 
     for (int i=1; i<numMembers; i+=2) {
@@ -122,8 +137,7 @@ public class NetViewJUnitTest {
   @Test
   public void testRemoveAll() throws Exception {
     int numMembers = members.size();
-    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members), Collections.emptySet(),
-        Collections.emptySet());
+    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members));
     setFailureDetectionPorts(view);
 
     Collection<InternalDistributedMember> removals = new ArrayList<>(numMembers/2);
@@ -147,8 +161,7 @@ public class NetViewJUnitTest {
   
   @Test
   public void testCopyView() throws Exception {
-    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members), Collections.emptySet(),
-        Collections.emptySet());
+    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members));
     setFailureDetectionPorts(view);
 
     NetView newView = new NetView(view, 3);
@@ -168,8 +181,7 @@ public class NetViewJUnitTest {
   
   @Test
   public void testAddLotsOfMembers() throws Exception {
-    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members), Collections.emptySet(),
-        Collections.emptySet());
+    NetView view = new NetView(members.get(0), 2, new ArrayList<>(members));
     setFailureDetectionPorts(view);
     
     NetView copy = new NetView(view, 2);
@@ -191,4 +203,67 @@ public class NetViewJUnitTest {
     assertEquals(100, view.getNewMembers(copy).size());
   }
   
-}
+  /**
+   * Test that failed weight calculations are correctly performed.  See bug #47342
+   * @throws Exception
+   */
+  @Test
+  public void testFailedWeight() throws Exception {
+    // in #47342 a new view was created that contained a member that was joining but
+    // was no longer reachable.  The member was included in the failed-weight and not
+    // in the previous view-weight, causing a spurious network partition to be declared
+    InternalDistributedMember members[] = new InternalDistributedMember[] {
+        new InternalDistributedMember("localhost", 1), new InternalDistributedMember("localhost", 2), new InternalDistributedMember("localhost", 3),
+        new InternalDistributedMember("localhost", 4), new InternalDistributedMember("localhost", 5), new InternalDistributedMember("localhost", 6)};
+    int i = 0;
+    // weight 3
+    members[i].setVmKind(DistributionManager.LOCATOR_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(true);
+    // weight 3
+    members[i].setVmKind(DistributionManager.LOCATOR_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(true);
+    // weight 15 (cache+leader)
+    members[i].setVmKind(DistributionManager.NORMAL_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(false);
+    // weight 0
+    members[i].setVmKind(DistributionManager.ADMIN_ONLY_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(false);
+    // weight 0
+    members[i].setVmKind(DistributionManager.ADMIN_ONLY_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(false);
+    // weight 10
+    members[i].setVmKind(DistributionManager.NORMAL_DM_TYPE);
+    members[i++].getNetMember().setPreferredForCoordinator(false);
+    
+    List<InternalDistributedMember> vmbrs = new ArrayList<>(members.length);
+    for (i=0; i<members.length; i++) {
+      vmbrs.add(members[i]);
+    }
+    NetView lastView = new NetView(members[0], 4, vmbrs);
+    InternalDistributedMember leader = members[2];
+    assertTrue(!leader.getNetMember().preferredForCoordinator());
+    
+    InternalDistributedMember joiningMember = new InternalDistributedMember("localhost", 7);
+    joiningMember.setVmKind(DistributionManager.NORMAL_DM_TYPE);
+    joiningMember.getNetMember().setPreferredForCoordinator(false);
+    
+    // have the joining member and another cache process (weight 10) in the failed members
+    // collection and check to make sure that the joining member is not included in failed
+    // weight calcs.
+    Set<InternalDistributedMember> failedMembers = new HashSet<>(3);
+    failedMembers.add(joiningMember);
+    failedMembers.add(members[members.length-1]); // cache
+    failedMembers.add(members[members.length-2]); // admin
+    List<InternalDistributedMember> newMbrs = new ArrayList<InternalDistributedMember>(lastView.getMembers());
+    newMbrs.removeAll(failedMembers);
+    NetView newView = new NetView(members[0], 5, newMbrs, Collections.emptySet(), failedMembers);
+    
+    int failedWeight = newView.getCrashedMemberWeight(lastView);
+//    System.out.println("last view = " + lastView);
+//    System.out.println("failed mbrs = " + failedMembers);
+//    System.out.println("failed weight = " + failedWeight);
+    assertEquals("failure weight calculation is incorrect", 10, failedWeight);
+    Set<InternalDistributedMember> actual = newView.getActualCrashedMembers(lastView);
+    assertTrue(!actual.contains(members[members.length-2]));
+  }
+ }

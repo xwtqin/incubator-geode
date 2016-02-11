@@ -16,22 +16,33 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
-import com.gemstone.gemfire.cache.Scope;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.MirrorType;
 import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.MirrorType;
 import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
+import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache30.*;
-import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore.BucketVisitor;
-
-import dunit.*;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * 
@@ -107,22 +118,22 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     // put().
     validateBucket2NodeBeforePutInMultiplePartitionedRegion(
         startIndexForRegion, endIndexForRegion);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Bucket2Node region of partition regions before any put() successfully validated ");
     // doing put() operation on multiple partition region
     putInMultiplePartitionedRegion(startIndexForRegion, endIndexForRegion,
         startIndexForKey, endIndexForKey);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Put() operation successfully in partition regions");
     // validating bucket regions of multiple partition regions.
     validateBucketsAfterPutInMultiplePartitionRegion(startIndexForRegion,
         endIndexForRegion);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Bucket regions of partition regions successfully validated");
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testBucketCerationInMultiPlePartitionRegion() Successfully completed");
   }
 
@@ -160,23 +171,23 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy);
         
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Partition Regions successfully created ");
     // doing put() operation from vm0 only
     putInMultiplePartitionRegionFromOneVm(vm[0], startIndexForRegion,
         endIndexForRegion, startIndexForKey, endIndexForKey);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Put() Opereration done only from one VM ");
     // validating bucket distribution ovar all the nodes
     int noBucketsExpectedOnEachNode = getNoBucketsExpectedOnEachNode();
     validateBucketsDistributionInMultiplePartitionRegion(startIndexForRegion,
         endIndexForRegion, noBucketsExpectedOnEachNode);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Bucket regions are equally distributed");
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testBucketCerationInMultiPlePartitionRegion() successfully completed");
   }
 
@@ -218,23 +229,23 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     // creating multiple partition regions on 3 nodes with localMaxMemory=200 redundancy = 0
     createPartitionRegion(vmList, startIndexForRegion, endIndexForRegion,
         localMaxMemory, redundancy);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Partition Regions successfully created ");
     // doing put() operation from all vms
     putInMultiplePartitionedRegionFromAllVms(startIndexForRegion,
         endIndexForRegion, startIndexForKey, endIndexForKey);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Put() Opereration done only from one VM ");
     // validating bucket distribution ovar all the nodes
     int noBucketsExpectedOnEachNode = getNoBucketsExpectedOnEachNode() - 4;
     validateBucketsDistributionInMultiplePartitionRegion(startIndexForRegion,
         endIndexForRegion, noBucketsExpectedOnEachNode);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Bucket regions are equally distributed");
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testBucketCerationInMultiPlePartitionRegion() successfully created");
   }
 
@@ -287,7 +298,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     // doing put() in multiple partition regions from 3 nodes.
     putInMultiplePartitionedRegionFrom3Nodes(startIndexForRegion,
         endIndexForRegion, startIndexForKey, endIndexForKey);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketDistributionAfterNodeAdditionInPR() - Put() operation successfully in partition regions on 3 Nodes");
 
@@ -305,15 +316,15 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     // doing put() in multiple partition regions from 3 nodes.
     putInMultiplePartitionedRegionFrom3Nodes(startIndexForRegion,
         endIndexForRegion, startIndexForKey, endIndexForKey);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketDistributionAfterNodeAdditionInPR() - Put() operation successfully in partition regions on 4th node");
     // validating bucket creation in the 4th node
     validateBucketsOnAllNodes(startIndexForRegion, endIndexForRegion);
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketDistributionAfterNodeAdditionInPR() - buckets on all the nodes are validated");
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "testBucketDistributionAfterNodeAdditionInPR() successfully created");
   }
 
@@ -359,7 +370,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
         endIndexForRegion, startIndexForKey, endIndexForKey);
     validateTotalNumBuckets(prPrefix, vmList, startIndexForRegion,
         endIndexForRegion, expectedNumBuckets);
-    getLogWriter().info("testTotalNumBucketProperty() completed successfully");
+    LogWriterUtils.getLogWriter().info("testTotalNumBucketProperty() completed successfully");
 
   }
 
@@ -413,7 +424,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     
     Host host = Host.getHost(0);
     createVMs(host);
-    invokeInEveryVM(new SerializableRunnable("Create PR") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("Create PR") {
       public void run() {
         getCache().createRegion(regionName, createRegionAttrs(0, 10, maxBuckets));
         
@@ -504,12 +515,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -546,11 +557,11 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
       }
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Exception during " + count, async[count].getException());
+        Assert.fail("Exception during " + count, async[count].getException());
       }
     }
   }
@@ -579,12 +590,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
  
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during" + count, async[count].getException());
+        Assert.fail("exception during" + count, async[count].getException());
       }
     }
   }
@@ -617,12 +628,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
      }
     }
   }
@@ -689,12 +700,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -734,12 +745,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("exception during " + count, async[count].getException());
+        Assert.fail("exception during " + count, async[count].getException());
       }
     }
   }
@@ -747,13 +758,6 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
   /**
    * This function performs validation of bucket2Node region of multiple
    * partition regions on 4 VMs.
-   * 
-   * @param vm0
-   * @param vm1
-   * @param vm2
-   * @param vm3
-   * @param startIndexForRegion
-   * @param endIndexForRegion
    */
   private void validateBucket2NodeBeforePutInMultiplePartitionedRegion(
       int startIndexForRegion, int endIndexForRegion) throws Throwable
@@ -770,12 +774,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
         startIndexForRegion, endIndexForRegion));
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        getLogWriter().warning("Failure in async invocation on vm " 
+        LogWriterUtils.getLogWriter().warning("Failure in async invocation on vm " 
             + vm[count]
             + " with exception " + async[count].getException());
         throw async[count].getException();
@@ -787,13 +791,6 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
   /**
    * This function performs validation of bucket regions of multiple partition
    * regions on 4 VMs.
-   * 
-   * @param vm0
-   * @param vm1
-   * @param vm2
-   * @param vm3
-   * @param startIndexForRegion
-   * @param endIndexForRegion
    */
   private void validateBucketsAfterPutInMultiplePartitionRegion(
       final int startIndexForRegion, final int endIndexForRegion)
@@ -813,12 +810,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < 4; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < 4; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("got exception on " + count, async[count].getException());
+        Assert.fail("got exception on " + count, async[count].getException());
       }
     }
 
@@ -834,12 +831,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 4; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 4; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        getLogWriter().warning("Failure of async invocation on VM " + 
+        LogWriterUtils.getLogWriter().warning("Failure of async invocation on VM " + 
             this.vm[count] + " exception thrown " + async[count].getException());
         throw async[count].getException();
       }
@@ -850,13 +847,6 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
   /**
    * This function performs validation of bucket regions of multiple partition
    * regions on 4 VMs.
-   * 
-   * @param vm0
-   * @param vm1
-   * @param vm2
-   * @param vm3
-   * @param startIndexForRegion
-   * @param endIndexForRegion
    */
   private void validateBucketsDistributionInMultiplePartitionRegion(
       final int startIndexForRegion, final int endIndexForRegion,
@@ -875,12 +865,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
       if (async[count].exceptionOccurred()) {
-        fail("Validation of bucket distribution failed on " + count,
+        Assert.fail("Validation of bucket distribution failed on " + count,
             async[count].getException());
       }
     }
@@ -888,13 +878,6 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
   /**
    * This function is used for the validation of bucket on all the region.
-   * 
-   * @param vm0
-   * @param vm1
-   * @param vm2
-   * @param vm3
-   * @param startIndexForRegion
-   * @param endIndexForRegion
    */
   private void validateBucketsOnAllNodes(final int startIndexForRegion,
       final int endIndexForRegion)
@@ -968,12 +951,12 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
           }
           if (redundancyManageFlag == 0) {
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "validateRedundancy() - Redundancy not satisfied for the partition region  : "
                     + pr.getName());
           }
           else {
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "validateRedundancy() - Redundancy satisfied for the partition region  : "
                     + pr.getName());
           }
@@ -1159,7 +1142,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
           assertTrue(pr.getRegionAdvisor().getNumProfiles() > 0);
           assertTrue(pr.getRegionAdvisor().getNumDataStores() > 0);
           final int bucketSetSize = pr.getRegionAdvisor().getCreatedBucketsCount();
-          getLogWriter().info("BucketSet size " + bucketSetSize);
+          LogWriterUtils.getLogWriter().info("BucketSet size " + bucketSetSize);
           if (bucketSetSize != 0) {
             Set buckets = pr.getRegionAdvisor().getBucketSet();
             Iterator it  = buckets.iterator();
@@ -1173,7 +1156,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
                 numBucketsWithStorage++;
               }
             } catch (NoSuchElementException end) {
-              getLogWriter().info("BucketSet iterations " + numBucketsWithStorage);
+              LogWriterUtils.getLogWriter().info("BucketSet iterations " + numBucketsWithStorage);
             }
             fail("There should be no buckets assigned");
           }
@@ -1205,7 +1188,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
           
           assertNotNull(pr.getDataStore());
           final int localBSize = pr.getDataStore().getBucketsManaged();
-          getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "validateBucketsDistribution() - Number of bukctes for "
                   + pr.getName() + " : "  + localBSize);
 
@@ -1280,7 +1263,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
           cache.createRegion(prPrefix + i,
               createRegionAttrs(redundancy, localMaxMem, numBuckets));
         }
-        getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info(
                 "createMultiplePartitionRegion() - Partition Regions Successfully Completed ");
       }
@@ -1326,7 +1309,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
           Set bucketsWithStorage = pr.getRegionAdvisor().getBucketSet();
           assertEquals(expectedNumBuckets, bucketsWithStorage.size());
         }
-        getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "Total Number of buckets validated in partition region");
       }
     };
@@ -1399,7 +1382,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
     createPartitionRegion(vmList, midIndexForRegion, endIndexForNode,
         localMaxMemory, redundancyTwo);
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "testBucketCerationInMultiPlePartitionRegion() - Partition Regions successfully created ");
   }
@@ -1411,7 +1394,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
   {
     for (int i = 0; i < 4; i++) {
       if (vm[i] == null)
-        getLogWriter().fine("VM is null" + vm[i]);
+        LogWriterUtils.getLogWriter().fine("VM is null" + vm[i]);
       vm[i].invoke(calculateMemoryOfPartitionRegion(i, i + 1));
     }
   }
@@ -1447,7 +1430,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
         while (sizeItr.hasNext()) {
           assertEquals(sizeItr.next(), objSize);
         }
-        getLogWriter().info("Size of partition region on each node is equal");
+        LogWriterUtils.getLogWriter().info("Size of partition region on each node is equal");
       }
     };
     vm[0].invoke(testTotalMemory);
@@ -1525,7 +1508,7 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
 
     /** main thread is waiting for the other threads to complete */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
-      DistributedTestCase.join(async[count], 30 * 1000, getLogWriter());
+      ThreadUtils.join(async[count], 30 * 1000);
     }
     /** testing whether exception occurred */
     for (int count = 0; count < AsyncInvocationArrSize; count++) {
@@ -1550,9 +1533,9 @@ public class PartitionedRegionBucketCreationDistributionDUnitTest extends
             .getRegion(Region.SEPARATOR + regionName);
         for (int i = 0; i < MAX_SIZE * 2; i++) {
           pr.put(key + i, Obj);
-          getLogWriter().info("MAXSIZE : " + i);
+          LogWriterUtils.getLogWriter().info("MAXSIZE : " + i);
         }
-        getLogWriter().info("Put successfully done for vm" + key);
+        LogWriterUtils.getLogWriter().info("Put successfully done for vm" + key);
       }
     };
     return putForLocalMaxMemory;

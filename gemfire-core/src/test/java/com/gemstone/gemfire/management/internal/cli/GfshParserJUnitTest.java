@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.shell.core.CommandMarker;
@@ -136,6 +137,26 @@ public class GfshParserJUnitTest {
   private static final Completion[] OPTION3_COMPLETIONS = {
       new Completion("option3"), new Completion("option3Alternate") };
 
+  private CommandManager commandManager;
+
+  private GfshParser parser;
+
+  @Before
+  public void setUp() throws Exception {
+    // Make sure no prior tests leave the CommandManager in a funky state
+    CommandManager.clearInstance();
+
+    commandManager = CommandManager.getInstance(false);
+    commandManager.add(Commands.class.newInstance());
+    commandManager.add(SimpleConverter.class.newInstance());
+    commandManager.add(StringArrayConverter.class.newInstance());
+    commandManager.add(StringListConverter.class.newInstance());
+    // Set up the parser
+    parser = new GfshParser(commandManager);
+
+    CliUtil.isGfshVM = false;
+  }
+
   @After
   public void tearDown() {
     CommandManager.clearInstance();
@@ -143,7 +164,7 @@ public class GfshParserJUnitTest {
   
   /**
    * Tests the auto-completion capability of {@link GfshParser} with the method
-   * {@link GfshParser#complete(String, int, List<{@link String}>)}
+   * {@link GfshParser#complete(String, int, List)}
    *
    * @throws IllegalAccessException
    * @throws InstantiationException
@@ -152,14 +173,6 @@ public class GfshParserJUnitTest {
    */
   @Test
   public void testComplete() throws Exception {
-    // get a CommandManager, add sample commands
-    CommandManager commandManager = CommandManager.getInstance(false);
-    assertNotNull("CommandManager should not be null.", commandManager);
-    commandManager.add(Commands.class.newInstance());
-    commandManager.add(SimpleConverter.class.newInstance());
-    // Set up the parser
-    GfshParser parser = new GfshParser(commandManager);
-
     // Get the names of the command
     String[] command1Names = ((CliCommand) METHOD_command1
         .getAnnotation(CliCommand.class)).value();
@@ -447,7 +460,7 @@ public class GfshParserJUnitTest {
 
   /**
    * Tests the auto-completion capability of {@link GfshParser} with the method
-   * {@link GfshParser#completeAdvanced(String, int, List<{@link Completion}>)}
+   * {@link GfshParser#completeAdvanced(String, int, List)}
    *
    * @throws IllegalAccessException
    * @throws InstantiationException
@@ -456,14 +469,6 @@ public class GfshParserJUnitTest {
    */
   @Test
   public void testCompleteAdvanced() throws Exception {
-    // get a CommandManager, add sample commands
-    CommandManager commandManager = CommandManager.getInstance(false);
-    assertNotNull("CommandManager should not be null.", commandManager);
-    commandManager.add(Commands.class.newInstance());
-    commandManager.add(SimpleConverter.class.newInstance());
-    // Set up the parser
-    GfshParser parser = new GfshParser(commandManager);
-
     // Get the names of the command
     String[] command1Names = ((CliCommand) METHOD_command1
         .getAnnotation(CliCommand.class)).value();
@@ -781,17 +786,6 @@ public class GfshParserJUnitTest {
    */
   @Test
   public void testParse() throws Exception {
-    // get a CommandManager, add sample commands
-    CommandManager commandManager = CommandManager.getInstance(false);
-    assertNotNull("CommandManager should not be null.", commandManager);
-    commandManager.add(StringArrayConverter.class.newInstance());
-    commandManager.add(StringListConverter.class.newInstance());
-    commandManager.add(SimpleConverter.class.newInstance());
-    commandManager.add(Commands.class.newInstance());
-
-    // Set up the parser
-    GfshParser parser = new GfshParser(commandManager);
-
     // Get the names of the command
     String[] command1Names = ((CliCommand) METHOD_command1
         .getAnnotation(CliCommand.class)).value();

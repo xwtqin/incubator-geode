@@ -16,19 +16,44 @@
  */
 package com.gemstone.gemfire.cache30;
 
-import com.gemstone.gemfire.cache.*;
-
-import com.gemstone.gemfire.internal.OSProcess;
-import com.gemstone.gemfire.internal.cache.*;
-import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
-import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
-
-import dunit.*;
-
-import java.util.*;
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.Array;
-import com.gemstone.gemfire.distributed.internal.membership.*;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheLoader;
+import com.gemstone.gemfire.cache.CacheLoaderException;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.DiskStore;
+import com.gemstone.gemfire.cache.DiskStoreFactory;
+import com.gemstone.gemfire.cache.EntryEvent;
+import com.gemstone.gemfire.cache.EntryNotFoundException;
+import com.gemstone.gemfire.cache.EvictionAction;
+import com.gemstone.gemfire.cache.EvictionAttributes;
+import com.gemstone.gemfire.cache.LoaderHelper;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionFactory;
+import com.gemstone.gemfire.cache.RegionShortcut;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.internal.OSProcess;
+import com.gemstone.gemfire.internal.cache.CachedDeserializable;
+import com.gemstone.gemfire.internal.cache.DiskRegion;
+import com.gemstone.gemfire.internal.cache.DiskRegionStats;
+import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.lru.LRUCapacityController;
+import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests the functionality of cache regions whose contents may be
@@ -118,7 +143,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     flush(region);
     
-    getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
+    LogWriterUtils.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
         + " reads=" + diskStats.getReads()
         + " evictions=" + lruStats.getEvictions()
         + " total=" + total
@@ -137,7 +162,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
     assertNotNull(value);
     assertEquals(0, ((int[]) value)[0]);
 
-    getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
+    LogWriterUtils.getLogWriter().info("DEBUG: writes=" + diskStats.getWrites()
         + " reads=" + diskStats.getReads()
         + " evictions=" + lruStats.getEvictions()
         + " total=" + total
@@ -226,7 +251,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "waiting for evictions to exceed 6";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 5 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 5 * 1000, 200, true);
           //DiskRegionStats diskStats = dr.getStats();
           //assertTrue(diskStats.getWrites() > 6);
         }
@@ -349,7 +374,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 //          DiskRegion dr = region.getDiskRegion();
           LRUStatistics lruStats = getLRUStats(region);
           for (int i = 0; lruStats.getEvictions() < 10; i++) {
-            getLogWriter().info("Put " + i);
+            LogWriterUtils.getLogWriter().info("Put " + i);
             region.put(new Integer(i), new byte[1]);
           }
 
@@ -410,7 +435,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     long evictions = lruStats.getEvictions();
 
-    getLogWriter().info("Destroying memory resident entries");
+    LogWriterUtils.getLogWriter().info("Destroying memory resident entries");
     // Destroying each of these guys should have no effect on the disk
     for (int i = total - 1; i >= evictions; i--) {
       region.destroy(new Integer(i));
@@ -421,7 +446,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
 //    long startRemoves = diskStats.getRemoves();
 
-    getLogWriter().info("Destroying disk-resident entries.  evictions=" + evictions);
+    LogWriterUtils.getLogWriter().info("Destroying disk-resident entries.  evictions=" + evictions);
     
     // Destroying each of these guys should cause a removal from disk
     for (int i = ((int) evictions) - 1; i >= 0; i--) {
@@ -433,7 +458,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 
     assertEquals(evictions, lruStats.getEvictions());
     
-    getLogWriter().info("keys remaining in region: " + region.keys().size());
+    LogWriterUtils.getLogWriter().info("keys remaining in region: " + region.keys().size());
     assertEquals(0, region.keys().size());
   }
 
@@ -945,7 +970,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
 //          DiskRegion dr = region.getDiskRegion();
           LRUStatistics lruStats = getLRUStats(region);
           for (int i = 0; lruStats.getEvictions() < 10; i++) {
-            getLogWriter().info("Put " + i);
+            LogWriterUtils.getLogWriter().info("Put " + i);
             region.put(new Integer(i), new byte[1]);
           }
 
@@ -974,7 +999,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "value for key remains: " + key;
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 500, 200, true);
+          Wait.waitForCriterion(ev, 500, 200, true);
         }
       });
 
@@ -998,7 +1023,7 @@ public class DiskRegionDUnitTest extends CacheTestCase {
               return "verify update";
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 500, 200, true);
+          Wait.waitForCriterion(ev, 500, 200, true);
         }
       });
   }

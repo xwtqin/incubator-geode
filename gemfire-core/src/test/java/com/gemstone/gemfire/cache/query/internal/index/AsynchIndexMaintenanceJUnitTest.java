@@ -28,10 +28,10 @@ import com.gemstone.gemfire.cache.query.CacheUtils;
 import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.QueryService;
 import com.gemstone.gemfire.cache.query.data.Portfolio;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -114,7 +114,7 @@ public class AsynchIndexMaintenanceJUnitTest {
         return "valueToEntriesMap never became 50";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 3000, 200, true);
+    Wait.waitForCriterion(ev, 3000, 200, true);
   }
   
   @Test
@@ -141,7 +141,7 @@ public class AsynchIndexMaintenanceJUnitTest {
       }
     };
 
-    DistributedTestCase.waitForCriterion(evSize, 17 * 1000, 200, true);
+    Wait.waitForCriterion(evSize, 17 * 1000, 200, true);
     
     // clear region.
     region.clear();
@@ -154,7 +154,7 @@ public class AsynchIndexMaintenanceJUnitTest {
         return "valueToEntriesMap never became size :" + 0;
       }
     };
-    DistributedTestCase.waitForCriterion(evClear, 17 * 1000, 200, true);
+    Wait.waitForCriterion(evClear, 17 * 1000, 200, true);
     
     // Add to region.
     for( int i=0; i<size ; ++i) {
@@ -162,7 +162,7 @@ public class AsynchIndexMaintenanceJUnitTest {
       idSet.add((i+1) + "");
     }    
     //assertEquals(0, getIndexSize(ri));
-    DistributedTestCase.waitForCriterion(evSize, 17 * 1000, 200, true);
+    Wait.waitForCriterion(evSize, 17 * 1000, 200, true);
   }
   
   @Test
@@ -184,7 +184,7 @@ public class AsynchIndexMaintenanceJUnitTest {
         return "valueToEntries map never became size 3";
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 10 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 10 * 1000, 200, true);
   }
   
   @Test
@@ -248,7 +248,7 @@ public class AsynchIndexMaintenanceJUnitTest {
     }
     try {
       for (int i = 0; i < TOTAL_THREADS; ++i) {
-        DistributedTestCase.join(threads[i], 30 * 1000, null);
+        ThreadUtils.join(threads[i], 30 * 1000);
       }
     }
     catch (Exception e) {

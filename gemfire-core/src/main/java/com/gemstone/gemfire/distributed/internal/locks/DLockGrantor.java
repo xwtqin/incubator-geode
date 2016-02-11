@@ -191,7 +191,7 @@ public class DLockGrantor {
   /** 
    * Identifies remote thread that has currently suspended locking or null.
    * 
-   * @guarded.By {@link #suspendLock}
+   * Concurrency: protected by synchronization of {@link #suspendLock}
    */
   protected RemoteThread lockingSuspendedBy = null;
   
@@ -203,7 +203,7 @@ public class DLockGrantor {
   /** 
    * Identifies the lockId used by the remote thread to suspend locking. 
    * 
-   * @guarded.By {@link #suspendLock}
+   * Concurrency: protected by synchronization of {@link #suspendLock}
    */
   protected int suspendedLockId = INVALID_LOCK_ID;
   
@@ -984,10 +984,7 @@ public class DLockGrantor {
     }
     try {
       checkDestroyed();
-      if (request.checkForTimeout()) {
-        // no cleanup here because we bypassed lock permissions
-        return 0;
-      }
+      // to fix GEODE-678 no longer call request.checkForTimeout
       DLockGrantToken grant = getGrantToken(request.getObjectName());
       if (grant == null) {
         if (logger.isTraceEnabled(LogMarker.DLS)) {
@@ -1922,9 +1919,10 @@ public class DLockGrantor {
    * <p>
    * Caller must synchronize on suspendLock.
    * 
+   * Concurrency: protected by synchronization of {@link #suspendLock}
+   * 
    * @param myRThread the remote thread that is about to suspend locking
    * @param lockId the id of the lock request used to suspend locking
-   * @guarded.By {@link #suspendLock}
    */
   protected void suspendLocking(final RemoteThread myRThread, final int lockId) {
     if (DEBUG_SUSPEND_LOCK) {
@@ -1964,8 +1962,9 @@ public class DLockGrantor {
    * <p>
    * Caller must synchronize on suspendLock.
    * 
+   * Concurrency: protected by synchronization of {@link #suspendLock}
+   * 
    * @return true if locking has been suspended
-   * @guarded.By {@link #suspendLock}
    */
   protected boolean isLockingSuspended() {
     if (DEBUG_SUSPEND_LOCK) {
@@ -1992,8 +1991,9 @@ public class DLockGrantor {
    * <p>
    * Caller must synchronize on suspendLock.
    * 
+   * Concurrency: protected by synchronization of {@link #suspendLock}
+   * 
    * @return true if locking has been suspended by the remote thread
-   * @guarded.By {@link #suspendLock}
    */
   protected boolean isLockingSuspendedBy(final RemoteThread rThread) {
     if (DEBUG_SUSPEND_LOCK) {
@@ -2187,7 +2187,7 @@ public class DLockGrantor {
    * Caller must acquire destroyReadLock. Synchronizes on suspendLock,
    * grantTokens and each grant token.
    * 
-   * @guarded.By {@link #acquireDestroyReadLock(long)}
+   * Concurrency: protected by {@link #destroyLock} via invoking {@link #acquireDestroyReadLock(long)}
    */
   protected void drainPermittedRequests() {
     ArrayList drain = null;
@@ -2617,9 +2617,10 @@ public class DLockGrantor {
      * token. 
      * <p>
      * Caller must synchronize on this grant token.
+     *
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
      * 
      * @return true if there are pending requests waiting to lock this
-     * @guarded.By this
      */
     protected synchronized boolean hasWaitingRequests() {
       if (this.pendingRequests == null) return false;
@@ -2666,9 +2667,10 @@ public class DLockGrantor {
      * Call stack: DLockReleaseMessage -> releaseIfLocked -> 
      *             getAndReleaseGrantIfLockedBy -> grant.releaseIfLockedBy
      *             
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
+     * 
      * @param owner the member to release the lock for
      * @param lockId the lock id that the member used to acquire the lock
-     * @guarded.By this
      */
     protected void releaseIfLockedBy(InternalDistributedMember owner, 
                                      int lockId) {
@@ -2704,11 +2706,12 @@ public class DLockGrantor {
      * <p>
      * Caller must synchronize on this grant token.
      * 
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
+     * 
      * @param owner the member to check for lock ownership
      * @param lockId the lock id that the member used for locking
      * @return true if lock is currently leased by the owner with the
      * specified lock id
-     * @guarded.By this
      */
     protected boolean isLockedBy(InternalDistributedMember owner, 
                                  int lockId) {
@@ -2892,8 +2895,9 @@ public class DLockGrantor {
      * <p>
      * Caller must synchronize on this grant token.
      * 
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
+     * 
      * @return true if the lock was granted to next request
-     * @guarded.By this
      */
     protected boolean grantLockToNextRequest() {
       final boolean isDebugEnabled_DLS = logger.isTraceEnabled(LogMarker.DLS);
@@ -3033,10 +3037,11 @@ public class DLockGrantor {
      * <p>
      * Caller must synchronize on this grant token.
      * 
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
+     * 
      * @param checkForExpiration true if expiration should be attempted before
      * checking if this grant token is currently granted
      * @return true if this grant token is currently granted
-     * @guarded.By this
      */
     protected boolean isGranted(boolean checkForExpiration) {
       if (checkForExpiration) {
@@ -3211,8 +3216,9 @@ public class DLockGrantor {
      * <p>
      * Caller must synchronize on this grant token.
      * 
+     * Concurrency: protected by synchronization of *this* DLockGrantToken
+     * 
      * @return the lease expiration time
-     * @guarded.By this
      */
     public long getLeaseExpireTime() {
       return this.leaseExpireTime;
@@ -3731,7 +3737,7 @@ public class DLockGrantor {
     public void quorumLost(Set<InternalDistributedMember> failures, List<InternalDistributedMember> remaining) {
     }
     public void memberSuspect(InternalDistributedMember id,
-        InternalDistributedMember whoSuspected) {
+        InternalDistributedMember whoSuspected, String reason) {
     }
     public void memberDeparted(final InternalDistributedMember id, final boolean crashed) {
       final DLockGrantor me = DLockGrantor.this;

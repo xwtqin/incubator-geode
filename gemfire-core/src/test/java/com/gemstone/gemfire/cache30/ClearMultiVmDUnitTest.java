@@ -20,25 +20,35 @@
  *
  * Created on August 11, 2005, 7:37 PM
  */
-
 package com.gemstone.gemfire.cache30;
+
+import java.util.Properties;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheTransactionManager;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionDestroyedException;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.UnsupportedOperationInTransactionException;
+import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  *
  * @author  prafulla
  */
-import dunit.*;
-
-import com.gemstone.gemfire.cache.*;
-
-import java.util.*;
-
-import com.gemstone.gemfire.distributed.DistributedSystem;
-import com.gemstone.gemfire.internal.cache.TXManagerImpl;
-import com.gemstone.gemfire.internal.cache.TXStateProxy;
-
-//import com.gemstone.gemfire.cache30.*;
-
 public class ClearMultiVmDUnitTest extends DistributedTestCase{
     
     /** Creates a new instance of ClearMultiVmDUnitTest */
@@ -65,15 +75,15 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
       vm1.invoke(ClearMultiVmDUnitTest.class, "createCache");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(ClearMultiVmDUnitTest.class, "closeCache");
-        vm1.invoke(ClearMultiVmDUnitTest.class, "closeCache");
-        cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
-        
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(ClearMultiVmDUnitTest.class, "closeCache");
+      vm1.invoke(ClearMultiVmDUnitTest.class, "closeCache");
+      cache = null;
+      Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCache(){
@@ -204,15 +214,15 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
         
         AsyncInvocation as1 = vm0.invokeAsync(ClearMultiVmDUnitTest.class, "firstVM");
         AsyncInvocation as2 = vm1.invokeAsync(ClearMultiVmDUnitTest.class, "secondVM");
-        DistributedTestCase.join(as1, 30 * 1000, getLogWriter());
-        DistributedTestCase.join(as2, 30 * 1000, getLogWriter());
+        ThreadUtils.join(as1, 30 * 1000);
+        ThreadUtils.join(as2, 30 * 1000);
         
         if(as1.exceptionOccurred()){
-          fail("as1 failed", as1.getException());
+          Assert.fail("as1 failed", as1.getException());
         }
         
         if(as2.exceptionOccurred()){
-          fail("as2 failed", as2.getException());
+          Assert.fail("as2 failed", as2.getException());
         }
         
         int j = vm0.invokeInt(ClearMultiVmDUnitTest.class, "sizeMethod");
@@ -320,9 +330,9 @@ public class ClearMultiVmDUnitTest extends DistributedTestCase{
             }
         });
         
-        DistributedTestCase.join(async1, 30 * 1000, getLogWriter());
+        ThreadUtils.join(async1, 30 * 1000);
         if(async1.exceptionOccurred()){
-          fail("async1 failed", async1.getException());
+          Assert.fail("async1 failed", async1.getException());
         }
         
         SerializableRunnable validate = new

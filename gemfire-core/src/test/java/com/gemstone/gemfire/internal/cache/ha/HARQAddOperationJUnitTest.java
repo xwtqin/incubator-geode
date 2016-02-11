@@ -47,9 +47,8 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.Conflatable;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * Test to verify Add operation to HARegion Queue with and without conflation.
@@ -471,8 +470,8 @@ public class HARQAddOperationJUnitTest
     t1.start();
     t2.start();
 
-    DistributedTestCase.join(t1, 180 * 1000, null);
-    DistributedTestCase.join(t2, 180 * 1000, null);
+    ThreadUtils.join(t1, 180 * 1000);
+    ThreadUtils.join(t2, 180 * 1000);
 
     if (testFailed)
       fail("Test failed due to " + message);
@@ -529,8 +528,8 @@ public class HARQAddOperationJUnitTest
     t2.start();
     t1.start();
 
-    DistributedTestCase.join(t1, 180 * 1000, null);
-    DistributedTestCase.join(t2, 180 * 1000, null);
+    ThreadUtils.join(t1, 180 * 1000);
+    ThreadUtils.join(t2, 180 * 1000);
 
     if (testFailed)
       fail("Test failed due to " + message);
@@ -629,7 +628,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfThreads; k++) {
-      DistributedTestCase.join(threads[k], 180 * 1000, null);
+      ThreadUtils.join(threads[k], 180 * 1000);
     }
 
     this.logWriter
@@ -712,7 +711,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfThreads; k++) {
-      DistributedTestCase.join(threads[k], 180 * 1000, null);
+      ThreadUtils.join(threads[k], 180 * 1000);
     }
 
     if (testFailed)
@@ -780,7 +779,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfThreads; k++) {
-      DistributedTestCase.join(threads[k], 180 * 1000, null);
+      ThreadUtils.join(threads[k], 180 * 1000);
     }
 
     if (testFailed)
@@ -854,7 +853,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfThreads; k++) {
-      DistributedTestCase.join(threads[k], 180 * 1000, null);
+      ThreadUtils.join(threads[k], 180 * 1000);
     }
 
     if (testFailed)
@@ -903,7 +902,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfPuts; k++) {
-      DistributedTestCase.join(threads_peek_remove[k], 180 * 1000, null);
+      ThreadUtils.join(threads_peek_remove[k], 180 * 1000);
     }
 
     if (testFailed)
@@ -966,7 +965,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfThreads; k++) {
-      DistributedTestCase.join(threads[k], 180 * 1000, null);
+      ThreadUtils.join(threads[k], 180 * 1000);
     }
 
     if (testFailed)
@@ -1014,7 +1013,7 @@ public class HARQAddOperationJUnitTest
     }
 
     for (int k = 0; k < numOfPuts - 1; k++) {
-      DistributedTestCase.join(threads_peek_remove[k], 180 * 1000, null);
+      ThreadUtils.join(threads_peek_remove[k], 180 * 1000);
     }
 
     if (testFailed)

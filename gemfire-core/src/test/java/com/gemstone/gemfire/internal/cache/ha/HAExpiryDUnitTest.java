@@ -34,11 +34,13 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This test checks Expiration of events in the regionqueue.
@@ -94,16 +96,14 @@ public class HAExpiryDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
-  {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     vm0.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm1.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm2.invoke(HAExpiryDUnitTest.class, "closeCache");
     vm3.invoke(HAExpiryDUnitTest.class, "closeCache");
     cache = null;
-    invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
-
+    Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
   }
 
   public void testExpiryPeriod() throws Exception
@@ -156,7 +156,7 @@ public class HAExpiryDUnitTest extends DistributedTestCase
     vm2.invoke(HAExpiryDUnitTest.class, "checkSizeBeforeExpiration");
     vm3.invoke(HAExpiryDUnitTest.class, "checkSizeBeforeExpiration");
 
-   pause(5000); // wait for some time to make sure that we give sufficient time
+   Wait.pause(5000); // wait for some time to make sure that we give sufficient time
                 // to expiry
    // in spite of giving time the events should not expire, and queue should be
    // same as before expiration
@@ -188,7 +188,7 @@ public class HAExpiryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     /*
      * if (regionqueue.size() < 1) fail("RegionQueue size canot be less than 1
      * before expiration");
@@ -217,7 +217,7 @@ public class HAExpiryDUnitTest extends DistributedTestCase
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 60 * 1000, 200, true);
     
     /*
      * if (regionqueue.size() > regionQueueSize) fail("RegionQueue size should

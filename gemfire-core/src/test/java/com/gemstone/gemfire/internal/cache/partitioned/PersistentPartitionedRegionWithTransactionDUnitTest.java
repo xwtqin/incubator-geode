@@ -21,11 +21,12 @@ import com.gemstone.gemfire.cache.CacheTransactionManager;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Tests the basic use cases for PR persistence.
@@ -41,24 +42,19 @@ public class PersistentPartitionedRegionWithTransactionDUnitTest extends Persist
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(new SerializableRunnable() {
-      
+  protected final void postTearDownCacheTestCase() throws Exception {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         TXManagerImpl.ALLOW_PERSISTENT_TRANSACTIONS = false;
         System.setProperty(DiskStoreImpl.RECOVER_VALUES_SYNC_PROPERTY_NAME, "false");
       }
     });
-    
   }
-
-
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       
       public void run() {
         TXManagerImpl.ALLOW_PERSISTENT_TRANSACTIONS = true;
@@ -110,12 +106,6 @@ public class PersistentPartitionedRegionWithTransactionDUnitTest extends Persist
     checkData(vm2, 0, numBuckets, "b");
   }
 
-  /**
-   * @param vm0
-   * @param i
-   * @param numBuckets
-   * @param string
-   */
   private void createDataWithRollback(VM vm, final int startKey, final int endKey, final String value) {
     SerializableRunnable createData = new SerializableRunnable() {
       
@@ -141,12 +131,12 @@ public class PersistentPartitionedRegionWithTransactionDUnitTest extends Persist
   @Override
   protected void createData(VM vm, final int startKey, final int endKey, final String value,
       final String regionName) {
-    getLogWriter().info("creating runnable to create data for region " + regionName);
+    LogWriterUtils.getLogWriter().info("creating runnable to create data for region " + regionName);
     SerializableRunnable createData = new SerializableRunnable() {
       
       public void run() {
         Cache cache = getCache();
-        getLogWriter().info("getting region " + regionName);
+        LogWriterUtils.getLogWriter().info("getting region " + regionName);
         Region region = cache.getRegion(regionName);
         
         for(int i =startKey; i < endKey; i++) {
@@ -178,7 +168,7 @@ public class PersistentPartitionedRegionWithTransactionDUnitTest extends Persist
       
       public void run() {
         Cache cache = getCache();
-        getLogWriter().info("checking data in " + regionName);
+        LogWriterUtils.getLogWriter().info("checking data in " + regionName);
         Region region = cache.getRegion(regionName);
         
         for(int i =startKey; i < endKey; i++) {

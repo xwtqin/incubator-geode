@@ -611,7 +611,8 @@ public class LocalRegion extends AbstractRegion
     this.offHeap = attrs.getOffHeap() || Boolean.getBoolean(myName+":OFF_HEAP");
     if (getOffHeap()) {
       if (cache.getOffHeapStore() == null) {
-        throw new IllegalStateException("The region " + myName + " was configured to use off heap memory but no off heap memory was configured.");
+        throw new IllegalStateException(LocalizedStrings.
+            LocalRegion_THE_REGION_0_WAS_CONFIGURED_TO_USE_OFF_HEAP_MEMORY_BUT_OFF_HEAP_NOT_CONFIGURED.toLocalizedString(myName));
       }
     }
     
@@ -803,11 +804,11 @@ public class LocalRegion extends AbstractRegion
     }
   }
 
-  public final IndexUpdater getIndexUpdater() {
+  public IndexUpdater getIndexUpdater() {
     return this.entries.getIndexUpdater();
   }
 
-  final boolean isCacheClosing()
+  boolean isCacheClosing()
   {
     return this.cache.isClosed();
   }
@@ -1261,7 +1262,7 @@ public class LocalRegion extends AbstractRegion
    * @param disableCopyOnRead if true then disable copy on read
    * @param preferCD true if the preferred result form is CachedDeserializable
    * @param clientEvent client's event, if any (for version tag retrieval)
-   * @param returnTombstones TODO
+   * @param returnTombstones whether destroyed entries should be returned
    * @param retainResult if true then the result may be a retained off-heap reference
    * @return the value for the given key
    */
@@ -1552,7 +1553,7 @@ public class LocalRegion extends AbstractRegion
   @Retained
   Object nonTxnFindObject(KeyInfo keyInfo, boolean p_isCreate,
       boolean generateCallbacks, Object p_localValue, boolean disableCopyOnRead, boolean preferCD,
-      EntryEventImpl clientEvent, boolean returnTombstones, boolean allowReadFromHDFS) 
+      ClientProxyMembershipID requestingClient, EntryEventImpl clientEvent, boolean returnTombstones, boolean allowReadFromHDFS) 
       throws TimeoutException, CacheLoaderException
   {
     final Object key = keyInfo.getKey();
@@ -1613,21 +1614,32 @@ public class LocalRegion extends AbstractRegion
         throw err;
       }
     }
-    // didn't find a future, do one more getDeserialized to catch race
-    // condition where the future was just removed by another get thread
+    // didn't find a future, do one more probe for the entry to catch a race
+    // condition where the future was just removed by another thread
     try {
-      localValue = getDeserializedValue(null, keyInfo, isCreate, disableCopyOnRead, preferCD, clientEvent, false, false/*allowReadFromHDFS*/, false);
-      // TODO verify that this method is not used for PR or BR and hence allowReadFromHDFS does not matter
-      // stats have now been updated
-      if (localValue != null && !Token.isInvalid(localValue)) {
-        result = localValue;
-        return result;
-      }
-      isCreate = localValue == null;
+      boolean partitioned = this.getDataPolicy().withPartitioning();
+      if (!partitioned) {
+        localValue = getDeserializedValue(null, keyInfo, isCreate, disableCopyOnRead, preferCD, clientEvent, false, false/*allowReadFromHDFS*/, false);
 
-      result = findObjectInSystem(keyInfo, isCreate, null, generateCallbacks,
-          localValue, disableCopyOnRead, preferCD, null, clientEvent, returnTombstones, false/*allowReadFromHDFS*/);
-      
+        // stats have now been updated
+        if (localValue != null && !Token.isInvalid(localValue)) {
+          result = localValue;
+          return result;
+        }
+        isCreate = localValue == null;
+        result = findObjectInSystem(keyInfo, isCreate, null, generateCallbacks,
+            localValue, disableCopyOnRead, preferCD, requestingClient, clientEvent, returnTombstones, false/*allowReadFromHDFS*/);
+
+      } else {
+        
+        // This code was moved from PartitionedRegion.nonTxnFindObject().  That method has been removed.
+        // For PRs we don't want to deserialize the value and we can't use findObjectInSystem because
+        // it can invoke code that is transactional.
+        result = getSharedDataView().findObject(keyInfo, this, true/*isCreate*/, generateCallbacks,
+            localValue, disableCopyOnRead, preferCD, null, null, false, allowReadFromHDFS);
+        // TODO why are we not passing the client event or returnTombstones in the above invokation?
+      }
+
       if (result == null && localValue != null) {
         if (localValue != Token.TOMBSTONE || returnTombstones) {
           result = localValue;
@@ -1636,8 +1648,12 @@ public class LocalRegion extends AbstractRegion
       // findObjectInSystem does not call conditionalCopy
     }
     finally {
-      VersionTag tag = (clientEvent==null)? null : clientEvent.getVersionTag();
-      thisFuture.set(new Object[]{result, tag});
+      if (result != null) {
+        VersionTag tag = (clientEvent==null)? null : clientEvent.getVersionTag();
+        thisFuture.set(new Object[]{result, tag});
+      } else {
+        thisFuture.set(null);
+      }
       this.getFutures.remove(keyInfo.getKey());
     }
     if (!disableCopyOnRead) {
@@ -11323,7 +11339,7 @@ public class LocalRegion extends AbstractRegion
    * @return this region's GemFireCache instance
    */
   @Override
-  public final GemFireCacheImpl getGemFireCache() {
+  public GemFireCacheImpl getGemFireCache() {
     return this.cache;
   }
 
@@ -12812,7 +12828,11 @@ public class LocalRegion extends AbstractRegion
    * or it may recover an index map that was previously persisted, depending
    * on whether the index previously existed.
    * 
+   * @param indexName the name of the index
+   * @param indexedExpression the index expression
+   * @param fromClause the from clause.
    * 
+   * @return The index map.
    * 
    * @throws IllegalStateException if this region is not using
    * soplog persistence
@@ -12820,12 +12840,6 @@ public class LocalRegion extends AbstractRegion
    * @throws IllegalStateException if this index was previously
    * persisted with a different expression or from clause.
    * 
-   * @param indexName the name of the index
-   * @param indexedExpression the index expression
-   * @param fromClause the from clause.
-   *  
-   * 
-   * @return The index map.
    */
   public IndexMap getIndexMap(String indexName, String indexedExpression, 
       String fromClause) {
@@ -12844,18 +12858,18 @@ public class LocalRegion extends AbstractRegion
    * or it may recover an index map that was previously persisted, depending
    * on whether the index previously existed.
    * 
+   * @param indexName the name of the index
+   * @param indexedExpression the index expression
+   * @param fromClause the from clause.
+   * 
+   * @return The index map.
+   * 
    * @throws IllegalStateException if this region is not using
    * soplog persistence
    * 
    * @throws IllegalStateException if this index was previously
    * persisted with a different expression or from clause.
    * 
-   * @param indexName the name of the index
-   * @param indexedExpression the index expression
-   * @param fromClause the from clause.
-   *  
-   * 
-   * @return The index map.
    */
   public IndexMap getUnsortedIndexMap(String indexName, String indexedExpression, 
       String fromClause) {

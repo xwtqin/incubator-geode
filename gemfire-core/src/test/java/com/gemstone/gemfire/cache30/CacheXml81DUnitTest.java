@@ -31,6 +31,7 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.XmlParser;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
 
 /**
  * Tests 8.1 schema based configuration. From this point all config test cases
@@ -57,7 +58,7 @@ public class CacheXml81DUnitTest extends CacheXml80DUnitTest {
 
   /**
    * Test extensions to
-   * <code>cache<code> element. Exercises {@link CacheCreation#fillIn}
+   * <code>cache<code> element.
    * 
    * @since 8.1
    */
@@ -86,8 +87,7 @@ public class CacheXml81DUnitTest extends CacheXml80DUnitTest {
   }
 
   /**
-   * Test extensions to <code>region</code> element. Exercises
-   * {@link CacheCreation#fillIn}
+   * Test extensions to <code>region</code> element.
    * 
    * @since 8.1
    */
@@ -140,6 +140,7 @@ public class CacheXml81DUnitTest extends CacheXml80DUnitTest {
     assertEquals(0, extension.onCreateCounter.get());
     assertEquals(0, extension.getXmlGeneratorCounter.get());
 
+    IgnoredException expectedException = IgnoredException.addIgnoredException("While reading Cache XML file");
     try {
       testXml(cache);
       fail("Excepted CacheXmlException");
@@ -149,6 +150,8 @@ public class CacheXml81DUnitTest extends CacheXml80DUnitTest {
         assertTrue(((SAXParseException) e.getCause()).getColumnNumber() > 0);
         assertEquals("Value is 'exception'.", e.getCause().getMessage());
       }
+    } finally {
+      expectedException.remove();
     }
   }
 

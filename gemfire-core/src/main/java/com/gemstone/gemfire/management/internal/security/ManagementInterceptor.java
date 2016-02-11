@@ -80,6 +80,11 @@ import com.gemstone.gemfire.security.Authenticator;
  */
 public class ManagementInterceptor implements JMXAuthenticator {
 
+  // FIXME: Merged from GEODE-17. Are they necessary?
+  public static final String USER_NAME = "security-username";
+  public static final String PASSWORD = "security-password";
+  public static final String OBJECT_NAME_ACCESSCONTROL = "GemFire:service=AccessControl,type=Distributed";
+
   private MBeanServerWrapper mBeanServerForwarder;
   private Logger logger;
   private ObjectName accessControlMBeanON;

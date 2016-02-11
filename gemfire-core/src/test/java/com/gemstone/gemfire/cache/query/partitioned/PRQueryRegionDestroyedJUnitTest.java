@@ -34,9 +34,8 @@ import com.gemstone.gemfire.cache.query.RegionNotFoundException;
 import com.gemstone.gemfire.cache.query.SelectResults;
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionTestHelper;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * Test verifies Region#query()for PartitionedRegion on a single VM with
@@ -64,11 +63,6 @@ public class PRQueryRegionDestroyedJUnitTest
   boolean encounteredException = false;
   static final int dataSize =100; 
   static final int delayQuery = 1000;
-  /**
-   * setUp*
-   * 
-   * @param name
-   */
 
   @Before
   public void setUp() throws Exception
@@ -222,8 +216,8 @@ public class PRQueryRegionDestroyedJUnitTest
       logger
           .info("PRQueryRegionDestroyedJUnitTest#testQueryOnSingleDataStore: Waiting for the Threads to join ");
 
-      DistributedTestCase.join(t1, 30 * 1000, null);
-      DistributedTestCase.join(t2, 30 * 1000, null);
+      ThreadUtils.join(t1, 30 * 1000);
+      ThreadUtils.join(t2, 30 * 1000);
       logger
           .info("PRQueryRegionDestroyedJUnitTest#testQueryOnSingleDataStore: checking for any Unexpected Exception's occured");
 

@@ -23,8 +23,8 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceType;
 import com.gemstone.gemfire.internal.cache.control.OffHeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
-
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 public class PartitionedRegionOffHeapEvictionDUnitTest extends
     PartitionedRegionEvictionDUnitTest {
@@ -34,7 +34,7 @@ public class PartitionedRegionOffHeapEvictionDUnitTest extends
   }  
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -44,12 +44,8 @@ public class PartitionedRegionOffHeapEvictionDUnitTest extends
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    Invoke.invokeInEveryVM(checkOrphans);
+    checkOrphans.run();
   }
 
   @Override

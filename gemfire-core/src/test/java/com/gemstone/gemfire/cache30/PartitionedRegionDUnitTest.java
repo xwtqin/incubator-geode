@@ -23,14 +23,29 @@ import java.util.Random;
 import java.util.Set;
 
 import com.gemstone.gemfire.LogWriter;
-import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.EntryEvent;
+import com.gemstone.gemfire.cache.EntryExistsException;
+import com.gemstone.gemfire.cache.InterestPolicy;
+import com.gemstone.gemfire.cache.PartitionAttributes;
+import com.gemstone.gemfire.cache.PartitionAttributesFactory;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionFactory;
+import com.gemstone.gemfire.cache.RegionShortcut;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.SubscriptionAttributes;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
-import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionException;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
 import com.gemstone.gemfire.internal.logging.PureLogWriter;
-
-import dunit.*;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * This class tests the functionality of a cache {@link Region region}
@@ -173,7 +188,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
         fact.addCacheListener(new CacheListenerAdapter(){
           @Override
           public void afterInvalidate(EntryEvent event) {
-            getLogWriter().info("afterInvalidate invoked with " + event);
+            com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("afterInvalidate invoked with " + event);
             InvalidateInvoked = true;
           }
         });
@@ -213,7 +228,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
             
             createRegion(name, "INCOMPATIBLE_ROOT", getRegionAttributes());
           } catch (CacheException ex) {
-            fail("While creating Partitioned region", ex);
+            Assert.fail("While creating Partitioned region", ex);
           }
         }
       });
@@ -231,7 +246,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
             }
 
           } catch (CacheException ex) {
-            fail("While creating Partitioned Region", ex);
+            Assert.fail("While creating Partitioned Region", ex);
           }
         }
       });
@@ -245,7 +260,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
           try {
             createRegion(regionName, "root", getRegionAttributes());
           } catch (CacheException ex) {
-            fail("While creating Partitioned region", ex);
+            Assert.fail("While creating Partitioned region", ex);
           }
         }
     };
@@ -279,7 +294,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
             }
           }
           catch (Exception ex) {
-            fail("while creating or populating partitioned region", ex);
+            Assert.fail("while creating or populating partitioned region", ex);
           }
           finally {
             if (region != null) {
@@ -346,7 +361,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
               }
               catch (Exception ex2) {
               }
-              fail("Unexpected exception", ex);
+              Assert.fail("Unexpected exception", ex);
             }
           }
       });
@@ -482,7 +497,7 @@ public class PartitionedRegionDUnitTest extends MultiVMRegionTestCase {
           try {
             createRegion(regionName, "root", getRegionAttributes());
           } catch (CacheException ex) {
-            fail("While creating Partitioned region", ex);
+            Assert.fail("While creating Partitioned region", ex);
           }
         }
     };

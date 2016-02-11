@@ -276,9 +276,10 @@ public class FederatingManager extends Manager {
    * block the membership listener
    * 
    * @param member
+   * @param reason TODO
    */
-  public void suspectMember(DistributedMember member, InternalDistributedMember whoSuspected) {
-    service.memberSuspect((InternalDistributedMember) member, whoSuspected);
+  public void suspectMember(DistributedMember member, InternalDistributedMember whoSuspected, String reason) {
+    service.memberSuspect((InternalDistributedMember) member, whoSuspected, reason);
 
   }
 
@@ -583,8 +584,6 @@ public class FederatingManager extends Manager {
    * @param objectName
    *          {@link javax.management.ObjectName} of the MBean
    * @return last updated time of the proxy
-   * 
-   * @throws InstanceNotFoundException
    */
   public long getLastUpdateTime(ObjectName objectName) {
     return proxyFactory.getLastUpdateTime(objectName);

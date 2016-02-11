@@ -24,6 +24,7 @@ import java.net.SocketException;
 import org.jgroups.Address;
 import org.jgroups.Message;
 import org.jgroups.protocols.UDP;
+import org.jgroups.util.AsciiString;
 import org.jgroups.util.DefaultThreadFactory;
 import org.jgroups.util.LazyThreadFactory;
 import org.jgroups.util.Util;
@@ -41,36 +42,6 @@ public class Transport extends UDP {
     messenger = m;
   }
   
-  /*
-   * (non-Javadoc)
-   * Copied from JGroups 3.6.6 UDP and modified to suppress
-   * stack traces when unable to set the ttl due to the TCP implementation
-   * not supporting the setting, and to only set ttl when multicast is
-   * going to be used.
-   * 
-   * @see org.jgroups.protocols.UDP#setTimeToLive(int)
-   */
-  @Override
-  protected void setTimeToLive(int ttl) {
-    if (ip_mcast) {
-      if(getImpl != null && setTimeToLive != null) {
-        try {
-            Object impl=getImpl.invoke(sock);
-            setTimeToLive.invoke(impl, ttl);
-        }
-        catch(InvocationTargetException e) {
-          log.info("Unable to set ip_ttl - TCP/IP implementation does not support this setting");
-        }
-        catch(Exception e) {
-            log.error("failed setting ip_ttl", e);
-        }
-      } else {
-        log.warn("ip_ttl %d could not be set in the datagram socket; ttl will default to 1 (getImpl=%s, " +
-                   "setTimeToLive=%s)", ttl, getImpl, setTimeToLive);
-      }
-    }
-  }
-
   /*
    * (non-Javadoc)
    * copied from JGroups to perform Geode-specific error handling when there
@@ -97,7 +68,7 @@ public class Transport extends UDP {
     catch (IOException e) {
       if (messenger != null
           /*&& e.getMessage().contains("Operation not permitted")*/) { // this is the english Oracle JDK exception condition we really want to catch
-        messenger.handleJGroupsIOException(e, msg, dest);
+        messenger.handleJGroupsIOException(e, dest);
       }
     }
     catch(Throwable e) {
@@ -105,7 +76,31 @@ public class Transport extends UDP {
 //        Util.getMessage("SendFailure"),
 //                  local_addr, (dest == null? "cluster" : dest), msg.size(), e.toString(), msg.printHeaders());
     }
-}
+  }
+
+  /*
+   * (non-Javadoc)
+   * copied from JGroups to perform Geode-specific error handling when there
+   * is a network partition
+   */
+  @Override
+  protected void doSend(AsciiString cluster_name, byte[] buf, int offset, int length, Address dest) throws Exception {
+    try {
+      super.doSend(cluster_name, buf, offset, length, dest);
+    } catch(SocketException sock_ex) {
+      if (!this.sock.isClosed() && !stack.getChannel().isClosed()) {
+        log.error("Exception caught while sending message", sock_ex);
+      }
+    } catch (IOException e) {
+      if (messenger != null
+          /*&& e.getMessage().contains("Operation not permitted")*/) { // this is the english Oracle JDK exception condition we really want to catch
+        messenger.handleJGroupsIOException(e, dest);
+      }
+    } catch(Throwable e) {
+        log.error("Exception caught while sending message", e);
+    }
+  }
+
     
   /*
    * (non-Javadoc)
@@ -138,5 +133,31 @@ public class Transport extends UDP {
     }
   }
 
+  // overridden to implement AvailablePort response
+  @Override
+  public void receive(Address sender, byte[] data, int offset, int length) {
+    if(data == null) return;
+
+    // drop message from self; it has already been looped back up (https://issues.jboss.org/browse/JGRP-1765)
+    if(local_physical_addr != null && local_physical_addr.equals(sender))
+        return;
+
+    if (length-offset == 4
+        && data[offset] == 'p'
+        && data[offset+1] == 'i'
+        && data[offset+2] == 'n'
+        && data[offset+3] == 'g') {
+      // AvailablePort check
+      data[offset+1] = 'o';
+      try {
+        sendToSingleMember(sender, data, offset, length);
+      } catch (Exception e) {
+        log.fatal("Unable to respond to available-port check", e);
+      }
+      return;
+    }
+
+    super.receive(sender,  data,  offset,  length);
+  }
 
 }

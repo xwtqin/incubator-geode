@@ -147,6 +147,7 @@ public class MethExecutor {
       }
       sb.append("] in class ");
       sb.append(c.getName());
+      sb.append(" methods=" + matchingMethods);
       throw new NoSuchMethodException(sb.toString());
     }
     else return (Method) matchingMethods.get(0);
@@ -240,7 +241,7 @@ public class MethExecutor {
                                            Object[] args) {
     try {
       // get the class
-      Class receiverClass = Class.forName(target.getClass().getName());
+      Class receiverClass = target.getClass();
 
       // invoke the method
       Object res = null;

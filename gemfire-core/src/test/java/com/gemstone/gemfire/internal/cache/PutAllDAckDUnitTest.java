@@ -19,29 +19,31 @@
  *
  * Created on September 15, 2005, 5:51 PM
  */
-
 package com.gemstone.gemfire.internal.cache;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.CacheFactory;
-//import com.gemstone.gemfire.cache.CacheListener;
 import com.gemstone.gemfire.cache.CacheTransactionManager;
 import com.gemstone.gemfire.cache.CacheWriter;
 import com.gemstone.gemfire.cache.EntryEvent;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
-//import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 /**
  *
  * @author vjadhav
@@ -71,15 +73,16 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(PutAllDAckDUnitTest.class, "createCacheForVM0");
       vm1.invoke(PutAllDAckDUnitTest.class, "createCacheForVM1");
-      getLogWriter().fine("Cache created successfully");
+      LogWriterUtils.getLogWriter().fine("Cache created successfully");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(PutAllDAckDUnitTest.class, "closeCache");
-        vm1.invoke(PutAllDAckDUnitTest.class, "closeCache");
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(PutAllDAckDUnitTest.class, "closeCache");
+      vm1.invoke(PutAllDAckDUnitTest.class, "closeCache");
     }
     
     public static void createCacheForVM0() throws Exception {
@@ -144,7 +147,7 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
                 obj = region.put(ob, str);
             }
         }catch(Exception ex){
-            fail("Failed while region.put", ex);
+            Assert.fail("Failed while region.put", ex);
         }
         return obj;
     }//end of putMethod
@@ -162,7 +165,7 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
             region.putAll(m);
             
         }catch(Exception ex){
-            fail("Failed while region.putAll", ex);
+            Assert.fail("Failed while region.putAll", ex);
         }
     }//end of putAllMethod
     
@@ -214,7 +217,7 @@ public class PutAllDAckDUnitTest extends DistributedTestCase {
 //             }
             
             beforeCreateputAllcounter++;
-            getLogWriter().fine("*******BeforeCreate*****");
+            LogWriterUtils.getLogWriter().fine("*******BeforeCreate*****");
             beforeCreate = true;
         }
     }

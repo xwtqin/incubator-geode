@@ -30,10 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
 
 /**
  * Tests the default SocketCloser.
@@ -122,7 +121,7 @@ public class SocketCloserJUnitTest {
           return "expected " + 2*maxThreads + " waiters but found only " + waitingToClose.get();
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 5000, 10, true);
+      Wait.waitForCriterion(wc, 5000, 10, true);
     }
     // now count down the latch that allows the sockets to close
     cdl.countDown();
@@ -142,7 +141,7 @@ public class SocketCloserJUnitTest {
           return "one or more sockets did not close";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 5000, 10, true);
+      Wait.waitForCriterion(wc, 5000, 10, true);
     }
   }
   
@@ -163,7 +162,7 @@ public class SocketCloserJUnitTest {
     Socket s = createClosableSocket();
     s.close();
     this.socketCloser.asyncClose(s, "A", r);
-    DistributedTestCase.pause(10);
+    Wait.pause(10);
     assertEquals(false, runnableCalled.get());
   }
   
@@ -191,6 +190,6 @@ public class SocketCloserJUnitTest {
         return "runnable was not called or socket was not closed";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 5000, 10, true);
+    Wait.waitForCriterion(wc, 5000, 10, true);
   }
 }

@@ -23,11 +23,11 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionDestroyedException;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheTestCase;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * @author dsmith
@@ -102,7 +102,7 @@ public class ConcurrentDestroySubRegionDUnitTest extends CacheTestCase {
         vm1.invoke(createChild);
       } catch(Exception e) {
         if(!(e.getCause() instanceof RegionDestroyedException)) {
-          fail("Wrong exception", e);
+          Assert.fail("Wrong exception", e);
         }
         RegionDestroyedException rde = (RegionDestroyedException) e.getCause();
         assertEquals("Error on loop " + i, "/region", rde.getRegionFullPath());
@@ -161,7 +161,7 @@ public class ConcurrentDestroySubRegionDUnitTest extends CacheTestCase {
         vm1.invoke(createChild);
       } catch(Exception e) {
         if(!(e.getCause() instanceof RegionDestroyedException)) {
-          fail("Wrong exception", e);
+          Assert.fail("Wrong exception", e);
         }
         RegionDestroyedException rde = (RegionDestroyedException) e.getCause();
         assertEquals("Error on loop " + i, "/region", rde.getRegionFullPath());

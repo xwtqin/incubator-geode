@@ -30,10 +30,12 @@ import com.gemstone.gemfire.cache.control.RebalanceOperation;
 import com.gemstone.gemfire.cache.control.RebalanceResults;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author tapshank, Created on Jan 19, 2006
@@ -359,7 +361,7 @@ public class PartitionedRegionStatsDUnitTest extends
         try {
           RebalanceResults results = op.getResults();
         } catch (Exception e) {
-          fail("ex", e);
+          Assert.fail("ex", e);
         }
       }
     };
@@ -407,7 +409,7 @@ public class PartitionedRegionStatsDUnitTest extends
           RebalanceResults results = op.getResults();
         }
         catch (Exception e) {
-          fail("ex", e);
+          Assert.fail("ex", e);
         }
       }
     };
@@ -518,7 +520,7 @@ public class PartitionedRegionStatsDUnitTest extends
         Cache cache = getCache();
         PartitionedRegion region = (PartitionedRegion) cache.getRegion("region1");
         final PartitionedRegionStats stats = region.getPrStats();
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           
           @Override
           public boolean done() {
@@ -542,7 +544,7 @@ public class PartitionedRegionStatsDUnitTest extends
         try {
           tombstoneService.forceBatchExpirationForTests(1);
         } catch (InterruptedException e) {
-          fail("interrupted", e);
+          Assert.fail("interrupted", e);
         }
       }
     });

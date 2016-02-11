@@ -19,9 +19,8 @@ package com.gemstone.gemfire.distributed.internal;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import junit.framework.Assert;
-
 import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.admin.AdminDistributedSystem;
@@ -39,21 +38,22 @@ import com.gemstone.gemfire.cache.RegionEvent;
 import com.gemstone.gemfire.cache.RegionFactory;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
-import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
+import com.gemstone.gemfire.distributed.internal.membership.NetView;
 import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
+import com.gemstone.gemfire.distributed.internal.membership.gms.interfaces.Manager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershipManager;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.internal.tcp.Stub;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This class tests the functionality of the {@link
@@ -151,7 +151,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       mgr = MembershipManagerHelper.getMembershipManager(sys);
       sys.disconnect();
       InternalDistributedMember idm2 = mgr.getLocalMember();
-      getLogWriter().info("original ID=" + idm +
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("original ID=" + idm +
           " and after connecting=" + idm2);
       assertTrue("should not have used a different udp port",
           idm.getPort() == idm2.getPort());
@@ -176,7 +176,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
 
     try {
       InternalDistributedMember mbr = new InternalDistributedMember(
-        DistributedTestCase.getIPLiteral(), 12345);
+        NetworkUtils.getIPLiteral(), 12345);
 
       // first make sure we can't add this as a surprise member (bug #44566)
       
@@ -186,12 +186,12 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
 
       int oldViewId = mbr.getVmViewId();
       mbr.setVmViewId((int)mgr.getView().getViewId()-1);
-      getLogWriter().info("current membership view is " + mgr.getView());
-      getLogWriter().info("created ID " + mbr + " with view ID " + mbr.getVmViewId());
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("current membership view is " + mgr.getView());
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("created ID " + mbr + " with view ID " + mbr.getVmViewId());
       sys.getLogWriter().info("<ExpectedException action=add>attempt to add old member</ExpectedException>");
       sys.getLogWriter().info("<ExpectedException action=add>Removing shunned GemFire node</ExpectedException>");
       try {
-        boolean accepted = mgr.addSurpriseMember(mbr, new Stub());
+        boolean accepted = mgr.addSurpriseMember(mbr);
         Assert.assertTrue("member with old ID was not rejected (bug #44566)", !accepted);
       } finally {
         sys.getLogWriter().info("<ExpectedException action=remove>attempt to add old member</ExpectedException>");
@@ -287,7 +287,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
         public void run() {
           props.setProperty(DistributionConfig.NAME_NAME, "sleeper");
           getSystem(props);
-          addExpectedException("elapsed while waiting for replies");
+          IgnoredException.addIgnoredException("elapsed while waiting for replies");
           RegionFactory rf = new RegionFactory();
           Region r = rf.setScope(Scope.DISTRIBUTED_ACK)
             .setDataPolicy(DataPolicy.REPLICATE)
@@ -347,6 +347,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
       public void afterCreate(EntryEvent event) {
         try {
           if (playDead) {
+            MembershipManagerHelper.beSickMember(system);
             MembershipManagerHelper.playDead(system);
           }
           Thread.sleep(15000);
@@ -400,7 +401,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
    */
   public void testKickOutSickMember() throws Exception {
     disconnectAllFromDS();
-    addExpectedException("10 seconds have elapsed while waiting");
+    IgnoredException.addIgnoredException("10 seconds have elapsed while waiting");
     Host host = Host.getHost(0);
 //    VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -463,7 +464,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
             }
           };
           // if this fails it means the sick member wasn't kicked out and something is wrong
-          DistributedTestCase.waitForCriterion(ev, 60 * 1000, 200, true);
+          Wait.waitForCriterion(ev, 60 * 1000, 200, true);
           
           ev = new WaitCriterion() {
             public boolean done() {
@@ -473,7 +474,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
               return null;
             }
           };
-          DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, false);
+          Wait.waitForCriterion(ev, 20 * 1000, 200, false);
           
           if (!myCache.isClosed()) {
             if (system.isConnected()) {
@@ -495,7 +496,7 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
               return "vm1's listener should have received afterRegionDestroyed notification";
             }
           };
-          DistributedTestCase.waitForCriterion(wc, 30 * 1000, 1000, true);
+          Wait.waitForCriterion(wc, 30 * 1000, 1000, true);
           
         }
       });
@@ -524,17 +525,55 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
     try {
       getSystem(props);
     } catch (IllegalArgumentException e) {
-      getLogWriter().info("caught expected exception (1)", e);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("caught expected exception (1)", e);
     }
     // use an invalid address
     props.setProperty(DistributionConfig.BIND_ADDRESS_NAME, "bruce.schuchardt");
     try {
       getSystem(props);
     } catch (IllegalArgumentException e) {
-      getLogWriter().info("caught expected exception (2_", e);
+      com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("caught expected exception (2_", e);
     }
     // use a valid bind address
     props.setProperty(DistributionConfig.BIND_ADDRESS_NAME, InetAddress.getLocalHost().getCanonicalHostName());
     getSystem().disconnect();
+  }
+  
+  /**
+   * install a new view and show that waitForViewInstallation works as expected
+   */
+  public void testWaitForViewInstallation() {
+    getSystem(new Properties());
+    
+    MembershipManager mgr = system.getDM().getMembershipManager(); 
+
+    final NetView v = mgr.getView();
+    
+    final boolean[] passed = new boolean[1];
+    Thread t = new Thread("wait for view installation") {
+      public void run() {
+        try {
+          ((DistributionManager)system.getDM()).waitForViewInstallation(v.getViewId()+1);
+          synchronized(passed) {
+            passed[0] = true;
+          }
+        } catch (InterruptedException e) {
+          // failed
+        }
+      }
+    };
+    t.setDaemon(true);
+    t.start();
+    
+    Wait.pause(2000);
+
+    NetView newView = new NetView(v, v.getViewId()+1);
+    ((Manager)mgr).installView(newView);
+
+    Wait.pause(2000);
+    
+    synchronized(passed) {
+      Assert.assertTrue(passed[0]);
+    }
   }
 }

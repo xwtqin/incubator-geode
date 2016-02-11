@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -17,6 +18,12 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.gemstone.gemfire.management.internal.cli.HeadlessGfsh;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import org.apache.logging.log4j.Logger;
 
 import com.gemstone.gemfire.LogWriter;
@@ -51,10 +58,15 @@ import com.gemstone.gemfire.management.internal.security.ResourceOperationContex
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import static com.jayway.awaitility.Awaitility.waitAtMost;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+//import dunit.DistributedTestCase;
+//import dunit.Host;
+//import dunit.SerializableRunnable;
+//import dunit.VM;
 
 /**
  * @author tushark
@@ -128,7 +140,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
   @SuppressWarnings("rawtypes")
   public void setUpServerVM(Properties gemFireProps) throws Exception {
     logger.info("Creating server vm cache with props =" + gemFireProps);
-    gemFireProps.setProperty(DistributionConfig.NAME_NAME, testName + "Server");
+    gemFireProps.setProperty(DistributionConfig.NAME_NAME, getTestMethodName() + "Server");
     createCache(gemFireProps);
     RegionFactory factory = cache.createRegionFactory(RegionShortcut.REPLICATE);
     Region r = factory.create("serverRegion");
@@ -139,7 +151,7 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
   }
 
   public void setUpClientVM(Properties gemFireProps, String host, int port, String user, String password) {
-    gemFireProps.setProperty(DistributionConfig.NAME_NAME, testName + "Client");
+    gemFireProps.setProperty(DistributionConfig.NAME_NAME, getTestMethodName() + "Client");
     gemFireProps.setProperty("security-client-auth-init",
         "com.gemstone.gemfire.management.internal.security.IntegratedSecDUnitTest$AuthInitializer.create");
     logger.info("Creating client cache with props =" + gemFireProps);
@@ -239,27 +251,29 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
         Cache cache = getCache();
         final ManagementService service = ManagementService.getManagementService(cache);
 
-        final WaitCriterion waitForMaangerMBean = new WaitCriterion() {
-          @Override
-          public boolean done() {
-            ManagerMXBean bean1 = service.getManagerMXBean();
-            DistributedRegionMXBean bean2 = service.getDistributedRegionMXBean("/serverRegion");
-            if (bean1 == null) {
-              logger.info("Still probing for ManagerMBean");
-              return false;
-            } else {
-              logger.info("Still probing for DistributedRegionMXBean=" + bean2);
-              return (bean2 != null);
-            }
-          }
+//        final WaitCriterion waitForMaangerMBean = new WaitCriterion() {
+//          @Override
+//          public boolean done() {
+//            ManagerMXBean bean1 = service.getManagerMXBean();
+//            DistributedRegionMXBean bean2 = service.getDistributedRegionMXBean("/serverRegion");
+//            if (bean1 == null) {
+//              logger.info("Still probing for ManagerMBean");
+//              return false;
+//            } else {
+//              logger.info("Still probing for DistributedRegionMXBean=" + bean2);
+//              return (bean2 != null);
+//            }
+//          }
+//
+//          @Override
+//          public String description() {
+//            return "Probing for DistributedRegionMXBean for serverRegion";
+//          }
+//        };
 
-          @Override
-          public String description() {
-            return "Probing for DistributedRegionMXBean for serverRegion";
-          }
-        };
-
-        DistributedTestCase.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
+//        DistributedTestCase.waitForCriterion(waitForMaangerMBean, 30000, 2000, true);
+        waitAtMost(30, TimeUnit.SECONDS).untilCall(service.getManagerMXBean(), is(not(null)));
+        waitAtMost(30, TimeUnit.SECONDS).untilCall(service.getDistributedRegionMXBean("/serverRegion"), is(not(null)));
 
         assertNotNull(service.getMemberMXBean());
         assertNotNull(service.getManagerMXBean());
@@ -688,11 +702,4 @@ public class IntegratedSecDUnitTest extends CommandTestBase {
     doCommandUsingGfsh("show log --member=Manager", true, "custom", "password123");
     doShowLogUsingJMX(true, "custom", "password123");*/
   }
-
-  
-
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
 }

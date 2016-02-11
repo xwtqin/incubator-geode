@@ -28,11 +28,10 @@ import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
 import com.gemstone.gemfire.internal.cache.CachedDeserializableFactory;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Tests basic region operations with compression enabled.
@@ -148,7 +147,18 @@ public class CompressionRegionOperationsDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
+    Error error = null;
+    Exception exception = null;
+    
+    try {
+      preTearDownCompressionRegionOperationsDUnitTest();
+    } catch (Error e) {
+      error = e;
+    } catch (Exception e) {
+      exception = e;
+    }
+    
     try {
       SnappyCompressor.getDefaultInstance();
       cleanup(getVM(TEST_VM));
@@ -156,8 +166,16 @@ public class CompressionRegionOperationsDUnitTest extends CacheTestCase {
       // Not a supported OS
     }
     
-    super.tearDown2();
-  }  
+    if (error != null) {
+      throw error;
+    }
+    if (exception != null) {
+      throw exception;
+    }
+  }
+  
+  protected void preTearDownCompressionRegionOperationsDUnitTest() throws Exception {
+  }
 
   /**
    * Invokes basic get/put operations tests on the test vm.

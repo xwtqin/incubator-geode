@@ -36,10 +36,10 @@ import com.gemstone.gemfire.internal.cache.RegionClearedException;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.cache.TombstoneService;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * This test is only for GLOBAL REPLICATE Regions. Tests are
@@ -168,7 +168,7 @@ public class GlobalRegionCCEDUnitTest extends GlobalRegionDUnitTest {
           CCRegion.put("cckey0", "ccvalue");
           CCRegion.put("cckey0", "ccvalue"); // version number will end up at 4
         } catch (CacheException ex) {
-          fail("While creating region", ex);
+          Assert.fail("While creating region", ex);
         }
       }
     };
@@ -190,7 +190,7 @@ public class GlobalRegionCCEDUnitTest extends GlobalRegionDUnitTest {
         try {
           entry.makeTombstone(CCRegion, tag);
         } catch (RegionClearedException e) {
-          fail("region was mysteriously cleared during unit testing", e);
+          Assert.fail("region was mysteriously cleared during unit testing", e);
         }
       }
     });

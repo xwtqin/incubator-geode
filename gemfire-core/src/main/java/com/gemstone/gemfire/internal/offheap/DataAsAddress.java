@@ -19,6 +19,7 @@ package com.gemstone.gemfire.internal.offheap;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.cache.BytesAndBitsForCompactor;
 import com.gemstone.gemfire.internal.cache.EntryBits;
+import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.cache.RegionEntryContext;
 
@@ -59,7 +60,13 @@ public class DataAsAddress extends AbstractStoredObject {
   }
 
   public byte[] getDecompressedBytes(RegionEntryContext r) {
-    return OffHeapRegionEntryHelper.encodedAddressToBytes(this.address, true, r);
+    byte[] bytes = OffHeapRegionEntryHelper.decodeAddressToBytes(getEncodedAddress(), true, true);
+    if (isCompressed()) {
+        long time = r.getCachePerfStats().startDecompression();
+        bytes = r.getCompressor().decompress(bytes);
+        r.getCachePerfStats().endDecompression(time);
+    }
+    return bytes;
   }
 
   /**
@@ -67,17 +74,21 @@ public class DataAsAddress extends AbstractStoredObject {
    * Otherwise return the serialize bytes in us in a byte array.
    */
   public byte[] getRawBytes() {
-    return OffHeapRegionEntryHelper.encodedAddressToRawBytes(this.address);
+    return OffHeapRegionEntryHelper.decodeAddressToBytes(getEncodedAddress(), true, false);
   }
   
   @Override
   public byte[] getSerializedValue() {
-    return OffHeapRegionEntryHelper.encodedAddressToBytes(this.address);
+    byte[] value = OffHeapRegionEntryHelper.decodeAddressToBytes(this.address, true, false);
+    if (!isSerialized()) {
+      value = EntryEventImpl.serialize(value);
+    }
+    return value;
   }
 
   @Override
   public Object getDeserializedValue(Region r, RegionEntry re) {
-    return OffHeapRegionEntryHelper.encodedAddressToObject(this.address);
+    return OffHeapRegionEntryHelper.decodeAddressToObject(this.address);
   }
 
   @Override

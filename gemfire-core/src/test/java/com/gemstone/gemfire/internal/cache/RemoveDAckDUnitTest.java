@@ -19,8 +19,10 @@
  *
  * Created on September 15, 2005, 12:41 PM
  */
-
 package com.gemstone.gemfire.internal.cache;
+
+import java.util.Properties;
+
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
@@ -31,10 +33,11 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.*;
-
-import java.util.Properties;
 /**
  *
  * @author vjadhav
@@ -63,16 +66,16 @@ public class RemoveDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(RemoveDAckDUnitTest.class, "createCacheVM0");
       vm1.invoke(RemoveDAckDUnitTest.class, "createCacheVM1");
-      getLogWriter().fine("Cache created in successfully");
+      LogWriterUtils.getLogWriter().fine("Cache created in successfully");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(RemoveDAckDUnitTest.class, "closeCache");
-        vm1.invoke(RemoveDAckDUnitTest.class, "closeCache");
-        
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(RemoveDAckDUnitTest.class, "closeCache");
+      vm1.invoke(RemoveDAckDUnitTest.class, "closeCache");
     }
     
     public static void createCacheVM0(){

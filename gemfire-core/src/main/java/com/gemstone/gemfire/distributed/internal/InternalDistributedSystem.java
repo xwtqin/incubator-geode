@@ -115,7 +115,7 @@ import com.gemstone.gemfire.security.GemFireSecurityException;
  * @since 3.0
  *
  */
-public final class InternalDistributedSystem
+public class InternalDistributedSystem
   extends DistributedSystem
   implements OsStatisticsFactory, StatisticsManager
 {
@@ -177,7 +177,7 @@ public final class InternalDistributedSystem
   /** Is this <code>DistributedSystem</code> connected to a
    * distributed system? 
    *
-   * @guarded.By {@link #isConnectedMutex} for writes
+   * Concurrency: volatile for reads and protected by synchronization of {@link #isConnectedMutex} for writes
    */
   protected volatile boolean isConnected;
 
@@ -284,6 +284,19 @@ public final class InternalDistributedSystem
         SystemFailure.stopThreads();
       }
     }
+  }
+  
+  
+  /**
+   * creates a non-functional instance for testing
+   * @param nonDefault - non-default distributed system properties
+   */
+  public static InternalDistributedSystem newInstanceForTesting(DM dm, Properties nonDefault) {
+    InternalDistributedSystem sys = new InternalDistributedSystem(nonDefault);
+    sys.config = new RuntimeDistributionConfigImpl(sys);
+    sys.dm = dm;
+    sys.isConnected = true;
+    return sys;
   }
 
   /**
@@ -529,10 +542,8 @@ public final class InternalDistributedSystem
       }
     }
 
-    if (this.isLoner) {
-      this.config = new RuntimeDistributionConfigImpl(this);
-    } else {
-      this.config = new RuntimeDistributionConfigImpl(this);
+    this.config = new RuntimeDistributionConfigImpl(this);
+    if (!this.isLoner) {
       this.attemptingToReconnect = (reconnectAttemptCounter > 0);
     }
     try {
@@ -767,7 +778,8 @@ public final class InternalDistributedSystem
    * @since 5.7
    */
   private void endInitLocator() throws IOException {
-    if (startedLocator != null) {
+    InternalLocator loc = this.startedLocator;
+    if (loc != null) {
       String locatorString = this.originalConfig.getStartLocator();
 //      DistributionLocatorId locId = new DistributionLocatorId(locatorString);
       boolean finished = false;
@@ -776,14 +788,14 @@ public final class InternalDistributedSystem
         // start server location services in order to be able to log information
         // about the use of cache servers
         //      if(locId.isServerLocator()) {
-        this.startedLocator.startServerLocation(this);
+        loc.startServerLocation(this);
         //      }
       
-        this.startedLocator.endStartLocator(this);
+        loc.endStartLocator(this);
         finished = true;
       } finally {
         if (!finished) {
-          this.startedLocator.stop();
+          loc.stop();
         }
       }
     }
@@ -1315,12 +1327,14 @@ public final class InternalDistributedSystem
           shutdownListeners = doDisconnects(attemptingToReconnect, reason);
         }
     
-        if (this.logWriterAppender != null) {
-          LogWriterAppenders.stop(LogWriterAppenders.Identifier.MAIN);
-        }
-        if (this.securityLogWriterAppender != null) {
-          // LOG:SECURITY: old code did NOT invoke this
-          LogWriterAppenders.stop(LogWriterAppenders.Identifier.SECURITY);
+        if (!this.attemptingToReconnect) {
+          if (this.logWriterAppender != null) {
+            LogWriterAppenders.stop(LogWriterAppenders.Identifier.MAIN);
+          }
+          if (this.securityLogWriterAppender != null) {
+            // LOG:SECURITY: old code did NOT invoke this
+            LogWriterAppenders.stop(LogWriterAppenders.Identifier.SECURITY);
+          }
         }
         
         AlertAppender.getInstance().shuttingDown();
@@ -1365,11 +1379,13 @@ public final class InternalDistributedSystem
         this.sampler = null;
       }
 
-      if (this.logWriterAppender != null) {
-        LogWriterAppenders.destroy(LogWriterAppenders.Identifier.MAIN);
-      }
-      if (this.securityLogWriterAppender != null) {
-        LogWriterAppenders.destroy(LogWriterAppenders.Identifier.SECURITY);
+      if (!this.attemptingToReconnect) {
+        if (this.logWriterAppender != null) {
+          LogWriterAppenders.destroy(LogWriterAppenders.Identifier.MAIN);
+        }
+        if (this.securityLogWriterAppender != null) {
+          LogWriterAppenders.destroy(LogWriterAppenders.Identifier.SECURITY);
+        }
       }
 
       // NOTE: no logging after this point :-)

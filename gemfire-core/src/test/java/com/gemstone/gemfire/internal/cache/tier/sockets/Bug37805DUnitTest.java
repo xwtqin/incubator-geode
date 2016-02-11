@@ -28,10 +28,10 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * 
@@ -65,7 +65,8 @@ public class Bug37805DUnitTest extends DistributedTestCase{
     CacheServerTestUtil.disableShufflingOfEndpoints();
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     // Stop server 1
     this.server1VM.invoke(CacheServerTestUtil.class, "closeCache");
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();
@@ -85,7 +86,7 @@ public class Bug37805DUnitTest extends DistributedTestCase{
 
     this.durableClientVM.invoke(CacheServerTestUtil.class, "createCacheClient",
         new Object[] {
-            getClientPool(getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
+            getClientPool(NetworkUtils.getServerHostName(durableClientVM.getHost()), PORT1, true, 0),
             regionName,
             getDurableClientDistributedSystemProperties(durableClientId,
                 durableClientTimeout), Boolean.TRUE });

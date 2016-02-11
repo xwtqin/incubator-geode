@@ -29,7 +29,7 @@ public class RefCountChangeInfo extends Throwable {
   private final String threadName;
   private final int rc;
   private final Object owner;
-  private int dupCount;
+  private int useCount;
   
   public RefCountChangeInfo(boolean decRefCount, int rc, Object owner) {
     super(decRefCount ? "FREE" : "USED");
@@ -42,11 +42,16 @@ public class RefCountChangeInfo extends Throwable {
     return this.owner;
   }
   
-  public int getDupCount() {
-    return this.dupCount;
+  public int getUseCount() {
+    return this.useCount;
   }
-  public void decDupCount() {
-    this.dupCount--;
+  public int incUseCount() {
+    this.useCount++;
+    return this.useCount;
+  }  
+  public int decUseCount() {
+    this.useCount--;
+    return this.useCount;
   }
 
   @Override
@@ -56,9 +61,9 @@ public class RefCountChangeInfo extends Throwable {
     ps.print(this.getMessage());
     ps.print(" rc=");
     ps.print(this.rc);
-    if (this.dupCount > 0) {
-      ps.print(" dupCount=");
-      ps.print(this.dupCount);
+    if (this.useCount > 0) {
+      ps.print(" useCount=");
+      ps.print(this.useCount);
     }
     ps.print(" by ");
     ps.print(this.threadName);
@@ -68,45 +73,58 @@ public class RefCountChangeInfo extends Throwable {
       ps.print("@");
       ps.print(System.identityHashCode(this.owner));
     }
+    
     ps.println(": ");
-    StackTraceElement[] trace = getStackTrace();
-    // skip the initial elements from SimpleMemoryAllocatorImpl
-    int skip=0;
-    for (int i=0; i < trace.length; i++) {
-      if (!trace[i].getClassName().contains("SimpleMemoryAllocatorImpl")) {
-        skip = i;
-        break;
-      }
-    }
-    for (int i=skip; i < trace.length; i++) {
-      ps.println("\tat " + trace[i]);
-    }
+    cleanStackTrace(ps); 
     ps.flush();
+    
     return baos.toString();
   }
-  
-  public boolean isDuplicate(RefCountChangeInfo other) {
+
+  public boolean isSameCaller(RefCountChangeInfo other) {
     if (!getMessage().equals(other.getMessage())) return false;
-    String trace = getStackTraceString();
-    String traceOther = other.getStackTraceString();
+    Object trace = getStackTraceString();
+    Object traceOther = other.getStackTraceString();
     if (trace.hashCode() != traceOther.hashCode()) return false;
     if (trace.equals(traceOther)) {
-      this.dupCount++;
       return true;
     } else {
       return false;
     }
   }
 
-  private String stackTraceString;
-  private String getStackTraceString() {
-    String result = this.stackTraceString;
+  private Object stackTraceString;
+
+  Object getStackTraceString() {
+    Object result = this.stackTraceString;
     if (result == null) {
-      StringPrintWriter spr = new StringPrintWriter();
-      printStackTrace(spr);
-      result = spr.getBuilder().toString();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream(64 * 1024);
+      PrintStream spr = new PrintStream(baos);
+      cleanStackTrace(spr);
+      result = baos.toString();
       this.stackTraceString = result;
     }
     return result;
   }
+  
+  void setStackTraceString(Object sts) {
+    stackTraceString = sts;
+  }
+
+  private void cleanStackTrace(PrintStream ps) {
+    StackTraceElement[] trace = getStackTrace();
+    // skip the initial elements from the offheap package
+    int skip=0;
+    for (int i=0; i < trace.length; i++) {
+      if(!(trace[i].toString().contains("com.gemstone.gemfire.internal.offheap"))) {
+        skip = i;
+        break;
+      }
+    }
+    for (int i=skip; i < trace.length; i++) {
+      ps.println("\tat " + trace[i]);
+    }   
+}
+
+
 }

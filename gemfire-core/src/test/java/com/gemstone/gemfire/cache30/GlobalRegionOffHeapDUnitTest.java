@@ -22,8 +22,8 @@ import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
-
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
  * Tests Global Region with OffHeap memory.
@@ -39,7 +39,7 @@ public class GlobalRegionOffHeapDUnitTest extends GlobalRegionDUnitTest {
   }
   
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -49,15 +49,9 @@ public class GlobalRegionOffHeapDUnitTest extends GlobalRegionDUnitTest {
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    Invoke.invokeInEveryVM(checkOrphans);
+    checkOrphans.run();
   }
-
-  
   
   @Override
   public void DISABLED_testNBRegionInvalidationDuringGetInitialImage() throws Throwable {

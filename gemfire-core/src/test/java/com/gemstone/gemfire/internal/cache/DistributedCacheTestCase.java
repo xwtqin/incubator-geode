@@ -16,13 +16,25 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
-import com.gemstone.gemfire.*;
-import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.InternalGemFireException;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheLoader;
+import com.gemstone.gemfire.cache.CacheLoaderException;
+import com.gemstone.gemfire.cache.EntryNotFoundException;
+import com.gemstone.gemfire.cache.LoaderHelper;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.distributed.internal.DistributionManager;
+import com.gemstone.gemfire.distributed.internal.DistributionManagerDUnitTest;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.Assert;
-import com.gemstone.gemfire.distributed.internal.*;
-import dunit.*;
-//import java.io.File;
-//import java.util.*;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * This is the abstract superclass of tests that validate the
@@ -93,7 +105,8 @@ public abstract class DistributedCacheTestCase
   /**
    * Closes the cache in this VM and each remote VM
    */
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     StringBuffer problems = new StringBuffer();
 
     if (cache != null) {
@@ -126,8 +139,6 @@ public abstract class DistributedCacheTestCase
 
     assertEquals("Problems while tearing down", 
                  "", problems.toString().trim());
-
-    super.tearDown2();
   }
 
   /**
@@ -218,7 +229,7 @@ public abstract class DistributedCacheTestCase
 
     Region newRegion =
       root.createSubregion(name, factory.create());
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
       "Created Region '" + newRegion.getFullPath() + "'");
   }
 
@@ -290,7 +301,7 @@ public abstract class DistributedCacheTestCase
                              factory.create());
     sub.create(entryName, null);
 
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
       "Defined Entry named '" + entryName + "' in region '" +
       sub.getFullPath() +"'");
   }
@@ -317,7 +328,7 @@ public abstract class DistributedCacheTestCase
 
     sub.put(entryName, value);
 
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
       "Put value " + value + " in entry " + entryName + " in region '" +
       region.getFullPath() +"'");
   }
@@ -350,8 +361,6 @@ public abstract class DistributedCacheTestCase
    *        Must be {@link java.io.Serializable}
    * @param value
    *        The value used to replace
-   *
-   * @see Region#put()
    */
   protected static void remoteReplace(String regionName,
                                       String entryName,
@@ -368,7 +377,7 @@ public abstract class DistributedCacheTestCase
 
     sub.put(entryName, value);
 
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
       "Replaced value " + value + "in entry " + entryName + " in region '" +
       region.getFullPath() +"'");
   }
@@ -381,8 +390,6 @@ public abstract class DistributedCacheTestCase
    *        region 
    * @param entryName
    *        Must be {@link java.io.Serializable}
-   *
-   * @see Region#replace()
    */
   protected static void remoteInvalidate(String regionName,
                                          String entryName)
@@ -407,8 +414,6 @@ public abstract class DistributedCacheTestCase
    *        region 
    * @param entryName
    *        Must be {@link java.io.Serializable}
-   *
-   * @see Region#replace()
    */
   protected static void remoteDestroy(String regionName,
                                       String entryName)
@@ -461,7 +466,7 @@ public abstract class DistributedCacheTestCase
     Host host = Host.getHost(0);
     int vmCount = host.getVMCount();
     for (int i=0; i<vmCount; i++) {
-      getLogWriter().info("Invoking " + methodName + "on VM#" + i);
+      LogWriterUtils.getLogWriter().info("Invoking " + methodName + "on VM#" + i);
       host.getVM(i).invoke(this.getClass(), methodName, args);
     }
   }

@@ -16,22 +16,60 @@
  */
 package com.gemstone.gemfire.cache30;
 
-import com.gemstone.gemfire.*;
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.cache.query.*;
-import com.gemstone.gemfire.cache.util.*;
-import com.gemstone.gemfire.distributed.*;
-import com.gemstone.gemfire.distributed.internal.*;
-import com.gemstone.gemfire.distributed.internal.membership.*;
-import com.gemstone.gemfire.internal.cache.*;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
-import dunit.*;
-import dunit.DistributedTestCase.WaitCriterion;
-
-import java.io.*;
-import java.util.*;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.AttributesMutator;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheLoader;
+import com.gemstone.gemfire.cache.CacheLoaderException;
+import com.gemstone.gemfire.cache.CacheTransactionManager;
+import com.gemstone.gemfire.cache.CommitDistributionException;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.ExpirationAction;
+import com.gemstone.gemfire.cache.ExpirationAttributes;
+import com.gemstone.gemfire.cache.LoaderHelper;
+import com.gemstone.gemfire.cache.LossAction;
+import com.gemstone.gemfire.cache.MembershipAttributes;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAccessException;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionDistributionException;
+import com.gemstone.gemfire.cache.RegionEvent;
+import com.gemstone.gemfire.cache.RegionMembershipListener;
+import com.gemstone.gemfire.cache.RegionReinitializedException;
+import com.gemstone.gemfire.cache.RequiredRoles;
+import com.gemstone.gemfire.cache.ResumptionAction;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.query.Query;
+import com.gemstone.gemfire.cache.query.QueryService;
+import com.gemstone.gemfire.cache.util.RegionMembershipListenerAdapter;
+import com.gemstone.gemfire.distributed.Role;
+import com.gemstone.gemfire.distributed.internal.DM;
+import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.membership.InternalRole;
+import com.gemstone.gemfire.internal.cache.AbstractRegion;
+import com.gemstone.gemfire.internal.cache.DistributedCacheOperation;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.TXManagerImpl;
+import com.gemstone.gemfire.internal.cache.TXState;
+import com.gemstone.gemfire.internal.cache.TXStateInterface;
+import com.gemstone.gemfire.internal.cache.TXStateProxyImpl;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * Tests region reliability defined by MembershipAttributes.
@@ -46,9 +84,8 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
   }
 
   @Override
-  public void tearDown2() throws java.lang.Exception {
+  protected final void preTearDownCacheTestCase() throws Exception {
     DistributedCacheOperation.setBeforePutOutgoing(null);
-    super.tearDown2();
   }
 
   // -------------------------------------------------------------------------
@@ -789,7 +826,7 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
         return "expected zero entries but have " + ((LocalRegion) region).basicEntries(false).size();
       }
     };
-    DistributedTestCase.waitForCriterion(wc1, 30*1000, 10, true);
+    Wait.waitForCriterion(wc1, 30*1000, 10, true);
 
     // create region again
     Host.getHost(0).getVM(1).invoke(new CacheSerializableRunnable("Create Region") {
@@ -971,7 +1008,7 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
         return "expected region " + region + " to be destroyed";
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 30*1000, 10, true);
+    Wait.waitForCriterion(wc, 30*1000, 10, true);
   }
   
   public static void waitForEntryDestroy(final Region region, final Object key) {
@@ -983,7 +1020,7 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
         return "expected entry " + key + " to not exist but it has the value " + region.get(key);
       }
     };
-    DistributedTestCase.waitForCriterion(wc, 30*1000, 10, true);
+    Wait.waitForCriterion(wc, 30*1000, 10, true);
   }
   
   /**
@@ -1376,7 +1413,7 @@ public abstract class RegionReliabilityTestCase extends ReliabilityTestCase {
       }
     });
     
-    DistributedTestCase.join(thread, 30 * 1000, getLogWriter());
+    ThreadUtils.join(thread, 30 * 1000);
     assertTrue(region.isDestroyed());
     try {
       region.put("fee", "fi");

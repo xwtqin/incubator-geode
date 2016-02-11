@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 
 public class CLISecurityDUnitTest extends CommandTestBase {
 
@@ -24,8 +25,8 @@ public class CLISecurityDUnitTest extends CommandTestBase {
   }
 
   protected void writeToLog(String text, String resultAsString) {
-    getLogWriter().info(testName + "\n");
-    getLogWriter().info(resultAsString);
+    LogWriterUtils.getLogWriter().info(getTestMethodName() + "\n");
+    LogWriterUtils.getLogWriter().info(resultAsString);
   }
 
   public void setUp() throws Exception {
@@ -34,9 +35,8 @@ public class CLISecurityDUnitTest extends CommandTestBase {
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  public void preTearDownCacheTestCase() throws Exception {
     deleteTempFile();
-    super.tearDown2();
   }
 
   private void createTempFile() {

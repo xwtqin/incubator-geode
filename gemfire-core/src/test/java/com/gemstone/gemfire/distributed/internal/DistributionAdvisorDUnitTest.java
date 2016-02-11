@@ -14,15 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.gemstone.gemfire.distributed.internal;
 
-import dunit.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import com.gemstone.gemfire.CancelCriterion;
-import com.gemstone.gemfire.distributed.internal.membership.*;
-
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 /**
  *
@@ -40,7 +44,7 @@ public class DistributionAdvisorDUnitTest extends DistributedTestCase {
   public void setUp() throws Exception {
     super.setUp();
     // connect to distributed system in every VM
-    invokeInEveryVM(new SerializableRunnable("DistributionAdvisorDUnitTest: SetUp") {
+    Invoke.invokeInEveryVM(new SerializableRunnable("DistributionAdvisorDUnitTest: SetUp") {
       public void run() {
         getSystem();
       }
@@ -78,9 +82,9 @@ public class DistributionAdvisorDUnitTest extends DistributedTestCase {
                     new DistributionAdvisor.Profile[profileList.size()]);
   }
     
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     this.advisor.close();
-    super.tearDown2();
   }
   
     

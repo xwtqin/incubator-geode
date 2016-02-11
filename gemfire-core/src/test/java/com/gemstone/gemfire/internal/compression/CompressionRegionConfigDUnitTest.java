@@ -27,13 +27,15 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.compression.Compressor;
 import com.gemstone.gemfire.compression.SnappyCompressor;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.standalone.DUnitLauncher;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 
 /**
  * Sanity checks on a number of basic cluster configurations with compression turned on.
@@ -74,11 +76,6 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
     super.setUp();
   }
   
-  @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-
   /**
    * Sanity check using two peers sharing a replicated region.
    * @throws Exception
@@ -237,7 +234,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
    * @param key the key to wait on.
    */
   private void waitOnPut(final VM vm, final String key) {
-    DistributedTestCase.waitForCriterion(new DistributedTestCase.WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       @Override
       public boolean done() {
         return (getUsingVM(vm, key) != null);
@@ -372,7 +369,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createServerRegion(name,dataPolicy,compressor));
         } catch(Exception e) {
-          getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -395,7 +392,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createRegion(name,dataPolicy,compressor));
         } catch(Exception e) {
-          getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -418,7 +415,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createRegion(name,dataPolicy,compressor,diskStoreName));
         } catch(Exception e) {
-          getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -442,7 +439,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
         try {
           assertNotNull(createClientRegion(name,compressor,shortcut));
         } catch(Exception e) {
-          getLogWriter().error("Could not create the compressed region", e);
+          LogWriterUtils.getLogWriter().error("Could not create the compressed region", e);
           return Boolean.FALSE;
         }
         
@@ -524,7 +521,7 @@ public class CompressionRegionConfigDUnitTest extends CacheTestCase {
     } 
     // Running in hydra
     else {
-      return getDUnitLocatorPort();
+      return DistributedTestUtils.getDUnitLocatorPort();
     }
   }
 }

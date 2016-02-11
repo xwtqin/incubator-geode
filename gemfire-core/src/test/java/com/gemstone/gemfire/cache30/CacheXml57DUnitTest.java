@@ -33,9 +33,9 @@ import com.gemstone.gemfire.cache.ExpirationAttributes;
 import com.gemstone.gemfire.cache.InterestPolicy;
 import com.gemstone.gemfire.cache.MirrorType;
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.Region.Entry;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.SubscriptionAttributes;
-import com.gemstone.gemfire.cache.Region.Entry;
 import com.gemstone.gemfire.cache.client.Pool;
 import com.gemstone.gemfire.cache.client.PoolFactory;
 import com.gemstone.gemfire.cache.client.PoolManager;
@@ -52,12 +52,14 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
 import com.gemstone.gemfire.internal.cache.xmlcache.Declarable2;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionCreation;
+import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
-
-import junit.framework.*;
+import junit.framework.Assert;
 
 /**
  * Tests 5.7 cache.xml features.
@@ -207,7 +209,7 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
     RegionAttributesCreation attrs = new RegionAttributesCreation(cache);
     attrs.setPoolName("mypool");
     cache.createVMRegion("rootNORMAL", attrs);
-    addExpectedException("Connection refused: connect");
+    IgnoredException.addIgnoredException("Connection refused: connect");
     testXml(cache);
     Cache c = getCache();
     assertNotNull(c);
@@ -326,10 +328,13 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
     RegionAttributesCreation attrs = new RegionAttributesCreation(cache);
     attrs.setPoolName("mypool");
     cache.createVMRegion("rootNORMAL", attrs);
+    IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.AbstractRegion_THE_CONNECTION_POOL_0_HAS_NOT_BEEN_CREATED.toLocalizedString("mypool"));
     try {
       testXml(cache);
       fail("expected IllegalStateException");
     } catch (IllegalStateException expected) {
+    } finally {
+      expectedException.remove();
     }
   }
   public void testAlreadyExistingPool() throws CacheException {
@@ -341,10 +346,13 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
       // now make sure declarative cache can't create the same pool
       CacheCreation cache = new CacheCreation();
       cache.createPoolFactory().addLocator(ALIAS2, 12345).create("mypool");
+      IgnoredException expectedException = IgnoredException.addIgnoredException(LocalizedStrings.PoolManagerImpl_POOL_NAMED_0_ALREADY_EXISTS.toLocalizedString("mypool"));
       try {
         testXml(cache);
         fail("expected IllegalStateException");
       } catch (IllegalStateException expected) {
+      } finally {
+        expectedException.remove();
       }
     } finally {
       PoolManager.close();
@@ -352,10 +360,10 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
   }
 
   public void testDynamicRegionFactoryConnectionPool() throws CacheException, IOException {
-    addExpectedException("Connection reset");
-    addExpectedException("SocketTimeoutException");
-    addExpectedException("ServerConnectivityException");
-    addExpectedException("Socket Closed");
+    IgnoredException.addIgnoredException("Connection reset");
+    IgnoredException.addIgnoredException("SocketTimeoutException");
+    IgnoredException.addIgnoredException("ServerConnectivityException");
+    IgnoredException.addIgnoredException("Socket Closed");
     getSystem();
     VM vm0 = Host.getHost(0).getVM(0);
     final int port = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
@@ -372,7 +380,7 @@ public class CacheXml57DUnitTest extends CacheXml55DUnitTest
     });
     CacheCreation cache = new CacheCreation();
     cache.createPoolFactory()
-    .addServer(getServerHostName(vm0.getHost()), port)
+    .addServer(NetworkUtils.getServerHostName(vm0.getHost()), port)
       .setSubscriptionEnabled(true)
     .create("connectionPool");
     cache.setDynamicRegionFactoryConfig(new DynamicRegionFactory.Config(null, "connectionPool", false, false));

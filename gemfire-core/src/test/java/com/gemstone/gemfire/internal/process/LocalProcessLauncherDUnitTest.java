@@ -25,11 +25,10 @@ import java.io.IOException;
 import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.internal.process.LocalProcessLauncher;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableRunnable;
 
 /**
  * Multi-process tests for ProcessLauncher.
@@ -48,10 +47,6 @@ public class LocalProcessLauncherDUnitTest extends DistributedTestCase {
   public void setUp() throws Exception {
     super.setUp();
     new File(getClass().getSimpleName()).mkdir();
-  }
-  
-  @Override
-  public void tearDown2() throws Exception {
   }
   
   public void testExistingPidFileThrows() throws Exception {

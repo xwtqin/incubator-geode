@@ -39,10 +39,9 @@ import com.gemstone.gemfire.cache.client.internal.Connection;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
 
 /**
  * Make sure max-connections on cache server is enforced
@@ -71,9 +70,6 @@ public class CacheServerMaxConnectionsJUnitTest
 
   /**
    * Close the cache and disconnects from the distributed system
-   *
-   * @exception -
-   *              thrown if any exception occured in closing cache/ds
    */
   @After
   public void tearDown() throws Exception
@@ -181,7 +177,7 @@ public class CacheServerMaxConnectionsJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 1000, 200, true);
+    Wait.waitForCriterion(ev, 1000, 200, true);
     assertEquals(MAX_CNXS, s.getInt("currentClientConnections"));
     assertEquals(1, s.getInt("currentClients"));
     this.system.getLogWriter().info("<ExpectedException action=add>" 
@@ -218,7 +214,7 @@ public class CacheServerMaxConnectionsJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 3 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 3 * 1000, 200, true);
     this.system.getLogWriter().info("currentClients="
         + s.getInt("currentClients")
         + " currentClientConnections="

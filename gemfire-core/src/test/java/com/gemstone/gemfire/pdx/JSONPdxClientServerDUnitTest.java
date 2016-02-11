@@ -40,12 +40,11 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
-
 import com.gemstone.gemfire.pdx.internal.json.PdxToJSON;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
 
 import org.json.JSONException;
@@ -61,7 +60,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() {
+  protected final void preTearDownCacheTestCase() {
     // this test creates client caches in some VMs and so
     // breaks the contract of CacheTestCase to hold caches in
     // that class's "cache" instance variable
@@ -596,7 +595,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.PROXY)
@@ -612,7 +611,7 @@ public class JSONPdxClientServerDUnitTest extends CacheTestCase {
     SerializableCallable createRegion = new SerializableCallable() {
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(vm.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(vm.getHost()), port);
         cf.setPoolThreadLocalConnections(threadLocalConnections);
         cf.setPdxReadSerialized(isPdxReadSerialized);
         ClientCache cache = getClientCache(cf);

@@ -42,7 +42,6 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.control.RebalanceOperation;
 import com.gemstone.gemfire.cache.control.RebalanceResults;
 import com.gemstone.gemfire.cache.control.ResourceManager;
-import com.gemstone.gemfire.cache.partition.PartitionManager;
 import com.gemstone.gemfire.cache.partition.PartitionRegionHelper;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
@@ -72,11 +71,12 @@ import com.gemstone.gemfire.internal.cache.partitioned.PartitionedRegionObserver
 import com.gemstone.gemfire.internal.cache.partitioned.PartitionedRegionObserverHolder;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
 import com.gemstone.gemfire.internal.cache.tier.sockets.Message;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
-import dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This is the base class to do operations
@@ -156,7 +156,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       assertNotNull(cache);
     }
     catch (Exception e) {
-      fail("Failed while creating the cache", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Failed while creating the cache", e);
     }
   }
 
@@ -197,7 +197,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     try {
       RebalanceResults result = operation.getResults();
     } catch (InterruptedException e) {
-      fail("Not expecting exception", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Not expecting exception", e);
     }
     
   }
@@ -344,7 +344,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           assertEquals(customer, region_Cust.get(custid));
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "getForColocation : failed while doing get operation in CustomerPartitionedRegion ",
               e);
         }
@@ -459,11 +459,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
         partitionedregion.put(custid, customer);
       }
       catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterUtils.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
   }
   
@@ -483,11 +483,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           partitionedregion.put(orderId, order);
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -510,11 +510,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             partitionedregion.put(shipmentId, shipment);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -534,11 +534,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
         partitionedregion.put(custid, customer);
       }
       catch (Exception e) {
-        fail(
+        com.gemstone.gemfire.test.dunit.Assert.fail(
             "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
             e);
       }
-      getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
+      LogWriterUtils.getLogWriter().info("Customer :- { " + custid + " : " + customer + " }");
     }
   }
   
@@ -558,11 +558,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           partitionedregion.put(orderId, order);
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
               e);
         }
-        getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+        LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
       }
     }
   }
@@ -585,11 +585,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             partitionedregion.put(shipmentId, shipment);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                 e);
           }
-          getLogWriter().info(
+          LogWriterUtils.getLogWriter().info(
               "Shipment :- { " + shipmentId + " : " + shipment + " }");
         }
       }
@@ -610,11 +610,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           partitionedregion.put(custid, customer);
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
               e);
         }
-        getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info("Customer :- { " + custid + " : " + customer + " }");
       }
     }
@@ -637,11 +637,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             partitionedregion.put(orderId, order);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                 e);
           }
-          getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+          LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
         }
       }
     }
@@ -666,11 +666,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               partitionedregion.put(shipmentId, shipment);
             }
             catch (Exception e) {
-              fail(
+              com.gemstone.gemfire.test.dunit.Assert.fail(
                   "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                   e);
             }
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Shipment :- { " + shipmentId + " : " + shipment + " }");
           }
         }
@@ -692,11 +692,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           partitionedregion.put(custid, customer);
         }
         catch (Exception e) {
-          fail(
+          com.gemstone.gemfire.test.dunit.Assert.fail(
               "putCustomerPartitionedRegion : failed while doing put operation in CustomerPartitionedRegion ",
               e);
         }
-        getLogWriter()
+        LogWriterUtils.getLogWriter()
             .info("Customer :- { " + custid + " : " + customer + " }");
       }
     }
@@ -719,11 +719,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             partitionedregion.put(orderId, order);
           }
           catch (Exception e) {
-            fail(
+            com.gemstone.gemfire.test.dunit.Assert.fail(
                 "putOrderPartitionedRegion : failed while doing put operation in OrderPartitionedRegion ",
                 e);
           }
-          getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
+          LogWriterUtils.getLogWriter().info("Order :- { " + orderId + " : " + order + " }");
         }
       }
     }
@@ -748,11 +748,11 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
               partitionedregion.put(shipmentId, shipment);
             }
             catch (Exception e) {
-              fail(
+              com.gemstone.gemfire.test.dunit.Assert.fail(
                   "putShipmentPartitionedRegion : failed while doing put operation in ShipmentPartitionedRegion ",
                   e);
             }
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 "Shipment :- { " + shipmentId + " : " + shipment + " }");
           }
         }
@@ -802,7 +802,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       }
     }
     catch (ParseException e) {
-      FixedPartitioningTestBase.fail("Exception Occured while parseing date", e);
+      com.gemstone.gemfire.test.dunit.Assert.fail("Exception Occured while parseing date", e);
     }
     return null;
   }
@@ -824,7 +824,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           .getRegion(Region.SEPARATOR + shipmentPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      com.gemstone.gemfire.test.dunit.Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -853,7 +853,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           // assertNotNull(orderPartitionedregion.get(orderId));
 
           if (custId.equals(orderId.getCustId())) {
-            getLogWriter().info(
+            LogWriterUtils.getLogWriter().info(
                 orderId + "belongs to node " + idmForCustomer + " "
                     + idmForOrder);
             assertEquals(idmForCustomer, idmForOrder);
@@ -865,7 +865,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             ShipmentId shipmentId = (ShipmentId)shipmentIterator.next();
             // assertNotNull(shipmentPartitionedregion.get(shipmentId));
             if (orderId.equals(shipmentId.getOrderId())) {
-              getLogWriter().info(
+              LogWriterUtils.getLogWriter().info(
                   shipmentId + "belongs to node " + idmForOrder + " "
                       + idmForShipment);
             }
@@ -1089,15 +1089,15 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       Integer primaryBuckets) {
     HashMap localBucket2RegionMap = (HashMap)region_FPR.getDataStore()
         .getSizeLocally();
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of the " + region_FPR + " in this VM :- "
             + localBucket2RegionMap.size() + "List of buckets : "
             + localBucket2RegionMap.keySet());
     assertEquals(numBuckets.intValue(), localBucket2RegionMap.size());
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of primary buckets the " + region_FPR + " in this VM :- "
             + region_FPR.getDataStore().getNumberOfPrimaryBucketsManaged());
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Lit of Primaries in this VM :- "
             + region_FPR.getDataStore().getAllLocalPrimaryBucketIds());
     
@@ -1109,15 +1109,15 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
       Integer numBuckets, Integer primaryBuckets) {
     HashMap localBucket2RegionMap = (HashMap)region_FPR.getDataStore()
         .getSizeLocally();
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of the " + region_FPR + " in this VM :- "
             + localBucket2RegionMap.size() + "List of buckets : "
             + localBucket2RegionMap.keySet());
     assertEquals(numBuckets.intValue(), localBucket2RegionMap.size());
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Size of primary buckets the " + region_FPR + " in this VM :- "
             + region_FPR.getDataStore().getNumberOfPrimaryBucketsManaged());
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "Lit of Primaries in this VM :- "
             + region_FPR.getDataStore().getAllLocalPrimaryBucketIds());
 
@@ -1133,7 +1133,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           .getRegion(Region.SEPARATOR + customerPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      com.gemstone.gemfire.test.dunit.Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -1161,7 +1161,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           .getRegion(Region.SEPARATOR + shipmentPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      com.gemstone.gemfire.test.dunit.Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -1212,7 +1212,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           .getRegion(Region.SEPARATOR + shipmentPartitionedRegionName);
     }
     catch (Exception e) {
-      fail(
+      com.gemstone.gemfire.test.dunit.Assert.fail(
           "validateAfterPutPartitionedRegion : failed while getting the region",
           e);
     }
@@ -1275,89 +1275,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     assertEquals(
         region_FPR.getDataStore().getAllLocalPrimaryBucketIds().size() % 3, 0);
   }
-  
-  public static void createPrimaryBucketsBelongingToThisPartition(
-      String regionName, Boolean destroyExistingRemote,
-      Boolean destroyExistingLocal) {
-    region_FPR = (PartitionedRegion)cache.getRegion(regionName);
-    assertNotNull(region_FPR);
-    int startingBucketId=0;
-    List<FixedPartitionAttributesImpl> fpas = region_FPR
-        .getFixedPartitionAttributesImpl();
-    for (FixedPartitionAttributesImpl fpa : fpas) {
-      if (fpa.isPrimary()) {
-        startingBucketId = fpa.getStartingBucketID();
-        break;
-      }else{
-        startingBucketId = 0;
-      }
-    }
-    final int bucketId = startingBucketId;
-    try {
-      PartitionManager.createPrimaryBucket(region_FPR, startingBucketId,
-          destroyExistingRemote, destroyExistingLocal);
-      waitForCriterion(new WaitCriterion() {
-        
-        public boolean done() {
-          return region_FPR.getBucketPrimary(bucketId) != null;
-        }
-        
-        public String description() {
-          return null;
-        }
-      }, 10000, 100, false);
-    } catch (Exception e) {
-      fail(
-          "Caught exception while creating primary bucket using PartitionManager for FPR",
-          e);
-    }
-  }
-  
-  public static void createPrimaryBucketsBelongingToOtherPartition(
-      String regionName, Boolean destroyExistingRemote,
-      Boolean destroyExistingLocal) {
-    region_FPR = (PartitionedRegion)cache.getRegion(regionName);
-    assertNotNull(region_FPR);
-    int bucketId = 13;
-    List<FixedPartitionAttributesImpl> fpas = region_FPR.getRegionAdvisor()
-        .adviseRemotePrimaryFPAs();
-    for (FixedPartitionAttributesImpl fpa : fpas) {
-      if (fpa.isPrimary()) {
-        bucketId = fpa.getStartingBucketID();
-      }
-    }
 
-    try {
-      PartitionManager.createPrimaryBucket(region_FPR, bucketId,
-          destroyExistingRemote, destroyExistingLocal);
-      fail("PartitionManager created primary bucket not belonging to the node.");
-    } catch (Exception expected) {
-      if (!((expected instanceof IllegalArgumentException) && (expected
-          .getMessage()
-          .contains(
-              "not part of any primary partition on this node for the FixedPartitionRegion")))) {
-        fail("Expected IllegalArgumentException ", expected);
-      }
-    }
-  }
-  
-  public static void createOutOfRangePrimaryBucketUsingPartitionManager(
-      String regionName, Integer bucketId, Boolean destroyExistingRemote,
-      Boolean destroyExistingLocal) {
-    region_FPR = (PartitionedRegion)cache.getRegion(regionName);
-    assertNotNull(region_FPR);
-
-    try {
-      PartitionManager.createPrimaryBucket(region_FPR, bucketId,
-          destroyExistingRemote, destroyExistingLocal);
-      fail("PartitionManager created out of range primary bucket .");
-    } catch (Exception expected) {
-      if (!((expected instanceof IllegalArgumentException) && (expected
-          .getMessage().contains("must be in the range")))) {
-        fail("Expected IllegalArgumentException ", expected);
-      }
-    }
-  }
   
   public static void setPRObserverBeforeCalculateStartingBucketId() {
     PartitionedRegion.BEFORE_CALCULATE_STARTING_BUCKET_FLAG = true;
@@ -1388,8 +1306,8 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
                 return excuse;
               }
             };
-            DistributedTestCase.waitForCriterion(wc, 20000, 500, false);
-            getLogWriter().info("end of beforeCalculatingStartingBucketId");
+            Wait.waitForCriterion(wc, 20000, 500, false);
+            LogWriterUtils.getLogWriter().info("end of beforeCalculatingStartingBucketId");
           }
         });
   }
@@ -1399,7 +1317,8 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     PartitionedRegion.BEFORE_CALCULATE_STARTING_BUCKET_FLAG = false;
   }
   
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     try {
       closeCache();
       member1.invoke(FixedPartitioningTestBase.class, "closeCache");
@@ -1418,7 +1337,6 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
           vm.invoke(FixedPartitioningTestBase.class, "remoteTearDown");
         }
       }
-      super.tearDown2();
     }
   }
 
@@ -1446,7 +1364,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
             throw e;
           }
           catch (Throwable t) {
-            getLogWriter().error(t);
+            LogWriterUtils.getLogWriter().error(t);
           }
         }
       }
@@ -1460,7 +1378,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
         throw e;
       }
       catch (Throwable t) {
-        getLogWriter().error("Error in closing the cache ", t);
+        LogWriterUtils.getLogWriter().error("Error in closing the cache ", t);
         
       }
     }
@@ -1468,7 +1386,7 @@ public class FixedPartitioningTestBase extends DistributedTestCase {
     try {
       cleanDiskDirs();
     } catch(IOException e) {
-      getLogWriter().error("Error cleaning disk dirs", e);
+      LogWriterUtils.getLogWriter().error("Error cleaning disk dirs", e);
     }
   }
   

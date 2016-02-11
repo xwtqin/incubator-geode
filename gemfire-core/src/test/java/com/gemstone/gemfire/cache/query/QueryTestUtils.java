@@ -43,9 +43,8 @@ import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.cache.query.types.CollectionType;
 import com.gemstone.gemfire.cache.query.types.ObjectType;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Utility class for testing supported queries
@@ -1324,7 +1323,6 @@ public class QueryTestUtils implements Serializable {
    *  The VM on which the queries are to be executed
    * @param qarr
    *  Array of keys, queries in the values of which to be executed
-   * @return
    */
   public void executeQueries(VM vm, final String qarr[]) {
     vm.invoke(new CacheSerializableRunnable("Executing query") {
@@ -1442,7 +1440,6 @@ public class QueryTestUtils implements Serializable {
   /**
    * Execute all the queries in the map
    * @param vm
-   * @param qarr
    */
   public void executeAllQueries(VM vm) {
     vm.invoke(new CacheSerializableRunnable("Execute all queries") {
@@ -1454,8 +1451,6 @@ public class QueryTestUtils implements Serializable {
 
   /**
    * Execute all the queries in the map
-   * @param qarr
-   * @throws Exception 
    */
   public Object[] executeAllQueries() {
     qs = cache.getQueryService();
@@ -1484,9 +1479,6 @@ public class QueryTestUtils implements Serializable {
    *    </code></P>
    * @param vm
    *  The vm on which the query is to be executed   
-   * @param qarr
-   *  Array of keys, queries in the values of which to be executed
-   * @return
    */
   public void executeBindQuery(VM vm, final String queryId,
       final Object[] params) {
@@ -1503,9 +1495,6 @@ public class QueryTestUtils implements Serializable {
    *    String[] arr = {"1", "2", "3"};<br>
    *    new QueryTestUtils().executeBindQuery("1", arr);
    *    </code></P>
-   * @param qarr
-   *  Array of keys, queries in the values of which to be executed
-   * @return
    */
   
   public Object executeBindQuery(final String queryId, final Object[] params) {

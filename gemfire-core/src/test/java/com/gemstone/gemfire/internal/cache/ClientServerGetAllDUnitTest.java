@@ -16,19 +16,37 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
-import com.gemstone.gemfire.cache.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.LoaderHelper;
+import com.gemstone.gemfire.cache.PartitionAttributesFactory;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.client.PoolFactory;
+import com.gemstone.gemfire.cache.client.PoolManager;
+import com.gemstone.gemfire.cache.server.CacheServer;
+import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
-import com.gemstone.gemfire.cache30.ClientServerTestCase;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.cache.client.*;
-import com.gemstone.gemfire.cache.server.CacheServer;
-
-import dunit.*;
-
-import java.util.*;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Class <code>ClientServerGetAllDUnitTest</code> test client/server getAll.
@@ -43,8 +61,7 @@ import java.util.*;
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 
@@ -55,7 +72,7 @@ import java.util.*;
     final String regionName = getUniqueName();
     final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -106,7 +123,7 @@ import java.util.*;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
@@ -158,7 +175,7 @@ import java.util.*;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false, true/*offheap*/);
 
@@ -270,7 +287,7 @@ import java.util.*;
     final String regionName = getUniqueName();
     final int mcastPort = 0; /* loner is ok for this test*/ //AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     final int serverPort = AvailablePortHelper.getRandomAvailableTCPPort();
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -381,7 +398,7 @@ import java.util.*;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, true);
 
@@ -443,7 +460,7 @@ import java.util.*;
     int[] ports = AvailablePortHelper.getRandomAvailableTCPPorts(2);
     final int server1Port = ports[0];
     final int server2Port = ports[1];
-    final String serverHost = getServerHostName(server1.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server1.getHost());
 
     createBridgeServer(server1, regionName, server1Port, true, false);
 
@@ -508,7 +525,7 @@ import java.util.*;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
 
     createBridgeServer(server, regionName, serverPort, false, false);
 
@@ -561,7 +578,7 @@ import java.util.*;
     });
 
     // client may see "server unreachable" exceptions after this
-    addExpectedException("Server unreachable", client);
+    IgnoredException.addIgnoredException("Server unreachable", client);
     stopBridgeServer(server);
   }
   
@@ -571,7 +588,7 @@ import java.util.*;
     final VM client = host.getVM(1);
     final String regionName = getUniqueName();
     final int serverPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    final String serverHost = getServerHostName(server.getHost());
+    final String serverHost = NetworkUtils.getServerHostName(server.getHost());
     final int numLocalValues = 101;
     
     createBridgeServerWithoutLoader(server, regionName, serverPort, false);
@@ -652,7 +669,7 @@ import java.util.*;
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         if (offheap) {
           config.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "350m");
         }
@@ -687,7 +704,7 @@ import java.util.*;
           bridge.setMaxThreads(offheap ? 16 : getMaxThreads());
           bridge.start();
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });
@@ -716,7 +733,7 @@ import java.util.*;
       public void run2() throws CacheException {
         // Create DS
         Properties config = new Properties();
-        config.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
+        config.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
         getSystem(config);
 
         // Create Region
@@ -736,7 +753,7 @@ import java.util.*;
           startBridgeServer(serverPort);
           System.out.println("Started bridger server ");
         } catch (Exception e) {
-          fail("While starting CacheServer", e);
+          Assert.fail("While starting CacheServer", e);
         }
       }
     });

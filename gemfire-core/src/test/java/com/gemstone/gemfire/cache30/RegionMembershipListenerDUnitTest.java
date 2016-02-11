@@ -16,21 +16,33 @@
  */
 package com.gemstone.gemfire.cache30;
 
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.cache.util.*;
-import com.gemstone.gemfire.distributed.*;
-import com.gemstone.gemfire.distributed.internal.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheListener;
+import com.gemstone.gemfire.cache.Operation;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionEvent;
+import com.gemstone.gemfire.cache.RegionMembershipListener;
+import com.gemstone.gemfire.cache.util.RegionMembershipListenerAdapter;
+import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DistributionAdvisor.Profile;
-import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManagerHelper;
 import com.gemstone.gemfire.internal.cache.CacheDistributionAdvisor.CacheProfile;
 import com.gemstone.gemfire.internal.cache.DistributedRegion;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
-import java.util.*;
-
-import dunit.*;
 /**
  * Test {@link RegionMembershipListener}
  *
@@ -56,8 +68,7 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     DistributedRegion.TEST_HOOK_ADD_PROFILE = false;
   }
 
@@ -356,9 +367,9 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
           return MyRML.this.toString() + " waiting for Op " + op + " when lastOp was " + getOpName(MyRML.this.lastOp);
         }
       };
-      getLogWriter().info(this.toString() + " waiting for Op " + getOpName(op)
+      LogWriterUtils.getLogWriter().info(this.toString() + " waiting for Op " + getOpName(op)
           + " when lastOp was " + getOpName(this.lastOp));
-      DistributedTestCase.waitForCriterion(ev, this.timeOut, 200, true);
+      Wait.waitForCriterion(ev, this.timeOut, 200, true);
       assertEquals(op, this.lastOp);
       return true;
     }
@@ -377,7 +388,7 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
       this.lastOp = Op.Initial;
       this.lastEvent = null;
       this.initialMembers = initialMembers;
-      getLogWriter().info(this.toString() + " received initialMembers notification for region " + r
+      LogWriterUtils.getLogWriter().info(this.toString() + " received initialMembers notification for region " + r
           + " with members " + Arrays.deepToString(initialMembers));
     }
     public void afterRemoteRegionCreate(RegionEvent event) {
@@ -387,23 +398,23 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
       if (cacheProfile != null) {
         this.memberInitialized = cacheProfile.regionInitialized;
         if (!this.memberInitialized) {
-          getLogWriter().warning("afterRemoteRegionCreate invoked when member is not done initializing!", new Exception("stack trace"));
+          LogWriterUtils.getLogWriter().warning("afterRemoteRegionCreate invoked when member is not done initializing!", new Exception("stack trace"));
         }
-        getLogWriter().info(this.toString() + " received afterRemoteRegionCreate notification for event " + event);
+        LogWriterUtils.getLogWriter().info(this.toString() + " received afterRemoteRegionCreate notification for event " + event);
       } else {
-        getLogWriter().warning("afterRemoteRegionCreate was expecting a profile in the event callback but there was none. " +
+        LogWriterUtils.getLogWriter().warning("afterRemoteRegionCreate was expecting a profile in the event callback but there was none. " +
         		" This indicates a problem with the test hook DistributedRegion.TEST_HOOK_ADD_PROFILE");
       }
     }
     public void afterRemoteRegionDeparture(RegionEvent event) {
       this.lastOp = Op.Departure;
       this.lastEvent = event;
-      getLogWriter().info(this.toString() + " received afterRemoteRegionDeparture notification for event " + event);
+      LogWriterUtils.getLogWriter().info(this.toString() + " received afterRemoteRegionDeparture notification for event " + event);
     }
     public void afterRemoteRegionCrash(RegionEvent event) {
       this.lastOp = Op.Crash;
       this.lastEvent = event;
-      getLogWriter().info(this.toString() + " received afterRemoteRegionCrash notification for event " + event);
+      LogWriterUtils.getLogWriter().info(this.toString() + " received afterRemoteRegionCrash notification for event " + event);
     }
   }
 }

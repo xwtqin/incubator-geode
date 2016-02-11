@@ -57,9 +57,8 @@ import com.gemstone.gemfire.cache.query.internal.ResultsCollectionWrapper;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager.TestHook;
 import com.gemstone.gemfire.cache.query.internal.types.ObjectTypeImpl;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * 
@@ -2055,7 +2054,7 @@ public class LikePredicateJUnitTest {
     assertEquals(5, rs[0][0].size());
 
     // wait for remove to complete
-    DistributedTestCase.join(LikeQueryIndexTestHook.th, 60 * 1000, null);
+    ThreadUtils.join(LikeQueryIndexTestHook.th, 60 * 1000);
 
     // The index should have been removed by now
     assertEquals(0, cache.getQueryService().getIndexes().size());

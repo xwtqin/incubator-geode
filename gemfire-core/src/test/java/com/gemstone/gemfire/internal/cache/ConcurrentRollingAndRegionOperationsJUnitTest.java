@@ -41,9 +41,8 @@ import com.gemstone.gemfire.internal.cache.DiskRegionProperties;
 import com.gemstone.gemfire.internal.cache.DiskRegionTestingBase;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * This JUnit test tests concurrent rolling and normal region operations
@@ -867,7 +866,7 @@ public class ConcurrentRollingAndRegionOperationsJUnitTest extends
     for (int i = 0; i < threads.size(); ++i) {
       Thread th = (Thread)threads.get(i);
       if (th != null) {
-        DistributedTestCase.join(th, 30 * 1000, null);
+        ThreadUtils.join(th, 30 * 1000);
       }
     }
     assertTrue(

@@ -16,9 +16,16 @@
  */
 package com.gemstone.gemfire.cache30;
 
-import com.gemstone.gemfire.cache.*;
-//import com.gemstone.gemfire.cache.util.*;
-//import java.util.*;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheListener;
+import com.gemstone.gemfire.cache.EntryEvent;
+import com.gemstone.gemfire.cache.EntryNotFoundException;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionEvent;
+import com.gemstone.gemfire.internal.cache.AbstractRegionMap;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * An abstract class whose test methods test the functionality of
@@ -234,11 +241,79 @@ public abstract class CacheListenerTestCase
     Region region =
       createRegion(name, factory.create());
 
+    // Does not exist so should not invoke listener
+    try {
+      region.invalidate(key);
+      fail("expected EntryNotFoundException");
+    } catch (EntryNotFoundException expected) {
+    }
+    assertFalse(listener.wasInvoked());
+
     region.create(key, value);
     assertTrue(listener.wasInvoked());
     region.invalidate(key);
     assertTrue(listener.wasInvoked());
+
+    // already invalid so should not invoke listener
+    region.invalidate(key);
+    assertFalse(listener.wasInvoked());
   }
+  
+  public void testCacheListenerAfterInvalidateWithForce() throws CacheException {
+    AbstractRegionMap.FORCE_INVALIDATE_EVENT = true;
+    try {
+      String name = this.getUniqueName();
+      final Object key = this.getUniqueName();
+      final Object value = new Integer(42);
+
+      TestCacheListener listener = new TestCacheListener() {
+          int invalidateCount = 0;
+          public void afterCreate2(EntryEvent event) {
+            // This method will get invoked when the region is populated
+          }
+
+          public void afterInvalidate2(EntryEvent event) {
+            invalidateCount++;
+            assertEquals(key, event.getKey());
+            if (invalidateCount == 2) {
+              assertEquals(value, event.getOldValue());
+            } else {
+              assertNull(event.getOldValue());
+            }
+            assertNull(event.getNewValue());
+            assertFalse(event.isLoad());
+            assertFalse(event.isLocalLoad());
+            assertFalse(event.isNetLoad());
+            assertFalse(event.isNetSearch());
+          }
+        };
+
+      AttributesFactory factory =
+        new AttributesFactory(getRegionAttributes());
+      factory.setCacheListener(listener);
+      Region region =
+        createRegion(name, factory.create());
+
+      // Does not exist but should still invoke listener
+      try {
+        region.invalidate(key);
+        fail("expected EntryNotFoundException");
+      } catch (EntryNotFoundException expected) {
+      }
+      assertTrue(listener.wasInvoked());
+
+      region.create(key, value);
+      assertTrue(listener.wasInvoked());
+      region.invalidate(key);
+      assertTrue(listener.wasInvoked());
+      // already invalid but should still invoke listener
+      region.invalidate(key);
+      assertTrue(listener.wasInvoked());
+    } finally {
+      AbstractRegionMap.FORCE_INVALIDATE_EVENT = false;
+    }
+  }
+
 
   /**
    * Tests that the <code>CacheListener</code> is called after a region
@@ -290,7 +365,7 @@ public abstract class CacheListenerTestCase
     assertTrue(region.getAttributes().getCacheListener() != null);
 //    com.gemstone.gemfire.internal.util.DebuggerSupport.waitForJavaDebugger(getLogWriter());
     region.destroyRegion();
-    pause(100); // extra pause
+    Wait.pause(100); // extra pause
     assertTrue(region.isDestroyed());
     assertTrue(listener.wasInvoked());
 
@@ -345,7 +420,7 @@ public abstract class CacheListenerTestCase
 
     region = createRegion(name, attrs);
     region.invalidateRegion();
-    pause(500);
+    Wait.pause(500);
     assertTrue(listener.wasInvoked());
     assertEquals(0, region.values().size());
   }

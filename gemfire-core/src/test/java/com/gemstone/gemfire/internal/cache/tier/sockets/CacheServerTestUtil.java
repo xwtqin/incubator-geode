@@ -50,8 +50,11 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl;
 import com.gemstone.gemfire.internal.cache.PoolFactoryImpl.PoolAttributes;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
-
-import dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 /**
  *
  * @author Yogesh Mahajan
@@ -60,7 +63,7 @@ import dunit.DistributedTestCase;
 public class CacheServerTestUtil extends DistributedTestCase
 {
   private static Cache cache = null;
-  private static ExpectedException expected;
+  private static IgnoredException expected;
 
   private static PoolImpl pool = null;
 
@@ -157,7 +160,7 @@ public class CacheServerTestUtil extends DistributedTestCase
   public static void createCacheClient(Pool poolAttr, String regionName,
       Properties dsProperties, Boolean addControlListener, Properties javaSystemProperties) throws Exception {  		
       new CacheServerTestUtil("temp").createCache(dsProperties);
-      addExpectedException("java.net.ConnectException||java.net.SocketException");
+      IgnoredException.addIgnoredException("java.net.ConnectException||java.net.SocketException");
       
       if (javaSystemProperties != null && javaSystemProperties.size() > 0) {
       	Enumeration e = javaSystemProperties.propertyNames();
@@ -223,9 +226,9 @@ public class CacheServerTestUtil extends DistributedTestCase
     ccf.set(DistributionConfig.DURABLE_CLIENT_ID_NAME, durableClientId);
     ccf.set(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, String.valueOf(timeout));
     ccf.set("log-file", "abs_client_system.log");
-    ccf.set("log-level", getDUnitLogLevel());
+    ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
     cache = (Cache)ccf.create();
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addIgnoredException("java.net.ConnectionException||java.net.SocketException");
     pool = (PoolImpl)PoolManager.find(poolName);
     
   }
@@ -244,7 +247,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     ccf.set(DistributionConfig.DURABLE_CLIENT_ID_NAME, durableClientId);
     ccf.set(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, String.valueOf(timeout));
     cache = (Cache)ccf.create();
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addIgnoredException("java.net.ConnectionException||java.net.SocketException");
     pool = (PoolImpl)PoolManager.find(poolName);
     
   }
@@ -255,9 +258,9 @@ public class CacheServerTestUtil extends DistributedTestCase
       File cacheXmlFile = new File(url.toURI().getPath());
       ccf.set("cache-xml-file", cacheXmlFile.toURI().getPath());
       ccf.set("mcast-port", "0");
-      ccf.set("locators", "localhost["+DistributedTestCase.getDUnitLocatorPort()+"]");
+      ccf.set("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
       ccf.set("log-file", "abs_server_system.log");
-      ccf.set("log-level", getDUnitLogLevel());
+      ccf.set("log-level", LogWriterUtils.getDUnitLogLevel());
     }
     catch (URISyntaxException e) {
       throw new ExceptionInInitializerError(e);
@@ -272,7 +275,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       File cacheXmlFile = new File(url.toURI().getPath());
       ccf.set("cache-xml-file", cacheXmlFile.toURI().getPath());
       ccf.set("mcast-port", "0");
-      ccf.set("locators", "localhost["+DistributedTestCase.getDUnitLocatorPort()+"]");
+      ccf.set("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     }
     catch (URISyntaxException e) {
       throw new ExceptionInInitializerError(e);
@@ -283,10 +286,6 @@ public class CacheServerTestUtil extends DistributedTestCase
 
   /**
    * Create client regions
-   * @param props
-   * @param regionName1
-   * @param regionName2
-   * @throws Exception
    */
   public static void createCacheClients(Pool poolAttr, String regionName1,
       String regionName2, Properties dsProperties) throws Exception
@@ -331,7 +330,7 @@ public class CacheServerTestUtil extends DistributedTestCase
   {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestCase.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
@@ -353,7 +352,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     Properties props = new Properties();
 //    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestCase.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
@@ -374,7 +373,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       throws Exception {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestCase.getDUnitLocatorPort()+"]");
+    props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     new CacheServerTestUtil("temp").createCache(props);
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
@@ -430,7 +429,7 @@ public class CacheServerTestUtil extends DistributedTestCase
     setSystem(props, cc.getDistributedSystem());
     cache = (Cache)cc;
     assertNotNull(cache);
-    expected = addExpectedException("java.net.ConnectionException||java.net.SocketException");
+    expected = IgnoredException.addIgnoredException("java.net.ConnectionException||java.net.SocketException");
   }
 
   public static void closeCache()
@@ -494,7 +493,7 @@ public class CacheServerTestUtil extends DistributedTestCase
       try {
         server.start();
       } catch(Exception e) {
-        fail("Unexpected exception", e);
+        Assert.fail("Unexpected exception", e);
       }
       assertTrue(server.isRunning());
     }
@@ -516,6 +515,7 @@ public class CacheServerTestUtil extends DistributedTestCase
    */
   public static void disableShufflingOfEndpoints()
   {
+    // TODO DISABLE_RANDOM doesn't seem to be used anywhere
     System.setProperty("gemfire.PoolImpl.DISABLE_RANDOM", "true");
     System.setProperty("gemfire.bridge.disableShufflingOfEndpoints", "true");
   }
@@ -525,6 +525,7 @@ public class CacheServerTestUtil extends DistributedTestCase
    */
   public static void enableShufflingOfEndpoints()
   {
+    // TODO DISABLE_RANDOM doesn't seem to be used anywhere
     System.setProperty("gemfire.PoolImpl.DISABLE_RANDOM", "false");
     System.setProperty("gemfire.bridge.disableShufflingOfEndpoints", "false");
   }

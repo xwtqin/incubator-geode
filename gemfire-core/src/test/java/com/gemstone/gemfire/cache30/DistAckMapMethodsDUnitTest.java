@@ -20,25 +20,38 @@
  *
  * Created on August 4, 2005, 12:36 PM
  */
-
 package com.gemstone.gemfire.cache30;
+
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheListener;
+import com.gemstone.gemfire.cache.CacheWriter;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.EntryEvent;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.RegionDestroyedException;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
+import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
+import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  *
  * @author  prafulla
  */
-
-import dunit.*;
-
-import com.gemstone.gemfire.cache.*;
-
-import java.util.*;
-
-import com.gemstone.gemfire.cache.util.*;
-import com.gemstone.gemfire.distributed.DistributedSystem;
-//import com.gemstone.gemfire.cache30.*;
-
-
 public class DistAckMapMethodsDUnitTest extends DistributedTestCase{
     static Cache cache;
     static Properties props = new Properties();
@@ -67,14 +80,15 @@ public class DistAckMapMethodsDUnitTest extends DistributedTestCase{
       vm1.invoke(DistAckMapMethodsDUnitTest.class, "createCache");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
-        vm1.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
-        cache = null;
-        invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
+      vm1.invoke(DistAckMapMethodsDUnitTest.class, "closeCache");
+      cache = null;
+      Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
     }
     
     public static void createCache(){
@@ -186,8 +200,8 @@ public class DistAckMapMethodsDUnitTest extends DistributedTestCase{
         vm0.invoke(DistAckMapMethodsDUnitTest.class, "putMethod", objArr);
         obj1 = vm1.invoke(DistAckMapMethodsDUnitTest.class, "getMethod", objArr);//to make sure that vm1 region has the entry
         obj2 = vm1.invoke(DistAckMapMethodsDUnitTest.class, "removeMethod", objArr);
-        getLogWriter().fine("111111111"+obj1);
-        getLogWriter().fine("2222222222"+obj2);
+        LogWriterUtils.getLogWriter().fine("111111111"+obj1);
+        LogWriterUtils.getLogWriter().fine("2222222222"+obj2);
         if (obj1 == null)
           fail("region1.getMethod returned null");
         if(!(obj1.equals(obj2))){

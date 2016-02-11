@@ -41,10 +41,9 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EventID;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
 
 /**
  * This is a functional-test for <code>ClientHealthMonitor</code>.
@@ -78,9 +77,6 @@ public class ClientHealthMonitorJUnitTest
 
   /**
    * Close the cache and disconnects from the distributed system
-   * 
-   * @exception -
-   *              thrown if any exception occured in closing cache/ds
    */
   @After
   public void tearDown() throws Exception
@@ -180,7 +176,7 @@ public class ClientHealthMonitorJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+    Wait.waitForCriterion(ev, 20 * 1000, 200, true);
     
     assertEquals(1, s.getInt("currentClients"));
     assertEquals(1, s.getInt("currentClientConnections"));
@@ -197,7 +193,7 @@ public class ClientHealthMonitorJUnitTest
         return null;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, TIME_BETWEEN_PINGS * 5, 200, true);
+    Wait.waitForCriterion(ev, TIME_BETWEEN_PINGS * 5, 200, true);
 
     {
       this.system.getLogWriter().info("currentClients="

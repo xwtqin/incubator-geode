@@ -33,19 +33,19 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.cache.server.ClientSubscriptionConfig;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * The ClientServerRegisterInterestsDUnitTest class is a test suite of test cases testing the interaction between a
  * client and a server in a Register Interests scenario.
  *
  * @author John Blum
- * @see dunit.DistributedTestCase
+ * @see com.gemstone.gemfire.test.dunit.DistributedTestCase
  * @since 8.0
  */
 public class ClientServerRegisterInterestsDUnitTest extends DistributedTestCase {
@@ -69,12 +69,11 @@ public class ClientServerRegisterInterestsDUnitTest extends DistributedTestCase 
     super.setUp();
     disconnectAllFromDS();
     setupGemFireCacheServer();
-    addExpectedException("java.net.ConnectException");
+    IgnoredException.addIgnoredException("java.net.ConnectException");
   }
 
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void preTearDown() throws Exception {
     serverPort.set(0);
     entryEvents.clear();
     gemfireServerVm.invoke(new SerializableRunnable() {

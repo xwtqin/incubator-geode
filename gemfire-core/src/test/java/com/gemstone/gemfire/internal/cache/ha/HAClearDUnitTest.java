@@ -37,11 +37,12 @@ import com.gemstone.gemfire.internal.cache.CacheObserverAdapter;
 import com.gemstone.gemfire.internal.cache.CacheObserverHolder;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.cache.Region;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
 
 /**
  * This is the Dunit test to verify clear and destroyRegion operation in
@@ -107,15 +108,13 @@ public class HAClearDUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
-  {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     client1.invoke(HAClearDUnitTest.class, "closeCache");
     client2.invoke(HAClearDUnitTest.class, "closeCache");
     server1.invoke(HAClearDUnitTest.class, "closeCache");
     server2.invoke(HAClearDUnitTest.class, "closeCache");
     closeCache();
-
   }
 
   /* The test perorms following operations
@@ -528,7 +527,7 @@ public class HAClearDUnitTest extends DistributedTestCase
       {
         Region region = cache.getRegion(Region.SEPARATOR + REGION_NAME);
         assertNotNull(region);
-        getLogWriter().info("Size of the region " + region.size());
+        LogWriterUtils.getLogWriter().info("Size of the region " + region.size());
         assertEquals(size, region.size());
       }
     };
@@ -543,7 +542,7 @@ public class HAClearDUnitTest extends DistributedTestCase
       public void run2() throws CacheException
       {
         Region region = cache.getRegion(Region.SEPARATOR + REGION_NAME);
-        getLogWriter().warning("Found region " + region);
+        LogWriterUtils.getLogWriter().warning("Found region " + region);
         assertNull(region);
       }
     };
@@ -560,14 +559,14 @@ public class HAClearDUnitTest extends DistributedTestCase
     PORT2 = ((Integer)server2.invoke(HAClearDUnitTest.class,
         "createServerCache")).intValue();
     client1.invoke(HAClearDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(Host.getHost(0)),
+        NetworkUtils.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2), new Boolean(true),
         new Boolean(true) });
     client2.invoke(HAClearDUnitTest.class, "createClientCache", new Object[] {
-        getServerHostName(Host.getHost(0)),
+        NetworkUtils.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2), new Boolean(true),
         new Boolean(true) });
-    createClientCache(getServerHostName(Host.getHost(0)),
+    createClientCache(NetworkUtils.getServerHostName(Host.getHost(0)),
         new Integer(PORT1), new Integer(PORT2),
         new Boolean(true), new Boolean(true));
   }
@@ -617,7 +616,7 @@ public class HAClearDUnitTest extends DistributedTestCase
       factory.setCacheListener(new CacheListenerAdapter() {
         public void afterRegionClear(RegionEvent event)
         {
-          getLogWriter().info("-------> afterRegionClear received");
+          LogWriterUtils.getLogWriter().info("-------> afterRegionClear received");
           synchronized (HAClearDUnitTest.class) {
             gotClearCallback = true;
             HAClearDUnitTest.class.notifyAll();
@@ -627,7 +626,7 @@ public class HAClearDUnitTest extends DistributedTestCase
         public void afterRegionDestroy(RegionEvent event)
         {
           synchronized (HAClearDUnitTest.class) {
-            getLogWriter().info("-------> afterRegionDestroy received");
+            LogWriterUtils.getLogWriter().info("-------> afterRegionDestroy received");
             gotDestroyRegionCallback = true;
             HAClearDUnitTest.class.notifyAll();
           }

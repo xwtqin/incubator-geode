@@ -26,9 +26,8 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.distributed.internal.membership.MembershipManager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.interfaces.Manager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershipManager;
-
-import dunit.DistributedTestCase;
-import dunit.DistributedTestCase.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * This helper class provides access to membership manager information that
@@ -42,7 +41,7 @@ public class MembershipManagerHelper
   /** returns the JGroupMembershipManager for the given distributed system */
   public static MembershipManager getMembershipManager(DistributedSystem sys) {
     InternalDistributedSystem isys = (InternalDistributedSystem)sys;
-    DistributionManager dm = (DistributionManager)isys.getDistributionManager();
+    DistributionManager dm = (DistributionManager)isys.getDM();
     MembershipManager mgr = dm.getMembershipManager();
     return mgr;
   }
@@ -150,12 +149,13 @@ public class MembershipManagerHelper
         return assMsg;
       }
     };
-    DistributedTestCase.waitForCriterion(ev, timeout, 200, true);
+    Wait.waitForCriterion(ev, timeout, 200, true);
   }
   
   public static void crashDistributedSystem(final DistributedSystem msys) {
     msys.getLogWriter().info("crashing distributed system: " + msys);
     MembershipManagerHelper.inhibitForcedDisconnectLogging(true);
+    MembershipManagerHelper.beSickMember(msys);
     MembershipManagerHelper.playDead(msys);
     GMSMembershipManager mgr = ((GMSMembershipManager)getMembershipManager(msys));
     mgr.forceDisconnect("for testing");

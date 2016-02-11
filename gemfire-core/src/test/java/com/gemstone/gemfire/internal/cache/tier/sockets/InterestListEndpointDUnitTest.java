@@ -44,11 +44,14 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.CacheServerImpl;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  *
@@ -90,7 +93,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
     server2 = host.getVM(1);
@@ -106,9 +109,9 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     PORT2 = initServerCache(server2);
 
     // then create client
-    pause(5000);  // [bruce] avoid ConnectException
+    Wait.pause(5000);  // [bruce] avoid ConnectException
     client1.invoke(impl.getClass(), "createClientCache", new Object[] {
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
 
   }
 
@@ -169,7 +172,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     VM primary = firstIsPrimary? server1 : server2;
 
     primary.invoke(impl.getClass(), "stopILEndpointServer");
-    pause(5000);
+    Wait.pause(5000);
 
     //Since the loadbalancing policy is roundrobin & there are two servers so
     // do two dumb puts, which will ensure that fail over happens from the
@@ -202,7 +205,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
             return null;
           }
         };
-        DistributedTestCase.waitForCriterion(ev, maxWaitTime, 200, true);
+        Wait.waitForCriterion(ev, maxWaitTime, 200, true);
       }
     });
 
@@ -417,7 +420,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
       }
     }
     catch (Exception ex) {
-      fail("failed while verifyIfNotInterestListEndpointAndThenPut()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while verifyIfNotInterestListEndpointAndThenPut()", ex);
     }
   }
 
@@ -429,7 +432,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
       r.registerInterest(k1, InterestResultPolicy.KEYS);
     }
     catch (Exception ex) {
-      fail("failed while region.registerInterest()", ex);
+      com.gemstone.gemfire.test.dunit.Assert.fail("failed while region.registerInterest()", ex);
     }
   }
 
@@ -467,7 +470,7 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
           return "Test missed a success";
         }
       };
-      DistributedTestCase.waitForCriterion(ev, 20 * 1000, 200, true);
+      Wait.waitForCriterion(ev, 20 * 1000, 200, true);
       
       //yes update
       assertEquals(server_k1, r.getEntry(k1).getValue());
@@ -487,15 +490,14 @@ public class InterestListEndpointDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     // Close client cache first, then server caches
     client1.invoke(impl.getClass(), "closeCache");
     server2.invoke(impl.getClass(), "closeCache");
     server1.invoke(impl.getClass(), "closeCache");
     CacheServerTestUtil.resetDisableShufflingOfEndpointsFlag();
     cache = null;
-    invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
+    Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() { cache = null; } });
   }
-
 }

@@ -27,9 +27,9 @@ import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.cache.query.data.PortfolioData;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
-
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * This tests creates partition regions with 1 Datastore & 1 Accessor node, 
@@ -77,13 +77,13 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     VM vm0 = host.getVM(0); 
     VM vm1 = host.getVM(1);
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating Accessor node on the VM0.
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Creating the Accessor node in the PR");
 
@@ -93,22 +93,22 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
 //    vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(localName,
 //        Scope.DISTRIBUTED_ACK, redundancy));
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(localName));
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully created the Accessor node in the PR");
 
     // Creating the Datastores Nodes in the VM1.
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest:testPRBasicQuerying ----- Creating the Datastore node in the PR");
     vm1.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
         redundancy));
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created the Datastore node in the PR");
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Successfully Created PR's across all VM's");
 
@@ -122,7 +122,7 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRDuplicatePuts(name, portfolio,
         cnt, cntDest));
     
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Inserted Portfolio data across PR's");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
@@ -136,7 +136,7 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRQueryAndCompareResults(
         name, localName));
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRBasicQuerying: Querying PR's Test ENDED");
   }
@@ -148,13 +148,13 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     VM vm1 = host.getVM(1);
     VM vm2 = host.getVM(2);
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Querying PR Test with DACK Started");
 
     // Creting PR's on the participating VM's
     // Creating Accessor node on the VM0.
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Creating the Accessor node in the PR");
 
@@ -164,12 +164,12 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
 //    vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(localName,
 //        Scope.DISTRIBUTED_ACK, redundancy));
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(localName, Portfolio.class));
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Successfully created the Accessor node in the PR");
 
     // Creating the Datastores Nodes in the VM1.
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest:testPRCountStarQuery ----- Creating the Datastore node in the PR");
     vm1.invoke(PRQHelp.getCacheSerializableRunnableForPRCreate(name,
@@ -179,11 +179,11 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
         redundancy, Portfolio.class));
     vm2.invoke(PRQHelp.getCacheSerializableRunnableForLocalRegionCreation(localName, Portfolio.class));
     
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Successfully Created the Datastore node in the PR");
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Successfully Created PR's across all VM's");
 
@@ -197,7 +197,7 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRDuplicatePuts(name, portfolio,
         cnt, cntDest+100));
     
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Inserted Portfolio data across PR's");
     vm0.invoke(PRQHelp.getCacheSerializableRunnableForPRPuts(localName,
@@ -217,7 +217,7 @@ public class PRBasicQueryDUnitTest extends PartitionedRegionDUnitTestCase
     vm2.invoke(PRQHelp.getCacheSerializableRunnableForPRCountStarQueries(
         name, localName));
 
-    getLogWriter()
+    LogWriterUtils.getLogWriter()
         .info(
             "PRQBasicQueryDUnitTest#testPRCountStarQuery: Querying PR's Test ENDED");
   }

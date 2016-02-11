@@ -28,11 +28,11 @@ import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.internal.cache.UpdateOperation.UpdateMessage;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Tests interrupting gemfire threads during a put operation to see what happens
@@ -51,8 +51,8 @@ public class InterruptsDUnitTest extends CacheTestCase {
   
   
   @Override
-  public void tearDown2() throws Exception {
-    invokeInEveryVM(new SerializableCallable() {
+  protected final void preTearDownCacheTestCase() throws Exception {
+    Invoke.invokeInEveryVM(new SerializableCallable() {
       
       @Override
       public Object call() throws Exception {
@@ -60,7 +60,6 @@ public class InterruptsDUnitTest extends CacheTestCase {
         return null;
       }
     });
-    super.tearDown2();
   }
   
   public void _testLoop() throws Throwable {

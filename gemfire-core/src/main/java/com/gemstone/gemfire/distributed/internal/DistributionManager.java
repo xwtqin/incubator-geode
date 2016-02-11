@@ -91,7 +91,6 @@ import com.gemstone.gemfire.internal.sequencelog.MembershipLogger;
 import com.gemstone.gemfire.internal.tcp.Connection;
 import com.gemstone.gemfire.internal.tcp.ConnectionTable;
 import com.gemstone.gemfire.internal.tcp.ReenteredConnectException;
-import com.gemstone.gemfire.internal.tcp.Stub;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantLock;
 
 /**
@@ -127,7 +126,6 @@ import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantLock;
  * @author David Whitlock
  * @since 2.0
  *
- * @see com.gemstone.gemfire.distributed.internal
  * @see DistributionMessage#process
  * @see IgnoredByManager
  */
@@ -274,7 +272,7 @@ public class DistributionManager
   /**
    * Executor for view related messages
    * 
-   * @see com.gemstone.gemfire.distributed.internal.membership.jgroup.ViewMessage
+   * @see com.gemstone.gemfire.distributed.internal.membership.gms.messages.ViewAckMessage
    * @see #STANDARD_EXECUTOR
    */
   public static final int VIEW_EXECUTOR = 79;
@@ -455,7 +453,7 @@ public class DistributionManager
   private ThreadPoolExecutor serialThread;
   
   /** Message processing executor for view messages
-   * @see com.gemstone.gemfire.distributed.internal.membership.jgroup.ViewMessage 
+   * @see com.gemstone.gemfire.distributed.internal.membership.gms.messages.ViewAckMessage 
    */
   private ThreadPoolExecutor viewThread;
   
@@ -2715,13 +2713,6 @@ public class DistributionManager
       return false; // no peers, we are alone.
     }
 
-    // ensure we have stubs for everyone else
-    Iterator it = allOthers.iterator();
-    while (it.hasNext()) {
-      InternalDistributedMember member = (InternalDistributedMember)it.next();
-      membershipManager.getStubForMember(member);
-    }
-
     try {
       ok = op.sendStartupMessage(allOthers, STARTUP_TIMEOUT, equivs,
           redundancyZone, enforceUniqueZone());
@@ -3333,9 +3324,10 @@ public class DistributionManager
   }
 
   /**
+   * @param reason TODO
    */
   public void handleManagerSuspect(InternalDistributedMember suspect, 
-      InternalDistributedMember whoSuspected) {
+      InternalDistributedMember whoSuspected, String reason) {
     if (!isCurrentMember(suspect)) {
       return; // fault tolerance
     }
@@ -3345,7 +3337,7 @@ public class DistributionManager
       return;
     }
 
-    addMemberEvent(new MemberSuspectEvent(suspect, whoSuspected));
+    addMemberEvent(new MemberSuspectEvent(suspect, whoSuspected, reason));
   }
   
   public void handleViewInstalled(NetView view) {
@@ -3756,7 +3748,7 @@ public class DistributionManager
                   }
                 }
                 public void memberSuspect(InternalDistributedMember id,
-                    InternalDistributedMember whoSuspected) {
+                    InternalDistributedMember whoSuspected, String reason) {
                 }
                 public void viewInstalled(NetView view) {
                 }
@@ -3895,7 +3887,7 @@ public class DistributionManager
   }
     
   /** returns the serialThread's queue if throttling is being used, null if not */
-  public ThrottlingMemLinkedQueueWithDMStats getSerialQueue(InternalDistributedMember sender) {
+  public OverflowQueueWithDMStats getSerialQueue(InternalDistributedMember sender) {
     if (MULTI_SERIAL_EXECUTORS) {  
       return this.serialQueuedExecutorPool.getSerialQueue(sender);
     } else {
@@ -4174,13 +4166,12 @@ public class DistributionManager
      * Returns the queue associated with this sender.
      * Used in FlowControl for throttling (based on queue size).
      */
-    public ThrottlingMemLinkedQueueWithDMStats getSerialQueue(InternalDistributedMember sender) {
+    public OverflowQueueWithDMStats getSerialQueue(InternalDistributedMember sender) {
       Integer queueId = getQueueId(sender, false);
       if (queueId == null){
         return null;
       }
-      
-      return (ThrottlingMemLinkedQueueWithDMStats)serialQueuedMap.get(queueId); 
+      return (OverflowQueueWithDMStats)serialQueuedMap.get(queueId);
     }
 
     /*
@@ -4424,8 +4415,8 @@ public class DistributionManager
       dm.handleManagerDeparture(theId, crashed, reason);
     }
     
-    public void memberSuspect(InternalDistributedMember suspect, InternalDistributedMember whoSuspected) {
-      dm.handleManagerSuspect(suspect, whoSuspected);
+    public void memberSuspect(InternalDistributedMember suspect, InternalDistributedMember whoSuspected, String reason) {
+      dm.handleManagerSuspect(suspect, whoSuspected, reason);
     }
     
     public void viewInstalled(NetView view) {
@@ -4579,20 +4570,27 @@ public class DistributionManager
    */
   private static final class MemberSuspectEvent extends MemberEvent {
     InternalDistributedMember whoSuspected;
-    MemberSuspectEvent(InternalDistributedMember suspect, InternalDistributedMember whoSuspected) {
+    String reason;
+    MemberSuspectEvent(InternalDistributedMember suspect, InternalDistributedMember whoSuspected, String reason) {
       super(suspect);
       this.whoSuspected = whoSuspected;
+      this.reason = reason;
     }
     public InternalDistributedMember whoSuspected() {
       return this.whoSuspected;
     }
+    
+    public String getReason() {
+      return this.reason;
+    }
+    
     @Override
     public String toString() {
-      return "member " + getId() + " suspected by: " + this.whoSuspected;
+      return "member " + getId() + " suspected by: " + this.whoSuspected + " reason: " + reason;
     }
     @Override
     protected void handleEvent(MembershipListener listener) {
-      listener.memberSuspect(getId(), whoSuspected());	
+      listener.memberSuspect(getId(), whoSuspected(), reason);	
     }
   }
   

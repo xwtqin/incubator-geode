@@ -32,10 +32,9 @@ import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class Bug48879DUnitTest extends DistributedTestCase {
@@ -68,7 +67,8 @@ public class Bug48879DUnitTest extends DistributedTestCase {
     createClientCache(host, new Integer[] {port0, port1}, Boolean.TRUE);
   }
 
-  public void tearDown2() throws Exception {
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
 
     vm0.invoke(Bug48879DUnitTest.class, "closeCache");

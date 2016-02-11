@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.gemstone.gemfire.cache.server.CacheServer;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,11 +55,6 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.ManagementTestBase;
 import com.gemstone.gemfire.management.internal.security.CommandTestBase;
 import com.gemstone.gemfire.pdx.PdxInstance;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
 
 /**
  * Dunit Test containing inter - operations between REST Client and Gemfire cache client
@@ -163,8 +163,8 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
     super.setUp();
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  public void postTearDown() throws Exception {
     disconnectAllFromDS();
   }
   
@@ -867,7 +867,7 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
     startLocatorInVM(locator, locatorPort, "");
     
     // find locators
-    String locators = getServerHostName(locator.getHost()) + "[" + locatorPort
+    String locators = NetworkUtils.getServerHostName(locator.getHost()) + "[" + locatorPort
         + "]";
      
     // start manager (peer cache)
@@ -879,7 +879,7 @@ public class RestAPIsAndInterOpISDUnitTest extends LocatorTestBase {
         "startBridgeServerWithRestServiceOnInVM", new Object[] { server ,  null, locators, new String[] {REGION_NAME}, CacheServer.DEFAULT_LOAD_PROBE });
     
     // create a client cache
-    createClientCacheInVM(client, getServerHostName(locator.getHost()),
+    createClientCacheInVM(client, NetworkUtils.getServerHostName(locator.getHost()),
         locatorPort);
     
     // create region in Manager, peer cache and Client cache nodes

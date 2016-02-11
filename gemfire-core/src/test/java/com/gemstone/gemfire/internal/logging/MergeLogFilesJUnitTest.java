@@ -41,9 +41,8 @@ import org.junit.experimental.categories.Category;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.SystemFailure;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * This class tests the functionality of the (new multi-threaded)
@@ -80,7 +79,7 @@ public class MergeLogFilesJUnitTest {
 
     for (Iterator iter = workers.iterator(); iter.hasNext(); ) {
       Worker worker = (Worker) iter.next();
-      DistributedTestCase.join(worker, 120 * 1000, null);
+      ThreadUtils.join(worker, 120 * 1000);
     }
 
     if (group.exceptionOccurred()) {

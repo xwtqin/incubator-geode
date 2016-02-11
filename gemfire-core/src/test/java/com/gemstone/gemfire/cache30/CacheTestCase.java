@@ -54,10 +54,15 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.logging.LogService;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * The abstract superclass of tests that require the creation of a
@@ -114,13 +119,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
         }
         cache = c;
       } catch (CacheExistsException e) {
-        fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e);
 
       } catch (RuntimeException ex) {
         throw ex;
 
       } catch (Exception ex) {
-        fail("Checked exception while initializing cache??", ex);
+        Assert.fail("Checked exception while initializing cache??", ex);
       } finally {
         System.clearProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE");
       }
@@ -138,13 +143,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
         Cache c = CacheFactory.create(getLonerSystem()); 
         cache = c;
       } catch (CacheExistsException e) {
-        fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e);
 
       } catch (RuntimeException ex) {
         throw ex;
 
       } catch (Exception ex) {
-        fail("Checked exception while initializing cache??", ex);
+        Assert.fail("Checked exception while initializing cache??", ex);
       } finally {
         System.clearProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE");
       }
@@ -164,13 +169,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
         Cache c = CacheFactory.create(getLonerSystemWithEnforceUniqueHost()); 
         cache = c;
       } catch (CacheExistsException e) {
-        fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e);
 
       } catch (RuntimeException ex) {
         throw ex;
 
       } catch (Exception ex) {
-        fail("Checked exception while initializing cache??", ex);
+        Assert.fail("Checked exception while initializing cache??", ex);
       } finally {
         System.clearProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE");
       }
@@ -201,7 +206,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         CacheXmlGenerator.generate(cache, pw);
         pw.close();
       } catch (IOException ex) {
-        fail("IOException during cache.xml generation to " + file, ex);
+        Assert.fail("IOException during cache.xml generation to " + file, ex);
       }
       cache = null;
       GemFireCacheImpl.testCacheXml = file;
@@ -227,7 +232,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         CacheXmlGenerator.generate(cache, pw, useSchema, xmlVersion);
         pw.close();
       } catch (IOException ex) {
-        fail("IOException during cache.xml generation to " + file, ex);
+        Assert.fail("IOException during cache.xml generation to " + file, ex);
       }
       cache = null;
       GemFireCacheImpl.testCacheXml = file;
@@ -259,7 +264,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
       final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
       if (gfCache != null && !gfCache.isClosed()
           && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public boolean done() {
             return gfCache.isClosed();
@@ -275,7 +280,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         createCache(client, cf);
       }
       if (client && cache != null) {
-        addExpectedException("java.net.ConnectException");
+        IgnoredException.addIgnoredException("java.net.ConnectException");
       }
       return cache;
     }
@@ -292,7 +297,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
       final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
       if (gfCache != null && !gfCache.isClosed()
           && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
 
           public boolean done() {
             return gfCache.isClosed();
@@ -309,7 +314,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         cache = (Cache)factory.create();
       }
       if (cache != null) {
-        addExpectedException("java.net.ConnectException");
+        IgnoredException.addIgnoredException("java.net.ConnectException");
       }
       return (ClientCache)cache;
     }
@@ -378,11 +383,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /** Closed the cache in all VMs. */
   protected void closeAllCache() {
     closeCache();
-    invokeInEveryVM(CacheTestCase.class, "closeCache");
+    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDown() throws Exception {
+    preTearDownCacheTestCase();
+    
     // locally destroy all root regions and close the cache
     remoteTearDown();
     // Now invoke it in every VM
@@ -390,10 +397,17 @@ public abstract class CacheTestCase extends DistributedTestCase {
       Host host = Host.getHost(h);
       for (int v = 0; v < host.getVMCount(); v++) {
         VM vm = host.getVM(v);
-        vm.invoke(CacheTestCase.class, "remoteTearDown");
+        vm.invoke(()->remoteTearDown());
       }
     }
-    super.tearDown2(); 
+    
+    postTearDownCacheTestCase();
+  }
+  
+  protected void preTearDownCacheTestCase() throws Exception {
+  }
+
+  protected void postTearDownCacheTestCase() throws Exception {
   }
 
   /**
@@ -412,7 +426,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         try {
           cleanDiskDirs();
         } catch(Exception e) {
-          getLogWriter().error("Error cleaning disk dirs", e);
+          LogWriterUtils.getLogWriter().error("Error cleaning disk dirs", e);
         }
       }
     }

@@ -34,9 +34,8 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 import com.gemstone.gemfire.StatisticsFactory;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * Testing methods for SimpleDiskRegion.java api's
@@ -364,11 +363,11 @@ public class SimpleDiskRegionJUnitTest extends DiskRegionTestingBase
     thread4.start();
     thread5.start();
 
-    DistributedTestCase.join(thread1, 30 * 1000, null);
-    DistributedTestCase.join(thread2, 30 * 1000, null);
-    DistributedTestCase.join(thread3, 30 * 1000, null);
-    DistributedTestCase.join(thread4, 30 * 1000, null);
-    DistributedTestCase.join(thread5, 30 * 1000, null);
+    ThreadUtils.join(thread1, 30 * 1000);
+    ThreadUtils.join(thread2, 30 * 1000);
+    ThreadUtils.join(thread3, 30 * 1000);
+    ThreadUtils.join(thread4, 30 * 1000);
+    ThreadUtils.join(thread5, 30 * 1000);
 
     if (keyIds.size() != 50000) {
       fail("Size not equal to 5000 as expected but is " + keyIds.size());

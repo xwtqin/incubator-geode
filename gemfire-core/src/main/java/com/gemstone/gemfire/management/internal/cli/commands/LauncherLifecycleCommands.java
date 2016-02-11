@@ -115,11 +115,6 @@ import com.gemstone.gemfire.management.internal.configuration.messages.SharedCon
 import com.gemstone.gemfire.management.internal.security.Resource;
 import com.gemstone.gemfire.management.internal.security.ResourceConstants;
 import com.gemstone.gemfire.management.internal.security.ResourceOperation;
-import com.gemstone.gemfire.security.GemFireSecurityException;
-//import com.gemstone.org.jgroups.stack.tcpserver.TcpClient;
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
-
 import org.springframework.shell.core.annotation.CliAvailabilityIndicator;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
@@ -431,7 +426,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
               TimeUnit.MILLISECONDS.timedWait(this, 500);
             }
 
-            locatorState = (ProcessUtils.isAvailable() ? locatorStatus(locatorPidFile, oldPid, memberName)
+            locatorState = (ProcessUtils.isAttachApiAvailable() ? locatorStatus(locatorPidFile, oldPid, memberName)
                 : locatorStatus(workingDirectory, memberName));
 
             String currentLocatorStatusMessage = locatorState.getStatusMessage();
@@ -1744,7 +1739,7 @@ public class LauncherLifecycleCommands extends AbstractCommandsSupport {
               TimeUnit.MILLISECONDS.timedWait(this, 500);
             }
 
-            serverState = (ProcessUtils.isAvailable() ? serverStatus(serverPidFile, oldPid, memberName)
+            serverState = (ProcessUtils.isAttachApiAvailable() ? serverStatus(serverPidFile, oldPid, memberName)
               : serverStatus(workingDirectory, memberName));
 
             String currentServerStatusMessage = serverState.getStatusMessage();

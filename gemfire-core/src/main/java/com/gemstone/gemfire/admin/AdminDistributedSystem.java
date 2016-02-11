@@ -38,7 +38,7 @@ import java.util.UUID;
  *
  * @author    Kirk Lund
  * @since     3.5
- * @deprecated as of 7.0 use the {@link com.gemstone.gemfire.management} package instead
+ * @deprecated as of 7.0 use the <code><a href="{@docRoot}/com/gemstone/gemfire/management/package-summary.html">management</a></code> package instead
  */
 public interface AdminDistributedSystem {
 	
@@ -366,9 +366,6 @@ public interface AdminDistributedSystem {
    *          The host of the member whose files were lost.
    * @param directory
    *          The directory where those files resided.
-   * 
-   * @throws RevokeFailedException if the persistent files are in fact
-   * currently running on one of the members of the distributed system.
    * @since 6.5
    * @deprecated use {@link #revokePersistentMember(UUID)} instead
    */
@@ -385,8 +382,6 @@ public interface AdminDistributedSystem {
    *          The unique id of the disk store which you are revoking. The unique
    *          id can be discovered from {@link #getMissingPersistentMembers()}
    * 
-   * @throws RevokeFailedException if the persistent files are in fact
-   * currently running on one of the members of the distributed system.
    * @since 7.0
    */
   public void revokePersistentMember(UUID diskStoreID) throws AdminException;

@@ -40,10 +40,9 @@ import com.gemstone.gemfire.internal.cache.execute.data.CustId;
 import com.gemstone.gemfire.internal.cache.execute.data.Customer;
 import com.gemstone.gemfire.internal.cache.execute.data.Order;
 import com.gemstone.gemfire.internal.cache.execute.data.OrderId;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -78,11 +77,12 @@ public class PartitionResolverDUnitTest extends CacheTestCase {
     datastore1 = host.getVM(1);
     datastore2 = host.getVM(2);
   }
+  
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  protected final void postTearDownCacheTestCase() throws Exception {
     CountingResolver.resetResolverCount();
   }
+  
   void createRegion(boolean isAccessor, int redundantCopies) {
     AttributesFactory af = new AttributesFactory();
     af.setScope(Scope.DISTRIBUTED_ACK);

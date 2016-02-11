@@ -47,6 +47,7 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheXml;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.cache.xmlcache.DiskStoreAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
+import com.gemstone.gemfire.test.dunit.Assert;
 
 /**
  * @author dsmith
@@ -107,7 +108,7 @@ public class CacheXml80DUnitTest extends CacheXml70DUnitTest {
     Cache c = getCache();
     assertNotNull(c);
     QueryService qs = c.getQueryService();
-    Collection indexes = qs.getIndexes();
+    Collection<Index> indexes = qs.getIndexes();
     assertEquals(3, indexes.size());
     c.getQueryService().createIndex("crIndex2", "r.CR_ID_2", "/replicated r");
     c.getQueryService().createIndex("rIndex", "r.R_ID", "/replicated r, r.positions.values rv");
@@ -121,20 +122,31 @@ public class CacheXml80DUnitTest extends CacheXml70DUnitTest {
       pw.close();
     }
     catch (IOException ex) {
-      fail("IOException during cache.xml generation to " + file, ex);
+      Assert.fail("IOException during cache.xml generation to " + file, ex);
     }
+    
+    // Get index info before closing cache.
+    indexes = qs.getIndexes();
+    
     c.close();
     GemFireCacheImpl.testCacheXml = file;
     assert(c.isClosed());
     
     c = getCache();
     qs = c.getQueryService();
-    indexes = qs.getIndexes();
-    assertEquals(5, indexes.size());
+    Collection<Index> newIndexes = qs.getIndexes();
+    assertEquals(5, newIndexes.size());
     
     Region r = c.getRegion("/replicated");
     for (int i = 0; i < 5;i++) {
       r.put(i, new TestObject(i));
+    }
+
+    // Validate to see, newly created indexes match the initial configuration
+    for (Index index : indexes) {
+      Index newIndex = qs.getIndex(r, index.getName());
+      assertEquals ("Index from clause is not same for index " + index.getName(), newIndex.getFromClause(), index.getFromClause());
+      assertEquals ("Index expression is not same for index " + index.getName(), newIndex.getIndexedExpression(), index.getIndexedExpression());
     }
 
     QueryObserverImpl observer = new QueryObserverImpl();

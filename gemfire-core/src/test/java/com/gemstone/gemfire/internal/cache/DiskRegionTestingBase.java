@@ -134,7 +134,6 @@ public class DiskRegionTestingBase
       if (cache != null && !cache.isClosed()) {
         for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
           Region root = (Region)itr.next();
-//          String name = root.name.getMethodName();
           if(root.isDestroyed() || root instanceof HARegion) {
             continue;
           }
@@ -211,8 +210,6 @@ public class DiskRegionTestingBase
 
   /**
    * cleans all the directory of all the files present in them
-   * @throws IOException 
-   *  
    */
   protected static void deleteFiles()
   {

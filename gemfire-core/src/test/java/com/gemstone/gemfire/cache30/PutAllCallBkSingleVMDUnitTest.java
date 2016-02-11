@@ -20,24 +20,30 @@
  *
  * Created on August 31, 2005, 4:17 PM
  */
-
 package com.gemstone.gemfire.cache30;
 
-/**
- *
- * @author vjadhav
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
-import dunit.*;
-
-import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheException;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheListener;
+import com.gemstone.gemfire.cache.CacheWriter;
+import com.gemstone.gemfire.cache.EntryEvent;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
-
-import java.util.*;
-
 import com.gemstone.gemfire.distributed.DistributedSystem;
-
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     
@@ -68,16 +74,16 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
       VM vm1 = host.getVM(1);
       vm0.invoke(PutAllCallBkSingleVMDUnitTest.class, "createCache");
       vm1.invoke(PutAllCallBkSingleVMDUnitTest.class, "createCache");
-      getLogWriter().fine("Cache created in successfully");
+      LogWriterUtils.getLogWriter().fine("Cache created in successfully");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(PutAllCallBkSingleVMDUnitTest.class, "closeCache");
-        vm1.invoke(PutAllCallBkSingleVMDUnitTest.class, "closeCache");
-        
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(PutAllCallBkSingleVMDUnitTest.class, "closeCache");
+      vm1.invoke(PutAllCallBkSingleVMDUnitTest.class, "closeCache");
     }
     
     public static synchronized void createCache(){
@@ -182,7 +188,7 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
                 obj = region.put(ob, str);
             }
         }catch(Exception ex){
-            fail("Failed while region.put", ex);
+            Assert.fail("Failed while region.put", ex);
         }
         return obj;
     }//end of putMethod
@@ -261,12 +267,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class AfterCreateCallback extends CacheListenerAdapter {
         public void afterCreate(EntryEvent event){            
             putAllcounter++;
-            getLogWriter().fine("In afterCreate"+putAllcounter);
+            LogWriterUtils.getLogWriter().fine("In afterCreate"+putAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllCreateCallback", event.getCallbackArgument());
             }
             if(putAllcounter == 25){
-                getLogWriter().fine("performingtrue");
+                LogWriterUtils.getLogWriter().fine("performingtrue");
                 afterCreate = true;
             }            
         }
@@ -275,12 +281,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class AfterUpdateCallback extends CacheListenerAdapter {
         public void afterUpdate(EntryEvent event){            
             afterUpdateputAllcounter++;
-            getLogWriter().fine("In afterUpdate"+afterUpdateputAllcounter);
+            LogWriterUtils.getLogWriter().fine("In afterUpdate"+afterUpdateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllAfterUpdateCallback", event.getCallbackArgument());
             }
             if(afterUpdateputAllcounter == 5){
-                getLogWriter().fine("performingtrue afterUpdate");
+                LogWriterUtils.getLogWriter().fine("performingtrue afterUpdate");
                 afterUpdate = true;
             }            
         }
@@ -288,12 +294,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
     static class BeforeCreateCallback extends CacheWriterAdapter {
           public void beforeCreate(EntryEvent event){            
             beforeCreateputAllcounter++;
-            getLogWriter().fine("In beforeCreate"+beforeCreateputAllcounter);
+            LogWriterUtils.getLogWriter().fine("In beforeCreate"+beforeCreateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllCreateCallback", event.getCallbackArgument());
             }
             if(beforeCreateputAllcounter == 25){
-                getLogWriter().fine("performingtrue beforeCreateputAll");
+                LogWriterUtils.getLogWriter().fine("performingtrue beforeCreateputAll");
                 beforeCreate = true;
             }            
         }
@@ -301,12 +307,12 @@ public class PutAllCallBkSingleVMDUnitTest extends DistributedTestCase{
       static class BeforeUpdateCallback extends CacheWriterAdapter {
         public void beforeUpdate(EntryEvent event){            
             beforeUpdateputAllcounter++;
-            getLogWriter().fine("In beforeUpdate"+beforeUpdateputAllcounter);
+            LogWriterUtils.getLogWriter().fine("In beforeUpdate"+beforeUpdateputAllcounter);
             if (event.getOperation().isPutAll()) {
               assertEquals("putAllAfterUpdateCallback", event.getCallbackArgument());
             }
             if(beforeUpdateputAllcounter == 5){
-                getLogWriter().fine("performingtrue beforeUpdate");
+                LogWriterUtils.getLogWriter().fine("performingtrue beforeUpdate");
                 beforeUpdate = true;
             }            
         }

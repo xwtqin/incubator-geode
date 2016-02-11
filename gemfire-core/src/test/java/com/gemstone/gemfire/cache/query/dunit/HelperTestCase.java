@@ -45,11 +45,11 @@ import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class HelperTestCase extends CacheTestCase {
 
@@ -240,7 +240,7 @@ public class HelperTestCase extends CacheTestCase {
         
         final ClientCacheFactory ccf = new ClientCacheFactory(properties);
         for (int i = 0; i < servers.length; i++) {
-          ccf.addPoolServer(getServerHostName(servers[i].getHost()), ports[i]);
+          ccf.addPoolServer(NetworkUtils.getServerHostName(servers[i].getHost()), ports[i]);
         }
         ccf.setPoolSubscriptionEnabled(true);
         ccf.setPoolSubscriptionRedundancy(redundancyLevel);

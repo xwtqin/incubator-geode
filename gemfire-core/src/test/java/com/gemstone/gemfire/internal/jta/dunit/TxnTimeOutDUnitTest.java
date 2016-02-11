@@ -16,33 +16,33 @@
  */
 package com.gemstone.gemfire.internal.jta.dunit;
 
-import dunit.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.naming.Context;
-import javax.transaction.*;
 import javax.naming.NamingException;
-
-
-
-//import java.sql.Connection;
-//import java.sql.ResultSet;
-import java.sql.SQLException;
-//import java.sql.Statement;
-import java.util.Properties;
+import javax.transaction.UserTransaction;
 
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.OSProcess;
 import com.gemstone.gemfire.internal.jta.CacheUtils;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
-
-
-
-//import com.gemstone.gemfire.internal.datasource.GemFireTransactionDataSource;
-//import com.gemstone.gemfire.internal.jta.UserTransactionImpl;
-//import javax.sql.DataSource;
-import java.io.*;
 
 /**
 *@author Mitul D Bid
@@ -72,7 +72,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
     wr.close();
     props.setProperty("cache-xml-file", path);
 //    props.setProperty("mcast-port", "10321");
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", LogWriterUtils.getDUnitLogLevel());
     try {
 //      ds = DistributedSystem.connect(props);
       ds = (new TxnTimeOutDUnitTest("temp")).getSystem(props);
@@ -122,7 +122,8 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
     vm0.invoke(TxnTimeOutDUnitTest.class, "init");
   }
 
-  public void tearDown2() throws NamingException, SQLException {
+  @Override
+  protected final void preTearDown() throws Exception {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     vm0.invoke(TxnTimeOutDUnitTest.class, "closeCache");
@@ -157,29 +158,29 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
         AsyncInvocation asyncObj5 = vm0.invokeAsync(TxnTimeOutDUnitTest.class,
         "runTest3",o4);
 
-        DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());        
+        ThreadUtils.join(asyncObj1, 5 * 60 * 1000);        
         if(asyncObj1.exceptionOccurred()){
-          fail("asyncObj1 failed", asyncObj1.getException());
+          Assert.fail("asyncObj1 failed", asyncObj1.getException());
         }
         
-        DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());        
+        ThreadUtils.join(asyncObj2, 5 * 60 * 1000);        
         if(asyncObj2.exceptionOccurred()){
-          fail("asyncObj2 failed", asyncObj2.getException());
+          Assert.fail("asyncObj2 failed", asyncObj2.getException());
         }
         
-        DistributedTestCase.join(asyncObj3, 5 * 60 * 1000, getLogWriter());        
+        ThreadUtils.join(asyncObj3, 5 * 60 * 1000);        
         if(asyncObj3.exceptionOccurred()){
-          fail("asyncObj3 failed", asyncObj3.getException());
+          Assert.fail("asyncObj3 failed", asyncObj3.getException());
         }
         
-        DistributedTestCase.join(asyncObj4, 5 * 60 * 1000, getLogWriter());        
+        ThreadUtils.join(asyncObj4, 5 * 60 * 1000);        
         if(asyncObj4.exceptionOccurred()){
-          fail("asyncObj4 failed", asyncObj4.getException());
+          Assert.fail("asyncObj4 failed", asyncObj4.getException());
         }
         
-        DistributedTestCase.join(asyncObj5, 5 * 60 * 1000, getLogWriter());        
+        ThreadUtils.join(asyncObj5, 5 * 60 * 1000);        
         if(asyncObj5.exceptionOccurred()){
-          fail("asyncObj5 failed", asyncObj5.getException());
+          Assert.fail("asyncObj5 failed", asyncObj5.getException());
         }
         
   
@@ -196,14 +197,14 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
         "runTest2");
     AsyncInvocation asyncObj2 =    vm0.invokeAsync(TxnTimeOutDUnitTest.class, "runTest1");
 
-    DistributedTestCase.join(asyncObj1, 5 * 60 * 1000, getLogWriter());
+    ThreadUtils.join(asyncObj1, 5 * 60 * 1000);
     if(asyncObj1.exceptionOccurred()){
-      fail("asyncObj1 failed", asyncObj1.getException());
+      Assert.fail("asyncObj1 failed", asyncObj1.getException());
     }
     
-    DistributedTestCase.join(asyncObj2, 5 * 60 * 1000, getLogWriter());
+    ThreadUtils.join(asyncObj2, 5 * 60 * 1000);
     if(asyncObj2.exceptionOccurred()){
-      fail("asyncObj2 failed", asyncObj2.getException());
+      Assert.fail("asyncObj2 failed", asyncObj2.getException());
     }
     
   }
@@ -230,7 +231,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
           fail("Exception did not occur although was supposed to occur");
     }
     catch (Exception e) {
-      getLogWriter().fine("Exception caught " + e);
+      LogWriterUtils.getLogWriter().fine("Exception caught " + e);
       fail("failed in naming lookup: " + e);
     }
     finally {
@@ -259,7 +260,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
           fail("Exception did not occur although was supposed to occur");
     }
     catch (Exception e) {
-      getLogWriter().fine("Exception caught " + e);
+      LogWriterUtils.getLogWriter().fine("Exception caught " + e);
       fail("failed in naming lookup: " + e);
     }
   }
@@ -303,7 +304,7 @@ public class TxnTimeOutDUnitTest extends DistributedTestCase {
       //
       //    sb.append(lineSep);
     }
-    getLogWriter().fine("***********\n " + sb);
+    LogWriterUtils.getLogWriter().fine("***********\n " + sb);
     return sb.toString();
   }
 } 

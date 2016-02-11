@@ -37,10 +37,11 @@ import com.gemstone.gemfire.internal.cache.ha.HAHelper;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 
 /**
  * This is the bugtest for bug no. 36738. When Object of class
@@ -86,18 +87,16 @@ public class HABug36738DUnitTest extends DistributedTestCase
 
   }
 
-  public void tearDown2() throws Exception
-  {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     server1.invoke(HABug36738DUnitTest.class, "closeCache");
     server2.invoke(HABug36738DUnitTest.class, "closeCache");
-
   }
 
   public void testBug36768() throws Exception
   {
     createServer1();
-    pause(10000);
+    Wait.pause(10000);
     server1.invoke(HABug36738DUnitTest.class, "checkRegionQueueSize");
     createServer2();
     server1.invoke(HABug36738DUnitTest.class, "checkRegionQueueSize");
@@ -114,7 +113,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
     while (itr.hasNext()) {
       Object key = itr.next();
       ClientUpdateMessage value = (ClientUpdateMessage)region.get(key);
-      getLogWriter().info("key : " + key + "Value " + value.getValue());
+      LogWriterUtils.getLogWriter().info("key : " + key + "Value " + value.getValue());
 
     }
 
@@ -162,7 +161,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
             new EventID(("memberID" + i).getBytes(), i, i));
 
         haRegion.put(new Long(i), clientMessage);
-        getLogWriter().info("Putting in the message Queue");
+        LogWriterUtils.getLogWriter().info("Putting in the message Queue");
 
       }
     }
@@ -191,7 +190,7 @@ public class HABug36738DUnitTest extends DistributedTestCase
     HARegion region = (HARegion)cache.getRegion(Region.SEPARATOR
         + HAHelper.getRegionQueueName(HAREGION_NAME));
     assertNotNull(region);
-    getLogWriter().info("Size of the Queue : " + region.size());
+    LogWriterUtils.getLogWriter().info("Size of the Queue : " + region.size());
 
   }
 }

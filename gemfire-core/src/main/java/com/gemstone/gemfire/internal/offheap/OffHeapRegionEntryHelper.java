@@ -39,15 +39,15 @@ import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
  */
 public class OffHeapRegionEntryHelper {
 
-  private static final long NULL_ADDRESS = 0L<<1;
-  private static final long INVALID_ADDRESS = 1L<<1;
-  private static final long LOCAL_INVALID_ADDRESS = 2L<<1;
-  private static final long DESTROYED_ADDRESS = 3L<<1;
-  public static final long REMOVED_PHASE1_ADDRESS = 4L<<1;
-  private static final long REMOVED_PHASE2_ADDRESS = 5L<<1;
-  private static final long END_OF_STREAM_ADDRESS = 6L<<1;
-  private static final long NOT_AVAILABLE_ADDRESS = 7L<<1;
-  private static final long TOMBSTONE_ADDRESS = 8L<<1;
+  protected static final long NULL_ADDRESS = 0L<<1;
+  protected static final long INVALID_ADDRESS = 1L<<1;
+  protected static final long LOCAL_INVALID_ADDRESS = 2L<<1;
+  protected static final long DESTROYED_ADDRESS = 3L<<1;
+  protected static final long REMOVED_PHASE1_ADDRESS = 4L<<1;
+  protected static final long REMOVED_PHASE2_ADDRESS = 5L<<1;
+  protected static final long END_OF_STREAM_ADDRESS = 6L<<1;
+  protected static final long NOT_AVAILABLE_ADDRESS = 7L<<1;
+  protected static final long TOMBSTONE_ADDRESS = 8L<<1;
   public static final int MAX_LENGTH_FOR_DATA_AS_ADDRESS = 8;
  /* private static final ChunkFactory chunkFactory ;
   static {
@@ -86,16 +86,6 @@ public class OffHeapRegionEntryHelper {
     if (v == Token.END_OF_STREAM) return END_OF_STREAM_ADDRESS;
     if (v == Token.NOT_AVAILABLE) return NOT_AVAILABLE_ADDRESS;
     throw new IllegalStateException("Can not convert " + v + " to an off heap address.");
-  }
-
-  static Object encodedAddressToObject(long ohAddress) {
-    return encodedAddressToObject(ohAddress, true, true);
-  }
-  
-  //TODO:Asif:Check if this is a valid equality conditions
-  public static boolean isAddressInvalidOrRemoved(long address) {
-    return address == INVALID_ADDRESS || address == LOCAL_INVALID_ADDRESS 
-        || address == REMOVED_PHASE2_ADDRESS || address == NULL_ADDRESS; 
   }
   
   /**
@@ -168,7 +158,10 @@ public class OffHeapRegionEntryHelper {
     }
   }
   
-  
+ /*
+  * This method is optimized for cases where if the caller wants to convert address to a Token
+  * compared to addressToObject which would deserialize the value.
+  */
   private static Token addressToToken(long ohAddress) {
     if (isOffHeap(ohAddress) || (ohAddress & ENCODED_BIT) != 0) {
       return Token.NOT_A_TOKEN;
@@ -222,11 +215,11 @@ public class OffHeapRegionEntryHelper {
   /**
    * This bit is set to indicate that the encoded data is serialized.
    */
-  private static long SERIALIZED_BIT = 2L;
+  static long SERIALIZED_BIT = 2L;
   /**
    * This bit is set to indicate that the encoded data is compressed.
    */
-  private static long COMPRESSED_BIT = 4L;
+  static long COMPRESSED_BIT = 4L;
   /**
    * This bit is set to indicate that the encoded data is a long whose value fits in 7 bytes.
    */
@@ -280,39 +273,19 @@ public class OffHeapRegionEntryHelper {
     }
     return 0L;
   }
-  
-  public static Object encodedAddressToObject(long addr, boolean decompress, boolean deserialize) {
-    boolean isSerialized = (addr & SERIALIZED_BIT) != 0;
-    byte[] bytes = encodedAddressToBytes(addr, decompress, false);
-    if (isSerialized) {
-      if (deserialize) {
-        return EntryEventImpl.deserialize(bytes);
+
+  static Object decodeAddressToObject(long ohAddress) {
+      byte[] bytes = decodeAddressToBytes(ohAddress, true, false);
+
+      boolean isSerialized = (ohAddress & SERIALIZED_BIT) != 0;
+      if (isSerialized) {
+         return EntryEventImpl.deserialize(bytes);
       } else {
-        return CachedDeserializableFactory.create(bytes);
+          return bytes;
       }
-    } else {
-      return bytes;
-    }
-  }
-  
-  static byte[] encodedAddressToBytes(long addr) {
-    byte[] result = encodedAddressToBytes(addr, true, false);
-    boolean isSerialized = (addr & SERIALIZED_BIT) != 0;
-    if (!isSerialized) {
-      result = EntryEventImpl.serialize(result);
-    }
-    return result;
   }
 
-  /**
-   * If the address contains a byte[] return it.
-   * Otherwise return the serialize bytes in the address in a byte array.
-   */
-  static byte[] encodedAddressToRawBytes(long addr) {
-    return encodedAddressToBytes(addr, true, false);
-  }
-
-  private static byte[] encodedAddressToBytes(long addr, boolean decompress, boolean compressedOk) {
+  static byte[] decodeAddressToBytes(long addr, boolean decompress, boolean compressedOk) {
     assert (addr & ENCODED_BIT) != 0;
     boolean isCompressed = (addr & COMPRESSED_BIT) != 0;
     int size = (int) ((addr & SIZE_MASK) >> SIZE_SHIFT);
@@ -340,18 +313,6 @@ public class OffHeapRegionEntryHelper {
     if (decompress && isCompressed) {
       if (!compressedOk) {
         throw new UnsupportedOperationException("Did not expect DataAsAddress to be compressed");
-      }
-    }
-    return bytes;
-  }
-  public static byte[] encodedAddressToBytes(long addr, boolean decompress, RegionEntryContext context) {
-    byte[] bytes = encodedAddressToBytes(addr, decompress, true);
-    if (decompress) {
-      boolean isCompressed = (addr & COMPRESSED_BIT) != 0;
-      if (isCompressed) {
-        long time = context.getCachePerfStats().startDecompression();
-        bytes = context.getCompressor().decompress(bytes);
-        context.getCachePerfStats().endDecompression(time);      
       }
     }
     return bytes;
@@ -386,7 +347,7 @@ public class OffHeapRegionEntryHelper {
   public static boolean isOffHeap(long addr) {
     if ((addr & ENCODED_BIT) != 0) return false;
     if (addr < 0) return true;
-    addr >>= 1; // shift left 1 to convert to array index;
+    addr >>= 1; // shift right 1 to convert to array index;
     return addr >= addrToObj.length;
   }
 

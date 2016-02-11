@@ -39,9 +39,8 @@ import org.junit.experimental.categories.Category;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.test.dunit.ThreadUtils;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
-
-import dunit.DistributedTestCase;
 
 /**
  * This is a multi threaded tests. This test creates two regions. Region1 which
@@ -445,8 +444,8 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
     });
     t1.start();
     t2.start();
-    DistributedTestCase.join(t1, 30 * 1000, null);
-    DistributedTestCase.join(t2, 30 * 1000, null);
+    ThreadUtils.join(t1, 30 * 1000);
+    ThreadUtils.join(t2, 30 * 1000);
     assertTrue(!failure);
 
   }
@@ -541,19 +540,19 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
       this.timeToStop.set(true);
     }
     for (int i = 0; i < numberOfPutsThreads; i++) {
-      DistributedTestCase.join(putThreads[i], 10*1000, null);
+      ThreadUtils.join(putThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfGetsThreads; i++) {
-      DistributedTestCase.join(getThreads[i], 10*1000, null);
+      ThreadUtils.join(getThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfDestroysThreads; i++) {
-      DistributedTestCase.join(destroyThreads[i], 10*1000, null);
+      ThreadUtils.join(destroyThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfClearThreads; i++) {
-      DistributedTestCase.join(clearThreads[i], 10*1000, null);
+      ThreadUtils.join(clearThreads[i], 10*1000);
     }
     for (int i = 0; i < numberOfForceRollThreads; i++) {
-      DistributedTestCase.join(forceRollThreads[i], 10*1000, null);
+      ThreadUtils.join(forceRollThreads[i], 10*1000);
     }
 
     if (this.validate) {
@@ -825,7 +824,7 @@ public class ConcurrentRegionOperationsJUnitTest extends DiskRegionTestingBase
         );
 
     region.clear();
-    DistributedTestCase.join(th, 20 * 1000, null);
+    ThreadUtils.join(th, 20 * 1000);
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = false;
     DiskStoreImpl.DEBUG_DELAY_JOINING_WITH_COMPACTOR = 500;
     CacheObserverHolder.setInstance(old);

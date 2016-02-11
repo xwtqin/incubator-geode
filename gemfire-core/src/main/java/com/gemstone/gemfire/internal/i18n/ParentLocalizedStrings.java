@@ -48,7 +48,7 @@ class ParentLocalizedStrings {
   public static final StringId AbstractHealthEvaluator_OKAY_HEALTH__0 = new StringId(1025, "OKAY_HEALTH:  {0}");
   public static final StringId AbstractHealthEvaluator_POOR_HEALTH__0 = new StringId(1026, "POOR_HEALTH:  {0}");
   public static final StringId AbstractRegion_CACHECALLBACK_CLOSE_EXCEPTION = new StringId(1027, "CacheCallback close exception");
-  // ok to reuse 1028
+  public static final StringId PoolManagerImpl_POOL_NAMED_0_ALREADY_EXISTS = new StringId(1028, "A pool named \"{0}\" already exists");
   public static final StringId AcceptorImpl_CACHE_SERVER_CONNECTION_LISTENER_BOUND_TO_ADDRESS_0_WITH_BACKLOG_1 = new StringId(1029, "Cache server connection listener bound to address {0} with backlog {1}.");
   public static final StringId AcceptorImpl_CACHE_SERVER_FAILED_ACCEPTING_CLIENT_CONNECTION_DUE_TO_SOCKET_TIMEOUT = new StringId(1030, "Cache server: failed accepting client connection due to socket timeout.");
   public static final StringId AcceptorImpl_CACHE_SERVER_FAILED_ACCEPTING_CLIENT_CONNECTION__0 = new StringId(1031, "Cache server: failed accepting client connection  {0}");
@@ -87,7 +87,7 @@ class ParentLocalizedStrings {
   public static final StringId AgentImpl_SNMPADAPTOR_ALREADY_REGISTERED_AS__0 = new StringId(1064, "SnmpAdaptor already registered as  {0}");
   public static final StringId AgentImpl_STOPPING_JMX_AGENT = new StringId(1065, "Stopping JMX agent");
   public static final StringId AgentImpl_XSLTPROCESSOR_ALREADY_REGISTERED_AS__0 = new StringId(1066, "XsltProcessor already registered as  {0}");
-  // ok to reuse 1067
+  public static final StringId AbstractRegion_THE_CONNECTION_POOL_0_HAS_NOT_BEEN_CREATED = new StringId(1067, "The connection pool \"{0}\" has not been created");
   public static final StringId AttributesFactory_0_WAS_NOT_AN_EXISTING_DIRECTORY = new StringId(1068, "\"{0}\" was not an existing directory.");
   public static final StringId AttributesFactory_ADDCACHELISTENER_PARAMETER_WAS_NULL = new StringId(1069, "addCacheListener parameter was null");
   public static final StringId AttributesFactory_AN_EVICTION_CONTROLLER_WITH_LOCAL_DESTROY_EVICTION_ACTION_IS_INCOMPATIBLE_WITH_DISTRIBUTED_REPLICATION = new StringId(1070, "An Eviction Controller with local destroy eviction action is incompatible with distributed replication");
@@ -140,7 +140,8 @@ class ParentLocalizedStrings {
   public static final StringId BaseCommand_UNKNOWN_QUERY_EXCEPTION = new StringId(1117, "Uknown query Exception.");
   public static final StringId BaseCommand_SEVERE_CACHE_EXCEPTION_0 = new StringId(1118, "Severe cache exception : {0}");
   public static final StringId BaseCommand_UNEXPECTED_QUERYINVALIDEXCEPTION_WHILE_PROCESSING_QUERY_0 = new StringId(1119, "Unexpected QueryInvalidException while processing query {0}");
-  // ok to reuse 1120..1121
+  public static final StringId LocalRegion_THE_REGION_0_WAS_CONFIGURED_TO_USE_OFF_HEAP_MEMORY_BUT_OFF_HEAP_NOT_CONFIGURED = new StringId(1120, "The region {0} was configured to use off heap memory but no off heap memory was configured");
+  // ok to reuse 1121
   public static final StringId CacheServerImpl_CACHESERVER_CONFIGURATION___0 = new StringId(1122, "CacheServer Configuration:   {0}");
   public static final StringId CacheServerImpl_FORCING_NOTIFYBYSUBSCRIPTION_TO_SUPPORT_DYNAMIC_REGIONS = new StringId(1123, "Forcing notifyBySubscription to support dynamic regions");
   // ok to reuse 1124..1130
@@ -599,7 +600,7 @@ class ParentLocalizedStrings {
   public static final StringId GemFireBasicDataSource_AN_EXCEPTION_WAS_CAUGHT_WHILE_TRYING_TO_LOAD_THE_DRIVER = new StringId(1589, "An Exception was caught while trying to load the driver. {0}");
   public static final StringId GemFireBasicDataSource_GEMFIREBASICDATASOURCE_GETCONNECTION_URL_FOR_THE_DATASOURCE_NOT_AVAILABLE = new StringId(1590, "GemFireBasicDataSource::getConnection:Url for the DataSource not available");
   public static final StringId GemFireCache_0__NOW_CLOSING = new StringId(1591, "{0} : Now closing.");
-  public static final StringId GemFireCache_CACHE_INITIALIZED_USING__0__1 = new StringId(1592, "Cache initialized using \"{0}\":{1}");
+  public static final StringId GemFireCache_INITIALIZING_CACHE_USING__0__1 = new StringId(1592, "Initializing cache using \"{0}\":{1}");
   public static final StringId GemFireCache_FAILED_TO_GET_THE_CQSERVICE_TO_CLOSE_DURING_CACHE_CLOSE_1 = new StringId(1593, "Failed to get the CqService, to close during cache close (1).");
   public static final StringId GemFireCache_FAILED_TO_GET_THE_CQSERVICE_TO_CLOSE_DURING_CACHE_CLOSE_2 = new StringId(1594, "Failed to get the CqService, to close during cache close (2).");
   public static final StringId GemFireCache_WHILE_READING_CACHE_XML_0_1 = new StringId(1595, "While reading Cache XML {0}. {1}");
@@ -730,9 +731,9 @@ class ParentLocalizedStrings {
   public static final StringId GroupMembershipService_MEMBERSHIP_FAULT_WHILE_PROCESSING_VIEW_REMOVAL_OF__0 = new StringId(1722, "Membership: Fault while processing view removal of  {0}");
   public static final StringId GroupMembershipService_MEMBERSHIP_FINISHED_VIEW_PROCESSING_VIEWID___0 = new StringId(1723, "Membership: Finished view processing viewID =  {0}");
   public static final StringId GroupMembershipService_MEMBERSHIP_GEMFIRE_RECEIVED_A_MESSAGE_WITH_NO_SENDER_ADDRESS = new StringId(1724, "Membership: GemFire received a message with no sender address");
-  public static final StringId GroupMembershipService_MEMBERSHIP_GEMFIRE_RECEIVED_NULL_MESSAGE_FROM__0 = new StringId(1725, "Membership: GemFire received null message from  {0}");
+  // ok to reuse 1725
   public static final StringId GroupMembershipService_MEMBERSHIP_IGNORING_SURPRISE_CONNECT_FROM_SHUNNED_MEMBER_0 = new StringId(1726, "Membership: Ignoring surprise connect from shunned member <{0}>");
-  public static final StringId GroupMembershipService_MEMBERSHIP_MESSAGE_HEADERS__0 = new StringId(1727, "Membership: message headers:  {0}");
+  // ok to reuse 1727
   // ok to reuse 1728
   public static final StringId GroupMembershipService_MEMBERSHIP_PAUSING_TO_ALLOW_OTHER_CONCURRENT_PROCESSES_TO_JOIN_THE_DISTRIBUTED_SYSTEM = new StringId(1729, "Membership: Pausing to allow other concurrent processes to join the distributed system");
   public static final StringId GroupMembershipService_MEMBERSHIP_PROCESSING_ADDITION__0_ = new StringId(1730, "Membership: Processing addition < {0} >");
@@ -1019,7 +1020,7 @@ class ParentLocalizedStrings {
   public static final StringId SystemAdmin_MONITOR_OPTION_HELP = new StringId(2005, "-monitor Causes the stats command to keep periodically checking its statistic archives for updates.");
 
   public static final StringId CacheFactory_0_EXISTING_CACHE_WITH_DIFFERENT_CACHE_CONFIG =  new StringId(2006, "Existing cache has different cache configuration, it has:\n{0}");
-  public static final StringId LonerDistributionmanager_CHANGING_PORT_FROM_TO = new StringId(2007, "Updating membership port.  Port changed from {0} to {1}.");
+  public static final StringId LonerDistributionmanager_CHANGING_PORT_FROM_TO = new StringId(2007, "Updating membership port.  Port changed from {0} to {1}.  ID is now {2}");
   public static final StringId ManagerLogWriter_ROLLING_CURRENT_LOG_TO_0 = new StringId(2008, "Rolling current log to {0}");
   
   public static final StringId ExecuteFunction66_TRANSACTIONAL_FUNCTION_WITHOUT_RESULT = new StringId(2009, " Function invoked within transactional context, but hasResults() is false; ordering of transactional operations cannot be guaranteed.  This message is only issued once by a server.");
@@ -1109,7 +1110,7 @@ class ParentLocalizedStrings {
   public static final StringId TCPConduit_ENDING_RECONNECT_ATTEMPT_BECAUSE_0_HAS_DISAPPEARED = new StringId(2086, "Ending reconnect attempt because {0} has disappeared.");
   public static final StringId TCPConduit_ENDING_RECONNECT_ATTEMPT_TO_0_BECAUSE_SHUTDOWN_HAS_STARTED = new StringId(2087, "Ending reconnect attempt to {0} because shutdown has started.");
   public static final StringId TCPConduit_ERROR_SENDING_MESSAGE_TO_0_WILL_REATTEMPT_1 = new StringId(2088, "Error sending message to {0} (will reattempt): {1}");
-  public static final StringId TCPConduit_EXCEPTION_CREATING_SERVERSOCKET = new StringId(2089, "While creating ServerSocket and Stub on port {0} with address {1}");
+  public static final StringId TCPConduit_EXCEPTION_CREATING_SERVERSOCKET = new StringId(2089, "While creating ServerSocket on port {0} with address {1}");
   public static final StringId TCPConduit_EXCEPTION_PARSING_P2PIDLECONNECTIONTIMEOUT = new StringId(2090, "exception parsing p2p.idleConnectionTimeout");
   public static final StringId TCPConduit_EXCEPTION_PARSING_P2PTCPBUFFERSIZE = new StringId(2091, "exception parsing p2p.tcpBufferSize");
   public static final StringId TCPConduit_FAILED_TO_ACCEPT_CONNECTION_FROM_0_BECAUSE_1 = new StringId(2092, "Failed to accept connection from {0} because {1}");
@@ -1444,7 +1445,7 @@ class ParentLocalizedStrings {
   public static final StringId Connection_DETECTED_WRONG_VERSION_OF_GEMFIRE_PRODUCT_DURING_HANDSHAKE_EXPECTED_0_BUT_FOUND_1 = new StringId(2432, "Detected wrong version of GemFire product during handshake. Expected  {0}  but found  {1}");
   public static final StringId Connection_FORCED_DISCONNECT_SENT_TO_0 = new StringId(2433, "Forced disconnect sent to  {0}");
   public static final StringId Connection_HANDSHAKE_FAILED = new StringId(2434, "Handshake failed");
-  public static final StringId Connection_MEMBER_FOR_STUB_0_LEFT_THE_GROUP = new StringId(2435, "Member for stub  {0}  left the group");
+  public static final StringId Connection_MEMBER_LEFT_THE_GROUP = new StringId(2435, "Member {0}  left the group");
   public static final StringId Connection_NOT_CONNECTED_TO_0 = new StringId(2436, "Not connected to  {0}");
   public static final StringId Connection_NULL_CONNECTIONTABLE = new StringId(2437, "Null ConnectionTable");
   public static final StringId Connection_SOCKET_HAS_BEEN_CLOSED = new StringId(2438, "socket has been closed");
@@ -1542,7 +1543,7 @@ class ParentLocalizedStrings {
   public static final StringId DefaultQuery_WHEN_QUERYING_A_PARTITIONED_REGION_THE_PROJECTIONS_MUST_NOT_REFERENCE_ANY_REGIONS = new StringId(2530, "When querying a Partitioned Region, the projections must not reference any regions");
   public static final StringId DestroyMessage_FAILED_SENDING_0 = new StringId(2531, "Failed sending < {0} >");
   public static final StringId DirectChannel_COMMUNICATIONS_DISCONNECTED = new StringId(2532, "communications disconnected");
-  public static final StringId DirectChannel_NO_STUB_0 = new StringId(2533, "No stub {0}");
+  public static final StringId DirectChannel_SHUNNING_0 = new StringId(2533, "Member is being shunned: {0}");
   public static final StringId DirectChannel_UNKNOWN_ERROR_SERIALIZING_MESSAGE = new StringId(2534, "Unknown error serializing message");
   public static final StringId DiskEntry_AN_IOEXCEPTION_WAS_THROWN_WHILE_SERIALIZING = new StringId(2535, "An IOException was thrown while serializing.");
   public static final StringId DiskEntry_DISK_REGION_IS_NULL = new StringId(2536, "Disk region is null");

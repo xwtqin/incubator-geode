@@ -21,8 +21,8 @@ import java.util.Properties;
 import com.gemstone.gemfire.compression.SnappyCompressor;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.OffHeapTestUtil;
-
-import dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class CompressionCacheListenerOffHeapDUnitTest extends
@@ -40,7 +40,7 @@ public class CompressionCacheListenerOffHeapDUnitTest extends
   }
 
   @Override
-  public void tearDown2() throws Exception {
+  protected final void preTearDownCompressionCacheListenerDUnitTest() throws Exception {
     SerializableRunnable checkOrphans = new SerializableRunnable() {
 
       @Override
@@ -50,12 +50,8 @@ public class CompressionCacheListenerOffHeapDUnitTest extends
         }
       }
     };
-    invokeInEveryVM(checkOrphans);
-    try {
-      checkOrphans.run();
-    } finally {
-      super.tearDown2();
-    }
+    Invoke.invokeInEveryVM(checkOrphans);
+    checkOrphans.run();
   }
 
   @Override

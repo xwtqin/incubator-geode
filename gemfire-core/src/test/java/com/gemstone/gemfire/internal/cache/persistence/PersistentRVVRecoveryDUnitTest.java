@@ -65,12 +65,16 @@ import com.gemstone.gemfire.internal.cache.Token.Tombstone;
 import com.gemstone.gemfire.internal.cache.TombstoneService;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase {
   
@@ -81,9 +85,8 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
   }
   
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(PersistentRecoveryOrderDUnitTest.class, "resetAckWaitThreshold");
+  protected final void postTearDownPersistentReplicatedTestBase() throws Exception {
+    Invoke.invokeInEveryVM(PersistentRecoveryOrderDUnitTest.class, "resetAckWaitThreshold");
   }
   
   public void testNoConcurrencyChecks () {
@@ -216,7 +219,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
       }
       
     });
-    ExpectedException ex = addExpectedException("DiskAccessException");
+    IgnoredException ex = IgnoredException.addIgnoredException("DiskAccessException");
     try {
       //Force expiration, with our test hook that should close the cache
       tombstoneService = cache.getTombstoneService();
@@ -286,7 +289,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
 
           // We should wait for timeout time so that tomstones are expired
           // right away when they are gIId based on their original timestamp.
-          pause((int) TEST_REPLICATED_TOMBSTONE_TIMEOUT);
+          Wait.pause((int) TEST_REPLICATED_TOMBSTONE_TIMEOUT);
 
           TombstoneService.REPLICATED_TOMBSTONE_TIMEOUT = TEST_REPLICATED_TOMBSTONE_TIMEOUT;
           TombstoneService.EXPIRED_TOMBSTONE_LIMIT = entryCount;
@@ -296,7 +299,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
           assertEquals(entryCount, getTombstoneCount(region));
 
           getCache().getLogger().fine("Waiting for maximumSleepTime ms");
-          pause(10000); // maximumSleepTime+500 in TombstoneSweeper GC thread
+          Wait.pause(10000); // maximumSleepTime+500 in TombstoneSweeper GC thread
 
           // Tombstones should have been expired and garbage collected by now by
           // TombstoneService.
@@ -391,7 +394,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
         Cache cache = getCache();
         Region region = cache.getRegion("prRegion");
         while (!region.get("testKey").equals("testValue2")) {
-          pause(100);
+          Wait.pause(100);
         }
         region.destroy("testKey");
       }
@@ -412,7 +415,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
         
         Region.Entry entry = ((PartitionedRegion)region).getEntry("testKey", true /*Entry is destroyed*/);
         RegionEntry re = ((EntrySnapshot)entry).getRegionEntry();
-        getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
+        LogWriterUtils.getLogWriter().fine("RegionEntry for testKey: " + re.getKey() + " " + re.getValueInVM((LocalRegion) region));
         assertTrue(re.getValueInVM((LocalRegion) region) instanceof Tombstone);
         
         VersionTag tag = re.getVersionStamp().asVersionTag();
@@ -752,7 +755,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
     //and then do the wait in the flusher thread.
     
     //Setup the callbacks to wait for krf creation and throw an exception
-    ExpectedException ex = addExpectedException("DiskAccessException");
+    IgnoredException ex = IgnoredException.addIgnoredException("DiskAccessException");
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER=true;
     try {
       final CountDownLatch krfCreated = new CountDownLatch(1);
@@ -809,7 +812,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
 
       //Wait for the region to be destroyed. The region won't be destroyed
       //until the async flusher thread ends up switching oplogs
-      waitForCriterion(new WaitCriterion() {
+      Wait.waitForCriterion(new WaitCriterion() {
 
         @Override
         public boolean done() {
@@ -836,7 +839,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
     for(int i = 0; i < 3; i++) {
       NonTXEntry entry = (NonTXEntry) recoveredRegion.getEntry("key" + i);
       tagsFromKrf[i] = entry.getRegionEntry().getVersionStamp().asVersionTag();
-      getLogWriter().info("krfTag[" + i + "]="+ tagsFromKrf[i] + ",value=" + entry.getValue());
+      LogWriterUtils.getLogWriter().info("krfTag[" + i + "]="+ tagsFromKrf[i] + ",value=" + entry.getValue());
     }
     
     closeCache();
@@ -851,7 +854,7 @@ public class PersistentRVVRecoveryDUnitTest extends PersistentReplicatedTestBase
       for(int i = 0; i < 3; i++) {
         NonTXEntry entry = (NonTXEntry) recoveredRegion.getEntry("key" + i);
         tagsFromCrf[i] = entry.getRegionEntry().getVersionStamp().asVersionTag();
-        getLogWriter().info("crfTag[" + i + "]="+ tagsFromCrf[i] + ",value=" + entry.getValue());
+        LogWriterUtils.getLogWriter().info("crfTag[" + i + "]="+ tagsFromCrf[i] + ",value=" + entry.getValue());
       }
       
       //Make sure the version tags from the krf and the crf match.

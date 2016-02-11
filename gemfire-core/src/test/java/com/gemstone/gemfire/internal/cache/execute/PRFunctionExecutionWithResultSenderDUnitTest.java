@@ -47,10 +47,10 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDUnitTestCase;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionTestHelper;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 public class PRFunctionExecutionWithResultSenderDUnitTest extends
     PartitionedRegionDUnitTestCase {
@@ -585,7 +585,7 @@ public class PRFunctionExecutionWithResultSenderDUnitTest extends
         ResultCollector rc1 = dataSet.withArgs(Boolean.TRUE).execute(
             function.getId());
         List l = ((List)rc1.getResult());
-        getLogWriter().info(
+        LogWriterUtils.getLogWriter().info(
             "PRFunctionExecutionDUnitTest#testExecutionOnAllNodes_byName : Result size :"
                 + l.size() + " Result : " + l);
         assertEquals(4, l.size());
@@ -601,8 +601,6 @@ public class PRFunctionExecutionWithResultSenderDUnitTest extends
  }
   /**
    * Ensure that the execution is happening all the PR as a whole
-   * 
-   * @throws Exception
    */
 
   public static class TestResolver implements PartitionResolver, Serializable {

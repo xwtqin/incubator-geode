@@ -73,12 +73,16 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager.ResourceObserverAdapter;
 import com.gemstone.gemfire.internal.cache.partitioned.BucketCountLoadProbe;
 import com.gemstone.gemfire.internal.cache.partitioned.LoadProbe;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.Invoke;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
  * @author dsmith
@@ -89,12 +93,9 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
 
   private static final long MAX_WAIT = 60;
   
-  
-  
   @Override
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-    invokeInEveryVM(new SerializableRunnable() {
+  protected final void postTearDownCacheTestCase() throws Exception {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);
         System.clearProperty("gemfire.resource.manager.threads");
@@ -329,7 +330,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
   }
   
   public void enforceIp(final boolean simulate) {
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         Properties props = new Properties();
         props.setProperty(DistributionConfig.ENFORCE_UNIQUE_HOST_NAME, "true");
@@ -427,7 +428,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
 
     } finally {
       disconnectFromDS();
-      invokeInEveryVM(new SerializableRunnable() {
+      Invoke.invokeInEveryVM(new SerializableRunnable() {
         public void run() {
           disconnectFromDS(); 
         }
@@ -560,7 +561,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     
     } finally {
       disconnectFromDS();
-      invokeInEveryVM(new SerializableRunnable() {
+      Invoke.invokeInEveryVM(new SerializableRunnable() {
         public void run() {
           //clear the redundancy zone setting
           disconnectFromDS(); 
@@ -611,7 +612,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         try {
           barrier.await(MAX_WAIT, TimeUnit.SECONDS);
         } catch (Exception e) {
-          fail("failed waiting for barrier", e);
+          Assert.fail("failed waiting for barrier", e);
         }
         observerCalled = true;
       } else {
@@ -765,7 +766,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     checkBucketCount(vm2, "region2", 6);
     } finally {
       disconnectFromDS();
-      invokeInEveryVM(new SerializableRunnable() {
+      Invoke.invokeInEveryVM(new SerializableRunnable() {
         public void run() {
           //clear the redundancy zone setting
           disconnectFromDS(); 
@@ -820,9 +821,9 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           .simulate()
           .getResults(MAX_WAIT, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
-        fail("Interrupted waiting on rebalance", e);
+        Assert.fail("Interrupted waiting on rebalance", e);
       } catch (TimeoutException e) {
-        fail("Timeout waiting on rebalance", e);
+        Assert.fail("Timeout waiting on rebalance", e);
       }
     } else {
       try {
@@ -832,9 +833,9 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         .start()
         .getResults(MAX_WAIT, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
-        fail("Interrupted waiting on rebalance", e);
+        Assert.fail("Interrupted waiting on rebalance", e);
       } catch (TimeoutException e) {
-        fail("Timeout waiting on rebalance", e);
+        Assert.fail("Timeout waiting on rebalance", e);
       }
     }
     assertEquals(Collections.emptySet(), manager.getRebalanceOperations());
@@ -1099,7 +1100,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
   }
   
   public void testRecoverRedundancyParallelAsyncEventQueueSimulation() throws NoSuchFieldException, SecurityException {
-    invokeInEveryVM(new SerializableRunnable() {
+    Invoke.invokeInEveryVM(new SerializableRunnable() {
 
       @Override
       public void run () {
@@ -1868,7 +1869,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           assertEquals(12, details.getCreatedBucketCount());
           assertEquals(1,details.getActualRedundantCopies());
           assertEquals(0,details.getLowRedundancyBucketCount());
-          getLogWriter().info("details=" + details.getPartitionMemberInfo());
+          LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
           long afterSize = 0;
           for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
             assertEquals(8, memberDetails.getBucketCount());
@@ -2010,7 +2011,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         assertEquals(12, details.getCreatedBucketCount());
         assertEquals(1,details.getActualRedundantCopies());
         assertEquals(0,details.getLowRedundancyBucketCount());
-        getLogWriter().info("details=" + details.getPartitionMemberInfo());
+        LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
         long afterSize = 0;
         for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
           assertEquals(8, memberDetails.getBucketCount());
@@ -2079,7 +2080,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
           assertEquals(12, details.getCreatedBucketCount());
           assertEquals(1,details.getActualRedundantCopies());
           assertEquals(0,details.getLowRedundancyBucketCount());
-          getLogWriter().info("details=" + details.getPartitionMemberInfo());
+          LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
           long afterSize = 0;
           for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
             assertEquals(6, memberDetails.getBucketCount());
@@ -2194,7 +2195,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         assertEquals(12, details.getCreatedBucketCount());
         assertEquals(1,details.getActualRedundantCopies());
         assertEquals(0,details.getLowRedundancyBucketCount());
-        getLogWriter().info("details=" + details.getPartitionMemberInfo());
+        LogWriterUtils.getLogWriter().info("details=" + details.getPartitionMemberInfo());
         long afterSize = 0;
         for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
           assertEquals(8, memberDetails.getBucketCount());
@@ -2504,7 +2505,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     }
     cacheWriter.release();
    
-    getLogWriter().info("starting wait for rebalance.  Will wait for " + MAX_WAIT + " seconds");
+    LogWriterUtils.getLogWriter().info("starting wait for rebalance.  Will wait for " + MAX_WAIT + " seconds");
     RebalanceResults results = rebalance.getResults(MAX_WAIT, TimeUnit.SECONDS);
     assertEquals(2, results.getTotalBucketCreatesCompleted());
     assertEquals(1, results.getTotalPrimaryTransfersCompleted());
@@ -2745,7 +2746,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
     // the rebalance op may think that the other member doesn't have buckets, then
     // ask it to create them and get a negative reply because it actually does
     // have the buckets, causing the test to fail
-    pause(10000);  
+    Wait.pause(10000);  
     
     //Try to rebalance again. This shouldn't do anything, because
     //we already recovered redundancy earlier.
@@ -2948,9 +2949,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
   /** 
    * Test to ensure that we wait for
    * in progress write operations before moving a primary.
-   * @throws InterruptedException 
    * @throws CancellationException 
-   * @throws TimeoutException 
    */
   public void moveBucketsWithUnrecoveredValuesRedundancy(final boolean simulate) {
     Host host = Host.getHost(0);
@@ -3167,7 +3166,7 @@ public class RebalanceOperationDUnitTest extends CacheTestCase {
         Cache cache = getCache();
         final PartitionedRegion region = (PartitionedRegion) cache.getRegion(regionName);
         
-        waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           
           @Override
           public boolean done() {

@@ -38,14 +38,14 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessageImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ConflationDUnitTest;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Tests the size of clientUpdateMessageImpl with the size calculated by
- * {@linkplain MemLRUCapacityController} for HA overFlow
+ * {@link com.gemstone.gemfire.internal.cache.lru.MemLRUCapacityController} for HA overFlow
  * @author aingle
  * @since 5.7
  */
@@ -94,8 +94,8 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     serverVM = host.getVM(3);
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     serverVM.invoke(ConflationDUnitTest.class, "unsetIsSlowStart");
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "closeCache");
@@ -156,9 +156,6 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
 
   /**
    * create client cache
-   *
-   * @param port1
-   * @param port2 - end points ports
    */
   public static void createCacheClient(Integer port1, String host)
       throws Exception {
@@ -194,7 +191,7 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class,
                   "createCacheClient",
                   new Object[] { port1, 
-                  getServerHostName(client.getHost()) });
+                  NetworkUtils.getServerHostName(client.getHost()) });
 
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "performPut",
         new Object[] { new Long(0L), new Long(100L) });
@@ -220,7 +217,7 @@ public class HAOverflowMemObjectSizerDUnitTest extends DistributedTestCase {
     client.invoke(HAOverflowMemObjectSizerDUnitTest.class,
                   "createCacheClient", 
                   new Object[] { port2,
-                  getServerHostName(client.getHost()) });
+                  NetworkUtils.getServerHostName(client.getHost()) });
 
     serverVM.invoke(HAOverflowMemObjectSizerDUnitTest.class, "performPut",
         new Object[] { new Long(101L), new Long(200L) });

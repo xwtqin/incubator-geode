@@ -77,6 +77,16 @@ public class NetView implements DataSerializableFixedID {
     Arrays.fill(failureDetectionPorts, -1);
   }
 
+  public NetView(InternalDistributedMember creator, int viewId, List<InternalDistributedMember> members) {
+    this.viewId = viewId;
+    this.members = new ArrayList<InternalDistributedMember>(members);
+    hashedMembers = new HashSet<>(this.members);
+    shutdownMembers = new HashSet<>();
+    crashedMembers = Collections.emptySet();
+    this.creator = creator;
+    Arrays.fill(failureDetectionPorts, -1);
+  }
+
   // legacy method for JGMM
   public NetView(int size, long viewId) {
     this.viewId = (int) viewId;
@@ -228,6 +238,10 @@ public class NetView implements DataSerializableFixedID {
   
   public void addCrashedMembers(Set<InternalDistributedMember> mbr) {
     this.crashedMembers.addAll(mbr);
+  }
+
+  public void addShutdownMembers(Set<InternalDistributedMember> mbr) {
+    this.shutdownMembers.addAll(mbr);
   }
 
   public boolean remove(InternalDistributedMember mbr) {
@@ -517,6 +531,21 @@ public class NetView implements DataSerializableFixedID {
 //    }
     sb.append("]");
     return sb.toString();
+  }
+  
+  /**
+   * Returns the ID from this view that is equal to the argument.
+   * If no such ID exists the argument is returned.
+   */
+  public synchronized InternalDistributedMember getCanonicalID(InternalDistributedMember id) {
+    if (hashedMembers.contains(id)) {
+      for (InternalDistributedMember m: this.members) {
+        if (id.equals(m)) {
+          return m;
+        }
+      }
+    }
+    return id;
   }
 
   @Override

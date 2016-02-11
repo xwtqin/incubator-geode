@@ -40,10 +40,12 @@ import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.VMCachedDeserializable;
 import com.gemstone.gemfire.pdx.PdxInstance;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.SerializableCallable;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * Test for #44807 to eliminate unnecessary serialization/deserialization in
@@ -117,9 +119,9 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
-        cf.addPoolServer(getServerHostName(server2.getHost()), port2);
-        cf.addPoolServer(getServerHostName(server3.getHost()), port3);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server2.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server3.getHost()), port3);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -143,14 +145,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults[][] sr = new SelectResults[1][2];
         SelectResults res = null;
@@ -162,7 +164,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -216,14 +218,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < queries.length; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -289,7 +291,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -317,14 +319,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -339,7 +341,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + multipleRegionQueries[i], e);
+            Assert.fail("Error executing query: " + multipleRegionQueries[i], e);
           }
           assertEquals(resultSize2[i], res.size());
           if (i == 4) {
@@ -396,7 +398,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < multipleRegionQueries.length; i++) {
@@ -404,7 +406,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             res = (SelectResults) qs.newQuery(multipleRegionQueries[i])
                 .execute();
           } catch (Exception e) {
-            fail("Error executing query: " + multipleRegionQueries[i], e);
+            Assert.fail("Error executing query: " + multipleRegionQueries[i], e);
           }
           assertEquals(resultSize2[i], res.size());
           if (i == 4) {
@@ -489,7 +491,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -513,14 +515,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -533,7 +535,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -584,14 +586,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < 6; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -662,9 +664,9 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
-        cf.addPoolServer(getServerHostName(server2.getHost()), port2);
-        cf.addPoolServer(getServerHostName(server3.getHost()), port3);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server2.getHost()), port2);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server3.getHost()), port3);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -688,14 +690,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -708,7 +710,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -759,14 +761,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < 6; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -818,7 +820,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -851,7 +853,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
           qs = getCache().getQueryService();
           qs.createIndex("status", "status", "/" + regName);
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
 
         return null;
@@ -862,14 +864,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -884,7 +886,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + multipleRegionQueries[i], e);
+            Assert.fail("Error executing query: " + multipleRegionQueries[i], e);
           }
           assertEquals(resultSize2[i], res.size());
           if (i == 4) {
@@ -927,7 +929,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
           qs = getCache().getQueryService();
           qs.createIndex("status", "status", "/" + regName2);
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
 
         return null;
@@ -938,14 +940,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -960,7 +962,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + multipleRegionQueries[i], e);
+            Assert.fail("Error executing query: " + multipleRegionQueries[i], e);
           }
           assertEquals(resultSize2[i], res.size());
           if (i == 4) {
@@ -1020,7 +1022,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1044,14 +1046,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -1064,7 +1066,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1119,14 +1121,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < queries.length; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1175,14 +1177,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < queries.length; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1241,7 +1243,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port1);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port1);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1265,14 +1267,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -1285,7 +1287,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1342,14 +1344,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < queries.length; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1398,14 +1400,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
         try {
           qs = getCache().getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         for (int i = 0; i < queries.length; i++) {
           try {
             res = (SelectResults) qs.newQuery(queries[i]).execute();
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1468,7 +1470,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
       @Override
       public Object call() throws Exception {
         ClientCacheFactory cf = new ClientCacheFactory();
-        cf.addPoolServer(getServerHostName(server1.getHost()), port);
+        cf.addPoolServer(NetworkUtils.getServerHostName(server1.getHost()), port);
         ClientCache cache = getClientCache(cf);
         cache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)
             .create(regName);
@@ -1484,14 +1486,14 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     client.invoke(new SerializableCallable("Query") {
       @Override
       public Object call() throws Exception {
-        getLogWriter().info("Querying remotely from client");
+        LogWriterUtils.getLogWriter().info("Querying remotely from client");
         QueryService localQS = null;
         QueryService remoteQS = null;
         try {
           localQS = ((ClientCache) getCache()).getLocalQueryService();
           remoteQS = ((ClientCache) getCache()).getQueryService();
         } catch (Exception e) {
-          fail("Exception getting query service ", e);
+          Assert.fail("Exception getting query service ", e);
         }
         SelectResults res = null;
         SelectResults[][] sr = new SelectResults[1][2];
@@ -1504,7 +1506,7 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
             sr[0][1] = res;
             CacheUtils.compareResultsOfWithAndWithoutIndex(sr);
           } catch (Exception e) {
-            fail("Error executing query: " + queries[i], e);
+            Assert.fail("Error executing query: " + queries[i], e);
           }
           assertEquals(resultSize[i], res.size());
           if (i == 3) {
@@ -1603,10 +1605,10 @@ public class SelectStarQueryDUnitTest extends CacheTestCase {
     public void beforeIterationEvaluation(CompiledValue executer,
         Object currentObject) {
       if (currentObject instanceof VMCachedDeserializable) {
-        getLogWriter().fine("currentObject is serialized object");
+        LogWriterUtils.getLogWriter().fine("currentObject is serialized object");
         isObjectSerialized = true;
       } else {
-        getLogWriter().fine("currentObject is deserialized object");
+        LogWriterUtils.getLogWriter().fine("currentObject is deserialized object");
       }
     }
 

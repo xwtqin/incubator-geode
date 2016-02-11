@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
@@ -43,11 +45,15 @@ import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.SystemManagementService;
 import com.gemstone.gemfire.management.internal.NotificationHub.NotificationHubListener;
+import com.gemstone.gemfire.test.dunit.AsyncInvocation;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
+import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
-import dunit.AsyncInvocation;
-import dunit.DistributedTestCase;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import static com.jayway.awaitility.Awaitility.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * This class checks and verifies various data and operations exposed through
@@ -95,12 +101,6 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
 
   }
 
-  public void tearDown2() throws Exception {
-    super.tearDown2();
-  }
-  
-  
-
   public void testGemFireConfigData() throws Exception {
      initManagement(false);
    
@@ -138,7 +138,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
       String log = (String) vm.invoke(CacheManagementDUnitTest.class,
           "fetchLog");
       assertNotNull(log);
-      getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> Log Of Member is " + log.toString()
               + "</ExpectedString> ");
 
@@ -654,7 +654,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
         .getMemberMXBean();
     JVMMetrics metrics = bean.showJVMMetrics();
 
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "<ExpectedString> JVMMetrics is " + metrics.toString()
             + "</ExpectedString> ");
 
@@ -665,7 +665,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
         .getMemberMXBean();
     OSMetrics metrics = bean.showOSMetrics();
 
-    getLogWriter().info(
+    LogWriterUtils.getLogWriter().info(
         "<ExpectedString> OSMetrics is " + metrics.toString()
             + "</ExpectedString> ");
 
@@ -679,7 +679,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
   }
 
   public static void assertExpectedMembers(int expectedMemberCount) {
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public String description() {
         return "Waiting all nodes to shutDown";
       }
@@ -706,14 +706,14 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
       MemberMXBean bean = MBeanUtil.getMemberMbeanProxy(member);
       JVMMetrics metrics = bean.showJVMMetrics();
 
-      getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> JVMMetrics is " + metrics.toString()
               + "</ExpectedString> ");
-      getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> OSMetrics is " + metrics.toString()
               + "</ExpectedString> ");
       
-      getLogWriter().info(
+      LogWriterUtils.getLogWriter().info(
           "<ExpectedString> Boolean Data Check " +bean.isManager()
               + "</ExpectedString> ");
       
@@ -837,7 +837,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
     SystemManagementService service = (SystemManagementService) getManagementService();
     final Map<ObjectName, NotificationHubListener> hubMap = service.getNotificationHub().getListenerObjectMap();
 
-    DistributedTestCase.waitForCriterion(new WaitCriterion() {
+    Wait.waitForCriterion(new WaitCriterion() {
       public String description() {
         return "Waiting for manager to register the listener";
       }
@@ -915,7 +915,7 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
 
       public void run() {
 
-        DistributedTestCase.waitForCriterion(new WaitCriterion() {
+        Wait.waitForCriterion(new WaitCriterion() {
           public String description() {
             return "Waiting for all the RegionCreated notification to reach the manager " + notifList.size();
           }
@@ -938,10 +938,9 @@ public class CacheManagementDUnitTest extends ManagementTestBase {
         // Even though we got 15 notification only 10 should be there due to
         // eviction attributes set in notification region
 
-        assertEquals(10, member1NotifRegion.size());
-        assertEquals(10, member2NotifRegion.size());
-        assertEquals(10, member3NotifRegion.size());
-
+        waitAtMost(5, TimeUnit.SECONDS).untilCall(to(member1NotifRegion).size(), equalTo(10));
+        waitAtMost(5, TimeUnit.SECONDS).untilCall(to(member2NotifRegion).size(), equalTo(10));
+        waitAtMost(5, TimeUnit.SECONDS).untilCall(to(member3NotifRegion).size(), equalTo(10));
       }
     });
 

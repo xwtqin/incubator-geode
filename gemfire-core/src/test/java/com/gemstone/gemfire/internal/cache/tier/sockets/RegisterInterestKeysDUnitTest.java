@@ -23,11 +23,14 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.NetworkUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.cache.client.*;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
 
 /**
  * Test code copied from UpdatePropagationDUnitTest
@@ -66,7 +69,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
   public void setUp() throws Exception {
     super.setUp();
     disconnectAllFromDS();
-    pause(5000);
+    Wait.pause(5000);
 
     final Host host = Host.getHost(0);
     //Server1 VM
@@ -86,15 +89,15 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
       host.getVM(i).invoke(getClass(), "createImpl", null);
     }
 
-    getLogWriter().info("implementation class is " + impl.getClass());
+    LogWriterUtils.getLogWriter().info("implementation class is " + impl.getClass());
 
     PORT1 =  ((Integer)server1.invoke(impl.getClass(), "createServerCache" )).intValue();
     PORT2 =  ((Integer)server2.invoke(impl.getClass(), "createServerCache" )).intValue();
     
     client1.invoke(impl.getClass(), "createClientCache", new Object[] { 
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
     client2.invoke(impl.getClass(), "createClientCache", new Object[] {
-      getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
+      NetworkUtils.getServerHostName(server1.getHost()), new Integer(PORT1),new Integer(PORT2)});
 
   }
 
@@ -137,7 +140,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
       assertEquals(r1.getEntry("key1").getValue(), "key-1");
     }
     catch (Exception ex) {
-      fail("failed while createEntriesK1()", ex);
+      Assert.fail("failed while createEntriesK1()", ex);
     }
   }
 
@@ -221,7 +224,7 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
 
     }
     catch (Exception ex) {
-      fail("failed while registering interest", ex);
+      Assert.fail("failed while registering interest", ex);
     }
   }
 
@@ -233,15 +236,13 @@ public class RegisterInterestKeysDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     //close client
     client1.invoke(impl.getClass(), "closeCache");
     client2.invoke(impl.getClass(), "closeCache");
     //close server
     server1.invoke(impl.getClass(), "closeCache");
     server2.invoke(impl.getClass(), "closeCache");
-
   }
-
 }

@@ -19,8 +19,11 @@
  *
  * Created on September 15, 2005, 5:51 PM
  */
-
 package com.gemstone.gemfire.internal.cache;
+
+import java.util.ArrayList;
+import java.util.Properties;
+
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
@@ -33,11 +36,12 @@ import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.util.CacheWriterAdapter;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
 
-import dunit.*;
-
-import java.util.ArrayList;
-import java.util.Properties;
 /**
  * Adapted from RemoveAllDAckDUnitTest
  * @author darrel
@@ -66,15 +70,16 @@ public class RemoveAllDAckDUnitTest extends DistributedTestCase {
       VM vm1 = host.getVM(1);
       vm0.invoke(RemoveAllDAckDUnitTest.class, "createCacheForVM0");
       vm1.invoke(RemoveAllDAckDUnitTest.class, "createCacheForVM1");
-      getLogWriter().fine("Cache created successfully");
+      LogWriterUtils.getLogWriter().fine("Cache created successfully");
     }
     
-    public void tearDown2(){
-        Host host = Host.getHost(0);
-        VM vm0 = host.getVM(0);
-        VM vm1 = host.getVM(1);
-        vm0.invoke(RemoveAllDAckDUnitTest.class, "closeCache");
-        vm1.invoke(RemoveAllDAckDUnitTest.class, "closeCache");
+    @Override
+    protected final void preTearDown() throws Exception {
+      Host host = Host.getHost(0);
+      VM vm0 = host.getVM(0);
+      VM vm1 = host.getVM(1);
+      vm0.invoke(RemoveAllDAckDUnitTest.class, "closeCache");
+      vm1.invoke(RemoveAllDAckDUnitTest.class, "closeCache");
     }
     
     public static void createCacheForVM0() throws Exception {
@@ -137,7 +142,7 @@ public class RemoveAllDAckDUnitTest extends DistributedTestCase {
                 obj = region.put(ob, str);
             }
         }catch(Exception ex){
-            fail("Failed while region.put", ex);
+            Assert.fail("Failed while region.put", ex);
         }
         return obj;
     }//end of putMethod
@@ -157,7 +162,7 @@ public class RemoveAllDAckDUnitTest extends DistributedTestCase {
             beforeDestroyRemoveAllcounter++;
             assertEquals(true, event.getOperation().isRemoveAll());
             assertEquals("removeAllCallback", event.getCallbackArgument());
-            getLogWriter().fine("*******BeforeDestroy*****");
+            LogWriterUtils.getLogWriter().fine("*******BeforeDestroy*****");
             beforeDestroy = true;
         }
     }

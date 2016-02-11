@@ -35,10 +35,9 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.tcp.ConnectionTable;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 
 /**
  * 
@@ -511,14 +510,12 @@ public class P2PDeltaPropagationDUnitTest extends DistributedTestCase
     }
   }
 
-  public void tearDown2() throws Exception
-  {
-    super.tearDown2();
+  @Override
+  protected final void preTearDown() throws Exception {
     closeCache();
     server1.invoke(P2PDeltaPropagationDUnitTest.class, "closeCache");
     server2.invoke(P2PDeltaPropagationDUnitTest.class, "closeCache");
     server3.invoke(P2PDeltaPropagationDUnitTest.class, "closeCache");
-        
   }
 
   public static void closeCache()

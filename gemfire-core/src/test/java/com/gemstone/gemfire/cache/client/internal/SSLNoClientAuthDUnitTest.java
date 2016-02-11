@@ -33,11 +33,10 @@ import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.security.AuthenticationRequiredException;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.util.test.TestUtil;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.VM;
 
 /**
  * Test for GEODE-396
@@ -267,14 +266,12 @@ public class SSLNoClientAuthDUnitTest extends DistributedTestCase {
     }
   }
   
-  public void tearDown2() throws Exception
-  {
+  @Override
+  protected final void preTearDown() throws Exception {
     final Host host = Host.getHost(0);
     VM serverVM = host.getVM(1);
     VM clientVM = host.getVM(2);
     clientVM.invoke(SSLNoClientAuthDUnitTest.class, "closeClientCacheTask");
     serverVM.invoke(SSLNoClientAuthDUnitTest.class, "closeCacheTask");
-    super.tearDown2();
   }
-
 }

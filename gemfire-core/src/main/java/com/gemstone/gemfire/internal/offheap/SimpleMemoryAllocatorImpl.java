@@ -25,12 +25,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+
 import org.apache.logging.log4j.Logger;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionService;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
@@ -54,7 +55,7 @@ import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
  * @author Kirk Lund
  * @since 9.0
  */
-public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryInspector {
+public final class SimpleMemoryAllocatorImpl implements MemoryAllocator {
 
   static final Logger logger = LogService.getLogger();
   
@@ -96,11 +97,12 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
   private final int largestSlab;
   
   public final FreeListManager freeList;
-  
+
+  private MemoryInspector memoryInspector;
+
   private volatile MemoryUsageListener[] memoryUsageListeners = new MemoryUsageListener[0];
   
   private static SimpleMemoryAllocatorImpl singleton = null;
-  private static final AtomicReference<Thread> asyncCleanupThread = new AtomicReference<>();
   final ChunkFactory chunkFactory;
   
   public static SimpleMemoryAllocatorImpl getAllocator() {
@@ -292,13 +294,14 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     this.stats.incFreeMemory(this.totalSlabSize);
     
     this.freeList = new FreeListManager(this);
+    this.memoryInspector = new MemoryInspectorImpl(this.freeList);
   }
   
   public List<Chunk> getLostChunks() {
     List<Chunk> liveChunks = this.freeList.getLiveChunks();
     List<Chunk> regionChunks = getRegionLiveChunks();
-    Set liveChunksSet = new HashSet(liveChunks);
-    Set regionChunksSet = new HashSet(regionChunks);
+    Set<Chunk> liveChunksSet = new HashSet<>(liveChunks);
+    Set<Chunk> regionChunksSet = new HashSet<>(regionChunks);
     liveChunksSet.removeAll(regionChunksSet);
     return new ArrayList<Chunk>(liveChunksSet);
   }
@@ -308,23 +311,22 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
    */
   private List<Chunk> getRegionLiveChunks() {
     ArrayList<Chunk> result = new ArrayList<Chunk>();
-    GemFireCacheImpl gfc = GemFireCacheImpl.getInstance();
+    RegionService gfc = GemFireCacheImpl.getInstance();
     if (gfc != null) {
-      Iterator rootIt = gfc.rootRegions().iterator();
+      Iterator<Region<?,?>> rootIt = gfc.rootRegions().iterator();
       while (rootIt.hasNext()) {
-        Region rr = (Region) rootIt.next();
+        Region<?,?> rr = rootIt.next();
         getRegionLiveChunks(rr, result);
-        Iterator srIt = rr.subregions(true).iterator();
+        Iterator<Region<?,?>> srIt = rr.subregions(true).iterator();
         while (srIt.hasNext()) {
-          Region sr = (Region)srIt.next();
-          getRegionLiveChunks(sr, result);
+          getRegionLiveChunks(srIt.next(), result);
         }
       }
     }
     return result;
   }
 
-  private void getRegionLiveChunks(Region r, List<Chunk> result) {
+  private void getRegionLiveChunks(Region<?,?> r, List<Chunk> result) {
     if (r.getAttributes().getOffHeap()) {
 
       if (r instanceof PartitionedRegion) {
@@ -375,7 +377,6 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     return result;
   }
   
-  @SuppressWarnings("unused")
   public static void debugLog(String msg, boolean logStack) {
     if (logStack) {
       logger.info(msg, new RuntimeException(msg));
@@ -590,39 +591,7 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
       }
     }
   }
-  
-  /** The inspection snapshot for MemoryInspector */
-  private List<MemoryBlock> memoryBlocks;
-  
-  @Override
-  public MemoryInspector getMemoryInspector() {
-    return this;
-  }
-  
-  @Override
-  public synchronized void clearInspectionSnapshot() {
-    this.memoryBlocks = null;
-  }
-  
-  @Override
-  public synchronized void createInspectionSnapshot() {
-    List<MemoryBlock> value = this.memoryBlocks;
-    if (value == null) {
-      value = getOrderedBlocks();
-      this.memoryBlocks = value;
-    }
-  }
 
-  synchronized List<MemoryBlock> getInspectionSnapshot() {
-    List<MemoryBlock> value = this.memoryBlocks;
-    if (value == null) {
-      return Collections.<MemoryBlock>emptyList();
-    } else {
-      return value;
-    }
-  }
-  
-  @Override
   public synchronized List<MemoryBlock> getOrphans() {
     List<Chunk> liveChunks = this.freeList.getLiveChunks();
     List<Chunk> regionChunks = getRegionLiveChunks();
@@ -631,55 +600,22 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
     for (Chunk chunk: liveChunks) {
       orphans.add(new MemoryBlockNode(this, chunk));
     }
-    Collections.sort(orphans, 
+    Collections.sort(orphans,
         new Comparator<MemoryBlock>() {
           @Override
           public int compare(MemoryBlock o1, MemoryBlock o2) {
             return Long.valueOf(o1.getMemoryAddress()).compareTo(o2.getMemoryAddress());
           }
-    });
+        });
     //this.memoryBlocks = new WeakReference<List<MemoryBlock>>(orphans);
     return orphans;
   }
-  
-  @Override
-  public MemoryBlock getFirstBlock() {
-    final List<MemoryBlock> value = getInspectionSnapshot();
-    if (value.isEmpty()) {
-      return null;
-    } else {
-      return value.get(0);
-    }
-  }
-  
-  @Override
-  public List<MemoryBlock> getAllBlocks() {
-    return getOrderedBlocks();
-  }
-  
-  @Override
-  public List<MemoryBlock> getAllocatedBlocks() {
-    return this.freeList.getAllocatedBlocks();
-  }
 
   @Override
-  public MemoryBlock getBlockAfter(MemoryBlock block) {
-    if (block == null) {
-      return null;
-    }
-    List<MemoryBlock> blocks = getInspectionSnapshot();
-    int nextBlock = blocks.indexOf(block) + 1;
-    if (nextBlock > 0 && blocks.size() > nextBlock) {
-      return blocks.get(nextBlock);
-    } else {
-      return null;
-    }
+  public MemoryInspector getMemoryInspector() {
+    return this.memoryInspector;
   }
 
-  private List<MemoryBlock> getOrderedBlocks() {
-    return this.freeList.getOrderedBlocks();
-  }
-  
   /*
    * Set this to "true" to perform data integrity checks on allocated and reused Chunks.  This may clobber 
    * performance so turn on only when necessary.
