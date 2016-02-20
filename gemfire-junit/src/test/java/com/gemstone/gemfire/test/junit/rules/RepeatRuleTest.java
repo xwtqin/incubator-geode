@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules.tests;
+package com.gemstone.gemfire.test.junit.rules;
 
-import static com.gemstone.gemfire.test.junit.rules.tests.TestRunner.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -29,10 +28,9 @@ import org.junit.runner.notification.Failure;
 
 import com.gemstone.gemfire.test.junit.Repeat;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
-import com.gemstone.gemfire.test.junit.rules.RepeatRule;
 
 /**
- * Unit tests for Repeat JUnit Rule.
+ * Unit tests for {@link RepeatRule}.
  * 
  * @author Kirk Lund
  */
@@ -43,7 +41,7 @@ public class RepeatRuleTest {
   
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsUnused() {
-    Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsUnused.class);
+    Result result = TestRunner.runTest(FailingTestShouldFailOneTimeWhenRepeatIsUnused.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -57,7 +55,7 @@ public class RepeatRuleTest {
 
   @Test
   public void passingTestShouldPassOneTimeWhenRepeatIsUnused() {
-    Result result = runTest(PassingTestShouldPassOneTimeWhenRepeatIsUnused.class);
+    Result result = TestRunner.runTest(PassingTestShouldPassOneTimeWhenRepeatIsUnused.class);
     
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassingTestShouldPassOneTimeWhenRepeatIsUnused.count).isEqualTo(1);
@@ -65,7 +63,7 @@ public class RepeatRuleTest {
 
   @Test
   public void zeroValueShouldThrowIllegalArgumentException() {
-    Result result = runTest(ZeroValueShouldThrowIllegalArgumentException.class);
+    Result result = TestRunner.runTest(ZeroValueShouldThrowIllegalArgumentException.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -79,7 +77,7 @@ public class RepeatRuleTest {
   
   @Test
   public void negativeValueShouldThrowIllegalArgumentException() {
-    Result result = runTest(NegativeValueShouldThrowIllegalArgumentException.class);
+    Result result = TestRunner.runTest(NegativeValueShouldThrowIllegalArgumentException.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -93,7 +91,7 @@ public class RepeatRuleTest {
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsOne() {
-    Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsOne.class);
+    Result result = TestRunner.runTest(FailingTestShouldFailOneTimeWhenRepeatIsOne.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -107,7 +105,7 @@ public class RepeatRuleTest {
 
   @Test
   public void passingTestShouldPassOneTimeWhenRepeatIsOne() {
-    Result result = runTest(PassingTestShouldPassOneTimeWhenRepeatIsOne.class);
+    Result result = TestRunner.runTest(PassingTestShouldPassOneTimeWhenRepeatIsOne.class);
     
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassingTestShouldPassOneTimeWhenRepeatIsOne.count).isEqualTo(1);
@@ -115,7 +113,7 @@ public class RepeatRuleTest {
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsTwo() {
-    Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsTwo.class);
+    Result result = TestRunner.runTest(FailingTestShouldFailOneTimeWhenRepeatIsTwo.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -129,7 +127,7 @@ public class RepeatRuleTest {
 
   @Test
   public void passingTestShouldPassTwoTimesWhenRepeatIsTwo() {
-    Result result = runTest(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.class);
+    Result result = TestRunner.runTest(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.class);
     
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassingTestShouldPassTwoTimesWhenRepeatIsTwo.count).isEqualTo(2);
@@ -137,7 +135,7 @@ public class RepeatRuleTest {
 
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsThree() {
-    Result result = runTest(FailingTestShouldFailOneTimeWhenRepeatIsThree.class);
+    Result result = TestRunner.runTest(FailingTestShouldFailOneTimeWhenRepeatIsThree.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -151,7 +149,7 @@ public class RepeatRuleTest {
 
   @Test
   public void passingTestShouldPassThreeTimesWhenRepeatIsThree() {
-    Result result = runTest(PassingTestShouldPassThreeTimesWhenRepeatIsThree.class);
+    Result result = TestRunner.runTest(PassingTestShouldPassThreeTimesWhenRepeatIsThree.class);
     
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassingTestShouldPassThreeTimesWhenRepeatIsThree.count).isEqualTo(3);

@@ -14,20 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules.tests;
+package com.gemstone.gemfire.test.junit.rules;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-  ExpectedTimeoutRuleTest.class,
-  IgnoreUntilRuleTest.class,
-  RepeatRuleTest.class,
-  RetryRuleGlobalWithErrorTest.class,
-  RetryRuleGlobalWithExceptionTest.class,
-  RetryRuleLocalWithErrorTest.class,
-  RetryRuleLocalWithExceptionTest.class,
-})
-public class JUnitRuleTestSuite {
+/**
+ * Used by JUnit rule unit tests to execute test cases.
+ * 
+ * @author Kirk Lund
+ */
+public class TestRunner {
+
+  protected TestRunner() {
+  }
+  
+  public static Result runTest(Class<?> test) {
+    JUnitCore junitCore = new JUnitCore();
+    return junitCore.run(Request.aClass(test).getRunner());
+  }
 }

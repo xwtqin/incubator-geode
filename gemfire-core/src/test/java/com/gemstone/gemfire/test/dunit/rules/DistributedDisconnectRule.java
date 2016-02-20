@@ -16,12 +16,15 @@
  */
 package com.gemstone.gemfire.test.dunit.rules;
 
-// TODO: import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
+// TODO:uncomment: import static com.gemstone.gemfire.test.dunit.DistributedTestRule.*;
 
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
+/**
+ * Disconnects all remote DUnit JVMs including the Locator JVM.
+ */
 @SuppressWarnings("serial")
-public class DistributedDisconnectRule extends DistributedExternalResource {
+public class DistributedDisconnectRule extends DistributedTestFixtureRule {
 
   private final boolean disconnectBefore;
   private final boolean disconnectAfter;
@@ -52,7 +55,7 @@ public class DistributedDisconnectRule extends DistributedExternalResource {
   }
 
   @Override
-  protected void after() throws Throwable {
+  protected void after() {
     if (this.disconnectAfter) {
       invoker().invokeEverywhere(serializableRunnable());
     }
@@ -66,7 +69,7 @@ public class DistributedDisconnectRule extends DistributedExternalResource {
   }
 
   @Override
-  protected void afterClass() throws Throwable {
+  protected void afterClass() {
     if (this.disconnectAfterClass) {
       invoker().invokeEverywhere(serializableRunnable());
     }
@@ -76,15 +79,13 @@ public class DistributedDisconnectRule extends DistributedExternalResource {
     return new SerializableRunnable() {
       @Override
       public void run() {
-        // TODO: disconnectFromDS();
+        // TODO:uncomment: disconnectFromDS();
       }
     };
   }
   
   /**
    * Builds an instance of DistributedDisconnectRule
-   * 
-   * @author Kirk Lund
    */
   public static class Builder {
     private boolean disconnectBeforeClass;

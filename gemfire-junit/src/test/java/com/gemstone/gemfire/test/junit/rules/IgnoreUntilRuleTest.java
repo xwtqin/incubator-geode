@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules.tests;
+package com.gemstone.gemfire.test.junit.rules;
 
-import static com.gemstone.gemfire.test.junit.rules.tests.TestRunner.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -29,10 +28,9 @@ import org.junit.runner.notification.Failure;
 
 import com.gemstone.gemfire.test.junit.IgnoreUntil;
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
-import com.gemstone.gemfire.test.junit.rules.IgnoreUntilRule;
 
 /**
- * Unit tests for IgnoreUntil JUnit Rule
+ * Unit tests for {@link IgnoreUntilRule}.
  * 
  * @author Kirk Lund
  */
@@ -43,7 +41,7 @@ public class IgnoreUntilRuleTest {
   
   @Test
   public void shouldIgnoreWhenUntilIsInFuture() {
-    Result result = runTest(ShouldIgnoreWhenUntilIsInFuture.class);
+    Result result = TestRunner.runTest(ShouldIgnoreWhenUntilIsInFuture.class);
     
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(ShouldIgnoreWhenUntilIsInFuture.count).isEqualTo(0);
@@ -51,7 +49,7 @@ public class IgnoreUntilRuleTest {
   
   @Test
   public void shouldExecuteWhenUntilIsInPast() {
-    Result result = runTest(ShouldExecuteWhenUntilIsInPast.class);
+    Result result = TestRunner.runTest(ShouldExecuteWhenUntilIsInPast.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     
@@ -65,7 +63,7 @@ public class IgnoreUntilRuleTest {
   
   @Test
   public void shouldExecuteWhenUntilIsDefault() {
-    Result result = runTest(ShouldExecuteWhenUntilIsDefault.class);
+    Result result = TestRunner.runTest(ShouldExecuteWhenUntilIsDefault.class);
     
     assertThat(result.wasSuccessful()).isFalse();
     

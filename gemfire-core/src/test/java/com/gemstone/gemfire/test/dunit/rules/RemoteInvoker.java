@@ -23,8 +23,13 @@ import java.io.Serializable;
 
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 
+/**
+ * Provides remote invocation support to a <code>TestRule</code>. These
+ * methods will invoke a SerializableRunnable in all remote DUnit JVMs
+ * including the Locator JVM.
+ */
 @SuppressWarnings("serial")
-public class RemoteInvoker implements Serializable {
+class RemoteInvoker implements Serializable {
 
   public void invokeEverywhere(final SerializableRunnable runnable) {
     try {

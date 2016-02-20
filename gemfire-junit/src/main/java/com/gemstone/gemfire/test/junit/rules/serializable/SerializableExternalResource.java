@@ -14,32 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules.examples;
+package com.gemstone.gemfire.test.junit.rules.serializable;
 
-import static org.assertj.core.api.Assertions.*;
-
-import com.gemstone.gemfire.test.junit.categories.UnitTest;
-import com.gemstone.gemfire.test.junit.rules.RetryRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.rules.ExternalResource;
 
 /**
- * Example usage of {@link RetryRule} with global scope.
+ * Serializable subclass of {@link org.junit.rules.ExternalResource ExternalResource}.
  */
-@Category(UnitTest.class)
-public class RetryRuleExampleTest {
-
-  @Rule
-  public final transient RetryRule retry = new RetryRule(2);
-  
-  private static int count = 0;
-
-  @Test
-  public void unreliableTestWithRaceConditions() {
-    count++;
-    if (count < 2) {
-      assertThat(count).isEqualTo(2); // doomed to fail
-    }
-  }
+public abstract class SerializableExternalResource extends ExternalResource implements SerializableTestRule {
 }

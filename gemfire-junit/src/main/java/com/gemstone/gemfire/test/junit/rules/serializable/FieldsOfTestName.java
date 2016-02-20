@@ -14,16 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules;
-
-import org.junit.rules.TestWatcher;
+package com.gemstone.gemfire.test.junit.rules.serializable;
 
 /**
- * Serializable version of TestWatcher JUnit Rule. JUnit lifecycle is not
- * executed in remote JVMs.
- * 
- * @author Kirk Lund
+ * Names of member fields in {@link org.junit.rules.TestName}.
  */
-@SuppressWarnings("serial")
-public class SerializableTestWatcher extends TestWatcher implements SerializableTestRule {
+public interface FieldsOfTestName {
+  static final String FIELD_NAME = "name"; // String
 }

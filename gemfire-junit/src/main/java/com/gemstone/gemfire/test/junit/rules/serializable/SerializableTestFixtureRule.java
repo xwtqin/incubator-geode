@@ -14,20 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules;
+package com.gemstone.gemfire.test.junit.rules.serializable;
 
-import java.io.Serializable;
-
-import org.junit.rules.TestRule;
+import com.gemstone.gemfire.test.junit.rules.TestFixtureRule;
 
 /**
- * Serializable version of JUnit TestRule. JUnit lifecycle is not
- * executed in remote JVMs.
- * 
- * The simplest way to satisfy this interface is to apply <tt>transient</tt>
- * to every instance field.
- * 
- * @author Kirk Lund
+ * Serializable version of {@link TestFixtureRule}.
  */
-public interface SerializableTestRule extends Serializable, TestRule {
+public abstract class SerializableTestFixtureRule extends TestFixtureRule implements SerializableTestRule {
 }

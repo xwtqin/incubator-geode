@@ -14,24 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.junit.rules.tests;
-
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
+package com.gemstone.gemfire.test.junit.rules.serializable;
 
 /**
- * Used by Rule Unit Tests to execute Test Cases.
- * 
- * @author Kirk Lund
+ * Names of member fields in {@link org.junit.rules.TemporaryFolder}.
  */
-public class TestRunner {
-
-  protected TestRunner() {
-  }
-  
-  public static Result runTest(Class<?> test) {
-    JUnitCore junitCore = new JUnitCore();
-    return junitCore.run(Request.aClass(test).getRunner());
-  }
+interface FieldsOfTemporaryFolder {
+  static final String FIELD_PARENT_FOLDER = "parentFolder"; // java.io.File
+  static final String FIELD_ASSURE_DELETION = "assureDeletion"; // boolean (since JUnit 4.13)
+  static final String FIELD_FOLDER = "folder"; // java.io.File
 }
