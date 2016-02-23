@@ -69,8 +69,6 @@ public class DistributedDisconnectRule extends DistributedExternalResource {
    * Builds an instance of DistributedDisconnectRule
    */
   public static class Builder {
-    private boolean disconnectBeforeClass;
-    private boolean disconnectAfterClass;
     private boolean disconnectBefore;
     private boolean disconnectAfter;
     
