@@ -28,6 +28,7 @@ import org.junit.rules.Timeout;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,10 +40,7 @@ public class SerializableTimeoutTest {
   @Test
   public void hasThreeFields() throws Exception {
     Field[] fields = Timeout.class.getDeclaredFields();
-    /*for (Field field : fields) {
-      System.out.println("Field: " + field);
-    }*/
-    assertThat(fields.length).isEqualTo(3);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(3);
   }
 
   @Test

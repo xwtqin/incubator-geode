@@ -26,6 +26,7 @@ import org.junit.rules.ExternalResource;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link SerializableExternalResource}.
@@ -36,10 +37,7 @@ public class SerializableExternalResourceTest {
   @Test
   public void hasZeroFields() throws Exception {
     Field[] fields = ExternalResource.class.getDeclaredFields();
-    /*for (Field field : fields) {
-      System.out.println("Field: " + field);
-    }*/
-    assertThat(fields.length).isEqualTo(0);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(1);
   }
 
   @Test

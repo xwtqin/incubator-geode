@@ -29,6 +29,7 @@ import org.junit.runner.Description;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link SerializableTestName}.
@@ -39,10 +40,7 @@ public class SerializableTestNameTest {
   @Test
   public void hasOneFields() throws Exception {
     Field[] fields = TestName.class.getDeclaredFields();
-    /*for (Field field : fields) {
-      System.out.println("Field: " + field);
-    }*/
-    assertThat(fields.length).isEqualTo(1);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(1);
   }
 
   @Test

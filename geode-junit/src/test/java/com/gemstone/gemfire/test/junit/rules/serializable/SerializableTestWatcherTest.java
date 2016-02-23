@@ -26,6 +26,7 @@ import org.junit.rules.TestWatcher;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link SerializableTestWatcher}.
@@ -36,10 +37,7 @@ public class SerializableTestWatcherTest {
   @Test
   public void hasZeroFields() throws Exception {
     Field[] fields = TestWatcher.class.getDeclaredFields();
-    /*for (Field field : fields) {
-      System.out.println("Field: " + field);
-    }*/
-    assertThat(fields.length).isEqualTo(0);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(0);
   }
 
   @Test

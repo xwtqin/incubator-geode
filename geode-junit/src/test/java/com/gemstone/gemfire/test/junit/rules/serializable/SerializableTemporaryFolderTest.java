@@ -30,6 +30,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link SerializableTemporaryFolder}.
@@ -43,10 +44,7 @@ public class SerializableTemporaryFolderTest {
   @Test
   public void hasTwoFields() throws Exception {
     Field[] fields = TemporaryFolder.class.getDeclaredFields();
-    /*for (Field field : fields) {
-      System.out.println("Field: " + field);
-    }*/
-    assertThat(fields.length).isEqualTo(2);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(2);
   }
 
   @Test
