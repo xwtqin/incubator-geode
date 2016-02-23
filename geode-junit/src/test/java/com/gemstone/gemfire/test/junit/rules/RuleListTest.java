@@ -134,20 +134,17 @@ public class RuleListTest {
 
     private final String name;
     private final Invocations invocations;
-    private final Throwable beforeClassThrowable;
     private final Throwable beforeThrowable;
 
     SpyRule(String name, Invocations invocations) {
       this.name = name;
       this.invocations = invocations;
-      this.beforeClassThrowable = null;
       this.beforeThrowable = null;
     }
 
     SpyRule(SpyRuleBuilder builder) {
       this.name = builder.name;
       this.invocations = builder.invocations;
-      this.beforeClassThrowable = builder.beforeClassThrowable;
       this.beforeThrowable = builder.beforeThrowable;
     }
 
@@ -185,7 +182,6 @@ public class RuleListTest {
 
     String name;
     Invocations invocations;
-    Throwable beforeClassThrowable;
     Throwable beforeThrowable;
 
     SpyRuleBuilder withName(String name) {
@@ -195,11 +191,6 @@ public class RuleListTest {
 
     SpyRuleBuilder withInvocations(Invocations invocations) {
       this.invocations = invocations;
-      return this;
-    }
-
-    SpyRuleBuilder beforeClassThrows(Throwable throwable) {
-      this.beforeClassThrowable = throwable;
       return this;
     }
 
