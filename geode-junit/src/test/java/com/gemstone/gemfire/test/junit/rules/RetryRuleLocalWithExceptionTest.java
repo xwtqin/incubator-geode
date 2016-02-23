@@ -35,7 +35,6 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
  * only the test methods annotated with {@code @Retry}) with failures due to
  * an {@code Exception}.
  *
- * @author Kirk Lund
  * @see com.gemstone.gemfire.test.junit.Retry
  * @see com.gemstone.gemfire.test.junit.rules.RetryRule
  */

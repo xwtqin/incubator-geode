@@ -34,7 +34,6 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
  * Unit tests for {@link RetryRule} involving global scope (ie rule affects all
  * tests in the test class) with failures due to an {@code Exception}.
  * 
- * @author Kirk Lund
  * @see com.gemstone.gemfire.test.junit.rules.RetryRule
  */
 @Category(UnitTest.class)

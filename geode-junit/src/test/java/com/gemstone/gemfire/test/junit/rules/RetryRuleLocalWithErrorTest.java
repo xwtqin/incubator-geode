@@ -35,8 +35,6 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
  * Unit tests for {@link RetryRule} involving local scope (ie rule affects
  * only the test methods annotated with {@code @Retry}) with failures due to
  * an {@code Error}.
- *
- * @author Kirk Lund
  */
 @Category(UnitTest.class)
 public class RetryRuleLocalWithErrorTest {

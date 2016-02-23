@@ -32,9 +32,6 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
  * Unit tests for {@link ExpectedTimeoutRule}.
- * 
- * @author Kirk Lund
- * @since 8.2
  */
 @Category(UnitTest.class)
 public class ExpectedTimeoutRuleTest {

@@ -28,7 +28,6 @@ package com.gemstone.gemfire.test.junit.categories;
  * <li>require anything special in the environment (such as editing config files or running an external process)
  * </ul>
  *
- * @author Kirk Lund
  * @see <a href="http://www.artima.com/weblogs/viewpost.jsp?thread=126923">A Set of Unit Testing Rules by Michael Feathers</a>
  */
 public interface UnitTest {

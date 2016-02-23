@@ -37,8 +37,6 @@ import java.util.List;
  *                                         .add(new SecondRule()
  *                                         .add(new ThirdRule();
  * </pre>
- *
- * @author Kirk Lund
  */
 public class RuleList implements TestRule {
   
