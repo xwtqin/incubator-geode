@@ -37,7 +37,7 @@ public class SerializableExternalResourceTest {
   @Test
   public void hasZeroFields() throws Exception {
     Field[] fields = ExternalResource.class.getDeclaredFields();
-    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(1);
+    assertThat(fields.length).as("Fields: " + Arrays.asList(fields)).isEqualTo(0);
   }
 
   @Test
