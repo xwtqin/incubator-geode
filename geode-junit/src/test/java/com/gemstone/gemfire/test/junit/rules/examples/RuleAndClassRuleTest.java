@@ -30,7 +30,7 @@ import org.junit.runner.Result;
 import org.junit.runners.model.Statement;
 
 /**
- * Example usage of a rule as both a method \@Rule and a \@ClassRule.
+ * Example usage of a rule as both a method {@literal @}Rule and a {@literal @}ClassRule.
  */
 @Category(UnitTest.class)
 public class RuleAndClassRuleTest {

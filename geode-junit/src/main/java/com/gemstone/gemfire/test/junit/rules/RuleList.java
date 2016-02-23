@@ -32,7 +32,7 @@ import java.util.List;
  * <pre>
  * public class SomeTest {
  *
- *   \@Rule
+ *   {@literal @}Rule
  *   public RuleList rules = new RuleList().add(new FirstRule()
  *                                         .add(new SecondRule()
  *                                         .add(new ThirdRule();

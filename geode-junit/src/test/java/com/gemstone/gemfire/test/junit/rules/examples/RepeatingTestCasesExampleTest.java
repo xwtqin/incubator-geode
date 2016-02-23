@@ -33,7 +33,7 @@ import com.gemstone.gemfire.test.junit.rules.RepeatRule;
 
 /**
  * The RepeatingTestCasesExampleTest class is a test suite of test cases testing the contract and functionality
- * of the JUnit @Repeat annotation on a test suite class test case methods.
+ * of the JUnit {@literal @}Repeat annotation on a test suite class test case methods.
  *
  * @see org.junit.Test
  * @see com.gemstone.gemfire.test.junit.Repeat

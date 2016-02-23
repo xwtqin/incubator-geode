@@ -32,8 +32,6 @@ import com.gemstone.gemfire.test.junit.categories.UnitTest;
 
 /**
  * Unit tests for {@link IgnoreUntilRule}.
- * 
- * @author Kirk Lund
  */
 @Category(UnitTest.class)
 public class IgnoreUntilRuleTest {
