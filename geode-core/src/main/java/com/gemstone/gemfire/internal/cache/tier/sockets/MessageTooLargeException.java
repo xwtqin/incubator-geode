@@ -14,28 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = 'geode'
+package com.gemstone.gemfire.internal.cache.tier.sockets;
 
-include 'geode-common'
-include 'geode-joptsimple'
-include 'geode-json'
-include 'geode-junit'
-include 'geode-core'
-include 'geode-web'
-include 'geode-web-api'
-include 'geode-pulse'
-include 'geode-assembly'
-include 'geode-rebalancer'
-include 'geode-lucene'
-include 'geode-wan'
-include 'geode-cq'
-include 'extensions/geode-modules'
-include 'extensions/geode-modules-tomcat7'
-include 'extensions/geode-modules-hibernate'
-include 'extensions/geode-modules-session'
-include 'extensions/geode-modules-assembly'
+import java.io.IOException;
 
-def minimumGradleVersion = '2.3'
-if (GradleVersion.current() < GradleVersion.version(minimumGradleVersion)) {
-  throw new GradleException('Running with unsupported Gradle Version. Use Gradle Wrapper or with Gradle version >= ' + minimumGradleVersion)
+public class MessageTooLargeException extends IOException {
+
+  private static final long serialVersionUID = -8970585803331525833L;
+  
+  public MessageTooLargeException(String message) {
+    super(message);
+  }
+
 }
