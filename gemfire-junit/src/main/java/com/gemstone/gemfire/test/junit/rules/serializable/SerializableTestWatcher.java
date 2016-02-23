@@ -19,8 +19,8 @@ package com.gemstone.gemfire.test.junit.rules.serializable;
 import org.junit.rules.TestWatcher;
 
 /**
- * Serializable subclass of {@link org.junit.rules.TestWatcher TestWatcher}. No
- * instance variables are serialized.
+ * Serializable subclass of {@link org.junit.rules.TestWatcher TestWatcher}.
+ * There are no instance variables to be serialized.
  */
 public abstract class SerializableTestWatcher extends TestWatcher implements SerializableTestRule {
 }

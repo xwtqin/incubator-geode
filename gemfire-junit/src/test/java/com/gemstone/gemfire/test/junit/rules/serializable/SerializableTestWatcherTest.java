@@ -36,9 +36,9 @@ public class SerializableTestWatcherTest {
   @Test
   public void hasZeroFields() throws Exception {
     Field[] fields = TestWatcher.class.getDeclaredFields();
-    for (Field field : fields) {
-      //System.out.println("Field: " + field);
-    }
+    /*for (Field field : fields) {
+      System.out.println("Field: " + field);
+    }*/
     assertThat(fields.length).isEqualTo(0);
   }
 
@@ -67,7 +67,7 @@ public class SerializableTestWatcherTest {
    */
   private static class FakeSerializableTestWatcher extends SerializableTestWatcher {
 
-    private int value = 0;
+    private int value = -1;
 
     private FakeSerializableTestWatcher value(final int value) {
       this.value = value;

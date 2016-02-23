@@ -56,7 +56,7 @@ public class SerializableTestFixtureRuleTest {
    */
   private static class FakeSerializableTestFixtureRule extends SerializableTestFixtureRule {
 
-    private int value = 0;
+    private int value = -1;
 
     public FakeSerializableTestFixtureRule value(final int value) {
       this.value = value;

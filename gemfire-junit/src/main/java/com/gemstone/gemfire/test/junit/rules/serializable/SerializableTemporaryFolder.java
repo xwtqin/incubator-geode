@@ -53,7 +53,6 @@ public class SerializableTemporaryFolder extends TemporaryFolder implements Seri
    */
   private static class SerializationProxy implements Serializable {
 
-    private static final long serialVersionUID = 1905526044015078240L;
     private final File parentFolder;
     private final File folder;
 

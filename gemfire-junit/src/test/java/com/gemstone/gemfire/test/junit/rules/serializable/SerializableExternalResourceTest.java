@@ -36,9 +36,9 @@ public class SerializableExternalResourceTest {
   @Test
   public void hasZeroFields() throws Exception {
     Field[] fields = ExternalResource.class.getDeclaredFields();
-    for (Field field : fields) {
-      //System.out.println("Field: " + field);
-    }
+    /*for (Field field : fields) {
+      System.out.println("Field: " + field);
+    }*/
     assertThat(fields.length).isEqualTo(0);
   }
 
@@ -67,7 +67,7 @@ public class SerializableExternalResourceTest {
    */
   private static class FakeSerializableExternalResource extends SerializableExternalResource {
 
-    private int value;
+    private int value = -1;
 
     public FakeSerializableExternalResource value(final int value) {
       this.value = value;

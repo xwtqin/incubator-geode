@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -127,85 +128,142 @@ public class RetryRuleGlobalWithErrorTest {
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassesOnThirdAttempt.count).isEqualTo(3);
   }
-  
+
+  /**
+   * Used by test {@link #zeroIsIllegal()}
+   */
   public static class ZeroIsIllegal {
-    protected static int count;
-    protected static final String message = "Retry count must be greater than zero";
+
+    static final String message = "Retry count must be greater than zero";
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(0);
 
     @Test
-    public void zeroIsIllegal() throws Exception {
+    public void doTest() throws Exception {
       count++;
     }
   }
-  
+
+  /**
+   * Used by test {@link #failsWithOne()}
+   */
   public static class FailsWithOne {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(1);
 
     @Test
-    public void failsWithOne() throws Exception {
+    public void doTest() throws Exception {
       count++;
       message = "Failing " + count;
       fail(message);
     }
   }
-  
+
+  /**
+   * Used by test {@link #passesWithOne()}
+   */
   public static class PassesWithOne {
-    protected static int count;
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(1);
 
     @Test
-    public void passesWithOne() throws Exception {
+    public void doTest() throws Exception {
       count++;
     }
   }
-  
+
+  /**
+   * Used by test {@link #passesWithUnused()}
+   */
   public static class PassesWhenUnused {
-    protected static int count;
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(2);
 
     @Test
-    public void passesWithUnused() throws Exception {
+    public void doTest() throws Exception {
       count++;
     }
   }
-  
+
+  /**
+   * Used by test {@link #failsOnSecondAttempt()}
+   */
   public static class FailsOnSecondAttempt {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(2);
 
     @Test
     @Retry(2)
-    public void failsOnSecondAttempt() {
+    public void doTest() throws Exception {
       count++;
       message = "Failing " + count;
       fail(message);
     }
   }
-  
+
+  /**
+   * Used by test {@link #passesOnSecondAttempt()}
+   */
   public static class PassesOnSecondAttempt {
-    protected static int count;
-    protected static String message;
-    
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
+
     @Rule
     public RetryRule retryRule = new RetryRule(2);
 
     @Test
     @Retry(2)
-    public void failsOnSecondAttempt() {
+    public void doTest() throws Exception {
       count++;
       if (count < 2) {
         message = "Failing " + count;
@@ -213,32 +271,52 @@ public class RetryRuleGlobalWithErrorTest {
       }
     }
   }
-  
+
+  /**
+   * Used by test {@link #failsOnThirdAttempt()}
+   */
   public static class FailsOnThirdAttempt {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
     @Test
     @Retry(3)
-    public void failsOnThirdAttempt() {
+    public void doTest() throws Exception {
       count++;
       message = "Failing " + count;
       fail(message);
     }
   }
 
+  /**
+   * Used by test {@link #passesOnThirdAttempt()}
+   */
   public static class PassesOnThirdAttempt {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
     @Test
-    public void failsOnThirdAttempt() {
+    public void doTest() throws Exception {
       count++;
       if (count < 3) {
         message = "Failing " + count;

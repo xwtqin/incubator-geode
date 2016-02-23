@@ -39,9 +39,9 @@ public class SerializableTimeoutTest {
   @Test
   public void hasThreeFields() throws Exception {
     Field[] fields = Timeout.class.getDeclaredFields();
-    for (Field field : fields) {
-      //System.out.println("Field: " + field);
-    }
+    /*for (Field field : fields) {
+      System.out.println("Field: " + field);
+    }*/
     assertThat(fields.length).isEqualTo(3);
   }
 
@@ -95,10 +95,14 @@ public class SerializableTimeoutTest {
         .withLookingForStuckThread(lookingForStuckThread)
         .build();
 
-    SerializableTimeout cloned = (SerializableTimeout) SerializationUtils.clone(instance);
-
     assertThat(readField(Timeout.class, instance, FIELD_TIMEOUT)).isEqualTo(timeout);
     assertThat(readField(Timeout.class, instance, FIELD_TIME_UNIT)).isEqualTo(timeUnit);
     assertThat(readField(Timeout.class, instance, FIELD_LOOK_FOR_STUCK_THREAD)).isEqualTo(lookingForStuckThread);
+
+    SerializableTimeout cloned = (SerializableTimeout) SerializationUtils.clone(instance);
+
+    assertThat(readField(Timeout.class, cloned, FIELD_TIMEOUT)).isEqualTo(timeout);
+    assertThat(readField(Timeout.class, cloned, FIELD_TIME_UNIT)).isEqualTo(timeUnit);
+    assertThat(readField(Timeout.class, cloned, FIELD_LOOK_FOR_STUCK_THREAD)).isEqualTo(lookingForStuckThread);
   }
 }

@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -105,61 +106,101 @@ public class RetryRuleLocalWithErrorTest {
     assertThat(result.wasSuccessful()).isTrue();
     assertThat(PassesOnThirdAttempt.count).isEqualTo(3);
   }
-  
+
+  /**
+   * Used by test {@link #failsUnused()}
+   */
   public static class FailsUnused {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
-    public void failsUnused() throws Exception {
+    public void doTest() throws Exception {
       count++;
       message = "Failing " + count;
       fail(message);
     }
   }
-  
+
+  /**
+   * Used by test {@link #passesUnused()}
+   */
   public static class PassesUnused {
-    protected static int count;
-    protected static String message;
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
 
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
-    public void passesUnused() throws Exception {
+    public void doTest() throws Exception {
       count++;
     }
   }
-  
+
+  /**
+   * Used by test {@link #failsOnSecondAttempt()}
+   */
   public static class FailsOnSecondAttempt {
-    protected static int count;
-    protected static String message;
-    
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
+
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
     @Retry(2)
-    public void failsOnSecondAttempt() {
+    public void doTest() throws Exception {
       count++;
       message = "Failing " + count;
       fail(message);
     }
   }
-  
+
+  /**
+   * Used by test {@link #passesOnSecondAttempt()}
+   */
   public static class PassesOnSecondAttempt {
-    protected static int count;
-    protected static String message;
-    
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
+
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
     @Retry(2)
-    public void failsOnSecondAttempt() {
+    public void doTest() throws Exception {
       count++;
       if (count < 2) {
         message = "Failing " + count;
@@ -167,17 +208,27 @@ public class RetryRuleLocalWithErrorTest {
       }
     }
   }
-  
+
+  /**
+   * Used by test {@link #failsOnThirdAttempt()}
+   */
   public static class FailsOnThirdAttempt {
-    protected static int count;
-    protected static String message;
-    
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
+
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
     @Retry(3)
-    public void failsOnThirdAttempt() {
+    public void doTest() throws Exception {
       count++;
 
       message = "Failing " + count;
@@ -185,16 +236,26 @@ public class RetryRuleLocalWithErrorTest {
     }
   }
 
+  /**
+   * Used by test {@link #passesOnThirdAttempt()}
+   */
   public static class PassesOnThirdAttempt {
-    protected static int count;
-    protected static String message;
-    
+
+    static int count = 0;
+    static String message = null;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+      message = null;
+    }
+
     @Rule
     public RetryRule retryRule = new RetryRule();
 
     @Test
     @Retry(3)
-    public void failsOnThirdAttempt() {
+    public void doTest() throws Exception {
       count++;
 
       if (count < 3) {

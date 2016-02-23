@@ -20,8 +20,10 @@ import static com.gemstone.gemfire.test.junit.rules.serializable.FieldsOfTestNam
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
 import org.junit.runner.Description;
 
@@ -31,14 +33,15 @@ import java.lang.reflect.Field;
 /**
  * Unit tests for {@link SerializableTestName}.
  */
+@Category(UnitTest.class)
 public class SerializableTestNameTest {
 
   @Test
   public void hasOneFields() throws Exception {
     Field[] fields = TestName.class.getDeclaredFields();
-    for (Field field : fields) {
-      //System.out.println("Field: " + field);
-    }
+    /*for (Field field : fields) {
+      System.out.println("Field: " + field);
+    }*/
     assertThat(fields.length).isEqualTo(1);
   }
 

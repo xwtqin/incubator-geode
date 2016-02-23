@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package com.gemstone.gemfire.test.junit.categories;
+
 /**
  * Tests Wan Feature.
  * 

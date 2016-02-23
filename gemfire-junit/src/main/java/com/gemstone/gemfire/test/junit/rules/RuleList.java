@@ -21,6 +21,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -86,7 +87,11 @@ public class RuleList implements TestRule {
     return base;
   }
 
+  /**
+   * Returns a reference to the actual list of {@code TestRule}s. For use by
+   * subclasses and tests.
+   */
   protected List<TestRule> rules() {
-    return new ArrayList<>(this.rules);
+    return this.rules;
   }
 }

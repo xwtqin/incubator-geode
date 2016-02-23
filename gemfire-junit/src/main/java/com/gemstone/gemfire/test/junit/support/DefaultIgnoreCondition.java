@@ -46,7 +46,7 @@ public class DefaultIgnoreCondition implements IgnoreCondition {
   }
 
   public boolean isIgnore() {
-    return ignore;
+    return this.ignore;
   }
 
   @Override

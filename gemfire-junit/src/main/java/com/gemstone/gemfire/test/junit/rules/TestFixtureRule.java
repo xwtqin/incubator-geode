@@ -25,10 +25,10 @@ import org.junit.runners.model.Statement;
  * method {@code Rule} test fixture lifecycle callbacks. Subclasses may
  * override any or all of these methods:
  * <p><ul>
- * <li></li>{@link #beforeClass()}
- * <li></li>{@link #afterClass()}
- * <li></li>{@link #before()}
- * <li></li>{@link #after()}
+ * <li>{@link #beforeClass()}
+ * <li>{@link #afterClass()}
+ * <li>{@link #before()}
+ * <li>{@link #after()}
  * </ul>
  *
  * <p>The rule variable does not have to be static in order to implement
@@ -60,8 +60,6 @@ import org.junit.runners.model.Statement;
  *   }
  * }
  * </pre>
- *
- * @author Kirk Lund
  */
 public class TestFixtureRule implements TestRule {
 
@@ -115,9 +113,6 @@ public class TestFixtureRule implements TestRule {
    * Override to perform custom setup during <code>beforeClass</code> which
    * is invoked prior to {@link #before()} and all test methods.
    *
-   * If any <code>Throwable</code> is thrown, then <code>afterClass</code> will
-   * be disabled.
-   *
    * @throws Throwable if setup fails
    */
   protected void beforeClass() throws Throwable {
@@ -132,9 +127,6 @@ public class TestFixtureRule implements TestRule {
 
   /**
    * Override to perform custom setup before each test method.
-   *
-   * If any <code>Throwable</code> is thrown, then <code>after</code> will
-   * be disabled.
    *
    * @throws Throwable if setup fails
    */

@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -89,6 +90,17 @@ public class RepeatRuleTest {
     assertThat(NegativeValueShouldThrowIllegalArgumentException.count).isEqualTo(0);
   }
 
+  /**
+   * Characterizes the behavior but is not a requirement for {@code RepeatRule}.
+   */
+  @Test
+  public void passingTestShouldBeSkippedWhenRepeatIsZero() {
+    Result result = TestRunner.runTest(PassingTestShouldBeSkippedWhenRepeatIsZero.class);
+
+    assertThat(result.wasSuccessful()).isFalse();
+    assertThat(PassingTestShouldBeSkippedWhenRepeatIsZero.count).isEqualTo(0);
+  }
+
   @Test
   public void failingTestShouldFailOneTimeWhenRepeatIsOne() {
     Result result = TestRunner.runTest(FailingTestShouldFailOneTimeWhenRepeatIsOne.class);
@@ -155,9 +167,18 @@ public class RepeatRuleTest {
     assertThat(PassingTestShouldPassThreeTimesWhenRepeatIsThree.count).isEqualTo(3);
   }
 
+  /**
+   * Used by test {@link #failingTestShouldFailOneTimeWhenRepeatIsUnused()}
+   */
   public static class FailingTestShouldFailOneTimeWhenRepeatIsUnused {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -168,9 +189,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #passingTestShouldPassOneTimeWhenRepeatIsUnused()}
+   */
   public static class PassingTestShouldPassOneTimeWhenRepeatIsUnused {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -180,9 +210,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #zeroValueShouldThrowIllegalArgumentException()}
+   */
   public static class ZeroValueShouldThrowIllegalArgumentException {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -193,9 +232,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #negativeValueShouldThrowIllegalArgumentException()}
+   */
   public static class NegativeValueShouldThrowIllegalArgumentException {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -206,9 +254,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #passingTestShouldBeSkippedWhenRepeatIsZero()}
+   */
   public static class PassingTestShouldBeSkippedWhenRepeatIsZero {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -218,10 +275,19 @@ public class RepeatRuleTest {
       count++;
     }
   }
-  
+
+  /**
+   * Used by test {@link #failingTestShouldFailOneTimeWhenRepeatIsOne()}
+   */
   public static class FailingTestShouldFailOneTimeWhenRepeatIsOne {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -233,9 +299,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #passingTestShouldPassOneTimeWhenRepeatIsOne()}
+   */
   public static class PassingTestShouldPassOneTimeWhenRepeatIsOne {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -246,9 +321,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #failingTestShouldFailOneTimeWhenRepeatIsTwo()}
+   */
   public static class FailingTestShouldFailOneTimeWhenRepeatIsTwo {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -260,9 +344,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #passingTestShouldPassTwoTimesWhenRepeatIsTwo()}
+   */
   public static class PassingTestShouldPassTwoTimesWhenRepeatIsTwo {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -273,9 +366,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #failingTestShouldFailOneTimeWhenRepeatIsThree()}
+   */
   public static class FailingTestShouldFailOneTimeWhenRepeatIsThree {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 
@@ -287,9 +389,18 @@ public class RepeatRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #passingTestShouldPassThreeTimesWhenRepeatIsThree()}
+   */
   public static class PassingTestShouldPassThreeTimesWhenRepeatIsThree {
-    protected static int count = 0;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public RepeatRule repeat = new RepeatRule();
 

@@ -23,9 +23,6 @@ import org.junit.rules.TestRule;
 /**
  * Specifies that a {@link org.junit.rules.TestRule TestRule} is
  * {@code Serializable}.
- *
- * The simplest way to satisfy this interface is to apply {@code transient} to
- * every instance field.
  */
 public interface SerializableTestRule extends Serializable, TestRule {
 }

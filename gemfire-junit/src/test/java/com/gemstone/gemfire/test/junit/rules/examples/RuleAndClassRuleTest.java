@@ -67,11 +67,15 @@ public class RuleAndClassRuleTest {
     assertThat(UsingRuleAsRuleAndClassRule.staticRule.afterInvoked).isEqualTo(true);
   }
 
+  /**
+   * Implementation of TestRule that records the callbacks invoked on it. Used
+   * by {@link UsingRuleAsRuleAndClassRule}.
+   */
   public static class SpyRule implements TestRule {
-    boolean beforeClassInvoked;
-    boolean afterClassInvoked;
-    boolean beforeInvoked;
-    boolean afterInvoked;
+    boolean beforeClassInvoked = false;
+    boolean afterClassInvoked = false;
+    boolean beforeInvoked = false;
+    boolean afterInvoked = false;
     
     @Override
     public Statement apply(final Statement base, final Description description) {
@@ -126,8 +130,11 @@ public class RuleAndClassRuleTest {
     private void after() {
       this.afterInvoked = true;
     }
-  };
-  
+  }
+
+  /**
+   * Used by the tests in {@link RuleAndClassRuleTest}.
+   */
   public static class UsingRuleAsRuleAndClassRule {
     @ClassRule
     public static SpyRule staticRule = new SpyRule();

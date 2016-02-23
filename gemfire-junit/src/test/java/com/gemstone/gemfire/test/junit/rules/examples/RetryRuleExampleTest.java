@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import com.gemstone.gemfire.test.junit.rules.RetryRule;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,10 +31,15 @@ import org.junit.experimental.categories.Category;
 @Category(UnitTest.class)
 public class RetryRuleExampleTest {
 
-  @Rule
-  public final transient RetryRule retry = new RetryRule(2);
-  
   private static int count = 0;
+
+  @Rule
+  public RetryRule retry = new RetryRule(2);
+
+  @BeforeClass
+  public static void beforeClass() {
+    count = 0;
+  }
 
   @Test
   public void unreliableTestWithRaceConditions() {

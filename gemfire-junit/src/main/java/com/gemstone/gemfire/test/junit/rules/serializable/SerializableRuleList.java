@@ -37,7 +37,7 @@ public class SerializableRuleList extends RuleList implements SerializableTestRu
     super(rule);
   }
 
-  public SerializableRuleList(final List<TestRule> rules) {
+  protected SerializableRuleList(final List<TestRule> rules) {
     super(rules);
   }
 

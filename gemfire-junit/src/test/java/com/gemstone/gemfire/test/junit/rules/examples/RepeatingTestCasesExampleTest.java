@@ -43,10 +43,10 @@ import com.gemstone.gemfire.test.junit.rules.RepeatRule;
 @Category(UnitTest.class)
 public class RepeatingTestCasesExampleTest {
 
-  private static AtomicInteger repeatOnceCounter = new AtomicInteger(0);
-  private static AtomicInteger repeatOnlyOnceCounter = new AtomicInteger(0);
-  private static AtomicInteger repeatTenTimesCounter = new AtomicInteger(0);
-  private static AtomicInteger repeatTwiceCounter = new AtomicInteger(0);
+  private static final AtomicInteger repeatOnceCounter = new AtomicInteger(0);
+  private static final AtomicInteger repeatOnlyOnceCounter = new AtomicInteger(0);
+  private static final AtomicInteger repeatTenTimesCounter = new AtomicInteger(0);
+  private static final AtomicInteger repeatTwiceCounter = new AtomicInteger(0);
 
   @Rule
   public RepeatRule repeatRule = new RepeatRule();
@@ -54,6 +54,10 @@ public class RepeatingTestCasesExampleTest {
   @BeforeClass
   public static void setupBeforeClass() {
     System.setProperty("tdd.example.test.case.two.repetitions", "2");
+    repeatOnceCounter.set(0);
+    repeatOnlyOnceCounter.set(0);
+    repeatTenTimesCounter.set(0);
+    repeatTwiceCounter.set(0);
   }
 
   @AfterClass

@@ -33,8 +33,6 @@ import java.io.Serializable;
 @Category(UnitTest.class)
 public class SerializableRuleListTest {
 
-  private String value = "foo";
-
   @Test
   public void isSerializable() throws Exception {
     assertThat(SerializableRuleList.class).isInstanceOf(Serializable.class);
@@ -42,7 +40,8 @@ public class SerializableRuleListTest {
 
   @Test
   public void canBeSerialized() throws Exception {
-    FakeSerializableTestRule fakeRule = new FakeSerializableTestRule().value(this.value);
+    String value = "foo";
+    FakeSerializableTestRule fakeRule = new FakeSerializableTestRule().value(value);
     SerializableRuleList instance = new SerializableRuleList().add(fakeRule);
 
     SerializableRuleList cloned = (SerializableRuleList) SerializationUtils.clone(instance);
@@ -52,11 +51,11 @@ public class SerializableRuleListTest {
   }
 
   /**
-   * Fake SerializableTestRule containing a string field and overriding equals.
+   * Fake SerializableTestRule with a string field and overriding equals.
    */
   private static class FakeSerializableTestRule implements SerializableTestRule {
 
-    private String value;
+    private String value = null;
 
     public FakeSerializableTestRule value(final String value) {
       this.value = value;
@@ -84,7 +83,7 @@ public class SerializableRuleListTest {
 
       FakeSerializableTestRule that = (FakeSerializableTestRule) o;
 
-      return this.value != null ? this.value.equals(that.value) : that.value == null;
+      return this.value != null ? this.value.equals(that.value()) : that.value() == null;
     }
   }
 }

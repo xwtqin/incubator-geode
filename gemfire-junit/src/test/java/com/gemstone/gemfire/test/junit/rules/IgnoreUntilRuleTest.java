@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -74,13 +75,22 @@ public class IgnoreUntilRuleTest {
     assertThat(failure.getException()).isExactlyInstanceOf(AssertionError.class).hasMessage(ASSERTION_ERROR_MESSAGE);
     assertThat(ShouldExecuteWhenUntilIsDefault.count).isEqualTo(1);
   }
-  
+
+  /**
+   * Used by test {@link #shouldIgnoreWhenUntilIsInFuture()}
+   */
   public static class ShouldIgnoreWhenUntilIsInFuture {
-    private static int count;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public final IgnoreUntilRule ignoreUntilRule = new IgnoreUntilRule();
-    
+
     @Test
     @IgnoreUntil(value = "description", until = "3000-01-01")
     public void doTest() throws Exception {
@@ -89,12 +99,21 @@ public class IgnoreUntilRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #shouldExecuteWhenUntilIsInPast()}
+   */
   public static class ShouldExecuteWhenUntilIsInPast {
-    private static int count;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public final IgnoreUntilRule ignoreUntilRule = new IgnoreUntilRule();
-    
+
     @Test
     @IgnoreUntil(value = "description", until = "1980-01-01")
     public void doTest() throws Exception {
@@ -103,14 +122,23 @@ public class IgnoreUntilRuleTest {
     }
   }
 
+  /**
+   * Used by test {@link #shouldExecuteWhenUntilIsDefault()}
+   */
   public static class ShouldExecuteWhenUntilIsDefault {
-    private static int count;
-    
+
+    static int count = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      count = 0;
+    }
+
     @Rule
     public final IgnoreUntilRule ignoreUntilRule = new IgnoreUntilRule();
-    
+
     @Test
-    @IgnoreUntil(value = "description")
+    @IgnoreUntil("description")
     public void doTest() throws Exception {
       count++;
       fail(ASSERTION_ERROR_MESSAGE);

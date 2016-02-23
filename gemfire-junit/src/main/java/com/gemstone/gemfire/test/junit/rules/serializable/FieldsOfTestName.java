@@ -19,6 +19,6 @@ package com.gemstone.gemfire.test.junit.rules.serializable;
 /**
  * Names of member fields in {@link org.junit.rules.TestName}.
  */
-public interface FieldsOfTestName {
+interface FieldsOfTestName {
   static final String FIELD_NAME = "name"; // String
 }

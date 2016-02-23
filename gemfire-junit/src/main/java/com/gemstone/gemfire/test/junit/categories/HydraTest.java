@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package com.gemstone.gemfire.test.junit.categories;
+
 /**
  * JUnit Test Category that specifies a hydra test.
  *  

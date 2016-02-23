@@ -43,9 +43,9 @@ public class SerializableTemporaryFolderTest {
   @Test
   public void hasTwoFields() throws Exception {
     Field[] fields = TemporaryFolder.class.getDeclaredFields();
-    for (Field field : fields) {
-      //System.out.println("Field: " + field);
-    }
+    /*for (Field field : fields) {
+      System.out.println("Field: " + field);
+    }*/
     assertThat(fields.length).isEqualTo(2);
   }
 
