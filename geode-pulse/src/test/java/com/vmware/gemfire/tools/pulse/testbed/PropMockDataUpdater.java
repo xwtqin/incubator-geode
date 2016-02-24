@@ -18,6 +18,23 @@
  */
 package com.vmware.gemfire.tools.pulse.testbed;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Alert;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Client;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.GatewayReceiver;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.GatewaySender;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Member;
+import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Region;
+import com.vmware.gemfire.tools.pulse.internal.data.IClusterUpdater;
+import com.vmware.gemfire.tools.pulse.internal.data.PulseConstants;
+import com.vmware.gemfire.tools.pulse.internal.data.Repository;
+import com.vmware.gemfire.tools.pulse.internal.log.PulseLogWriter;
+import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Locator;
+import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Peer;
+import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Server;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,24 +46,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.ResourceBundle;
-
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Alert;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Client;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.GatewayReceiver;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.GatewaySender;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Member;
-import com.vmware.gemfire.tools.pulse.internal.data.Cluster.Region;
-import com.vmware.gemfire.tools.pulse.internal.data.IClusterUpdater;
-import com.vmware.gemfire.tools.pulse.internal.data.PulseConstants;
-import com.vmware.gemfire.tools.pulse.internal.data.Repository;
-import com.vmware.gemfire.tools.pulse.internal.json.JSONException;
-import com.vmware.gemfire.tools.pulse.internal.json.JSONObject;
-import com.vmware.gemfire.tools.pulse.internal.log.PulseLogWriter;
-import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Locator;
-import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Peer;
-import com.vmware.gemfire.tools.pulse.testbed.GemFireDistributedSystem.Server;
-
 
 public class PropMockDataUpdater implements IClusterUpdater {
   private static final int MAX_HOSTS = 40;
@@ -60,6 +59,8 @@ public class PropMockDataUpdater implements IClusterUpdater {
   private Cluster cluster= null;
   private TestBed testbed;
   private final String testbedFile = System.getProperty("pulse.propMockDataUpdaterFile");;
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   public PropMockDataUpdater(Cluster cluster) {
     this.cluster = cluster;
@@ -88,7 +89,7 @@ public class PropMockDataUpdater implements IClusterUpdater {
     cluster.setTotalHeapSize(totalHeapSize);
     long usedHeapSize  = Math.abs(r.nextInt(2048));
     cluster.setUsedHeapSize(usedHeapSize);
-    float writePerSec = Math.abs(r.nextInt(100));
+    double writePerSec = Math.abs(r.nextInt(100));
     cluster.setWritePerSec(writePerSec);
 
     //propfile
@@ -341,13 +342,12 @@ public class PropMockDataUpdater implements IClusterUpdater {
     if(port==null || "".equals(port))
       port = "1099";
     gatewayReceiver.setListeningPort(Integer.parseInt(port));
-    gatewayReceiver.setLinkThroughput((float) Math.abs(r.nextInt(10)));
+    gatewayReceiver.setLinkThroughput(Math.abs(r.nextInt(10)));
     gatewayReceiver.setAvgBatchProcessingTime((long) Math.abs(r.nextInt(10)));
     gatewayReceiver.setId(String.valueOf(Math.abs(r.nextInt(10))));
     gatewayReceiver.setQueueSize(Math.abs(r.nextInt(10)));
     gatewayReceiver.setStatus(true);
     gatewayReceiver.setBatchSize(Math.abs(r.nextInt(10)));
-
 
     int gatewaySenderCount = Math.abs(r.nextInt(10));
 
@@ -356,7 +356,6 @@ public class PropMockDataUpdater implements IClusterUpdater {
     for (int i = 0; i < gatewaySenderCount; i++) {
       list.add(createGatewaySenderCount(r));
     }
-
 
     Map<String, List<Member>> physicalToMember = cluster.getPhysicalToMember();
 
@@ -379,7 +378,7 @@ public class PropMockDataUpdater implements IClusterUpdater {
 
     gatewaySender.setBatchSize(Math.abs(r.nextInt(10)));
     gatewaySender.setId(String.valueOf(Math.abs(r.nextInt(10))));
-    gatewaySender.setLinkThroughput((float) Math.abs(r.nextInt(10)));
+    gatewaySender.setLinkThroughput(Math.abs(r.nextInt(10)));
     gatewaySender.setPersistenceEnabled(true);
     gatewaySender.setPrimary(true);
     gatewaySender.setQueueSize(Math.abs(r.nextInt(10)));
@@ -428,7 +427,7 @@ public class PropMockDataUpdater implements IClusterUpdater {
     m.setCurrentHeapSize(Math.abs(r.nextInt(Math.abs((int) m.getMaxHeapSize()))));
     m.setTotalDiskUsage(Math.abs(r.nextInt(100)));
 
-    Float cpuUsage = r.nextFloat() * 100;
+    double cpuUsage = r.nextDouble() * 100;
     m.getCpuUsageSamples().add(cpuUsage);
     m.setCpuUsage(cpuUsage);
 
@@ -506,8 +505,7 @@ public class PropMockDataUpdater implements IClusterUpdater {
   }
 
   @Override
-  public JSONObject executeQuery(String queryText, String members, int limit)
-      throws JSONException {
+  public ObjectNode executeQuery(String queryText, String members, int limit) {
     // TODO for Sushant/Sachin - Add implementation for MockUpdater for Automation
     return null;
   }
