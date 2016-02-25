@@ -39,7 +39,7 @@ Extract the source archive and build from the expanded directory:
 
 Start a locator and server:
 
-    $ cd gemfire-assembly/build/install/apache-geode
+    $ cd geode-assembly/build/install/apache-geode
     $ ./bin/gfsh
     gfsh> start locator --name=locator
     gfsh> start server --name=server
@@ -75,10 +75,10 @@ _HelloWorld.java_
       }
     }
 
-Compile and run `HelloWorld.java`.  The classpath should include `gemfire-core-dependencies.jar`.
+Compile and run `HelloWorld.java`.  The classpath should include `geode-dependencies.jar`.
 
-    javac -cp /some/path/geode/gemfire-assembly/build/install/geode/lib/gemfire-core-dependencies.jar HelloWorld.java
-    java -cp .:/some/path/geode/gemfire-assembly/build/install/geode/lib/gemfire-core-dependencies.jar HelloWorld
+    javac -cp /some/path/geode/geode-assembly/build/install/apache-geode/lib/geode-dependencies.jar HelloWorld.java
+    java -cp .:/some/path/geode/geode-assembly/build/install/apache-geode/lib/geode-dependencies.jar HelloWorld
 
 #Application Development
 
@@ -87,14 +87,6 @@ Geode applications can be written in a number of client technologies:
 * Java using the Geode client API or embedded using the Geode peer API
 * [Spring Data GemFire](http://projects.spring.io/spring-data-gemfire/) or [Spring Cache](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)
 * [Python](https://github.com/gemfire/py-gemfire-rest)
-* [REST](http://geode-docs.cfapps.io/docs/geode_rest/book_intro.html)
-* [[memcached|Moving from memcached to gemcached]]
-
-
-# Build environment in Docker
-```
-dev-tools/docker/compile/start-compile-docker.sh
-
-```
-
+* [REST](http://geode.docs.pivotal.io/docs/rest_apps/book_intro.html)
+* [memcached](https://cwiki.apache.org/confluence/display/GEODE/Moving+from+memcached+to+gemcached)
 

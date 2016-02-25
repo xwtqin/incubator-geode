@@ -35,7 +35,7 @@ dependencyVersions.load(new FileInputStream("${project.projectDir}/gradle/depend
 dependencyVersions.keys().each{ k -> project.ext[k] = dependencyVersions[k]}
 
 allprojects {
-  version = versionNumber + '-' + releaseType
+  version = versionNumber + releaseType
   ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
   // We want to see all test results.  This is equivalatent to setting --continue
@@ -43,7 +43,6 @@ allprojects {
   gradle.startParameter.continueOnFailure = true
   
   repositories {
-    mavenLocal()
     mavenCentral()
     maven { url "http://repo.spring.io/release" }
     maven { url "http://repo.spring.io/milestone" }
@@ -69,7 +68,7 @@ task clean(type: Delete) {
 }
 
 // allow external projects to override include location
-if (name == 'gemfire') {
+if (name == 'geode') {
   ext.scriptDir = 'gradle'
 }
 
