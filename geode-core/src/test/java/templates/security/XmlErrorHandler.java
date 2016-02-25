@@ -14,14 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package templates.security;
 
+import com.gemstone.gemfire.LogWriter;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import com.gemstone.gemfire.LogWriter;
 
 /**
  * Implementation of {@link ErrorHandler} interface to handle validation errors
@@ -54,7 +52,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     throw new SAXParseException("Error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null);
+        + ": " + exception.getMessage(), null, exception);
   }
 
   /**
@@ -65,7 +63,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     throw new SAXParseException("Fatal error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null);
+        + ": " + exception.getMessage(), null, exception);
   }
 
   /**

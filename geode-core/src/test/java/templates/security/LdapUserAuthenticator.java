@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
@@ -92,7 +91,7 @@ public class LdapUserAuthenticator implements Authenticator {
     Properties env = new Properties();
     env
         .put(Context.INITIAL_CONTEXT_FACTORY,
-            "com.sun.jndi.ldap.LdapCtxFactory");
+            com.sun.jndi.ldap.LdapCtxFactory.class.getName());
     env.put(Context.PROVIDER_URL, this.ldapUrlScheme + this.ldapServer + '/'
         + this.basedn);
     String fullentry = "uid=" + userName + "," + this.basedn;
@@ -103,10 +102,9 @@ public class LdapUserAuthenticator implements Authenticator {
       ctx.close();
     }
     catch (Exception e) {
-      //TODO:hitesh need to add getCause message
       throw new AuthenticationFailedException(
           "LdapUserAuthenticator: Failure with provided username, password "
-              + "combination for user name: " + userName);
+              + "combination for user name: " + userName, e);
     }
     return new UsernamePrincipal(userName);
   }

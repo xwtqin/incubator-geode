@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
@@ -85,7 +84,7 @@ public class PKCSAuthenticator implements Authenticator {
     }
     catch (Exception e) {
       throw new AuthenticationFailedException(
-          "Exception while getting public keys: " + e.getMessage());
+          "Exception while getting public keys: " + e.getMessage(), e);
     }
   }
 
@@ -152,9 +151,6 @@ public class PKCSAuthenticator implements Authenticator {
         throw getException("verification of client signature failed");
       }
       return new PKCSPrincipal(alias);
-    }
-    catch (GemFireSecurityException ex) {
-      throw ex;
     }
     catch (Exception ex) {
       throw getException(ex.toString(), ex);
