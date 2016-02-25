@@ -62,28 +62,6 @@ public class ExpectedTimeoutRule implements TestRule {
   }
 
   /**
-   * This method does nothing.
-   *
-   * @deprecated AssertionErrors are handled by default
-   */
-  @Deprecated
-  public ExpectedTimeoutRule handleAssertionErrors() {
-    this.delegate.handleAssertionErrors();
-    return this;
-  }
-
-  /**
-   * This method does nothing.
-   *
-   * @deprecated AssumptionViolatedExceptions are handled by default
-   */
-  @Deprecated
-  public ExpectedTimeoutRule handleAssumptionViolatedExceptions() {
-    this.delegate.handleAssumptionViolatedExceptions();
-    return this;
-  }
-  
-  /**
    * Adds {@code matcher} to the list of requirements for any thrown exception.
    */
   public void expect(final Matcher<?> matcher) {
