@@ -437,7 +437,7 @@ public class FreeListManager {
 
         this.ma.getStats().setLargestFragment(largestFragment);
         this.ma.getStats().setFragments(tmp.size());        
-        updateFragmentation(largestFragment);
+        this.ma.getStats().setFragmentation(getFragmentation());
 
         return result;
       } // sync
@@ -473,21 +473,31 @@ public class FreeListManager {
     }
   }
   
-  private void updateFragmentation(long largestFragment) {      
-    long freeSize = getFreeMemory();
+  protected int getNoOfFragments() {
+    return this.fragmentList.size();
+  }
+  
+  protected int getFragmentation() {
 
-    // Calculate free space fragmentation only if there is free space available.
-    if(freeSize > 0) {
-      long numerator = freeSize - largestFragment;
-
-      double percentage = (double) numerator / (double) freeSize;
-      percentage *= 100d;
-
-      int wholePercentage = (int) Math.rint(percentage);
-      this.ma.getStats().setFragmentation(wholePercentage);
+    int availableFragments = getNoOfFragments();
+    
+    if(availableFragments < 2) {
+      //case when there are no fragments or only one fragment
+      //then freeMemory is either be 0 or as 1 fragment, so freeMemory is not fragmented.
+      return 0;
     } else {
-      // No free space? Then we have no free space fragmentation.
-      this.ma.getStats().setFragmentation(0);
+      long freeMemory = getFreeMemory();
+      long totalMemory = getTotalMemory();
+      if (freeMemory == totalMemory) {
+        //case when freeMemory is entirely totalMemory then freeMemory is not fragmented
+        return 0;
+      } else {
+        //case when freeMemory is fragmented
+        //then compare the no. of available fragments with max no. of possible fragments
+        long maxPossibleFragments = freeMemory / ObjectChunk.MIN_CHUNK_SIZE;
+        double fragmentation = (availableFragments / maxPossibleFragments) * 100.0;
+        return (int) fragmentation;
+      }
     }
   }
 

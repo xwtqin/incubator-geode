@@ -739,6 +739,59 @@ public class FreeListManagerTest {
     LogWriter lw = mock(LogWriter.class);
     this.freeListManager.logOffHeapState(lw, 1024);
   }
+  
+  @Test
+  public void fragmentationShouldBeZeroIfNumberOfFragmentsIsZero() {
+    UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
+    this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
+    
+    FreeListManager spy = spy(this.freeListManager);
+    
+    when(spy.getNoOfFragments()).thenReturn(0);
+    
+    assertThat(spy.getFragmentation()).isZero();
+  }
+  
+  @Test
+  public void fragmentationShouldBeZeroIfNumberOfFragmentsIsOne() {
+    UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
+    this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
+    
+    FreeListManager spy = spy(this.freeListManager);
+    
+    when(spy.getNoOfFragments()).thenReturn(1);
+    
+    assertThat(spy.getFragmentation()).isZero();
+  }
+  
+  @Test
+  public void fragmentationShouldBeZeroIfTotalMemoryIsFree() {
+    UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
+    this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
+    
+    FreeListManager spy = spy(this.freeListManager);
+    
+    when(spy.getNoOfFragments()).thenReturn(2);
+    when(spy.getFreeMemory()).thenReturn(Long.MAX_VALUE);
+    when(spy.getTotalMemory()).thenReturn(Long.MAX_VALUE);
+    
+    assertThat(spy.getFragmentation()).isZero();
+  }
+  
+  @Test
+  public void fragmentationShouldBe100IfAllFreeMemoryIsFragmentedAsMinChunks() {
+    UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
+    this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
+    
+    FreeListManager spy = spy(this.freeListManager);
+    
+    when(spy.getNoOfFragments()).thenReturn(2);
+    when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 2);
+    when(spy.getTotalMemory()).thenReturn(Long.MAX_VALUE);
+    
+    assertThat(spy.getFragmentation()).isEqualTo(100);
+  }
+  
   /**
    * Just like Fragment except that the first time allocate is called
    * it returns false indicating that the allocate failed.
