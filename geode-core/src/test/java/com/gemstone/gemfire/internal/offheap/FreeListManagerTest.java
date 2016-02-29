@@ -747,7 +747,7 @@ public class FreeListManagerTest {
     
     FreeListManager spy = spy(this.freeListManager);
     
-    when(spy.getNoOfFragments()).thenReturn(0);
+    when(spy.getFragmentsCount()).thenReturn(0);
     
     assertThat(spy.getFragmentation()).isZero();
   }
@@ -759,21 +759,19 @@ public class FreeListManagerTest {
     
     FreeListManager spy = spy(this.freeListManager);
     
-    when(spy.getNoOfFragments()).thenReturn(1);
+    when(spy.getFragmentsCount()).thenReturn(1);
     
     assertThat(spy.getFragmentation()).isZero();
   }
   
   @Test
-  public void fragmentationShouldBeZeroIfTotalMemoryIsFree() {
+  public void fragmentationShouldBeZeroIfUsedMemoryIsZero() {
     UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
     this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
     
     FreeListManager spy = spy(this.freeListManager);
     
-    when(spy.getNoOfFragments()).thenReturn(2);
-    when(spy.getFreeMemory()).thenReturn(Long.MAX_VALUE);
-    when(spy.getTotalMemory()).thenReturn(Long.MAX_VALUE);
+    when(spy.getUsedMemory()).thenReturn(0L);
     
     assertThat(spy.getFragmentation()).isZero();
   }
@@ -785,11 +783,43 @@ public class FreeListManagerTest {
     
     FreeListManager spy = spy(this.freeListManager);
     
-    when(spy.getNoOfFragments()).thenReturn(2);
+    when(spy.getUsedMemory()).thenReturn(1L);
+    when(spy.getFragmentsCount()).thenReturn(2);
     when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 2);
-    when(spy.getTotalMemory()).thenReturn(Long.MAX_VALUE);
     
     assertThat(spy.getFragmentation()).isEqualTo(100);
+  }
+  
+  @Test
+  public void fragmentationShouldBeRoundedToNearestInteger() {
+    UnsafeMemoryChunk chunk = new UnsafeMemoryChunk(10);
+    this.freeListManager = createFreeListManager(ma, new UnsafeMemoryChunk[] {chunk});
+    
+    FreeListManager spy = spy(this.freeListManager);
+    
+    when(spy.getUsedMemory()).thenReturn(1L);
+    when(spy.getFragmentsCount()).thenReturn(4);
+    when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 8);
+    
+    assertThat(spy.getFragmentation()).isEqualTo(50); //Math.rint(50.0)
+    
+    when(spy.getUsedMemory()).thenReturn(1L);
+    when(spy.getFragmentsCount()).thenReturn(3);
+    when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 8);
+    
+    assertThat(spy.getFragmentation()).isEqualTo(38); //Math.rint(37.5)
+    
+    when(spy.getUsedMemory()).thenReturn(1L);
+    when(spy.getFragmentsCount()).thenReturn(6);
+    when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 17);
+    
+    assertThat(spy.getFragmentation()).isEqualTo(35); //Math.rint(35.29)
+    
+    when(spy.getUsedMemory()).thenReturn(1L);
+    when(spy.getFragmentsCount()).thenReturn(6);
+    when(spy.getFreeMemory()).thenReturn((long)ObjectChunk.MIN_CHUNK_SIZE * 9);
+    
+    assertThat(spy.getFragmentation()).isEqualTo(67); //Math.rint(66.66)
   }
   
   /**

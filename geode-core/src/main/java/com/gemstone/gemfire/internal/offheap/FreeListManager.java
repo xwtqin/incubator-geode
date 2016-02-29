@@ -473,30 +473,29 @@ public class FreeListManager {
     }
   }
   
-  protected int getNoOfFragments() {
+  protected int getFragmentsCount() {
     return this.fragmentList.size();
   }
   
   protected int getFragmentation() {
-
-    int availableFragments = getNoOfFragments();
-    
-    if(availableFragments < 2) {
-      //case when there are no fragments or only one fragment
-      //then freeMemory is either be 0 or as 1 fragment, so freeMemory is not fragmented.
+    if(getUsedMemory() == 0) {
+      //when no memory is used then there is no fragmentation
       return 0;
     } else {
-      long freeMemory = getFreeMemory();
-      long totalMemory = getTotalMemory();
-      if (freeMemory == totalMemory) {
-        //case when freeMemory is entirely totalMemory then freeMemory is not fragmented
+      int availableFragments = getFragmentsCount();
+      if (availableFragments == 0) {
+        //zero fragments means no free memory then no fragmentation
+        return 0;
+      } else if (availableFragments == 1) {
+        //free memory is available as one fragment, so no fragmentation
         return 0;
       } else {
-        //case when freeMemory is fragmented
+        //when more than 1 fragment is available
         //then compare the no. of available fragments with max no. of possible fragments
+        long freeMemory = getFreeMemory();
         long maxPossibleFragments = freeMemory / ObjectChunk.MIN_CHUNK_SIZE;
-        double fragmentation = (availableFragments / maxPossibleFragments) * 100.0;
-        return (int) fragmentation;
+        double fragmentation = ((double) availableFragments /(double) maxPossibleFragments) * 100d;
+        return (int) Math.rint(fragmentation);
       }
     }
   }
