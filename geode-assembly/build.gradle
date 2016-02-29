@@ -58,6 +58,9 @@ dependencies {
   testCompile project(':geode-junit')
   testCompile project(path: ':geode-core', configuration: 'testOutput')
 
+  testCompile 'org.apache.httpcomponents:httpclient:' + project.'httpclient.version'
+  testCompile 'org.apache.httpcomponents:httpcore:' + project.'httpcore.version'
+
   testRuntime files("${System.getProperty('java.home')}/../lib/tools.jar")
 }
 
@@ -253,6 +256,8 @@ distributions {
       exclude '*.asc'
       exclude '*-sources.jar'
       exclude '*-javadoc.jar'
+
+      from rootProject.file( 'README.md' )
 
       into ('config') {
         from defaultCacheConfig
