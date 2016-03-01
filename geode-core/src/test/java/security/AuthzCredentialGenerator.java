@@ -19,7 +19,9 @@
 package security;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AccessControl;
+import org.apache.logging.log4j.Logger;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import java.util.Properties;
  * @since 5.5
  */
 public abstract class AuthzCredentialGenerator {
+  private static final Logger logger = LogService.getLogger();
 
   /**
    * Enumeration for various {@link AuthzCredentialGenerator} implementations.
@@ -255,6 +258,7 @@ public abstract class AuthzCredentialGenerator {
       this.sysProps = init();
     }
     catch (IllegalArgumentException ex) {
+      logger.error("KIRK:SECURITY: ex={}", ex);
       return false;
     }
     return true;
@@ -322,6 +326,7 @@ public abstract class AuthzCredentialGenerator {
         return this.cGen.getValidCredentials(principal);
       }
       catch (IllegalArgumentException ex) {
+        logger.error("KIRK:SECURITY: ex={}", ex);
       }
     }
     return null;
@@ -364,6 +369,7 @@ public abstract class AuthzCredentialGenerator {
         return this.cGen.getValidCredentials(principal);
       }
       catch (IllegalArgumentException ex) {
+        logger.error("KIRK:SECURITY: ex={}", ex);
       }
     }
     return null;
