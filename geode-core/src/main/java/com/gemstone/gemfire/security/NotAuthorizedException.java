@@ -26,8 +26,10 @@ import java.security.Principal;
  * @since 5.5
  */
 public class NotAuthorizedException extends GemFireSecurityException {
-private static final long serialVersionUID = 419215768216387745L;
-  private Principal principal = null;
+  private static final long serialVersionUID = 419215768216387745L;
+
+  private transient Principal principal = null;
+
   /**
    * Constructs instance of <code>NotAuthorizedException</code> with error
    * message.
@@ -47,6 +49,7 @@ private static final long serialVersionUID = 419215768216387745L;
   public Principal getPrincipal() {
     return this.principal;
   }
+
   /**
    * Constructs instance of <code>NotAuthorizedException</code> with error
    * message and cause.

@@ -102,6 +102,7 @@ public class LdapUserAuthenticator implements Authenticator {
       ctx.close();
     }
     catch (Exception e) {
+      e.printStackTrace();
       throw new AuthenticationFailedException(
           "LdapUserAuthenticator: Failure with provided username, password "
               + "combination for user name: " + userName, e);

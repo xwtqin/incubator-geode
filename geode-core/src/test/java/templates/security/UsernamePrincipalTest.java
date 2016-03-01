@@ -14,30 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package templates.security;
 
+import com.gemstone.gemfire.test.junit.categories.UnitTest;
+import org.apache.commons.lang.SerializationUtils;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import java.io.Serializable;
-import java.security.Principal;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author kneeraj
- * 
+ * Unit tests for {@link UsernamePrincipal}
  */
-public class PKCSPrincipal implements Principal, Serializable {
+@Category(UnitTest.class)
+public class UsernamePrincipalTest {
 
-  private String alias;
-
-  public PKCSPrincipal(String alias) {
-    this.alias = alias;
+  @Test
+  public void isSerializable() throws Exception {
+    assertThat(UsernamePrincipal.class).isInstanceOf(Serializable.class);
   }
 
-  public String getName() {
-    return this.alias;
-  }
+  @Test
+  public void canBeSerialized() throws Exception {
+    String name = "jsmith";
+    UsernamePrincipal instance = new UsernamePrincipal(name);
 
-  @Override
-  public String toString() {
-    return this.alias;
+    UsernamePrincipal cloned = (UsernamePrincipal) SerializationUtils.clone(instance);
+
+    assertThat(cloned.getName()).isEqualTo(name);
   }
 }
