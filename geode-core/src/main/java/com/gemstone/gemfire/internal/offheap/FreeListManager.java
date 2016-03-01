@@ -490,7 +490,7 @@ public class FreeListManager {
         //free memory is available as one fragment, so no fragmentation
         return 0;
       } else {
-        //more than 1 fragment is available so freeMemory is > 0
+        //more than 1 fragment is available so freeMemory is > ObjectChunk.MIN_CHUNK_SIZE
         long freeMemory = getFreeMemory();
         assert freeMemory > ObjectChunk.MIN_CHUNK_SIZE;
         long maxPossibleFragments = freeMemory / ObjectChunk.MIN_CHUNK_SIZE;
