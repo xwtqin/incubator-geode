@@ -17,6 +17,8 @@
 package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
+import com.gemstone.gemfire.internal.logging.LogService;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -33,14 +35,15 @@ import org.xml.sax.SAXParseException;
  * @since 5.5
  */
 public class XmlErrorHandler implements ErrorHandler {
+  private static final Logger logger = LogService.getLogger();
 
-  private LogWriter logger;
+  private LogWriter logWriter;
 
   private String xmlFileName;
 
-  public XmlErrorHandler(LogWriter logger, String xmlFileName) {
+  public XmlErrorHandler(LogWriter logWriter, String xmlFileName) {
 
-    this.logger = logger;
+    this.logWriter = logWriter;
     this.xmlFileName = xmlFileName;
   }
 
@@ -49,7 +52,7 @@ public class XmlErrorHandler implements ErrorHandler {
    * where the exception occurred.
    */
   public void error(SAXParseException exception) throws SAXException {
-
+    logger.error("KIRK:SECURITY: exception={}", exception);
     throw new SAXParseException("Error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
         + ": " + exception.getMessage(), null, exception);
@@ -60,7 +63,7 @@ public class XmlErrorHandler implements ErrorHandler {
    * where the exception occurred.
    */
   public void fatalError(SAXParseException exception) throws SAXException {
-
+    logger.error("KIRK:SECURITY: exception={}", exception);
     throw new SAXParseException("Fatal error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
         + ": " + exception.getMessage(), null, exception);
@@ -71,10 +74,11 @@ public class XmlErrorHandler implements ErrorHandler {
    * filename and the position of exception in the file.
    */
   public void warning(SAXParseException exception) throws SAXException {
-
-    this.logger.warning("Warning while parsing XML [" + this.xmlFileName
+    logger.error("KIRK:SECURITY: exception={}", exception);
+    this.logWriter.warning("Warning while parsing XML [" + this.xmlFileName
         + "] at line " + exception.getLineNumber() + " column "
         + exception.getColumnNumber() + ": " + exception.getMessage());
   }
+
 
 }

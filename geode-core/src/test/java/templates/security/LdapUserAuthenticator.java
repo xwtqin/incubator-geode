@@ -18,8 +18,10 @@ package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 import com.gemstone.gemfire.security.Authenticator;
+import org.apache.logging.log4j.Logger;
 
 import java.security.Principal;
 import java.util.Properties;
@@ -32,6 +34,7 @@ import javax.naming.directory.InitialDirContext;
  * @since 5.5
  */
 public class LdapUserAuthenticator implements Authenticator {
+  private static final Logger logger = LogService.getLogger();
 
   private String ldapServer = null;
 
@@ -102,7 +105,7 @@ public class LdapUserAuthenticator implements Authenticator {
       ctx.close();
     }
     catch (Exception e) {
-      e.printStackTrace();
+      logger.error("KIRK:SECURITY: e={}", e);
       throw new AuthenticationFailedException(
           "LdapUserAuthenticator: Failure with provided username, password "
               + "combination for user name: " + userName, e);

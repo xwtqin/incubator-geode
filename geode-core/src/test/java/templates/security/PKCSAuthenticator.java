@@ -18,9 +18,11 @@ package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 import com.gemstone.gemfire.security.Authenticator;
 import com.gemstone.gemfire.security.GemFireSecurityException;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
@@ -40,6 +42,7 @@ import java.util.Properties;
  * 
  */
 public class PKCSAuthenticator implements Authenticator {
+  private static final Logger logger = LogService.getLogger();
 
   public static final String PUBLIC_KEY_FILE = "security-publickey-filepath";
 
@@ -83,6 +86,7 @@ public class PKCSAuthenticator implements Authenticator {
       }
     }
     catch (Exception e) {
+      logger.error("KIRK:SECURITY: e={}", e);
       throw new AuthenticationFailedException(
           "Exception while getting public keys: " + e.getMessage(), e);
     }

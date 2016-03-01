@@ -18,9 +18,11 @@ package templates.security;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
 import com.gemstone.gemfire.security.GemFireSecurityException;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.security.Key;
@@ -42,6 +44,7 @@ import java.util.Properties;
  * @since 5.5
  */
 public class PKCSAuthInit implements AuthInitialize {
+  private static final Logger logger = LogService.getLogger();
 
   public static final String KEYSTORE_FILE_PATH = "security-keystorepath";
 
@@ -122,6 +125,7 @@ public class PKCSAuthInit implements AuthInitialize {
       }
     }
     catch (Exception ex) {
+      logger.error("KIRK:SECURITY: ex={}", ex);
       throw new AuthenticationFailedException(
           "PKCSAuthInit: Exception while getting credentials: " + ex, ex);
     }

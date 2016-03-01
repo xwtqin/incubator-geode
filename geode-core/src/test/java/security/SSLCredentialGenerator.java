@@ -18,7 +18,9 @@
  */
 package security;
 
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.security.Principal;
 import java.util.Properties;
 
 public class SSLCredentialGenerator extends CredentialGenerator {
+  private static final Logger logger = LogService.getLogger();
 
   private File findTrustedJKS() {
     File ssldir = new File(System.getProperty("JTESTS") + "/ssl");
@@ -48,6 +51,7 @@ public class SSLCredentialGenerator extends CredentialGenerator {
       return props;
     }
     catch (IOException ex) {
+      logger.error("KIRK:SECURITY: ex={}", ex);
       throw new AuthenticationFailedException(
           "SSL: Exception while opening the key store: " + ex.getMessage(), ex);
     }
@@ -64,6 +68,7 @@ public class SSLCredentialGenerator extends CredentialGenerator {
       return props;
     }
     catch (IOException ex) {
+      logger.error("KIRK:SECURITY: ex={}", ex);
       throw new AuthenticationFailedException(
           "SSL: Exception while opening the key store: " + ex.getMessage(), ex);
     }
