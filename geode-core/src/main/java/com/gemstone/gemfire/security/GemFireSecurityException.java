@@ -19,6 +19,9 @@ package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.GemFireException;
 
+import javax.naming.NamingException;
+import java.io.*;
+
 /**
  * The base class for all com.gemstone.gemfire.security package related
  * exceptions.
@@ -27,7 +30,7 @@ import com.gemstone.gemfire.GemFireException;
  * @since 5.5
  */
 public class GemFireSecurityException extends GemFireException {
-private static final long serialVersionUID = 3814254578203076926L;
+  private static final long serialVersionUID = 3814254578203076926L;
 
   /**
    * Constructs instance of <code>SecurityException</code> with error message.
@@ -52,4 +55,32 @@ private static final long serialVersionUID = 3814254578203076926L;
     super(message, cause);
   }
 
+  protected boolean isSerializable(final Object object) {
+    if (object == null) {
+      return true;
+    }
+    return object.getClass().isInstance(Serializable.class);
+  }
+
+  protected Object getResolvedObj() {
+    if (getCause() != null && getCause().getClass().isInstance(NamingException.class)) {
+      return ((javax.naming.NamingException) getCause()).getResolvedObj();
+    }
+    return null;
+  }
+
+  private void writeObject(final ObjectOutputStream stream) throws IOException {
+    final Object resolvedObj = getResolvedObj();
+    if (isSerializable(resolvedObj)) {
+      stream.defaultWriteObject();
+    } else {
+      final NamingException namingException = (NamingException) getCause();
+      namingException.setResolvedObj(null);
+      try {
+        stream.defaultWriteObject();
+      } finally {
+        namingException.setResolvedObj(resolvedObj);
+      }
+    }
+  }
 }

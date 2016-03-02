@@ -17,6 +17,9 @@
 
 package com.gemstone.gemfire.security;
 
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.security.Principal;
 
 /**
@@ -28,7 +31,7 @@ import java.security.Principal;
 public class NotAuthorizedException extends GemFireSecurityException {
   private static final long serialVersionUID = 419215768216387745L;
 
-  private transient Principal principal = null;
+  private Principal principal = null;
 
   /**
    * Constructs instance of <code>NotAuthorizedException</code> with error
@@ -63,4 +66,26 @@ public class NotAuthorizedException extends GemFireSecurityException {
     super(message, cause);
   }
 
+  private void writeObject(final ObjectOutputStream stream) throws IOException {
+    Principal myPrincipal = this.principal;
+    if (!isSerializable(myPrincipal)) {
+      this.principal = null;
+    }
+
+    Object resolvedObj = getResolvedObj();
+    NamingException namingException = null;
+    if (!isSerializable(resolvedObj)) {
+      namingException = (NamingException) getCause();
+      namingException.setResolvedObj(null);
+    }
+
+    try {
+      stream.defaultWriteObject();
+    } finally {
+      this.principal = myPrincipal;
+      if (namingException != null) {
+        namingException.setResolvedObj(resolvedObj);
+      }
+    }
+  }
 }
