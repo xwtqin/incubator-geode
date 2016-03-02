@@ -32,14 +32,20 @@ import java.io.*;
 public class GemFireSecurityException extends GemFireException {
   private static final long serialVersionUID = 3814254578203076926L;
 
+  private Throwable cause;
+
   /**
    * Constructs instance of <code>SecurityException</code> with error message.
    * 
    * @param message
    *                the error message
    */
-  public GemFireSecurityException(String message) {
-    super(message);
+  public GemFireSecurityException(final String message) {
+    this(message, null);
+  }
+
+  public GemFireSecurityException(final Throwable cause) {
+    this(cause != null ? cause.getMessage() : null, cause);
   }
 
   /**
@@ -51,19 +57,25 @@ public class GemFireSecurityException extends GemFireException {
    * @param cause
    *                a <code>Throwable</code> that is a cause of this exception
    */
-  public GemFireSecurityException(String message, Throwable cause) {
-    super(message, cause);
+  public GemFireSecurityException(final String message, final Throwable cause) {
+    super(message);
+    this.cause = cause;
+  }
+
+  @Override
+  public Throwable getCause() {
+    return (this.cause == this ? null : this.cause);
   }
 
   protected boolean isSerializable(final Object object) {
     if (object == null) {
       return true;
     }
-    return object.getClass().isInstance(Serializable.class);
+    return Serializable.class.isInstance(object);
   }
 
   protected Object getResolvedObj() {
-    if (getCause() != null && getCause().getClass().isInstance(NamingException.class)) {
+    if (getCause() != null && NamingException.class.isInstance(getCause())) {
       return ((javax.naming.NamingException) getCause()).getResolvedObj();
     }
     return null;

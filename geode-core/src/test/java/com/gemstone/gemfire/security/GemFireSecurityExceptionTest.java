@@ -25,21 +25,19 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
 
 import javax.naming.NamingException;
-import javax.security.auth.Subject;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.security.Principal;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.googlecode.catchexception.CatchException.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
- * Unit tests for {@link NotAuthorizedException}.
+ * Unit tests for {@link GemFireSecurityException}.
  */
 @Category(UnitTest.class)
-public class NotAuthorizedExceptionTest {
+public class GemFireSecurityExceptionTest {
 
   private String message;
   private String causeMessage;
@@ -47,9 +45,6 @@ public class NotAuthorizedExceptionTest {
   private NamingException nonSerializableNamingException;
   private SerializableObject serializableResolvedObj;
   private NamingException serializableNamingException;
-  private String principalName;
-  private Principal nonSerializablePrincipal;
-  private Principal serializablePrincipal;
 
   @Rule
   public TestName testName = new TestName();
@@ -66,10 +61,6 @@ public class NotAuthorizedExceptionTest {
     this.serializableResolvedObj = new SerializableObject(this.testName.getMethodName());
     this.serializableNamingException = new NamingException(this.causeMessage);
     this.serializableNamingException.setResolvedObj(this.serializableResolvedObj);
-
-    this.principalName = "jsmith";
-    this.nonSerializablePrincipal = mock(Principal.class);
-    this.serializablePrincipal = new SerializablePrincipal(this.principalName);
 
     assertPreConditions();
   }
@@ -90,14 +81,14 @@ public class NotAuthorizedExceptionTest {
 
   @Test
   public void isSerializable() throws Exception {
-    assertThat(NotAuthorizedException.class).isInstanceOf(Serializable.class);
+    assertThat(GemFireSecurityException.class).isInstanceOf(Serializable.class);
   }
 
   @Test
   public void serializes() throws Exception {
-    NotAuthorizedException instance = new NotAuthorizedException(this.message);
+    GemFireSecurityException instance = new GemFireSecurityException(this.message);
 
-    NotAuthorizedException cloned = (NotAuthorizedException) SerializationUtils.clone(instance);
+    GemFireSecurityException cloned = (GemFireSecurityException) SerializationUtils.clone(instance);
 
     assertThat(cloned).hasMessage(this.message);
   }
@@ -105,33 +96,46 @@ public class NotAuthorizedExceptionTest {
   @Test
   public void serializesWithThrowable() throws Exception {
     Throwable cause = new Exception(this.causeMessage);
-    NotAuthorizedException instance = new NotAuthorizedException(this.message, cause);
+    GemFireSecurityException instance = new GemFireSecurityException(this.message, cause);
 
-    NotAuthorizedException cloned = (NotAuthorizedException) SerializationUtils.clone(instance);
+    GemFireSecurityException cloned = (GemFireSecurityException) SerializationUtils.clone(instance);
 
-    assertThat(cloned).hasMessage(this.message);
-    assertThat(cloned).hasCause(cause);
+    assertThat(cloned).hasMessage(this.message).hasCause(cause);
+    assertThat(cloned.getCause()).hasMessage(this.causeMessage);
   }
 
   @Test
-  public void serializesWithNonSerializablePrincipal() throws Exception {
-    NotAuthorizedException instance = new NotAuthorizedException(this.message, this.nonSerializablePrincipal);
-    assertThat(instance.getPrincipal()).isNotNull();
+  public void serializesWithNonSerializableNamingException() throws Exception {
+    GemFireSecurityException instance = new GemFireSecurityException(this.message, this.nonSerializableNamingException);
 
-    NotAuthorizedException cloned = (NotAuthorizedException) SerializationUtils.clone(instance);
+    GemFireSecurityException cloned = (GemFireSecurityException) SerializationUtils.clone(instance);
 
-    assertThat(cloned).hasMessage(this.message);
-    assertThat(cloned.getPrincipal()).isNull();
+    assertThat(cloned).hasMessage(this.message).hasCause(this.nonSerializableNamingException);
+    NamingException cause = (NamingException) cloned.getCause();
+    assertThat(cause).hasMessage(this.causeMessage);
+    assertThat(cause.getResolvedObj()).isNull();
   }
 
   @Test
-  public void serializesWithSerializablePrincipal() throws Exception {
-    NotAuthorizedException instance = new NotAuthorizedException(this.message, this.serializablePrincipal);
+  public void serializesWithSerializableNamingException() throws Exception {
+    GemFireSecurityException instance = new GemFireSecurityException(this.message, this.serializableNamingException);
 
-    NotAuthorizedException cloned = (NotAuthorizedException) SerializationUtils.clone(instance);
+    GemFireSecurityException cloned = (GemFireSecurityException) SerializationUtils.clone(instance);
 
-    assertThat(cloned).hasMessage(this.message);
-    assertThat(cloned.getPrincipal()).isNotNull().isEqualTo(this.serializablePrincipal);
+    assertThat(cloned).hasMessage(this.message).hasCause(this.serializableNamingException);
+    NamingException cause = (NamingException) cloned.getCause();
+    assertThat(cause).hasMessage(this.causeMessage);
+    assertThat(cause.getResolvedObj()).isNotNull().isEqualTo(this.serializableResolvedObj);
+  }
+
+  @Test
+  public void isSerializableReturnsTrueForSerializableClass() throws Exception {
+    assertThat(new GemFireSecurityException("").isSerializable(this.serializableResolvedObj)).isTrue();
+  }
+
+  @Test
+  public void isSerializableReturnsFalseForNonSerializableClass() throws Exception {
+    assertThat(new GemFireSecurityException("").isSerializable(this.nonSerializableResolvedObj)).isFalse();
   }
 
   public Object clone(final Serializable object) {
@@ -152,36 +156,6 @@ public class NotAuthorizedExceptionTest {
       if (o == null || getClass() != o.getClass()) return false;
 
       SerializableObject that = (SerializableObject) o;
-
-      return name != null ? name.equals(that.name) : that.name == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-      return name != null ? name.hashCode() : 0;
-    }
-  }
-
-  public static class SerializablePrincipal implements Principal, Serializable {
-
-    private String name;
-
-    SerializablePrincipal(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public String getName() {
-      return this.name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      SerializablePrincipal that = (SerializablePrincipal) o;
 
       return name != null ? name.equals(that.name) : that.name == null;
 
