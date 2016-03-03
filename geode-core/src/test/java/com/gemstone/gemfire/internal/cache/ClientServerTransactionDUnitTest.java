@@ -527,8 +527,6 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         for (int i = 0; i < MAX_ENTRIES; i++) {
           CustId custId = new CustId(i);
           Customer cust = new Customer("name"+suffix+i, "address"+suffix+i);
-          assertEquals(cust, r.get(custId));
-          assertEquals(cust, pr.get(custId));
           if (isCommit) {
             assertEquals(cust, r.get(custId));
             assertEquals(cust, pr.get(custId));
