@@ -16,6 +16,16 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.googlecode.catchexception.CatchException.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.io.NotSerializableException;
+import java.io.Serializable;
+import java.security.Principal;
+
+import javax.naming.NamingException;
+
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
@@ -23,17 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
-
-import javax.naming.NamingException;
-import javax.security.auth.Subject;
-import java.io.NotSerializableException;
-import java.io.Serializable;
-import java.security.Principal;
-
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link NotAuthorizedException}.
@@ -49,7 +48,7 @@ public class NotAuthorizedExceptionTest {
   private NamingException serializableNamingException;
   private String principalName;
   private Principal nonSerializablePrincipal;
-  private Principal serializablePrincipal;
+  private SerializablePrincipal serializablePrincipal;
 
   @Rule
   public TestName testName = new TestName();
@@ -85,6 +84,11 @@ public class NotAuthorizedExceptionTest {
     assertThat(this.nonSerializableResolvedObj).isNotInstanceOf(Serializable.class);
 
     catchException(this).clone(this.serializableResolvedObj);
+    assertThat((Throwable)caughtException()).isNull();
+
+    assertThat(this.nonSerializablePrincipal).isNotInstanceOf(Serializable.class);
+
+    catchException(this).clone(this.serializablePrincipal);
     assertThat((Throwable)caughtException()).isNull();
   }
 

@@ -16,6 +16,14 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.googlecode.catchexception.CatchException.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.io.NotSerializableException;
+import java.io.Serializable;
+
+import javax.naming.NamingException;
+
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
@@ -23,15 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
-
-import javax.naming.NamingException;
-import java.io.NotSerializableException;
-import java.io.Serializable;
-import java.security.Principal;
-
-import static com.googlecode.catchexception.CatchException.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link GemFireSecurityException}.

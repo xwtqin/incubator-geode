@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.gemstone.gemfire.security;
 
-import com.gemstone.gemfire.GemFireException;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.naming.NamingException;
-import java.io.*;
+
+import com.gemstone.gemfire.GemFireException;
 
 /**
  * The base class for all com.gemstone.gemfire.security package related
@@ -30,66 +32,100 @@ import java.io.*;
  * @since 5.5
  */
 public class GemFireSecurityException extends GemFireException {
+
   private static final long serialVersionUID = 3814254578203076926L;
 
   private Throwable cause;
 
   /**
-   * Constructs instance of <code>SecurityException</code> with error message.
-   * 
-   * @param message
-   *                the error message
+   * Constructs a new exception with the specified detail message.
+   *
+   * @param  message the detail message (which is saved for later retrieval
+   *         by the {@link #getMessage()} method).  (A <tt>null</tt> value
+   *         is permitted.)
    */
   public GemFireSecurityException(final String message) {
     this(message, null);
   }
 
+  /**
+   * Constructs a new exception with the specified cause.
+   *
+   * <p>Note that the detail message associated with {@code cause} <i>is</i>
+   * automatically used as this exception's detail message.
+   *
+   * @param  cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
   public GemFireSecurityException(final Throwable cause) {
     this(cause != null ? cause.getMessage() : null, cause);
   }
 
   /**
-   * Constructs instance of <code>SecurityException</code> with error message
-   * and cause.
-   * 
-   * @param message
-   *                the error message
-   * @param cause
-   *                a <code>Throwable</code> that is a cause of this exception
+   * Constructs a new exception with the specified detail message and cause.
+   *
+   * <p>If {@code message} is null, then the detail message associated with
+   * {@code cause} <i>is</i> automatically used as this exception's detail
+   * message.
+   *
+   * @param  message the detail message (which is saved for later retrieval
+   *         by the {@link #getMessage()} method).  (A <tt>null</tt> value
+   *         is permitted.)
+   * @param  cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
    */
   public GemFireSecurityException(final String message, final Throwable cause) {
-    super(message);
+    super(message != null ? message : (cause != null ? cause.getMessage() : null));
     this.cause = cause;
   }
 
   @Override
-  public Throwable getCause() {
+  public final Throwable getCause() {
     return (this.cause == this ? null : this.cause);
   }
 
-  protected boolean isSerializable(final Object object) {
+  /**
+   * Returns true if the provided {@code object} implements {@code Serializable}.
+   *
+   * @param  object the {@code object} to test for implementing {@code Serializable}.
+   * @return true if the provided {@code object} implements {@code Serializable}.
+   */
+  protected final boolean isSerializable(final Object object) {
     if (object == null) {
       return true;
     }
     return Serializable.class.isInstance(object);
   }
 
-  protected Object getResolvedObj() {
-    if (getCause() != null && NamingException.class.isInstance(getCause())) {
-      return ((javax.naming.NamingException) getCause()).getResolvedObj();
+  /**
+   * Returns {@link NamingException#getResolvedObj()} if the {@code cause}
+   * is a {@code NamingException}. Returns <tt>null</tt> for any other type
+   * of {@code cause}.
+   *
+   * @return {@code NamingException#getResolvedObj()} if the {@code cause}
+   *         is a {@code NamingException}.
+   */
+  protected final Object getResolvedObj() {
+    final Throwable thisCause = this.cause;
+    if (thisCause != null && NamingException.class.isInstance(thisCause)) {
+      return ((NamingException) thisCause).getResolvedObj();
     }
     return null;
   }
 
-  private void writeObject(final ObjectOutputStream stream) throws IOException {
+  private synchronized void writeObject(final ObjectOutputStream out) throws IOException {
     final Object resolvedObj = getResolvedObj();
     if (isSerializable(resolvedObj)) {
-      stream.defaultWriteObject();
+      out.defaultWriteObject();
     } else {
       final NamingException namingException = (NamingException) getCause();
       namingException.setResolvedObj(null);
       try {
-        stream.defaultWriteObject();
+        out.defaultWriteObject();
       } finally {
         namingException.setResolvedObj(resolvedObj);
       }
