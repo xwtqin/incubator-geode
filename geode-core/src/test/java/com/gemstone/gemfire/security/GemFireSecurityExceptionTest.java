@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.NotSerializableException;
 import java.io.Serializable;
-
 import javax.naming.NamingException;
 
 import com.gemstone.gemfire.test.junit.categories.UnitTest;

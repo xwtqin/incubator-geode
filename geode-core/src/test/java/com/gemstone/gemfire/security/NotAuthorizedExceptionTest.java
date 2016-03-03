@@ -23,7 +23,6 @@ import static org.mockito.Mockito.*;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.security.Principal;
-
 import javax.naming.NamingException;
 
 import com.gemstone.gemfire.test.junit.categories.UnitTest;

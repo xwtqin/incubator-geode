@@ -16,10 +16,10 @@
  */
 package com.gemstone.gemfire.security;
 
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.security.Principal;
+import javax.naming.NamingException;
 
 /**
  * Thrown when a client/peer is unauthorized to perform a requested operation.

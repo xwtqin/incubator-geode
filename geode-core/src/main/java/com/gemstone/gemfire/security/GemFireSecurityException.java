@@ -19,7 +19,6 @@ package com.gemstone.gemfire.security;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
 import javax.naming.NamingException;
 
 import com.gemstone.gemfire.GemFireException;
