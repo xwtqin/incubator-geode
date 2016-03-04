@@ -83,7 +83,7 @@ public class GemFireSecurityException extends GemFireException {
   }
 
   @Override
-  public final Throwable getCause() {
+  public final synchronized Throwable getCause() {
     return (this.cause == this ? null : this.cause);
   }
 

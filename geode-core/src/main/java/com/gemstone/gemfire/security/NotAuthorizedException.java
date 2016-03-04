@@ -106,7 +106,7 @@ public class NotAuthorizedException extends GemFireSecurityException {
    *
    * @return the {@code principal} for which authorization failed.
    */
-  public Principal getPrincipal() {
+  public synchronized Principal getPrincipal() {
     return this.principal;
   }
 
