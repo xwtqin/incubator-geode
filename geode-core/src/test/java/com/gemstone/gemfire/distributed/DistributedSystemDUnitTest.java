@@ -51,7 +51,9 @@ import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests the functionality of the {@link DistributedSystem} class.
@@ -60,6 +62,7 @@ import org.junit.Test;
  *
  * @author David Whitlock
  */
+@Category(DistributedTest.class)
 public class DistributedSystemDUnitTest extends DistributedTestCase {
 
 //  public DistributedSystemDUnitTest(String name) {

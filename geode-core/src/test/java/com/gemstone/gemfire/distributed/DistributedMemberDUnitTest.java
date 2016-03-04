@@ -39,8 +39,10 @@ import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import junit.framework.AssertionFailedError;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests the functionality of the {@link DistributedMember} class.
@@ -48,6 +50,7 @@ import org.junit.Test;
  * @author Kirk Lund
  * @since 5.0
  */
+@Category(DistributedTest.class)
 public class DistributedMemberDUnitTest extends DistributedTestCase {
 
   protected void sleep(long millis) {
