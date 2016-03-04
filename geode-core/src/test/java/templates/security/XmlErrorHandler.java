@@ -52,7 +52,6 @@ public class XmlErrorHandler implements ErrorHandler {
    * where the exception occurred.
    */
   public void error(SAXParseException exception) throws SAXException {
-    logger.error("KIRK:SECURITY: exception={}", exception);
     throw new SAXParseException("Error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
         + ": " + exception.getMessage(), null, exception);
@@ -63,7 +62,6 @@ public class XmlErrorHandler implements ErrorHandler {
    * where the exception occurred.
    */
   public void fatalError(SAXParseException exception) throws SAXException {
-    logger.error("KIRK:SECURITY: exception={}", exception);
     throw new SAXParseException("Fatal error while parsing XML at line "
         + exception.getLineNumber() + " column " + exception.getColumnNumber()
         + ": " + exception.getMessage(), null, exception);
@@ -74,10 +72,9 @@ public class XmlErrorHandler implements ErrorHandler {
    * filename and the position of exception in the file.
    */
   public void warning(SAXParseException exception) throws SAXException {
-    logger.error("KIRK:SECURITY: exception={}", exception);
     this.logWriter.warning("Warning while parsing XML [" + this.xmlFileName
         + "] at line " + exception.getLineNumber() + " column "
-        + exception.getColumnNumber() + ": " + exception.getMessage());
+        + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
   }
 
 

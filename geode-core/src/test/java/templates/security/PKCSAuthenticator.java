@@ -86,7 +86,6 @@ public class PKCSAuthenticator implements Authenticator {
       }
     }
     catch (Exception e) {
-      logger.error("KIRK:SECURITY: e={}", e);
       throw new AuthenticationFailedException(
           "Exception while getting public keys: " + e.getMessage(), e);
     }
@@ -157,7 +156,6 @@ public class PKCSAuthenticator implements Authenticator {
       return new PKCSPrincipal(alias);
     }
     catch (Exception ex) {
-      logger.error("KIRK:SECURITY: ex={}", ex);
       throw getException(ex.toString(), ex);
     }
   }

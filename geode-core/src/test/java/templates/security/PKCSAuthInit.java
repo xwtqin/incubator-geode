@@ -125,7 +125,6 @@ public class PKCSAuthInit implements AuthInitialize {
       }
     }
     catch (Exception ex) {
-      logger.error("KIRK:SECURITY: ex={}", ex);
       throw new AuthenticationFailedException(
           "PKCSAuthInit: Exception while getting credentials: " + ex, ex);
     }

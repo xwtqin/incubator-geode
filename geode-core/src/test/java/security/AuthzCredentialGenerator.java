@@ -258,7 +258,6 @@ public abstract class AuthzCredentialGenerator {
       this.sysProps = init();
     }
     catch (IllegalArgumentException ex) {
-      logger.error("KIRK:SECURITY: ex={}", ex);
       return false;
     }
     return true;
@@ -326,7 +325,6 @@ public abstract class AuthzCredentialGenerator {
         return this.cGen.getValidCredentials(principal);
       }
       catch (IllegalArgumentException ex) {
-        logger.error("KIRK:SECURITY: ex={}", ex);
       }
     }
     return null;
@@ -369,7 +367,6 @@ public abstract class AuthzCredentialGenerator {
         return this.cGen.getValidCredentials(principal);
       }
       catch (IllegalArgumentException ex) {
-        logger.error("KIRK:SECURITY: ex={}", ex);
       }
     }
     return null;

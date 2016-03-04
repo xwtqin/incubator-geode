@@ -105,7 +105,6 @@ public class LdapUserAuthenticator implements Authenticator {
       ctx.close();
     }
     catch (Exception e) {
-      logger.error("KIRK:SECURITY: e={}", e);
       throw new AuthenticationFailedException(
           "LdapUserAuthenticator: Failure with provided username, password "
               + "combination for user name: " + userName, e);
