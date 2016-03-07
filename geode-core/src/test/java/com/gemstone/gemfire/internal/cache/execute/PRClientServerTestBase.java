@@ -683,14 +683,14 @@ public class PRClientServerTestBase extends CacheTestCase {
   
   @Override
   protected final void postTearDownCacheTestCase() throws Exception {
-    closeCache();
-    client.invoke(() -> PRClientServerTestBase.closeCache());
-    server1.invoke(() -> PRClientServerTestBase.closeCache());
-    server2.invoke(() -> PRClientServerTestBase.closeCache());
-    server3.invoke(() -> PRClientServerTestBase.closeCache());
+    closeCacheAndDisconnect();
+    client.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());
+    server1.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());
+    server2.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());
+    server3.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());
   }
 
-  public static void closeCache() {
+  public static void closeCacheAndDisconnect() {
     if (cache != null && !cache.isClosed()) {
       cache.close();
       cache.getDistributedSystem().disconnect();

@@ -1383,12 +1383,12 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   @Override
   protected final void postTearDownCacheTestCase() throws Exception {
     // close the clients first
-    closeCache();
+    closeCacheAndDisconnect();
     // then close the servers
-    server1.invoke(() -> ClientServerMiscDUnitTest.closeCache());
+    server1.invoke(() -> ClientServerMiscDUnitTest.closeCacheAndDisconnect());
   }
 
-  public static void closeCache()
+  public static void closeCacheAndDisconnect()
   {
     Cache cache = new ClientServerMiscDUnitTest("temp").getCache();
     if (cache != null && !cache.isClosed()) {

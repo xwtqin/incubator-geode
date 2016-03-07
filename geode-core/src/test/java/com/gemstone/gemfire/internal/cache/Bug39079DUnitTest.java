@@ -311,9 +311,9 @@ public class Bug39079DUnitTest extends CacheTestCase {
    vm0.invoke(() -> Bug39079DUnitTest.validateRuningBridgeServerList());
    
    // close server cache
-   vm0.invoke(() -> Bug39079DUnitTest.closeCache());
+   vm0.invoke(() -> Bug39079DUnitTest.closeCacheAndDisconnect());
    // close client cache
-   vm1.invoke(() -> Bug39079DUnitTest.closeCache());
+   vm1.invoke(() -> Bug39079DUnitTest.closeCacheAndDisconnect());
   }
   
   public static Integer createServerCache() throws Exception
@@ -335,7 +335,7 @@ public class Bug39079DUnitTest extends CacheTestCase {
     return new Integer(bs1.getPort());
   }
 
-  public static void closeCache()
+  public static void closeCacheAndDisconnect()
   {
     if (gemfirecache != null && !gemfirecache.isClosed()) {
       gemfirecache.close();

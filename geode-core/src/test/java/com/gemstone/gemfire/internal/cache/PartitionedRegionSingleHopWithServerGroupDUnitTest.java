@@ -128,11 +128,11 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   @Override
   protected final void preTearDownCacheTestCase() throws Exception {
     // close the clients first
-    member0.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCache());
-    member1.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCache());
-    member2.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCache());
-    member3.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCache());
-    closeCache();
+    member0.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
+    member1.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
+    member2.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
+    member3.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
+    closeCacheAndDisconnect();
   }
   
   @Override
@@ -161,7 +161,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     }
   }
 
-  public static void closeCache() {
+  public static void closeCacheAndDisconnect() {
     resetHonourServerGroupsInPRSingleHop();
     if (cache != null && !cache.isClosed()) {
       cache.close();

@@ -493,18 +493,18 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   @Override
   protected final void postTearDownCacheTestCase() throws Exception {
-    closeCache();
-    vm0.invoke(() -> WANCommandTestBase.closeCache());
-    vm1.invoke(() -> WANCommandTestBase.closeCache());
-    vm2.invoke(() -> WANCommandTestBase.closeCache());
-    vm3.invoke(() -> WANCommandTestBase.closeCache());
-    vm4.invoke(() -> WANCommandTestBase.closeCache());
-    vm5.invoke(() -> WANCommandTestBase.closeCache());
-    vm6.invoke(() -> WANCommandTestBase.closeCache());
-    vm7.invoke(() -> WANCommandTestBase.closeCache());
+    closeCacheAndDisconnect();
+    vm0.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm1.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm2.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm3.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm4.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm5.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm6.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
+    vm7.invoke(() -> WANCommandTestBase.closeCacheAndDisconnect());
   }
 
-  public static void closeCache() {
+  public static void closeCacheAndDisconnect() {
     if (cache != null && !cache.isClosed()) {
       cache.close();
       cache.getDistributedSystem().disconnect();

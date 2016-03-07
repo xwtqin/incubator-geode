@@ -18,44 +18,53 @@
  */
 package com.gemstone.gemfire.test.dunit.internal;
 
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-
 import java.util.Properties;
 
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+
 /**
- * Created by klund on 2/25/2016.
+ * Defines the {@code DistributedTestCase} methods that can be overridden by subclasses.
  */
-public interface DistributedTest {
+public interface DistributedTestFixture {
 
   /**
-   * <code>preSetUp()</code> is invoked before DistributedTestCase#setUp().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preSetUp()} is invoked before {@code DistributedTestCase#setUp()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preSetUp() throws Exception;
 
   /**
-   * <code>postSetUp()</code> is invoked after DistributedTestCase#setUp().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postSetUp()} is invoked after {@code DistributedTestCase#setUp()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postSetUp() throws Exception;
 
   /**
-   * <code>preTearDown()</code> is invoked before DistributedTestCase#tearDown().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preTearDown()} is invoked before {@code DistributedTestCase#tearDown()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preTearDown() throws Exception;
 
   /**
-   * <code>postTearDown()</code> is invoked after DistributedTestCase#tearDown().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postTearDown()</code> is invoked after {@code DistributedTestCase#tearDown()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postTearDown() throws Exception;
 
+  /**
+   * Returns the {@code Properties} used to define the {@code DistributedSystem}.
+   *
+   * <p>Override this as needed. This method is called by various
+   * {@code getSystem} methods in {@code DistributedTestCase}.
+   */
   public Properties getDistributedSystemProperties();
 
+  /**
+   * @deprecated Please override {@link #getDistributedSystemProperties()} instead. This should be removed.
+   */
   public InternalDistributedSystem getSystem(final Properties props); // TODO: remove and make final in DistributedTestCase
 }

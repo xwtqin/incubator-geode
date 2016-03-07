@@ -91,15 +91,15 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /**
    * Creates the <code>Cache</code> for this test
    */
-  private void createCache() {
+  private final void createCache() {
     createCache(false);
   }
   
-  private void createCache(boolean client) {
+  private final void createCache(boolean client) {
     createCache(client, null);
   }
   
-  private void createCache(boolean client, CacheFactory cf) {
+  private final void createCache(boolean client, CacheFactory cf) {
     synchronized(CacheTestCase.class) {
       try {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
@@ -136,7 +136,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Creates the <code>Cache</code> for this test that is not connected
    * to other members
    */
-  public Cache createLonerCache() {
+  public final Cache createLonerCache() {
     synchronized(CacheTestCase.class) {
       try {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
@@ -162,7 +162,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * to other members.
    * Added specifically to test scenario of defect #47181.
    */
-  public Cache createLonerCacheWithEnforceUniqueHost() {
+  public final Cache createLonerCacheWithEnforceUniqueHost() {
     synchronized(CacheTestCase.class) {
       try {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
@@ -187,7 +187,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Sets this test up with a CacheCreation as its cache.
    * Any existing cache is closed. Whoever calls this must also call finishCacheXml
    */
-  public static synchronized void beginCacheXml() {
+  public static final synchronized void beginCacheXml() {
 //    getLogWriter().info("before closeCache");
     closeCache();
 //    getLogWriter().info("before TestCacheCreation");
@@ -198,7 +198,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Finish what beginCacheXml started. It does this be generating a cache.xml
    * file and then creating a real cache using that cache.xml.
    */
-  public void finishCacheXml(String name) {
+  public final void finishCacheXml(String name) {
     synchronized(CacheTestCase.class) {
       File file = new File(name + "-cache.xml");
       try {
@@ -222,7 +222,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Finish what beginCacheXml started. It does this be generating a cache.xml
    * file and then creating a real cache using that cache.xml.
    */
-  public void finishCacheXml(String name, boolean useSchema, String xmlVersion) {
+  public final void finishCacheXml(String name, boolean useSchema, String xmlVersion) {
     synchronized(CacheTestCase.class) {
       File dir = new File("XML_" + xmlVersion);
       dir.mkdirs();
@@ -337,13 +337,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
       return cache;
   }
 
-  public static synchronized void disconnectFromDS() {
+  public static synchronized final void disconnectFromDS() {
     closeCache();
     DistributedTestCase.disconnectFromDS();
   }
   
   /** Close the cache */
-  public static synchronized void closeCache() {
+  public static synchronized final void closeCache() {
     //Workaround for that fact that some classes are now extending
     //CacheTestCase but not using it properly.
     if(cache == null) {
@@ -381,7 +381,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   }
 
   /** Closed the cache in all VMs. */
-  protected void closeAllCache() {
+  protected final void closeAllCache() {
     closeCache();
     Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
   }
@@ -413,7 +413,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /**
    * Local destroy all root regions and close the cache.  
    */
-  protected synchronized static void remoteTearDown() {
+  protected final synchronized static void remoteTearDown() {
     try {
       DistributionMessageObserver.setInstance(null);
       destroyRegions(cache);
@@ -447,7 +447,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * @return internal arguements, which may be null.  If null, then default 
    * InternalRegionArguments are used to construct the Region
    */
-  public InternalRegionArguments getInternalRegionArguments()
+  public final InternalRegionArguments getInternalRegionArguments()
   {
     return null;
   }
@@ -526,7 +526,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * send an unordered message requiring an ack to all connected members 
    * in order to flush the unordered communication channel
    */
-  public void sendUnorderedMessageToAll() {
+  public final void sendUnorderedMessageToAll() {
     //if (getCache() instanceof distcache.gemfire.GemFireCacheImpl) {
       try {
         com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage msg = new com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage();
@@ -620,7 +620,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
     }
   }
   
-  public static File getDiskDir() {
+  public static final File getDiskDir() {
     int vmNum = VM.getCurrentVMNum();
     File dir = new File("diskDir", "disk" + String.valueOf(vmNum)).getAbsoluteFile();
     dir.mkdirs();
@@ -633,11 +633,11 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * will be automatically cleaned up 
    * on test case closure.
    */
-  public static File[] getDiskDirs() {
+  public static final File[] getDiskDirs() {
     return new File[] {getDiskDir()};
   }
   
-  public static void cleanDiskDirs() throws IOException {
+  public static final void cleanDiskDirs() throws IOException {
     FileUtil.delete(getDiskDir());
     File[] defaultStoreFiles = new File(".").listFiles(new FilenameFilter() {
       

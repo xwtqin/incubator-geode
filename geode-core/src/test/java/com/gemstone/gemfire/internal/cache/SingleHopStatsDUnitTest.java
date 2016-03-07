@@ -114,11 +114,11 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
   @Override
   protected final void preTearDownCacheTestCase() throws Exception {
     // close the clients first
-    member0.invoke(() -> SingleHopStatsDUnitTest.closeCache());
-    member1.invoke(() -> SingleHopStatsDUnitTest.closeCache());
-    member2.invoke(() -> SingleHopStatsDUnitTest.closeCache());
-    member3.invoke(() -> SingleHopStatsDUnitTest.closeCache());
-    closeCache();
+    member0.invoke(() -> SingleHopStatsDUnitTest.closeCacheAndDisconnect());
+    member1.invoke(() -> SingleHopStatsDUnitTest.closeCacheAndDisconnect());
+    member2.invoke(() -> SingleHopStatsDUnitTest.closeCacheAndDisconnect());
+    member3.invoke(() -> SingleHopStatsDUnitTest.closeCacheAndDisconnect());
+    closeCacheAndDisconnect();
   }
   
   @Override
@@ -137,7 +137,7 @@ public class SingleHopStatsDUnitTest extends CacheTestCase{
     }
   }
 
-  public static void closeCache() {
+  public static void closeCacheAndDisconnect() {
     if (cache != null && !cache.isClosed()) {
       cache.close();
       cache.getDistributedSystem().disconnect();

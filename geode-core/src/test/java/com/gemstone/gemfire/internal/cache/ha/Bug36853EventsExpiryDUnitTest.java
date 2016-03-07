@@ -279,9 +279,9 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    * Closes the cache
    * 
    */
-  public static void closeCache()
+  public static void unSetExpiryTimeAndCloseCache()
   {    
-    System.setProperty(HARegionQueue.REGION_ENTRY_EXPIRY_TIME, "");
+    System.clearProperty(HARegionQueue.REGION_ENTRY_EXPIRY_TIME);
     CacheTestCase.closeCache();
   }
 
@@ -295,9 +295,9 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
   protected final void preTearDownCacheTestCase() throws Exception
   {
     // close client
-    client.invoke(() -> Bug36853EventsExpiryDUnitTest.closeCache());
+    client.invoke(() -> Bug36853EventsExpiryDUnitTest.unSetExpiryTimeAndCloseCache());
     // close server
-    server.invoke(() -> Bug36853EventsExpiryDUnitTest.closeCache());
+    server.invoke(() -> Bug36853EventsExpiryDUnitTest.unSetExpiryTimeAndCloseCache());
 
   }
 

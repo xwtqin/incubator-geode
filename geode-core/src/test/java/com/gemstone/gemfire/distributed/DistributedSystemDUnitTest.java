@@ -28,7 +28,6 @@ import java.util.concurrent.TimeoutException;
 
 import com.gemstone.gemfire.CancelException;
 import com.gemstone.gemfire.GemFireConfigException;
-import com.gemstone.gemfire.SystemConnectException;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
@@ -46,7 +45,7 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
-import com.gemstone.gemfire.test.dunit.internal.junit4.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
@@ -63,7 +62,7 @@ import org.junit.experimental.categories.Category;
  * @author David Whitlock
  */
 @Category(DistributedTest.class)
-public class DistributedSystemDUnitTest extends DistributedTestCase {
+public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
 
 //  public DistributedSystemDUnitTest(String name) {
 //    super(name);

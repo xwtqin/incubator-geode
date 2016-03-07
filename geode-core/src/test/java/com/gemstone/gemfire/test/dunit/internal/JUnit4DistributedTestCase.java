@@ -1,22 +1,28 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.internal.junit4;
+package com.gemstone.gemfire.test.dunit.internal;
+
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import com.gemstone.gemfire.admin.internal.AdminDistributedSystemImpl;
 import com.gemstone.gemfire.cache.Cache;
@@ -50,7 +56,6 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
-import com.gemstone.gemfire.test.dunit.internal.DistributedTest;
 import com.gemstone.gemfire.test.dunit.standalone.DUnitLauncher;
 import com.gemstone.gemfire.test.junit.rules.serializable.SerializableTestName;
 import org.apache.logging.log4j.Logger;
@@ -59,25 +64,19 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 /**
- * This class is the base class for all distributed unit tests.
+ * This class is the base class for all distributed tests using JUnit 4.
+ *
+ * TODO: make this class abstract when JUnit3DistributedTestCase is deleted
  */
-public class DistributedTestCase implements DistributedTest, Serializable {
+public class JUnit4DistributedTestCase implements DistributedTestFixture, Serializable {
 
   private static final Logger logger = LogService.getLogger();
 
   private static final Set<String> testHistory = new LinkedHashSet<String>();
 
   /** This VM's connection to the distributed system */
-  public static InternalDistributedSystem system;
+  public static InternalDistributedSystem system; // TODO: make private
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
   private static volatile String testMethodName;
@@ -85,28 +84,39 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
-  public static boolean reconnect = false;
+  public static boolean reconnect = false; // TODO: make private
 
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
+  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
 
-  private final Class<?> testClass; // TODO: optimize this into one var
-  private final DistributedTest test;
+  private final DistributedTestFixture distributedTestFixture;
 
-  public DistributedTestCase() {
-    this.test = this;
-    this.testClass = getClass();
+  /**
+   * Creates a new JUnit4DistributedTestCase distributedTestFixture with the given name.
+   *
+   * @deprecated Please use {@link #JUnit4DistributedTestCase()} instead. The {@code name} is ignored.
+   */
+  @Deprecated
+  public JUnit4DistributedTestCase(final String name) {
+    this();
   }
 
-  public DistributedTestCase(final DistributedTest test) {
-    this.test = test;
-    this.testClass = test.getClass();
+  public JUnit4DistributedTestCase() {
+    this((DistributedTestFixture)null);
+  }
+
+  JUnit4DistributedTestCase(final DistributedTestFixture distributedTestFixture) {
+    if (distributedTestFixture == null) {
+      this.distributedTestFixture = this;
+    } else {
+      this.distributedTestFixture = distributedTestFixture;
+    }
   }
 
   @Rule
   public SerializableTestName testName = new SerializableTestName();
 
   @BeforeClass
-  public static void initializeDistributedTestCase() {
+  public static final void initializeDistributedTestCase() {
     DUnitLauncher.launchIfNeeded();
   }
 
@@ -114,8 +124,8 @@ public class DistributedTestCase implements DistributedTest, Serializable {
     return this.testName.getMethodName();
   }
 
-  public final Class<?> getTestClass() {
-    return this.testClass;
+  public final Class<? extends DistributedTestFixture> getTestClass() {
+    return this.distributedTestFixture.getClass();
   }
 
   //---------------------------------------------------------------------------
@@ -140,6 +150,10 @@ public class DistributedTestCase implements DistributedTest, Serializable {
    * @since 3.0
    */
   public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
+    if (this.distributedTestFixture != this) {
+      return this.distributedTestFixture.getSystem(props);
+    }
+
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -248,19 +262,24 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   }
 
   /**
-   * Returns a <code>Properties</code> object used to configure a
+   * Returns a {@code Properties} object used to configure a
    * connection to a {@link
    * com.gemstone.gemfire.distributed.DistributedSystem}.
    * Unless overridden, this method will return an empty
-   * <code>Properties</code> object.
+   * {@code Properties} object.
+   *
+   * <p>Override this as needed. Default implementation returns empty {@code Properties}.
    *
    * @since 3.0
    */
   public Properties getDistributedSystemProperties() {
+    if (this.distributedTestFixture != this) {
+      return this.distributedTestFixture.getDistributedSystemProperties();
+    }
     return new Properties();
   }
 
-  public static void disconnectAllFromDS() {
+  public static final void disconnectAllFromDS() {
     disconnectFromDS();
     Invoke.invokeInEveryVM(()->disconnectFromDS());
   }
@@ -268,7 +287,7 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   /**
    * Disconnects this VM from the distributed system
    */
-  public static void disconnectFromDS() {
+  public static void disconnectFromDS() { // TODO: this is overridden by CacheTestCase
     setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {
@@ -298,19 +317,19 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   // name methods
   //---------------------------------------------------------------------------
 
-  public static String getTestMethodName() {
+  public static final String getTestMethodName() {
     return testMethodName;
   }
 
-  public static void setTestMethodName(final String testMethodName) { // TODO: delete
-    DistributedTestCase.testMethodName = testMethodName;
+  public static final void setTestMethodName(final String testMethodName) { // TODO: delete
+    JUnit4DistributedTestCase.testMethodName = testMethodName;
   }
 
   /**
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.
    */
-  public String getUniqueName() {
+  public final String getUniqueName() {
     return getTestClass().getSimpleName() + "_" + getName();
   }
 
@@ -360,37 +379,45 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   }
 
   /**
-   * <code>preSetUp()</code> is invoked before {@link #setUpDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preSetUp()} is invoked before {@link #setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preSetUp() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.preSetUp();
+      return;
+    }
   }
 
   /**
-   * <code>postSetUp()</code> is invoked after {@link #setUpDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postSetUp()} is invoked after {@link #setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postSetUp() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.postSetUp();
+      return;
+    }
   }
 
-  private static String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
+  private static final String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
     return "DiskStore-" + String.valueOf(hostIndex) + "-" + String.valueOf(vmIndex) + "-" + className + "." + methodName; // used to be getDeclaringClass()
   }
 
-  private static void setUpVM(final String methodName, final String defaultDiskStoreName) {
+  private static final void setUpVM(final String methodName, final String defaultDiskStoreName) {
     setTestMethodName(methodName);
     GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");
     setUpCreationStackGenerator();
   }
 
-  private void logTestStart() {
+  private final void logTestStart() {
     System.out.println("\n\n[setup] START TEST " + getTestClass().getSimpleName()+"."+testMethodName+"\n\n");
   }
 
-  private static void setUpCreationStackGenerator() {
+  private static final void setUpCreationStackGenerator() {
     // the following is moved from InternalDistributedSystem to fix #51058
     InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
         new InternalDistributedSystem.CreationStackGenerator() {
@@ -421,7 +448,7 @@ public class DistributedTestCase implements DistributedTest, Serializable {
    * Write a message to the log about what tests have ran previously. This
    * makes it easier to figure out if a previous test may have caused problems
    */
-  private void logTestHistory() {
+  private final void logTestHistory() {
     String classname = getTestClass().getSimpleName();
     testHistory.add(classname);
     System.out.println("Previously run tests: " + testHistory);
@@ -455,22 +482,30 @@ public class DistributedTestCase implements DistributedTest, Serializable {
   }
 
   /**
-   * <code>preTearDown()</code> is invoked before {@link #tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preTearDown()} is invoked before {@link #tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preTearDown() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.preTearDown();
+      return;
+    }
   }
 
   /**
-   * <code>postTearDown()</code> is invoked after {@link #tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postTearDown()} is invoked after {@link #tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postTearDown() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.postTearDown();
+      return;
+    }
   }
 
-  public static void cleanupAllVms() { // TODO: make private
+  public static final void cleanupAllVms() { // TODO: make private
     tearDownVM();
     Invoke.invokeInEveryVM(()->tearDownVM());
     Invoke.invokeInLocator(()->{
@@ -480,7 +515,7 @@ public class DistributedTestCase implements DistributedTest, Serializable {
     DUnitLauncher.closeAndCheckForSuspects();
   }
 
-  private static void tearDownVM() {
+  private static final void tearDownVM() {
     closeCache();
 
     // keep alphabetized to detect duplicate lines
@@ -515,7 +550,7 @@ public class DistributedTestCase implements DistributedTest, Serializable {
     IgnoredException.removeAllExpectedExceptions();
   }
 
-  private static void closeCache() {
+  private static final void closeCache() {
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
     if (cache != null && !cache.isClosed()) {
       destroyRegions(cache);
@@ -542,7 +577,7 @@ public class DistributedTestCase implements DistributedTest, Serializable {
     }
   }
 
-  private static void tearDownCreationStackGenerator() {
+  private static final void tearDownCreationStackGenerator() {
     InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
   }
 }

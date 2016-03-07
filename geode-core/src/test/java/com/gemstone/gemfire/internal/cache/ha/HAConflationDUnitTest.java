@@ -116,12 +116,12 @@ public class HAConflationDUnitTest extends CacheTestCase
 
   @Override
   protected final void postTearDownCacheTestCase() throws Exception {
-    client1.invoke(() -> HAConflationDUnitTest.closeCache());
+    client1.invoke(() -> HAConflationDUnitTest.closeCacheAndDisconnect());
     // close server
-    server1.invoke(() -> HAConflationDUnitTest.closeCache());
+    server1.invoke(() -> HAConflationDUnitTest.closeCacheAndDisconnect());
   }
   
-  public static void closeCache()
+  public static void closeCacheAndDisconnect()
   {
     if (cache != null && !cache.isClosed()) {
       cache.close();

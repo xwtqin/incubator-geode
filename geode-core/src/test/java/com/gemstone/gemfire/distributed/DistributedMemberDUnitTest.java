@@ -33,7 +33,7 @@ import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.test.dunit.internal.junit4.DistributedTestCase;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
@@ -51,9 +51,9 @@ import org.junit.experimental.categories.Category;
  * @since 5.0
  */
 @Category(DistributedTest.class)
-public class DistributedMemberDUnitTest extends DistributedTestCase {
+public class DistributedMemberDUnitTest extends JUnit4DistributedTestCase {
 
-  protected void sleep(long millis) {
+  protected void sleep(long millis) { // TODO: replace with Awaitility
     try {
       Thread.sleep(millis);
     }
