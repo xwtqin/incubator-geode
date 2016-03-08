@@ -79,7 +79,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * All references synchronized via <code>CacheTestCase.class</code>
    * */
   // static so it doesn't get serialized with SerializableRunnable inner classes
-  private static Cache cache; // TODO: make private
+  private static Cache cache;
   
   ////////  Constructors
 
