@@ -137,11 +137,6 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     server2.invoke(registerInstantiator);
   }
   
-  @Override
-  protected final void preTearDown() throws Exception {
-    DistributedTestCase.cleanupAllVms();
-  }
-
   // Region: Utility and static functions invoked by the tests
 
   private static Properties buildProperties(String authenticator,

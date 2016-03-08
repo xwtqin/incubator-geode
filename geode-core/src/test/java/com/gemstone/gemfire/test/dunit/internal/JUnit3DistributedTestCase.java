@@ -45,22 +45,22 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
 
   private final JUnit4DistributedTestCase delegate = new JUnit4DistributedTestCase(this);
 
-  private static final Logger logger = LogService.getLogger();
-
-  private static final Set<String> testHistory = new LinkedHashSet<String>();
-
-  /** This VM's connection to the distributed system */
-  public static InternalDistributedSystem system;
-  private static Class lastSystemCreatedInTest;
-  private static Properties lastSystemProperties;
-  private static volatile String testMethodName;
-
-  /** For formatting timing info */
-  private static final DecimalFormat format = new DecimalFormat("###.###");
-
-  public static boolean reconnect = false;
-
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
+//  private static final Logger logger = LogService.getLogger();
+//
+//  private static final Set<String> testHistory = new LinkedHashSet<String>();
+//
+//  /** This VM's connection to the distributed system */
+//  public static InternalDistributedSystem system;
+//  private static Class lastSystemCreatedInTest;
+//  private static Properties lastSystemProperties;
+//  private static volatile String testMethodName;
+//
+//  /** For formatting timing info */
+//  private static final DecimalFormat format = new DecimalFormat("###.###");
+//
+//  public static boolean reconnect = false;
+//
+//  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
   static {
     JUnit4DistributedTestCase.initializeDistributedTestCase();
@@ -122,15 +122,6 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   }
 
   /**
-   * Returns a loner distributed system in combination with enforceUniqueHost
-   * and redundancyZone properties.
-   * Added specifically to test scenario of defect #47181.
-   */
-  public final InternalDistributedSystem getLonerSystemWithEnforceUniqueHost() {
-    return delegate.getLonerSystemWithEnforceUniqueHost();
-  }
-
-  /**
    * Returns whether or this VM is connected to a {@link
    * DistributedSystem}.
    */
@@ -187,29 +178,29 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   //---------------------------------------------------------------------------
 
   /**
-   * Sets up the JUnit3DistributedTestCase.
+   * Sets up the DistributedTestCase.
    * <p>
    * Do not override this method. Override {@link #preSetUp()} with work that
    * needs to occur before setUp() or override {@link #postSetUp()} with work
    * that needs to occur after setUp().
    */
   @Override
-  public void setUp() throws Exception {
+  public final void setUp() throws Exception {
     delegate.setUp();
   }
 
   /**
-   * <code>preSetUp()</code> is invoked before #setUpDistributedTestCase().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preSetUp()} is invoked before {@link JUnit4DistributedTestCase#setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preSetUp() throws Exception {
   }
 
   /**
-   * <code>postSetUp()</code> is invoked after #setUpDistributedTestCase().
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postSetUp()} is invoked after {@link JUnit4DistributedTestCase#setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postSetUp() throws Exception {
   }
@@ -231,17 +222,17 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   }
 
   /**
-   * <code>preTearDown()</code> is invoked before {@link JUnit4DistributedTestCase#tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preTearDown()} is invoked before {@link JUnit4DistributedTestCase#tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void preTearDown() throws Exception {
   }
 
   /**
-   * <code>postTearDown()</code> is invoked after {@link JUnit4DistributedTestCase#tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postTearDown()} is invoked after {@link JUnit4DistributedTestCase#tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   public void postTearDown() throws Exception {
   }

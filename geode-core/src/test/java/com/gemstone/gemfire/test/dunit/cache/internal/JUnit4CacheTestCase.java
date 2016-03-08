@@ -14,21 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.cache30;
+package com.gemstone.gemfire.test.dunit.cache.internal;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.Logger;
-
-import com.gemstone.gemfire.InternalGemFireError;
-import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
@@ -43,19 +38,18 @@ import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.cache.client.ClientCache;
 import com.gemstone.gemfire.cache.client.ClientCacheFactory;
 import com.gemstone.gemfire.cache.client.PoolManager;
+import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.distributed.internal.SerialAckedMessage;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
@@ -63,63 +57,85 @@ import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
+import org.apache.logging.log4j.Logger;
 
 /**
- * The abstract superclass of tests that require the creation of a
- * {@link Cache}.
+ * This class is the base class for all distributed tests using JUnit 4 that
+ * require the creation of a {@link Cache}.
  *
- * @author David Whitlock
- * @since 3.0
+ * TODO: make this class abstract when JUnit3CacheTestCase is deleted
  */
-public abstract class CacheTestCase extends DistributedTestCase {
+public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements CacheTestFixture {
+
   private static final Logger logger = LogService.getLogger();
 
-  /** The Cache from which regions are obtained 
-   * 
-   * All references synchronized via <code>CacheTestCase.class</code>
-   * */
-  // static so it doesn't get serialized with SerializableRunnable inner classes
-  private static Cache cache; // TODO: make private
-  
-  ////////  Constructors
+  /**
+   * The Cache from which regions are obtained.
+   *
+   * <p>All references synchronized via {@code JUnit4CacheTestCase.class}.
+   *
+   * <p>Field is static so it doesn't get serialized with SerializableRunnable inner classes.
+   */
+  protected static Cache cache; // TODO: make private
 
-  public CacheTestCase(String name) {
-    super(name);
+  private final CacheTestFixture cacheTestFixture;
+
+  /**
+   * Creates a new JUnit4DistributedTestCase test with the given name.
+   *
+   * @deprecated Please use {@link #JUnit4CacheTestCase()} instead. The {@code name} is ignored.
+   */
+  @Deprecated
+  public JUnit4CacheTestCase(final String name) {
+    this();
   }
 
-  ////////  Helper methods
+  public JUnit4CacheTestCase() {
+    this((CacheTestFixture)null);
+  }
+
+  JUnit4CacheTestCase(final CacheTestFixture cacheTestFixture) {
+    super(); // TODO: what about DistributedTestFixture?
+    if (cacheTestFixture == null) {
+      this.cacheTestFixture = this;
+    } else {
+      this.cacheTestFixture = cacheTestFixture;
+    }
+  }
+
   /**
-   * Creates the <code>Cache</code> for this test
+   * Creates the {@code Cache} for this test
    */
   private final void createCache() {
     createCache(false);
   }
-  
-  private final void createCache(boolean client) {
+
+  private final void createCache(final boolean client) {
     createCache(client, null);
   }
-  
-  private final void createCache(boolean client, CacheFactory cf) {
-    synchronized(CacheTestCase.class) {
+
+  private final void createCache(final boolean client, final CacheFactory factory) {
+    synchronized(JUnit4CacheTestCase.class) {
       try {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
-        Cache c;
+        Cache newCache;
         if (client) {
-          c = (Cache)new ClientCacheFactory(getSystem().getProperties()).create();
+          newCache = (Cache)new ClientCacheFactory(getSystem().getProperties()).create();
         } else {
-          if(cf == null) {
-            c = CacheFactory.create(getSystem());
+          if(factory == null) {
+            newCache = CacheFactory.create(getSystem());
           } else {
             Properties props = getSystem().getProperties();
             for(Map.Entry entry : props.entrySet()) {
-              cf.set((String) entry.getKey(), (String)entry.getValue());
+              factory.set((String) entry.getKey(), (String)entry.getValue());
             }
-            c = cf.create();
+            newCache = factory.create();
           }
         }
-        cache = c;
+        cache = newCache;
       } catch (CacheExistsException e) {
-        Assert.fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e); // TODO: remove error handling
 
       } catch (RuntimeException ex) {
         throw ex;
@@ -133,17 +149,17 @@ public abstract class CacheTestCase extends DistributedTestCase {
   }
 
   /**
-   * Creates the <code>Cache</code> for this test that is not connected
+   * Creates the {@code Cache} for this test that is not connected
    * to other members
    */
   public final Cache createLonerCache() {
-    synchronized(CacheTestCase.class) {
+    synchronized(JUnit4CacheTestCase.class) {
       try {
         System.setProperty("gemfire.DISABLE_DISCONNECT_DS_ON_CACHE_CLOSE", "true");
-        Cache c = CacheFactory.create(getLonerSystem()); 
-        cache = c;
+        Cache newCache = CacheFactory.create(getLonerSystem());
+        cache = newCache;
       } catch (CacheExistsException e) {
-        Assert.fail("the cache already exists", e);
+        Assert.fail("the cache already exists", e); // TODO: remove error handling
 
       } catch (RuntimeException ex) {
         throw ex;
@@ -162,25 +178,23 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Any existing cache is closed. Whoever calls this must also call finishCacheXml
    */
   public static final synchronized void beginCacheXml() {
-//    getLogWriter().info("before closeCache");
     closeCache();
-//    getLogWriter().info("before TestCacheCreation");
     cache = new TestCacheCreation();
-//    getLogWriter().info("after TestCacheCreation");
   }
+
   /**
    * Finish what beginCacheXml started. It does this be generating a cache.xml
    * file and then creating a real cache using that cache.xml.
    */
-  public final void finishCacheXml(String name) {
-    synchronized(CacheTestCase.class) {
+  public final void finishCacheXml(final String name) {
+    synchronized(JUnit4CacheTestCase.class) {
       File file = new File(name + "-cache.xml");
       try {
         PrintWriter pw = new PrintWriter(new FileWriter(file), true);
         CacheXmlGenerator.generate(cache, pw);
         pw.close();
       } catch (IOException ex) {
-        Assert.fail("IOException during cache.xml generation to " + file, ex);
+        Assert.fail("IOException during cache.xml generation to " + file, ex); // TODO: remove error handling
       }
       cache = null;
       GemFireCacheImpl.testCacheXml = file;
@@ -191,13 +205,13 @@ public abstract class CacheTestCase extends DistributedTestCase {
       }
     }
   }
-  
+
   /**
    * Finish what beginCacheXml started. It does this be generating a cache.xml
    * file and then creating a real cache using that cache.xml.
    */
-  public final void finishCacheXml(String name, boolean useSchema, String xmlVersion) {
-    synchronized(CacheTestCase.class) {
+  public final void finishCacheXml(final String name, final boolean useSchema, final String xmlVersion) {
+    synchronized(JUnit4CacheTestCase.class) {
       File dir = new File("XML_" + xmlVersion);
       dir.mkdirs();
       File file = new File(dir, name + ".xml");
@@ -206,7 +220,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
         CacheXmlGenerator.generate(cache, pw, useSchema, xmlVersion);
         pw.close();
       } catch (IOException ex) {
-        Assert.fail("IOException during cache.xml generation to " + file, ex);
+        Assert.fail("IOException during cache.xml generation to " + file, ex); // TODO: remove error handling
       }
       cache = null;
       GemFireCacheImpl.testCacheXml = file;
@@ -224,26 +238,26 @@ public abstract class CacheTestCase extends DistributedTestCase {
   public final Cache getCache() {
     return getCache(false);
   }
-  
-  public final Cache getCache(CacheFactory cf) {
-    return getCache(false, cf);
+
+  public final Cache getCache(final CacheFactory factory) {
+    return getCache(false, factory);
   }
-  
-  public final Cache getCache(boolean client) {
+
+  public final Cache getCache(final boolean client) {
     return getCache(client, null);
   }
 
-  public final Cache getCache(boolean client, CacheFactory cf) {
-    synchronized (CacheTestCase.class) {
-      final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
-      if (gfCache != null && !gfCache.isClosed()
-          && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        Wait.waitForCriterion(new WaitCriterion() {
-
+  public final Cache getCache(final boolean client, final CacheFactory factory) {
+    synchronized (JUnit4CacheTestCase.class) {
+      final GemFireCacheImpl gemFireCache = GemFireCacheImpl.getInstance();
+      if (gemFireCache != null && !gemFireCache.isClosed()
+              && gemFireCache.getCancelCriterion().cancelInProgress() != null) {
+        Wait.waitForCriterion(new WaitCriterion() { // TODO: replace with Awaitility
+          @Override
           public boolean done() {
-            return gfCache.isClosed();
+            return gemFireCache.isClosed();
           }
-
+          @Override
           public String description() {
             return "waiting for cache to close";
           }
@@ -251,7 +265,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
       }
       if (cache == null || cache.isClosed()) {
         cache = null;
-        createCache(client, cf);
+        createCache(client, factory);
       }
       if (client && cache != null) {
         IgnoredException.addIgnoredException("java.net.ConnectException");
@@ -262,21 +276,20 @@ public abstract class CacheTestCase extends DistributedTestCase {
 
   /**
    * creates a client cache from the factory if one does not already exist
+   *
    * @since 6.5
-   * @param factory
-   * @return the client cache
    */
-  public final ClientCache getClientCache(ClientCacheFactory factory) {
-    synchronized (CacheTestCase.class) {
-      final GemFireCacheImpl gfCache = GemFireCacheImpl.getInstance();
-      if (gfCache != null && !gfCache.isClosed()
-          && gfCache.getCancelCriterion().cancelInProgress() != null) {
-        Wait.waitForCriterion(new WaitCriterion() {
-
+  public final ClientCache getClientCache(final ClientCacheFactory factory) {
+    synchronized (JUnit4CacheTestCase.class) {
+      final GemFireCacheImpl gemFireCache = GemFireCacheImpl.getInstance();
+      if (gemFireCache != null && !gemFireCache.isClosed()
+              && gemFireCache.getCancelCriterion().cancelInProgress() != null) {
+        Wait.waitForCriterion(new WaitCriterion() { // TODO: replace with Awaitility
+          @Override
           public boolean done() {
-            return gfCache.isClosed();
+            return gemFireCache.isClosed();
           }
-
+          @Override
           public String description() {
             return "waiting for cache to close";
           }
@@ -297,51 +310,59 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /**
    * same as {@link #getCache()} but with casting
    */
-  public final GemFireCacheImpl getGemfireCache() {
+  public final GemFireCacheImpl getGemfireCache() { // TODO: remove?
     return (GemFireCacheImpl)getCache();
   }
-  public static synchronized final boolean hasCache() {
-      return cache != null;
+
+  public static final synchronized boolean hasCache() {
+    return cache != null;
   }
 
   /**
    * Return current cache without creating one.
    */
-  public static synchronized final Cache basicGetCache() {
-      return cache;
+  public static final synchronized Cache basicGetCache() {
+    return cache;
   }
 
-  /** Close the cache */
-  public static synchronized final void closeCache() {
-    //Workaround for that fact that some classes are now extending
-    //CacheTestCase but not using it properly.
+  public static final synchronized void disconnectFromDS() {
+    closeCache();
+    JUnit4DistributedTestCase.disconnectFromDS();
+  }
+
+  /**
+   * Close the cache
+   */
+  public static final synchronized void closeCache() {
+    // Workaround for that fact that some classes are now extending
+    // CacheTestCase but not using it properly.
     if(cache == null) {
       cache = GemFireCacheImpl.getInstance();
     }
     try {
-    if (cache != null) {
-      try {
-        if (!cache.isClosed()) {
-          if (cache instanceof GemFireCacheImpl) {
-            CacheTransactionManager txMgr = ((GemFireCacheImpl)cache).getTxManager();
-            if (txMgr != null) {
-              if (txMgr.exists()) {
-                try {
-                  // make sure we cleanup this threads txid stored in a thread local
-                  txMgr.rollback();
-                }catch(Exception ignore) {
-                  
+      if (cache != null) {
+        try {
+          if (!cache.isClosed()) {
+            if (cache instanceof GemFireCacheImpl) {
+              CacheTransactionManager txMgr = ((GemFireCacheImpl)cache).getTxManager();
+              if (txMgr != null) {
+                if (txMgr.exists()) {
+                  try {
+                    // make sure we cleanup this threads txid stored in a thread local
+                    txMgr.rollback();
+                  }catch(Exception ignore) {
+
+                  }
                 }
               }
             }
+            cache.close();
           }
-          cache.close();
         }
-      }
-      finally {
-        cache = null;
-      }
-    } // cache != null
+        finally {
+          cache = null;
+        }
+      } // cache != null
     } finally {
       //Make sure all pools are closed, even if we never
       //created a cache
@@ -349,40 +370,46 @@ public abstract class CacheTestCase extends DistributedTestCase {
     }
   }
 
-  /** Closed the cache in all VMs. */
+  /**
+   * Close the cache in all VMs.
+   */
   protected final void closeAllCache() {
     closeCache();
-    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
+    Invoke.invokeInEveryVM(()->closeCache());
   }
 
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     preTearDownCacheTestCase();
-    
+    tearDownCacheTestCase();
+    postTearDownCacheTestCase();
+  }
+
+  public final void tearDownCacheTestCase() {
     // locally destroy all root regions and close the cache
     remoteTearDown();
     // Now invoke it in every VM
-    for (int h = 0; h < Host.getHostCount(); h++) {
+    for (int h = 0; h < Host.getHostCount(); h++) { // TODO: use Invoke
       Host host = Host.getHost(h);
       for (int v = 0; v < host.getVMCount(); v++) {
         VM vm = host.getVM(v);
         vm.invoke(()->remoteTearDown());
       }
     }
-    
-    postTearDownCacheTestCase();
-  }
-  
-  protected void preTearDownCacheTestCase() throws Exception {
   }
 
-  protected void postTearDownCacheTestCase() throws Exception {
+  @Override
+  public void preTearDownCacheTestCase() throws Exception {
+  }
+
+  @Override
+  public void postTearDownCacheTestCase() throws Exception {
   }
 
   /**
-   * Local destroy all root regions and close the cache.  
+   * Local destroy all root regions and close the cache.
    */
-  protected final synchronized static void remoteTearDown() {
+  protected static synchronized void remoteTearDown() {
     try {
       DistributionMessageObserver.setInstance(null);
       destroyRegions(cache);
@@ -404,31 +431,27 @@ public abstract class CacheTestCase extends DistributedTestCase {
   /**
    * Returns a region with the given name and attributes
    */
-  public final Region createRegion(String name,
-                                      RegionAttributes attrs)
-    throws CacheException {
-    return createRegion(name, "root", attrs);
+  public final Region createRegion(final String name, final RegionAttributes attributes) throws CacheException {
+    return createRegion(name, "root", attributes);
   }
-  
+
   /**
-   * Provide any internal region arguments, typically required when 
-   * internal use (aka meta-data) regions are needed.
-   * @return internal arguements, which may be null.  If null, then default 
-   * InternalRegionArguments are used to construct the Region
+   * Provide any internal region arguments, typically required when internal
+   * use (aka meta-data) regions are needed.
+   *
+   * @return internal arguments, which may be null.  If null, then default
+   *         InternalRegionArguments are used to construct the Region
    */
-  public final InternalRegionArguments getInternalRegionArguments()
-  {
+  public final InternalRegionArguments getInternalRegionArguments() { // TODO: delete?
     return null;
   }
 
-  final public Region createRegion(String name, String rootName,
-                                      RegionAttributes attrs)
-    throws CacheException {
+  public final Region createRegion(final String name, final String rootName, final RegionAttributes attributes) throws CacheException {
     Region root = getRootRegion(rootName);
     if (root == null) {
       // don't put listeners on root region
-      RegionAttributes rootAttrs = attrs;
-      AttributesFactory fac = new AttributesFactory(attrs);
+      RegionAttributes rootAttrs = attributes;
+      AttributesFactory fac = new AttributesFactory(attributes);
       ExpirationAttributes expiration = ExpirationAttributes.DEFAULT;
 
       // fac.setCacheListener(null);
@@ -446,11 +469,11 @@ public abstract class CacheTestCase extends DistributedTestCase {
 
     InternalRegionArguments internalArgs = getInternalRegionArguments();
     if (internalArgs == null) {
-      return root.createSubregion(name, attrs);
+      return root.createSubregion(name, attributes);
     } else {
       try {
         LocalRegion lr = (LocalRegion) root;
-        return lr.createSubregion(name, attrs, internalArgs);
+        return lr.createSubregion(name, attributes, internalArgs);
       } catch (IOException ioe) {
         AssertionError assErr = new AssertionError("unexpected exception");
         assErr.initCause(ioe);
@@ -459,123 +482,66 @@ public abstract class CacheTestCase extends DistributedTestCase {
         AssertionError assErr = new AssertionError("unexpected exception");
         assErr.initCause(cnfe);
         throw assErr;
-      } 
+      }
     }
   }
-  
+
   public final Region getRootRegion() {
     return getRootRegion("root");
   }
-  
-  public final Region getRootRegion(String rootName) {
+
+  public final Region getRootRegion(final String rootName) {
     return getCache().getRegion(rootName);
   }
 
-  protected final Region createRootRegion(RegionAttributes attrs)
-  throws RegionExistsException, TimeoutException {
-    return createRootRegion("root", attrs);
+  protected final Region createRootRegion(final RegionAttributes attributes) throws RegionExistsException, TimeoutException {
+    return createRootRegion("root", attributes);
   }
 
-  public final Region createRootRegion(String rootName, RegionAttributes attrs)
-  throws RegionExistsException, TimeoutException {
-    return getCache().createRegion(rootName, attrs);
+  public final Region createRootRegion(final String rootName, final RegionAttributes attributes) throws RegionExistsException, TimeoutException {
+    return getCache().createRegion(rootName, attributes);
   }
-  public final Region createExpiryRootRegion(String rootName, RegionAttributes attrs)
-  throws RegionExistsException, TimeoutException {
+
+  public final Region createExpiryRootRegion(final String rootName, final RegionAttributes attributes) throws RegionExistsException, TimeoutException {
     System.setProperty(LocalRegion.EXPIRY_MS_PROPERTY, "true");
     try {
-      return createRootRegion(rootName, attrs);
+      return createRootRegion(rootName, attributes);
     } finally {
-      System.getProperties().remove(LocalRegion.EXPIRY_MS_PROPERTY);
+      System.clearProperty(LocalRegion.EXPIRY_MS_PROPERTY);
     }
   }
 
-
-//  /**
-//   * send an unordered message requiring an ack to all connected members
-//   * in order to flush the unordered communication channel
-//   */
-//  public final void sendUnorderedMessageToAll() {
-//    //if (getCache() instanceof distcache.gemfire.GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage msg = new com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage();
-//        msg.send(InternalDistributedSystem.getConnectedInstance().getDM().getNormalDistributionManagerIds(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send unordered message due to exception", e);
-//      }
-//    //}
-//  }
-
   /**
-   * send an unordered message requiring an ack to all connected admin members 
-   * in order to flush the unordered communication channel
-   */
-//  public void sendUnorderedMessageToAdminMembers() {
-//    //if (getCache() instanceof distcache.gemfire.GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage msg = new com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage();
-//        msg.send(DistributedSystemHelper.getAdminMembers(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send unordered message due to exception", e);
-//      }
-//    //}
-//  }
-
-//  /**
-//   * send an ordered message requiring an ack to all connected members
-//   * in order to flush the ordered communication channel
-//   */
-//  public final void sendSerialMessageToAll() {
-//    if (getCache() instanceof GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.SerialAckedMessage msg = new com.gemstone.gemfire.distributed.internal.SerialAckedMessage();
-//        msg.send(InternalDistributedSystem.getConnectedInstance().getDM().getNormalDistributionManagerIds(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send serial message due to exception", e);
-//      }
-//    }
-//  }
-
-  /**
-   * @deprecated Use DistributedTestCase.addExpectedException
+   * @deprecated Please use {@link IgnoredException#addIgnoredException(String)} instead.
    */
   @Deprecated
-  protected final CacheSerializableRunnable addExceptionTag1(final String expectedException) {
-    CacheSerializableRunnable addExceptionTag = new CacheSerializableRunnable(
-    "addExceptionTag") {
-      public void run2()
-      {
-        getCache().getLogger().info(
-            "<ExpectedException action=add>" + expectedException
-            + "</ExpectedException>");
+  public final CacheSerializableRunnable addExceptionTag1(final String exceptionStringToIgnore) { // TODO: delete this method
+    CacheSerializableRunnable addExceptionTag = new CacheSerializableRunnable("addExceptionTag") {
+      @Override
+      public void run2() {
+        getCache().getLogger().info("<ExpectedException action=add>" + exceptionStringToIgnore + "</ExpectedException>");
       }
     };
-    
     return addExceptionTag;
   }
 
   /**
-   * @deprecated Use DistributedTestCase.addExpectedException
+   * @deprecated Please use {@link IgnoredException#addIgnoredException(String)} instead.
    */
   @Deprecated
-  protected final CacheSerializableRunnable removeExceptionTag1(final String expectedException) {
-    CacheSerializableRunnable removeExceptionTag = new CacheSerializableRunnable(
-    "removeExceptionTag") {
+  public final CacheSerializableRunnable removeExceptionTag1(final String exceptionStringToIgnore) { // TODO: delete this method
+    CacheSerializableRunnable removeExceptionTag = new CacheSerializableRunnable("removeExceptionTag") {
+      @Override
       public void run2() throws CacheException {
-        getCache().getLogger().info(
-            "<ExpectedException action=remove>" + expectedException
-            + "</ExpectedException>");
+        getCache().getLogger().info("<ExpectedException action=remove>" + exceptionStringToIgnore + "</ExpectedException>");
       }
     };
     return removeExceptionTag;
   }
 
   /**
-   * Used to generate a cache.xml. Basically just a CacheCreation
-   * with a few more methods implemented.
+   * Used to generate a cache.xml. Basically just a CacheCreation with a few
+   * more methods implemented.
    */
   private static final class TestCacheCreation extends CacheCreation {
     private boolean closed = false;
@@ -588,33 +554,31 @@ public abstract class CacheTestCase extends DistributedTestCase {
       return this.closed;
     }
   }
-  
+
   public static final File getDiskDir() {
     int vmNum = VM.getCurrentVMNum();
     File dir = new File("diskDir", "disk" + String.valueOf(vmNum)).getAbsoluteFile();
     dir.mkdirs();
     return dir;
   }
-  
+
   /**
-   * Return a set of disk directories
-   * for persistence tests. These directories
-   * will be automatically cleaned up 
-   * on test case closure.
+   * Return a set of disk directories for persistence tests. These directories
+   * will be automatically cleaned up on test case closure.
    */
   public static final File[] getDiskDirs() {
     return new File[] {getDiskDir()};
   }
-  
+
   public static final void cleanDiskDirs() throws IOException {
     FileUtil.delete(getDiskDir());
     File[] defaultStoreFiles = new File(".").listFiles(new FilenameFilter() {
-      
+      @Override
       public boolean accept(File dir, String name) {
         return name.startsWith("BACKUPDiskStore-" + System.getProperty("vmid"));
       }
     });
-    
+
     for(File file: defaultStoreFiles) {
       FileUtil.delete(file);
     }

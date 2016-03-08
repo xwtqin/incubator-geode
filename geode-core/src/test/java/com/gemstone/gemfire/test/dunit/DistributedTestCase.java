@@ -81,7 +81,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   private static final Set<String> testHistory = new LinkedHashSet<String>();
 
   /** This VM's connection to the distributed system */
-  public static InternalDistributedSystem system;
+  public static InternalDistributedSystem system; // TODO: make private
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
   private static volatile String testMethodName;
@@ -89,13 +89,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
-  public static boolean reconnect = false;
+  public static boolean reconnect = false; // TODO: make private
 
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
+  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
 
   /**
-   * Creates a new <code>DistributedTestCase</code> test with the
-   * given name.
+   * Creates a new <code>DistributedTestCase</code> test with the given name.
    */
   public DistributedTestCase(final String name) {
     super(name);
@@ -105,25 +104,30 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   //---------------------------------------------------------------------------
   // methods for tests
   //---------------------------------------------------------------------------
-  
-  public final void setSystem(final Properties props, final DistributedSystem ds) { // TODO: override getDistributedSystemProperties and then delete
+
+  /**
+   * @deprecated Please override {@link #getDistributedSystemProperties()} instead.
+   */
+  @Deprecated
+  public final void setSystem(final Properties props, final DistributedSystem ds) { // TODO: delete
     system = (InternalDistributedSystem)ds;
     lastSystemProperties = props;
     lastSystemCreatedInTest = getClass(); // used to be getDeclaringClass()
   }
   
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the given
-   * <code>Properties</code>.  Note that this method uses hydra's
-   * configuration to determine the location of log files, etc.
-   * Note: "final" was removed so that WANTestBase can override this method.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the given {@code Properties}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
+   *
+   * <p>Note: "final" was removed so that WANTestBase can override this method.
    * This was part of the xd offheap merge.
    *
-   * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
+  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: restore final
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -183,10 +187,12 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the
-   * <code>Properties</code> returned by {@link
-   * #getDistributedSystemProperties}.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the {@code Properties} returned by
+   * {@link #getDistributedSystemProperties()}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
    *
    * @see #getSystem(Properties)
    *
@@ -197,8 +203,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   /**
-   * Returns a loner distributed system that isn't connected to other
-   * vms
+   * Returns a loner distributed system that isn't connected to other vms.
    * 
    * @since 6.5
    */
@@ -210,33 +215,16 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
   
   /**
-   * Returns a loner distributed system in combination with enforceUniqueHost
-   * and redundancyZone properties.
-   * Added specifically to test scenario of defect #47181.
-   */
-  public final InternalDistributedSystem getLonerSystemWithEnforceUniqueHost() {
-    Properties props = getDistributedSystemProperties();
-    props.put(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.put(DistributionConfig.LOCATORS_NAME, "");
-    props.put(DistributionConfig.ENFORCE_UNIQUE_HOST_NAME, "true");
-    props.put(DistributionConfig.REDUNDANCY_ZONE_NAME, "zone1");
-    return getSystem(props);
-  }
-
-  /**
-   * Returns whether or this VM is connected to a {@link
-   * DistributedSystem}.
+   * Returns whether or this VM is connected to a {@link DistributedSystem}.
    */
   public final boolean isConnectedToDS() {
     return system != null && system.isConnected();
   }
 
   /**
-   * Returns a <code>Properties</code> object used to configure a
-   * connection to a {@link
-   * com.gemstone.gemfire.distributed.DistributedSystem}.
-   * Unless overridden, this method will return an empty
-   * <code>Properties</code> object.
+   * Returns a {@code Properties} object used to configure a connection to a
+   * {@link DistributedSystem}. Unless overridden, this method will return an
+   * empty {@code Properties} object.
    *
    * @since 3.0
    */
@@ -244,7 +232,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     return new Properties();
   }
 
-  public static void disconnectAllFromDS() {
+  public static final void disconnectAllFromDS() {
     disconnectFromDS();
     Invoke.invokeInEveryVM(()->disconnectFromDS());
   }
@@ -252,7 +240,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   /**
    * Disconnects this VM from the distributed system
    */
-  public static void disconnectFromDS() {
+  public static final void disconnectFromDS() {
     setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {
@@ -282,11 +270,11 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   // name methods
   //---------------------------------------------------------------------------
   
-  public static String getTestMethodName() {
+  public static final String getTestMethodName() {
     return testMethodName;
   }
 
-  public static void setTestMethodName(final String testMethodName) { // TODO: delete
+  public static final void setTestMethodName(final String testMethodName) { // TODO: delete
     DistributedTestCase.testMethodName = testMethodName;
   }
   
@@ -294,35 +282,35 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.
    */
-  public String getUniqueName() {
+  public final String getUniqueName() {
     return getClass().getSimpleName() + "_" + getName();
   }
 
   //---------------------------------------------------------------------------
   // setup methods
   //---------------------------------------------------------------------------
-  
+
   /**
    * Sets up the DistributedTestCase.
-   * <p>
-   * Do not override this method. Override {@link #preSetUp()} with work that
+   *
+   * <p> Do not override this method. Override {@link #preSetUp()} with work that
    * needs to occur before setUp() or override {@link #postSetUp()} with work
    * that needs to occur after setUp().
    */
   @Override
-  public void setUp() throws Exception {
+  public void setUp() throws Exception { // TODO: make final and force subclasses to override template methods
     preSetUp();
     setUpDistributedTestCase();
     postSetUp();
   }
-  
+
   /**
    * Sets up DistributedTest in controller and remote VMs. This includes the
-   * defining the test name, setting the default disk store name, logging the 
+   * defining the test name, setting the default disk store name, logging the
    * test history, and capturing a creation stack for detecting the source of
    * incompatible DistributedSystem connections.
-   * <p>
-   * Do not override this method.
+   *
+   * <p>Do not override this method.
    */
   private final void setUpDistributedTestCase() {
     final String className = getClass().getCanonicalName();
@@ -344,37 +332,37 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   /**
-   * <code>preSetUp()</code> is invoked before {@link #setUpDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preSetUp()} is invoked before {@link #setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   protected void preSetUp() throws Exception {
   }
-  
+
   /**
-   * <code>postSetUp()</code> is invoked after {@link #setUpDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postSetUp()} is invoked after {@link #setUpDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   protected void postSetUp() throws Exception {
   }
   
-  private static String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
+  private static final String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
     return "DiskStore-" + String.valueOf(hostIndex) + "-" + String.valueOf(vmIndex) + "-" + className + "." + methodName; // used to be getDeclaringClass()
   }
   
-  private static void setUpVM(final String methodName, final String defaultDiskStoreName) {
+  private static final void setUpVM(final String methodName, final String defaultDiskStoreName) {
     setTestMethodName(methodName);
     GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");    
     setUpCreationStackGenerator();
   }
 
-  private void logTestStart() {
+  private final void logTestStart() {
     System.out.println("\n\n[setup] START TEST " + getClass().getSimpleName()+"."+testMethodName+"\n\n");
   }
   
-  private static void setUpCreationStackGenerator() {
+  private static final void setUpCreationStackGenerator() {
     // the following is moved from InternalDistributedSystem to fix #51058
     InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
     new CreationStackGenerator() {
@@ -405,7 +393,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Write a message to the log about what tests have ran previously. This
    * makes it easier to figure out if a previous test may have caused problems
    */
-  private void logTestHistory() {
+  private final void logTestHistory() {
     String classname = getClass().getSimpleName();
     testHistory.add(classname);
     System.out.println("Previously run tests: " + testHistory);
@@ -417,8 +405,8 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
 
   /**
    * Tears down the DistributedTestCase.
-   * <p>
-   * Do not override this method. Override {@link #preTearDown()} with work that
+   *
+   * <p>Do not override this method. Override {@link #preTearDown()} with work that
    * needs to occur before tearDown() or override {@link #postTearDown()} with work
    * that needs to occur after tearDown().
    */
@@ -437,24 +425,24 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
     cleanupAllVms();
   }
-  
+
   /**
-   * <code>preTearDown()</code> is invoked before {@link #tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code preTearDown()} is invoked before {@link #tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   protected void preTearDown() throws Exception {
   }
-  
+
   /**
-   * <code>postTearDown()</code> is invoked after {@link #tearDownDistributedTestCase()}.
-   * <p>
-   * Override this as needed. Default implementation is empty.
+   * {@code postTearDown()} is invoked after {@link #tearDownDistributedTestCase()}.
+   *
+   * <p>Override this as needed. Default implementation is empty.
    */
   protected void postTearDown() throws Exception {
   }
   
-  public static void cleanupAllVms() { // TODO: make private
+  private static final void cleanupAllVms() {
     tearDownVM();
     Invoke.invokeInEveryVM(()->tearDownVM());
     Invoke.invokeInLocator(()->{
@@ -464,7 +452,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     DUnitLauncher.closeAndCheckForSuspects();
   }
 
-  private static void tearDownVM() {
+  private static final void tearDownVM() {
     closeCache();
 
     // keep alphabetized to detect duplicate lines
@@ -499,7 +487,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     IgnoredException.removeAllExpectedExceptions();
   }
 
-  private static void closeCache() {
+  private static final void closeCache() { // TODO: this should move to CacheTestCase
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
     if (cache != null && !cache.isClosed()) {
       destroyRegions(cache);
@@ -507,7 +495,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
   }
   
-  protected static final void destroyRegions(final Cache cache) { // TODO: make private
+  protected static final void destroyRegions(final Cache cache) { // TODO: this should move to CacheTestCase
     if (cache != null && !cache.isClosed()) {
       // try to destroy the root regions first so that we clean up any persistent files.
       for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {
@@ -526,7 +514,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
     }
   }
   
-  private static void tearDownCreationStackGenerator() {
+  private static final void tearDownCreationStackGenerator() {
     InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(InternalDistributedSystem.DEFAULT_CREATION_STACK_GENERATOR);
   }
 }

@@ -46,6 +46,7 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.MembershipManage
 import com.gemstone.gemfire.distributed.internal.membership.gms.interfaces.Manager;
 import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershipManager;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
@@ -75,9 +76,8 @@ public class DistributionManagerDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  public void setUp() throws Exception {
+  public void preSetUp() throws Exception {
     disconnectAllFromDS();
-    super.setUp();
   }
 
   ////////  Test Methods

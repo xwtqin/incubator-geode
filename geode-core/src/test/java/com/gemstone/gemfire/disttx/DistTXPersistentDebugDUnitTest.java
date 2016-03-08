@@ -72,8 +72,8 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
   }
   
   public static void createPersistentPR(String regionName) {
-    assertNotNull(cache);
-    cache.createRegion(regionName, getPersistentPRAttributes(1, -1, cache, 113, true));
+    assertNotNull(basicGetCache());
+    basicGetCache().createRegion(regionName, getPersistentPRAttributes(1, -1, basicGetCache(), 113, true));
   }
   
   protected static RegionAttributes getPersistentPRAttributes(final int redundancy, final int recoveryDelay,
@@ -105,11 +105,11 @@ public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
     SerializableCallable TxOps = new SerializableCallable() {
       @Override
       public Object call() throws Exception {
-        CacheTransactionManager mgr = cache.getCacheTransactionManager();
+        CacheTransactionManager mgr = basicGetCache().getCacheTransactionManager();
         mgr.setDistributed(true);
         LogWriterUtils.getLogWriter().fine("SJ:TX BEGIN");
         mgr.begin();
-        Region<CustId, Customer> prRegion = cache.getRegion(regionName);
+        Region<CustId, Customer> prRegion = basicGetCache().getRegion(regionName);
 
         CustId custIdOne = new CustId(1);
         Customer customerOne = new Customer("name1", "addr1");

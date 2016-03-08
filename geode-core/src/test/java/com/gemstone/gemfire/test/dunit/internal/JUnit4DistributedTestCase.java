@@ -149,7 +149,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
+  @Override
+  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final and remove from DistributedTestFixture
     if (this.distributedTestFixture != this) {
       return this.distributedTestFixture.getSystem(props);
     }
@@ -240,20 +241,6 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   /**
-   * Returns a loner distributed system in combination with enforceUniqueHost
-   * and redundancyZone properties.
-   * Added specifically to test scenario of defect #47181.
-   */
-  public final InternalDistributedSystem getLonerSystemWithEnforceUniqueHost() {
-    Properties props = getDistributedSystemProperties();
-    props.put(DistributionConfig.MCAST_PORT_NAME, "0");
-    props.put(DistributionConfig.LOCATORS_NAME, "");
-    props.put(DistributionConfig.ENFORCE_UNIQUE_HOST_NAME, "true");
-    props.put(DistributionConfig.REDUNDANCY_ZONE_NAME, "zone1");
-    return getSystem(props);
-  }
-
-  /**
    * Returns whether or this VM is connected to a {@link
    * DistributedSystem}.
    */
@@ -272,6 +259,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    *
    * @since 3.0
    */
+  @Override
   public Properties getDistributedSystemProperties() {
     if (this.distributedTestFixture != this) {
       return this.distributedTestFixture.getDistributedSystemProperties();
@@ -339,8 +327,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
 
   /**
    * Sets up the DistributedTestCase.
-   * <p>
-   * Do not override this method. Override {@link #preSetUp()} with work that
+   *
+   * <p> Do not override this method. Override {@link #preSetUp()} with work that
    * needs to occur before setUp() or override {@link #postSetUp()} with work
    * that needs to occur after setUp().
    */
@@ -356,8 +344,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    * defining the test name, setting the default disk store name, logging the
    * test history, and capturing a creation stack for detecting the source of
    * incompatible DistributedSystem connections.
-   * <p>
-   * Do not override this method.
+   *
+   * <p>Do not override this method.
    */
   private final void setUpDistributedTestCase() {
     final String className = getTestClass().getCanonicalName();
@@ -383,6 +371,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    *
    * <p>Override this as needed. Default implementation is empty.
    */
+  @Override
   public void preSetUp() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.preSetUp();
@@ -395,6 +384,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    *
    * <p>Override this as needed. Default implementation is empty.
    */
+  @Override
   public void postSetUp() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.postSetUp();
@@ -460,8 +450,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
 
   /**
    * Tears down the DistributedTestCase.
-   * <p>
-   * Do not override this method. Override {@link #preTearDown()} with work that
+   *
+   * <p>Do not override this method. Override {@link #preTearDown()} with work that
    * needs to occur before tearDown() or override {@link #postTearDown()} with work
    * that needs to occur after tearDown().
    */
@@ -486,6 +476,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    *
    * <p>Override this as needed. Default implementation is empty.
    */
+  @Override
   public void preTearDown() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.preTearDown();
@@ -498,6 +489,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    *
    * <p>Override this as needed. Default implementation is empty.
    */
+  @Override
   public void postTearDown() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.postTearDown();

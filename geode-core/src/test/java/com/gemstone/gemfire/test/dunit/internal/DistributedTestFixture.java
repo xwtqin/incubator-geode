@@ -23,7 +23,7 @@ import java.util.Properties;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 
 /**
- * Defines the {@code DistributedTestCase} methods that can be overridden by subclasses.
+ * Defines the {@code DistributedTestCase} methods that can be overridden by its subclasses.
  */
 public interface DistributedTestFixture {
 

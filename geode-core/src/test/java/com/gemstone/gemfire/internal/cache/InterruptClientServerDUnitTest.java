@@ -218,7 +218,7 @@ public class InterruptClientServerDUnitTest extends CacheTestCase {
     return vm.invoke(new SerializableCallable() {
       @Override
       public Object call() throws Exception {
-        assertFalse(cache.isClosed());
+        assertFalse(basicGetCache().isClosed());
         Region<Object, Object> region = getCache().getRegion("region");
         return region.get(0);
       }

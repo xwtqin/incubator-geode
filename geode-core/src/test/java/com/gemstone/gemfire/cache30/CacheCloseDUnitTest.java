@@ -26,6 +26,7 @@ import com.gemstone.gemfire.cache.CacheLoaderException;
 import com.gemstone.gemfire.cache.LoaderHelper;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
+import com.gemstone.gemfire.test.dunit.cache.internal.JUnit3CacheTestCase;
 
 /**
  * Test to make sure cache close is working.
@@ -33,7 +34,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
  * @author darrel
  * @since 3.0
  */
-public class CacheCloseDUnitTest extends CacheTestCase {
+public class CacheCloseDUnitTest extends JUnit3CacheTestCase {
 
   public CacheCloseDUnitTest(String name) {
     super(name);

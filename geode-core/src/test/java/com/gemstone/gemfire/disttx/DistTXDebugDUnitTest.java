@@ -124,8 +124,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     // assertNotNull(basicGetCache());
     // Region pr = basicGetCache().createRegion(partitionedRegionName,
     // attr.create());
-    assertNotNull(cache);
-    Region pr = cache.createRegion(partitionedRegionName, attr.create());
+    assertNotNull(basicGetCache());
+    Region pr = basicGetCache().createRegion(partitionedRegionName, attr.create());
     assertNotNull(pr);
     LogWriterUtils.getLogWriter().info(
         "Partitioned Region " + partitionedRegionName
@@ -145,8 +145,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     // assertNotNull(basicGetCache());
     // Region pr = basicGetCache().getRegion(partitionedRegionName);
 
-    assertNotNull(cache);
-    Region pr = cache.getRegion(partitionedRegionName);
+    assertNotNull(basicGetCache());
+    Region pr = basicGetCache().getRegion(partitionedRegionName);
     assertNotNull(pr);
     LogWriterUtils.getLogWriter().info(
         "Destroying Partitioned Region " + partitionedRegionName);
@@ -163,7 +163,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     }
     // Region rr = basicGetCache().createRegion(replicatedRegionName,
     // af.create());
-    Region rr = cache.createRegion(replicatedRegionName, af.create());
+    Region rr = basicGetCache().createRegion(replicatedRegionName, af.create());
     assertNotNull(rr);
     LogWriterUtils.getLogWriter().info(
         "Replicated Region " + replicatedRegionName + " created Successfully :"
@@ -191,7 +191,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // PartitionedRegion pr1 = (PartitionedRegion)
         // basicGetCache().getRegion(
         // "pregion1");
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         // put some data (non tx ops)
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
@@ -203,7 +203,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // put in tx and commit
         // CacheTransactionManager ctx = basicGetCache()
         // .getCacheTransactionManager();
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -262,7 +262,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         SerializableCallable verifySize = new SerializableCallable("getOps") {
           @Override
           public Object call() throws CacheException {
-            PartitionedRegion pr1 = (PartitionedRegion) cache
+            PartitionedRegion pr1 = (PartitionedRegion) basicGetCache()
                 .getRegion("pregion1");
             LogWriterUtils.getLogWriter().info(
                 " calling pr.getLocalSize " + pr1.getLocalSize());
@@ -295,8 +295,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        Region rr1 = cache.getRegion("rregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
 
         // put some data (non tx ops)
         for (int i = 1; i <= 6; i++) {
@@ -307,7 +307,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
           rr1.put(dummy, "1_entry__" + i);
         }
 
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         // destroy data in tx and commit
         ctx.begin();
@@ -350,8 +350,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        Region rr1 = cache.getRegion("rregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr1.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
@@ -382,9 +382,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // PartitionedRegion pr1 = (PartitionedRegion)
         // basicGetCache().getRegion(
         // "pregion1");
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         // Region rr1 = basicGetCache().getRegion("rregion1");
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         // put some data (non tx ops)
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
@@ -398,7 +398,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // put in tx and commit
         // CacheTransactionManager ctx = basicGetCache()
         // .getCacheTransactionManager();
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -430,12 +430,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
 
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
@@ -461,12 +461,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // PartitionedRegion pr1 = (PartitionedRegion)
         // basicGetCache().getRegion(
         // "pregion1");
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
 
         // put in tx and commit
         // CacheTransactionManager ctx = basicGetCache()
         // .getCacheTransactionManager();
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -493,8 +493,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxGetOps = new SerializableCallable("TxGetOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
@@ -512,12 +512,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         // PartitionedRegion pr1 = (PartitionedRegion)
         // basicGetCache().getRegion(
         // "pregion1");
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
 
         // put in tx and commit
         // CacheTransactionManager ctx = basicGetCache()
         // .getCacheTransactionManager();
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -558,9 +558,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        Region rr1 = cache.getRegion("rregion1");
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -595,12 +595,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
@@ -624,10 +624,10 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
-        Region rr1 = cache.getRegion("rregion1");     
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         HashMap<DummyKeyBasedRoutingResolver, String> phm = new HashMap<DummyKeyBasedRoutingResolver, String>();
@@ -663,12 +663,12 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
         
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
@@ -691,9 +691,9 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         HashMap<DummyKeyBasedRoutingResolver, String> phm = new HashMap<DummyKeyBasedRoutingResolver, String>();
@@ -725,7 +725,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(2, pr1.getLocalSize());
@@ -760,7 +760,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");     
+        Region rr1 = basicGetCache().getRegion("rregion1");
         //put some data
         HashMap<Integer, String> rhm = new HashMap<Integer, String>();
         for (int i = 1; i <= 3; i++) {
@@ -768,7 +768,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         }
         rr1.putAll(rhm);
         
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         rr1.removeAll(rhm.keySet());
@@ -795,7 +795,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(0, rr1.size());
@@ -818,7 +818,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         HashMap<DummyKeyBasedRoutingResolver, String> phm = new HashMap<DummyKeyBasedRoutingResolver, String>();
         for (int i = 1; i <= 3; i++) {
           DummyKeyBasedRoutingResolver dummy = new DummyKeyBasedRoutingResolver(
@@ -827,7 +827,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
         }
         pr1.putAll(phm);
         
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         pr1.removeAll(phm.keySet());
@@ -850,7 +850,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        PartitionedRegion pr1 = (PartitionedRegion) cache.getRegion("pregion1");
+        PartitionedRegion pr1 = (PartitionedRegion) basicGetCache().getRegion("pregion1");
         LogWriterUtils.getLogWriter().info(
             " calling pr.getLocalSize " + pr1.getLocalSize());
         assertEquals(0, pr1.getLocalSize());
@@ -877,8 +877,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        Region rr1 = basicGetCache().getRegion("rregion1");
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
@@ -907,7 +907,7 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable verifySize = new SerializableCallable("getOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
+        Region rr1 = basicGetCache().getRegion("rregion1");
         LogWriterUtils.getLogWriter()
             .info(" calling rr.getLocalSize " + rr1.size());
         assertEquals(3, rr1.size());
@@ -921,8 +921,8 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
     SerializableCallable TxRollbackOps = new SerializableCallable("TxOps") {
       @Override
       public Object call() throws CacheException {
-        Region rr1 = cache.getRegion("rregion1");
-        CacheTransactionManager ctx = cache.getCacheTransactionManager();
+        Region rr1 = basicGetCache().getRegion("rregion1");
+        CacheTransactionManager ctx = basicGetCache().getCacheTransactionManager();
         ctx.setDistributed(true);
         ctx.begin();
         for (int i = 1; i <= 3; i++) {
