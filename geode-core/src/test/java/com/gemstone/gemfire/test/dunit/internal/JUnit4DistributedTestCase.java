@@ -154,7 +154,10 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
     if (this.distributedTestFixture != this) {
       return this.distributedTestFixture.getSystem(props);
     }
+  return defaultGetSystem(props);
+  }
 
+  final InternalDistributedSystem defaultGetSystem(final Properties props) {
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -168,10 +171,10 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
         String testName = lastSystemCreatedInTest.getName() + '-' + testMethod;
         String oldLogFile = p.getProperty(DistributionConfig.LOG_FILE_NAME);
         p.put(DistributionConfig.LOG_FILE_NAME,
-            oldLogFile.replace("system.log", testName+".log"));
+                oldLogFile.replace("system.log", testName+".log"));
         String oldStatFile = p.getProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME);
         p.put(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
-            oldStatFile.replace("statArchive.gfs", testName+".gfs"));
+                oldStatFile.replace("statArchive.gfs", testName+".gfs"));
       }
       system = (InternalDistributedSystem)DistributedSystem.connect(p);
       lastSystemProperties = p;
@@ -182,9 +185,9 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
         needNewSystem = !newProps.equals(lastSystemProperties);
         if(needNewSystem) {
           LogWriterUtils.getLogWriter().info(
-              "Test class has changed and the new DS properties are not an exact match. "
-                  + "Forcing DS disconnect. Old props = "
-                  + lastSystemProperties + "new props=" + newProps);
+                  "Test class has changed and the new DS properties are not an exact match. "
+                          + "Forcing DS disconnect. Old props = "
+                          + lastSystemProperties + "new props=" + newProps);
         }
       } else {
         Properties activeProps = system.getProperties();
@@ -196,8 +199,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
           if (!value.equals(activeProps.getProperty(key))) {
             needNewSystem = true;
             LogWriterUtils.getLogWriter().info("Forcing DS disconnect. For property " + key
-                + " old value = " + activeProps.getProperty(key)
-                + " new value = " + value);
+                    + " old value = " + activeProps.getProperty(key)
+                    + " new value = " + value);
             break;
           }
         }
@@ -225,6 +228,18 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    */
   public final InternalDistributedSystem getSystem() {
     return getSystem(getDistributedSystemProperties());
+  }
+
+  public final InternalDistributedSystem basicGetSystem() {
+    return this.system;
+  }
+
+  public final void nullSystem() { // TODO: delete
+    system = null;
+  }
+
+  public static final InternalDistributedSystem getSystemStatic() {
+    return system;
   }
 
   /**
@@ -264,6 +279,10 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
     if (this.distributedTestFixture != this) {
       return this.distributedTestFixture.getDistributedSystemProperties();
     }
+    return defaultGetDistributedSystemProperties();
+  }
+
+  final Properties defaultGetDistributedSystemProperties() {
     return new Properties();
   }
 
@@ -275,7 +294,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   /**
    * Disconnects this VM from the distributed system
    */
-  public static void disconnectFromDS() { // TODO: this is overridden by CacheTestCase
+  public static final void disconnectFromDS() { // TODO: this is overridden by CacheTestCase
     setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {

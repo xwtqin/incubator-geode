@@ -45,6 +45,7 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
+import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
@@ -63,9 +64,14 @@ import org.junit.experimental.categories.Category;
  * @author David Whitlock
  */
 @Category(DistributedTest.class)
-public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
+public class DistributedSystemDUnitTest extends DistributedTestCase {
+
+  public DistributedSystemDUnitTest(String name) {
+    super(name);
+  }
 
   public void postSetUp() throws Exception {
+    System.out.println("KIRK:postSetUp");
     disconnectAllFromDS();
   }
   
@@ -248,7 +254,7 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
     Properties config = new Properties();
     config.setProperty("mcast-port", "0");
     config.setProperty("locators", "");
-    system = (InternalDistributedSystem)DistributedSystem.connect(config);
+    getSystem(config);
     try {
       // make sure isolated distributed system can still create a cache and region
       Cache cache = CacheFactory.create(getSystem());
@@ -268,7 +274,7 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
     int tcpPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     config.put("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     config.setProperty("tcp-port", String.valueOf(tcpPort));
-    system = (InternalDistributedSystem)DistributedSystem.connect(config);
+    InternalDistributedSystem system = getSystem(config);
     DistributionManager dm = (DistributionManager)system.getDistributionManager();
     GMSMembershipManager mgr = (GMSMembershipManager)dm.getMembershipManager();
     int actualPort = mgr.getDirectChannelPort();
@@ -300,7 +306,7 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
       config.setProperty(DistributionConfig.BIND_ADDRESS_NAME, loopback.getHostAddress());
       LogWriterUtils.getLogWriter().info("attempting to connect with " + loopback +" and locators=" + locators);
       try {
-        system = (InternalDistributedSystem)DistributedSystem.connect(config);
+        InternalDistributedSystem system = getSystem(config);
         system.disconnect();
         fail("expected a configuration exception disallowing use of loopback address");
       } catch (GemFireConfigException e) {
@@ -318,8 +324,8 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
     config.put("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
     // Minimum 3 ports required in range for UDP, FD_SOCK and TcpConduit.
     config.setProperty(DistributionConfig.MEMBERSHIP_PORT_RANGE_NAME, 
-        ""+unicastPort+"-"+(unicastPort+2)); 
-    system = (InternalDistributedSystem)DistributedSystem.connect(config);
+        ""+unicastPort+"-"+(unicastPort+2));
+    InternalDistributedSystem system = getSystem(config);
     DistributionManager dm = (DistributionManager)system.getDistributionManager();
     InternalDistributedMember idm = dm.getDistributionManagerId();
     system.disconnect();
@@ -334,7 +340,7 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
     config.setProperty(DistributionConfig.MEMBERSHIP_PORT_RANGE_NAME, ""
         + (DistributionConfig.DEFAULT_MEMBERSHIP_PORT_RANGE[1] - 2) + "-"
         + (DistributionConfig.DEFAULT_MEMBERSHIP_PORT_RANGE[1]));
-    system = (InternalDistributedSystem)DistributedSystem.connect(config);
+    InternalDistributedSystem system = getSystem(config);
     Cache cache = CacheFactory.create(system);
     cache.addCacheServer();
     DistributionManager dm = (DistributionManager) system.getDistributionManager();
@@ -356,7 +362,7 @@ public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
     config.setProperty("start-locator", "localhost["+socketPorts[1]+"]");
     config.setProperty(DistributionConfig.MEMBERSHIP_PORT_RANGE_NAME, 
         ""+unicastPort+"-"+(unicastPort+2));
-    system = (InternalDistributedSystem)DistributedSystem.connect(config);
+    InternalDistributedSystem system = (InternalDistributedSystem)DistributedSystem.connect(config);
     try {
       DistributionManager dm = (DistributionManager)system.getDistributionManager();
       InternalDistributedMember idm = dm.getDistributionManagerId();

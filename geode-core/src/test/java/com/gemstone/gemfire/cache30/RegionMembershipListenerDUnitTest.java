@@ -295,7 +295,7 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
       
       crashCacheOtherVm();
       int to = getOpTimeout();
-      MembershipManagerHelper.waitForMemberDeparture(system, this.otherId, to);
+      MembershipManagerHelper.waitForMemberDeparture(basicGetSystem(), this.otherId, to);
       this.myListener.waitForCrashOp();
       {
         RegionEvent e = this.myListener.getLastEvent();

@@ -69,15 +69,6 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
 
   private final JUnit4CacheTestCase delegate = new JUnit4CacheTestCase(this);
 
-//  private static final Logger logger = LogService.getLogger();
-//
-//  /** The Cache from which regions are obtained
-//   *
-//   * All references synchronized via <code>JUnit3CacheTestCase.class</code>
-//   * */
-//  // static so it doesn't get serialized with SerializableRunnable inner classes
-//  protected static Cache cache;
-
   public JUnit3CacheTestCase(final String name) {
     super(name);
   }
@@ -159,9 +150,9 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
     return JUnit4CacheTestCase.basicGetCache();
   }
 
-  public static synchronized final void disconnectFromDS() {
-    JUnit4CacheTestCase.disconnectFromDS();
-  }
+//  public static synchronized final void disconnectFromDS() {
+//    JUnit4CacheTestCase.disconnectFromDS();
+//  }
 
   /** Close the cache */
   public static synchronized final void closeCache() {
@@ -198,17 +189,6 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
    */
   public final Region createRegion(final String name, final RegionAttributes attributes) throws CacheException {
     return delegate.createRegion(name, attributes);
-  }
-
-  /**
-   * Provide any internal region arguments, typically required when internal
-   * use (aka meta-data) regions are needed.
-   *
-   * @return internal arguments, which may be null.  If null, then default
-   *         InternalRegionArguments are used to construct the Region
-   */
-  public final InternalRegionArguments getInternalRegionArguments() {
-    return delegate.getInternalRegionArguments();
   }
 
   public final Region createRegion(final String name, final String rootName, final RegionAttributes attributes) throws CacheException {

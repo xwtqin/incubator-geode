@@ -158,8 +158,8 @@ public class LocalFunctionExecutionDUnitTest extends DistributedTestCase{
     try {
       Function function1 = new TestFunction(true,TestFunction.TEST_FUNCTION_EXCEPTION);
       FunctionService.registerFunction(function1);
-      DistributedMember localmember = system.getDistributedMember();
-      ResultCollector rc = FunctionService.onMember(system, localmember).withArgs(Boolean.TRUE).execute(function1.getId());
+      DistributedMember localmember = getSystemStatic().getDistributedMember();
+      ResultCollector rc = FunctionService.onMember(getSystemStatic(), localmember).withArgs(Boolean.TRUE).execute(function1.getId());
       rc.getResult();
       Assert.fail("Exception should occur",new Exception("Test Failed"));
     }

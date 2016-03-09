@@ -77,7 +77,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
    *
    * <p>Field is static so it doesn't get serialized with SerializableRunnable inner classes.
    */
-  protected static Cache cache; // TODO: make private
+  private static Cache cache;
 
   private final CacheTestFixture cacheTestFixture;
 
@@ -96,7 +96,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   JUnit4CacheTestCase(final CacheTestFixture cacheTestFixture) {
-    super(); // TODO: what about DistributedTestFixture?
+    super(); // TODO: what about DistributedTestFixture? Make CacheTestFixture extend DistributedTestFixture
     if (cacheTestFixture == null) {
       this.cacheTestFixture = this;
     } else {
@@ -325,10 +325,10 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
     return cache;
   }
 
-  public static final synchronized void disconnectFromDS() {
-    closeCache();
-    JUnit4DistributedTestCase.disconnectFromDS();
-  }
+//  public static final synchronized void disconnectFromDS() {
+//    closeCache();
+//    JUnit4DistributedTestCase.disconnectFromDS();
+//  }
 
   /**
    * Close the cache
@@ -442,7 +442,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
    * @return internal arguments, which may be null.  If null, then default
    *         InternalRegionArguments are used to construct the Region
    */
-  public final InternalRegionArguments getInternalRegionArguments() { // TODO: delete?
+  private final InternalRegionArguments getInternalRegionArguments() { // TODO: delete?
     return null;
   }
 

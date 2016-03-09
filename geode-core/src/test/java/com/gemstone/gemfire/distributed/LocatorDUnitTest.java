@@ -75,6 +75,8 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  */
 public class LocatorDUnitTest extends DistributedTestCase {
 
+  private static volatile InternalDistributedSystem system = null;
+
   static TestHook hook;
 
   /**
@@ -112,6 +114,14 @@ public class LocatorDUnitTest extends DistributedTestCase {
     }
     if (port2 > 0) {
       DistributedTestUtils.deleteLocatorStateFile(port2);
+    }
+  }
+
+  @Override
+  protected final void postTearDown() throws Exception {
+    if (system != null) {
+      system.disconnect();
+      system = null;
     }
   }
 

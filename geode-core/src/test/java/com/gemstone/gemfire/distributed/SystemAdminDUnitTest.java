@@ -52,7 +52,7 @@ public class SystemAdminDUnitTest extends DistributedTestCase {
   
   public void disconnect() {
     // get rid of the command-line distributed system created by SystemAdmin
-    system = null;
+    nullSystem();
     InternalDistributedSystem sys = InternalDistributedSystem.getAnyInstance();
     if (sys != null && sys.isConnected()) {
       LogWriterUtils.getLogWriter().info("disconnecting(3)");

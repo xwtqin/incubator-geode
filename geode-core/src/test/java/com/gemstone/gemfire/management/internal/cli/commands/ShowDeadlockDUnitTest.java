@@ -188,7 +188,7 @@ public class ShowDeadlockDUnitTest extends CacheTestCase {
         } catch (InterruptedException e) {
           Assert.fail("interrupted", e);
         }
-        ResultCollector collector = FunctionService.onMember(system, member).execute(new TestFunction());
+        ResultCollector collector = FunctionService.onMember(basicGetSystem(), member).execute(new TestFunction());
         //wait the function to lock the lock on member.
         collector.getResult();
         lock.unlock();

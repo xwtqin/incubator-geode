@@ -152,7 +152,7 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
         Properties props = getDistributedSystemProperties();
         props.put("mcast-port", "0");
         props.remove("locators");
-        system = (InternalDistributedSystem)DistributedSystem.connect(props);
+        InternalDistributedSystem system = getSystem(props);
         Cache cache = CacheFactory.create(system);
         cache.createRegion(OTHER_REGION,af.create());
         if (startServer) {

@@ -94,7 +94,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
    * @since 3.0
    */
   public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
-    return delegate.getSystem(props);
+    return delegate.defaultGetSystem(props);
   }
 
   /**
@@ -109,6 +109,18 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
    */
   public final InternalDistributedSystem getSystem() {
     return delegate.getSystem();
+  }
+
+  public final InternalDistributedSystem basicGetSystem() {
+    return delegate.basicGetSystem();
+  }
+
+  public final void nullSystem() { // TODO: delete
+    delegate.nullSystem();
+  }
+
+  public static final InternalDistributedSystem getSystemStatic() {
+    return JUnit4DistributedTestCase.getSystemStatic();
   }
 
   /**
@@ -139,17 +151,17 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
    * @since 3.0
    */
   public Properties getDistributedSystemProperties() {
-    return delegate.getDistributedSystemProperties();
+    return delegate.defaultGetDistributedSystemProperties();
   }
 
-  public static void disconnectAllFromDS() {
+  public static final void disconnectAllFromDS() {
     JUnit4DistributedTestCase.disconnectAllFromDS();
   }
 
   /**
    * Disconnects this VM from the distributed system
    */
-  public static void disconnectFromDS() {
+  public static final void disconnectFromDS() {
     JUnit4DistributedTestCase.disconnectFromDS();
   }
 
@@ -157,7 +169,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   // name methods
   //---------------------------------------------------------------------------
 
-  public static String getTestMethodName() {
+  public static final String getTestMethodName() {
     return JUnit4DistributedTestCase.getTestMethodName();
   }
 
@@ -169,7 +181,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.
    */
-  public String getUniqueName() {
+  public final String getUniqueName() {
     return delegate.getUniqueName();
   }
 

@@ -272,7 +272,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
         publishers[pubThread] = pubs[pubVM].invokeAsync(
             new CacheSerializableRunnable("pub-connect-and-put-data-" + pubVM + "-thread-" + pubThread) {
           public void run2() throws CacheException {
-            final PubSubStats statistics = new PubSubStats(system, "pub-" + pubThread, pubVM);
+            final PubSubStats statistics = new PubSubStats(basicGetSystem(), "pub-" + pubThread, pubVM);
             pubStatsRef.set(pubThread, statistics);
             
             final RegionMembershipListener rml = rmlRef.get();

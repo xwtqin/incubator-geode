@@ -129,7 +129,7 @@ public class InterestListRecoveryDUnitTest extends DistributedTestCase
     VM serverFirstRegistered = null;
     VM serverSecondRegistered = null;
 
-    LogWriter logger = system.getLogWriter();
+    LogWriter logger = basicGetSystem().getLogWriter();
     createEntries();
     server2.invoke(() -> InterestListRecoveryDUnitTest.createEntries());
     server1.invoke(() -> InterestListRecoveryDUnitTest.createEntries());

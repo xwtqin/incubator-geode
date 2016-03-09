@@ -945,12 +945,12 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
   
   public final InternalDistributedSystem getSystem(String diskStoreId) {
     new Exception("TEST DEBUG###" + diskStoreId).printStackTrace();
-    if (system == null || !system.isConnected()) {
+    if (basicGetSystem() == null || !basicGetSystem().isConnected()) {
       // Figure out our distributed system properties
       Properties p = DistributedTestUtils.getAllDistributedSystemProperties(getDistributedSystemProperties());
-      system = (InternalDistributedSystem)DistributedSystem.connect(p);
+      getSystem(p);
     } 
-    return system;
+    return basicGetSystem();
   }
   
   

@@ -4259,7 +4259,7 @@ public class WANTestBase extends DistributedTestCase{
   public static void checkAllSiteMetaData(     
       Map<Integer, ArrayList<Integer>> dsVsPorts) {
     waitForSitesToUpdate();
-    assertNotNull(system);
+    assertNotNull(getSystemStatic());
 //    Map<Integer,Set<DistributionLocatorId>> allSiteMetaData = ((DistributionConfigImpl)system
 //        .getConfig()).getAllServerLocatorsInfo();
     
@@ -4292,7 +4292,7 @@ public class WANTestBase extends DistributedTestCase{
     
     WaitCriterion wc = new WaitCriterion() {
       public boolean done() {
-        if (system != null) {
+        if (getSystemStatic() != null) {
           return true;
         }
         else {
@@ -4305,7 +4305,7 @@ public class WANTestBase extends DistributedTestCase{
       }
     };
     Wait.waitForCriterion(wc, 50000, 1000, true); 
-    assertNotNull(system);
+    assertNotNull(getSystemStatic());
     
 //    final Map<Integer,Set<DistributionLocatorId>> allSiteMetaData = ((DistributionConfigImpl)system
 //        .getConfig()).getAllServerLocatorsInfo();

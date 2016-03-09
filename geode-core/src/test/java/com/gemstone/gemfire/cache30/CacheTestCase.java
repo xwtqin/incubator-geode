@@ -416,7 +416,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * @return internal arguements, which may be null.  If null, then default 
    * InternalRegionArguments are used to construct the Region
    */
-  public final InternalRegionArguments getInternalRegionArguments()
+  private final InternalRegionArguments getInternalRegionArguments()
   {
     return null;
   }

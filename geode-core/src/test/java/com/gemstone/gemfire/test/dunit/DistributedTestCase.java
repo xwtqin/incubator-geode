@@ -81,7 +81,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   private static final Set<String> testHistory = new LinkedHashSet<String>();
 
   /** This VM's connection to the distributed system */
-  public static InternalDistributedSystem system; // TODO: make private
+  private static InternalDistributedSystem system; // TODO: make private
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
   private static volatile String testMethodName;
@@ -200,6 +200,18 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    */
   public final InternalDistributedSystem getSystem() {
     return getSystem(getDistributedSystemProperties());
+  }
+
+  public final InternalDistributedSystem basicGetSystem() {
+    return this.system;
+  }
+
+  public final void nullSystem() { // TODO: delete
+    system = null;
+  }
+
+  public static final InternalDistributedSystem getSystemStatic() {
+    return system;
   }
 
   /**
