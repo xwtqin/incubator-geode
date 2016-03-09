@@ -81,22 +81,22 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
 
   private final CacheTestFixture cacheTestFixture;
 
-  /**
-   * Creates a new JUnit4DistributedTestCase test with the given name.
-   *
-   * @deprecated Please use {@link #JUnit4CacheTestCase()} instead. The {@code name} is ignored.
-   */
-  @Deprecated
-  public JUnit4CacheTestCase(final String name) {
-    this();
-  }
+//  /**
+//   * Creates a new JUnit4DistributedTestCase test with the given name.
+//   *
+//   * @deprecated Please use {@link #JUnit4CacheTestCase()} instead. The {@code name} is ignored.
+//   */
+//  @Deprecated
+//  public JUnit4CacheTestCase(final String name) {
+//    this();
+//  }
 
   public JUnit4CacheTestCase() {
     this((CacheTestFixture)null);
   }
 
   JUnit4CacheTestCase(final CacheTestFixture cacheTestFixture) {
-    super(); // TODO: what about DistributedTestFixture? Make CacheTestFixture extend DistributedTestFixture
+    super(cacheTestFixture);
     if (cacheTestFixture == null) {
       this.cacheTestFixture = this;
     } else {

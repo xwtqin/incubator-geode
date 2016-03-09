@@ -33,14 +33,12 @@ import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
-
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
-import junit.framework.AssertionFailedError;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -233,7 +231,7 @@ public class DistributedMemberDUnitTest extends JUnit4DistributedTestCase {
               assertEquals(3, members.size());
               break;
             }
-            catch (AssertionFailedError e) {
+            catch (AssertionError e) { // TODO: delete this
               if (i < 3) {
                 sleep(200);
               } else {
@@ -314,7 +312,7 @@ public class DistributedMemberDUnitTest extends JUnit4DistributedTestCase {
               assertEquals(3, members.size());
               break;
             }
-            catch (AssertionFailedError e) {
+            catch (AssertionError e) { // TODO: delete this
               if (i < 3) {
                 sleep(200);
               } else {

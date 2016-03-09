@@ -64,19 +64,16 @@ import org.junit.experimental.categories.Category;
  * @author David Whitlock
  */
 @Category(DistributedTest.class)
-public class DistributedSystemDUnitTest extends DistributedTestCase {
+public class DistributedSystemDUnitTest extends JUnit3DistributedTestCase {
 
   public DistributedSystemDUnitTest(String name) {
     super(name);
   }
 
   public void postSetUp() throws Exception {
-    System.out.println("KIRK:postSetUp");
     disconnectAllFromDS();
   }
   
-  ////////  Test methods
-
   /**
    * ensure that waitForMemberDeparture correctly flushes the serial message queue for
    * the given member
@@ -117,7 +114,7 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
     }
   }
 
-  static class FakeMessage extends SerialDistributionMessage {
+  private static class FakeMessage extends SerialDistributionMessage {
     volatile boolean[] blocked;
     volatile boolean processed;
     
@@ -154,10 +151,6 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   @Test
   public void testGetSameSystemTwice() {
     Properties config = new Properties();
-
-//     int unusedPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-//     config.setProperty("mcast-port", String.valueOf(unusedPort));
-    // a loner is all this test needs
     config.setProperty("mcast-port", "0");
     config.setProperty("locators", "");
     // set a flow-control property for the test (bug 37562)
@@ -177,10 +170,6 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   @Test
   public void testGetDifferentSystem() {
     Properties config = new Properties();
-
-//     int unusedPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-//     config.setProperty("mcast-port", String.valueOf(unusedPort));
-    // a loner is all this test needs
     config.setProperty("mcast-port", "0");
     config.setProperty("locators", "");
     config.setProperty("mcast-flow-control", "3000000,0.20,3000");
@@ -209,10 +198,6 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   @Test
   public void testGetDifferentSystemAfterClose() {
     Properties config = new Properties();
-
-//     int unusedPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-//     config.setProperty("mcast-port", String.valueOf(unusedPort));
-    // a loner is all this test needs
     config.setProperty("mcast-port", "0");
     config.setProperty("locators", "");
 
@@ -229,9 +214,6 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   @Test
   public void testGetProperties() {
     Properties config = new Properties();
-
-//     int unusedPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-//     config.setProperty("mcast-port", String.valueOf(unusedPort));
     // a loner is all this test needs
     int unusedPort = 0;
     config.setProperty("mcast-port", "0");
@@ -394,11 +376,6 @@ public class DistributedSystemDUnitTest extends DistributedTestCase {
   @Test
   public void testEmptyCacheXmlFile() throws Exception {
     Properties config = new Properties();
-
-//     int unusedPort =
-//       AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-//     config.setProperty("mcast-port", String.valueOf(unusedPort));
-    // a loner is all this test needs
     config.setProperty("mcast-port", "0");
     config.setProperty("locators", "");
     config.setProperty(DistributionConfig.CACHE_XML_FILE_NAME, "");

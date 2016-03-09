@@ -89,9 +89,9 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
-  public static boolean reconnect = false; // TODO: make private
+  private static boolean reconnect = false; // TODO: make private
 
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
+  private static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
 
   /**
    * Creates a new <code>DistributedTestCase</code> test with the given name.

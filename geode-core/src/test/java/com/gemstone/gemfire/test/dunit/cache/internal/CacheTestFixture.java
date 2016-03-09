@@ -17,11 +17,12 @@
 package com.gemstone.gemfire.test.dunit.cache.internal;
 
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.test.dunit.internal.DistributedTestFixture;
 
 /**
  * Defines the {@code CacheTestCase} methods that can be overridden by its subclasses.
  */
-public interface CacheTestFixture {
+public interface CacheTestFixture extends DistributedTestFixture {
 
   /**
    * {@code preTearDownCacheTestCase()} is invoked before {@code CacheTestCase#tearDownCacheTestCase()}.

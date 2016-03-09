@@ -90,21 +90,21 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
 
   private final DistributedTestFixture distributedTestFixture;
 
-  /**
-   * Creates a new JUnit4DistributedTestCase distributedTestFixture with the given name.
-   *
-   * @deprecated Please use {@link #JUnit4DistributedTestCase()} instead. The {@code name} is ignored.
-   */
-  @Deprecated
-  public JUnit4DistributedTestCase(final String name) {
-    this();
-  }
+//  /**
+//   * Creates a new JUnit4DistributedTestCase distributedTestFixture with the given name.
+//   *
+//   * @deprecated Please use {@link #JUnit4DistributedTestCase()} instead. The {@code name} is ignored.
+//   */
+//  @Deprecated
+//  public JUnit4DistributedTestCase(final String name) {
+//    this();
+//  }
 
   public JUnit4DistributedTestCase() {
     this((DistributedTestFixture)null);
   }
 
-  JUnit4DistributedTestCase(final DistributedTestFixture distributedTestFixture) {
+  protected JUnit4DistributedTestCase(final DistributedTestFixture distributedTestFixture) {
     if (distributedTestFixture == null) {
       this.distributedTestFixture = this;
     } else {
