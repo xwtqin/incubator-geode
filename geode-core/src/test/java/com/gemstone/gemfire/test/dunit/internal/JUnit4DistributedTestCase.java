@@ -76,7 +76,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   private static final Set<String> testHistory = new LinkedHashSet<String>();
 
   /** This VM's connection to the distributed system */
-  public static InternalDistributedSystem system; // TODO: make private
+  private static InternalDistributedSystem system;
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
   private static volatile String testMethodName;
@@ -84,26 +84,23 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
-  public static boolean reconnect = false; // TODO: make private
+  private static boolean reconnect = false;
 
-  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
+  private static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
   private final DistributedTestFixture distributedTestFixture;
 
-//  /**
-//   * Creates a new JUnit4DistributedTestCase distributedTestFixture with the given name.
-//   *
-//   * @deprecated Please use {@link #JUnit4DistributedTestCase()} instead. The {@code name} is ignored.
-//   */
-//  @Deprecated
-//  public JUnit4DistributedTestCase(final String name) {
-//    this();
-//  }
-
+  /**
+   * Constructs a new distributed test. All JUnit 4 test classes need to have a
+   * no-arg constructor.
+   */
   public JUnit4DistributedTestCase() {
     this((DistributedTestFixture)null);
   }
 
+  /**
+   * This constructor should only be used by {@link JUnit3DistributedTestCase}.
+   */
   protected JUnit4DistributedTestCase(final DistributedTestFixture distributedTestFixture) {
     if (distributedTestFixture == null) {
       this.distributedTestFixture = this;

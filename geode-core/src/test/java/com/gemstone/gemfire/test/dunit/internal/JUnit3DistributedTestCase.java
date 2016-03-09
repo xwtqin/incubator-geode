@@ -45,33 +45,13 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
 
   private final JUnit4DistributedTestCase delegate = new JUnit4DistributedTestCase(this);
 
-//  private static final Logger logger = LogService.getLogger();
-//
-//  private static final Set<String> testHistory = new LinkedHashSet<String>();
-//
-//  /** This VM's connection to the distributed system */
-//  public static InternalDistributedSystem system;
-//  private static Class lastSystemCreatedInTest;
-//  private static Properties lastSystemProperties;
-//  private static volatile String testMethodName;
-//
-//  /** For formatting timing info */
-//  private static final DecimalFormat format = new DecimalFormat("###.###");
-//
-//  public static boolean reconnect = false;
-//
-//  public static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
-
-  static {
-    JUnit4DistributedTestCase.initializeDistributedTestCase();
-  }
-
   /**
    * Creates a new <code>JUnit3DistributedTestCase</code> test with the
    * given name.
    */
   public JUnit3DistributedTestCase(final String name) {
     super(name);
+    JUnit4DistributedTestCase.initializeDistributedTestCase();
   }
 
   //---------------------------------------------------------------------------
