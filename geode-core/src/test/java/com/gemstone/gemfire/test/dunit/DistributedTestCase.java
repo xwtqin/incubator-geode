@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.test.dunit;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.gemstone.gemfire.test.dunit.internal.DistributedTestFixture;
 import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
 
@@ -74,14 +76,14 @@ import junit.framework.TestCase;
  */
 @Category(DistributedTest.class)
 @SuppressWarnings("serial")
-public abstract class DistributedTestCase extends TestCase implements java.io.Serializable {
+public abstract class DistributedTestCase extends TestCase implements DistributedTestFixture, Serializable {
   
   private static final Logger logger = LogService.getLogger();
   
   private static final Set<String> testHistory = new LinkedHashSet<String>();
 
   /** This VM's connection to the distributed system */
-  private static InternalDistributedSystem system; // TODO: make private
+  private static InternalDistributedSystem system;
   private static Class lastSystemCreatedInTest;
   private static Properties lastSystemProperties;
   private static volatile String testMethodName;
@@ -89,9 +91,9 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   /** For formatting timing info */
   private static final DecimalFormat format = new DecimalFormat("###.###");
 
-  private static boolean reconnect = false; // TODO: make private
+  private static boolean reconnect = false;
 
-  private static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest"); // TODO: make private
+  private static final boolean logPerTest = Boolean.getBoolean("dunitLogPerTest");
 
   /**
    * Creates a new <code>DistributedTestCase</code> test with the given name.
@@ -127,7 +129,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    *
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: restore final
+  public final InternalDistributedSystem getSystem(final Properties props) {
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -203,7 +205,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   }
 
   public final InternalDistributedSystem basicGetSystem() {
-    return this.system;
+    return system;
   }
 
   public final void nullSystem() { // TODO: delete
@@ -253,7 +255,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * Disconnects this VM from the distributed system
    */
   public static final void disconnectFromDS() {
-    setTestMethodName(null);
+    //setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {
       system.disconnect();
@@ -310,7 +312,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    * that needs to occur after setUp().
    */
   @Override
-  public void setUp() throws Exception { // TODO: make final and force subclasses to override template methods
+  public final void setUp() throws Exception {
     preSetUp();
     setUpDistributedTestCase();
     postSetUp();
@@ -348,7 +350,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    *
    * <p>Override this as needed. Default implementation is empty.
    */
-  protected void preSetUp() throws Exception {
+  public void preSetUp() throws Exception {
   }
 
   /**
@@ -356,7 +358,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    *
    * <p>Override this as needed. Default implementation is empty.
    */
-  protected void postSetUp() throws Exception {
+  public void postSetUp() throws Exception {
   }
   
   private static final String getDefaultDiskStoreName(final int hostIndex, final int vmIndex, final String className, final String methodName) {
@@ -377,28 +379,28 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
   private static final void setUpCreationStackGenerator() {
     // the following is moved from InternalDistributedSystem to fix #51058
     InternalDistributedSystem.TEST_CREATION_STACK_GENERATOR.set(
-    new CreationStackGenerator() {
-      @Override
-      public Throwable generateCreationStack(final DistributionConfig config) {
-        final StringBuilder sb = new StringBuilder();
-        final String[] validAttributeNames = config.getAttributeNames();
-        for (int i = 0; i < validAttributeNames.length; i++) {
-          final String attName = validAttributeNames[i];
-          final Object actualAtt = config.getAttributeObject(attName);
-          String actualAttStr = actualAtt.toString();
-          sb.append("  ");
-          sb.append(attName);
-          sb.append("=\"");
-          if (actualAtt.getClass().isArray()) {
-            actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
+        new CreationStackGenerator() {
+          @Override
+          public Throwable generateCreationStack(final DistributionConfig config) {
+            final StringBuilder sb = new StringBuilder();
+            final String[] validAttributeNames = config.getAttributeNames();
+            for (int i = 0; i < validAttributeNames.length; i++) {
+              final String attName = validAttributeNames[i];
+              final Object actualAtt = config.getAttributeObject(attName);
+              String actualAttStr = actualAtt.toString();
+              sb.append("  ");
+              sb.append(attName);
+              sb.append("=\"");
+              if (actualAtt.getClass().isArray()) {
+                actualAttStr = InternalDistributedSystem.arrayToString(actualAtt);
+              }
+              sb.append(actualAttStr);
+              sb.append("\"");
+              sb.append("\n");
+            }
+            return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
           }
-          sb.append(actualAttStr);
-          sb.append("\"");
-          sb.append("\n");
-        }
-        return new Throwable("Creating distributed system with the following configuration:\n" + sb.toString());
-      }
-    });
+        });
   }
   
   /**
@@ -443,7 +445,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    *
    * <p>Override this as needed. Default implementation is empty.
    */
-  protected void preTearDown() throws Exception {
+  public void preTearDown() throws Exception {
   }
 
   /**
@@ -451,7 +453,7 @@ public abstract class DistributedTestCase extends TestCase implements java.io.Se
    *
    * <p>Override this as needed. Default implementation is empty.
    */
-  protected void postTearDown() throws Exception {
+  public void postTearDown() throws Exception {
   }
   
   private static final void cleanupAllVms() {

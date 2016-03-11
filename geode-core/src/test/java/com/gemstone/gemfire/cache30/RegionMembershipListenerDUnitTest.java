@@ -62,13 +62,12 @@ public class RegionMembershipListenerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     DistributedRegion.TEST_HOOK_ADD_PROFILE = true;
   }
   
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     DistributedRegion.TEST_HOOK_ADD_PROFILE = false;
   }
 

@@ -85,8 +85,7 @@ public class ReconnectDUnitTest extends CacheTestCase
   }
   
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     this.locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     final int locPort = this.locatorPort;
     Host.getHost(0).getVM(locatorVMNumber)
@@ -133,7 +132,7 @@ public class ReconnectDUnitTest extends CacheTestCase
   }
   
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     try {
       Host.getHost(0).getVM(locatorVMNumber).invoke(new SerializableRunnable("stop locator") {
         public void run() {

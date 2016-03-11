@@ -114,9 +114,8 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
     super(name);
   }
   
-
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     Host host = Host.getHost(0);
     member0 = host.getVM(0);
     member1 = host.getVM(1);
@@ -126,7 +125,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   }
   
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     // close the clients first
     member0.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
     member1.invoke(() -> PartitionedRegionSingleHopWithServerGroupDUnitTest.closeCacheAndDisconnect());
@@ -136,7 +135,7 @@ public class PartitionedRegionSingleHopWithServerGroupDUnitTest extends CacheTes
   }
   
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     try {
       member0 = null;
       member1 = null;

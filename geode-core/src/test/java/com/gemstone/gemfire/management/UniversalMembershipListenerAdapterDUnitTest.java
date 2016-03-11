@@ -90,7 +90,7 @@ public class UniversalMembershipListenerAdapterDUnitTest extends ClientServerTes
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     InternalClientMembership.unregisterAllListeners();
   }
   

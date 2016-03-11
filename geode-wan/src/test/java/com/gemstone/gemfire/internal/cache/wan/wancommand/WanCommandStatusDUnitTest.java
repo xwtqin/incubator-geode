@@ -38,10 +38,6 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
   public void testGatewaySenderStatus(){
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));

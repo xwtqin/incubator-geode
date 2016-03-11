@@ -57,10 +57,6 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     super(name);
   }
   
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
   public void testParallelSenderQueueEventsOverflow_NoDiskStoreSpecified() throws Exception {
     Integer lnPort = (Integer)vm0.invoke(() -> WANTestBase.createFirstLocatorWithDSId( 1 ));
     Integer nyPort = (Integer)vm1.invoke(() -> WANTestBase.createFirstRemoteLocator( 2, lnPort ));

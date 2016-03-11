@@ -170,8 +170,9 @@ public class WANTestBase extends DistributedTestCase{
   public WANTestBase(String name) {
     super(name);
   }
-  
-  public void setUp() throws Exception {
+
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     vm0 = host.getVM(0); 
     vm1 = host.getVM(1);
@@ -182,8 +183,8 @@ public class WANTestBase extends DistributedTestCase{
     vm6 = host.getVM(6); 
     vm7 = host.getVM(7);
     //Need to set the test name after the VMs are created
-    super.setUp();
-    //this is done to vary the number of dispatchers for sender 
+
+    //this is done to vary the number of dispatchers for sender
     //during every test method run
     shuffleNumDispatcherThreads();
     Invoke.invokeInEveryVM(WANTestBase.class,"setNumDispatcherThreadsForTheRun",
@@ -191,6 +192,10 @@ public class WANTestBase extends DistributedTestCase{
     IgnoredException.addIgnoredException("Connection refused");
     IgnoredException.addIgnoredException("Software caused connection abort");
     IgnoredException.addIgnoredException("Connection reset");
+    postSetUpWANTestBase();
+  }
+
+  protected void postSetUpWANTestBase() throws Exception {
   }
   
   public static void shuffleNumDispatcherThreads() {
@@ -5119,7 +5124,7 @@ public class WANTestBase extends DistributedTestCase{
   }*/
   
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     cleanupVM();
     List<AsyncInvocation> invocations = new ArrayList<AsyncInvocation>();
     final Host host = Host.getHost(0);
@@ -5168,14 +5173,15 @@ public class WANTestBase extends DistributedTestCase{
   }
   
   @Override
-  public InternalDistributedSystem getSystem(Properties props) {
+  public final Properties getDistributedSystemProperties() {
     // For now all WANTestBase tests allocate off-heap memory even though
     // many of them never use it.
     // The problem is that WANTestBase has static methods that create instances
     // of WANTestBase (instead of instances of the subclass). So we can't override
     // this method so that only the off-heap subclasses allocate off heap memory.
+    Properties props = new Properties();
     props.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "300m");
-    return super.getSystem(props);
+    return props;
   }
   
   /**

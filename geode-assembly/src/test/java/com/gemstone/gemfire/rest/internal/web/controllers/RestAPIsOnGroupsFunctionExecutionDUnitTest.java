@@ -46,9 +46,9 @@ public class RestAPIsOnGroupsFunctionExecutionDUnitTest extends RestAPITestBase 
   public RestAPIsOnGroupsFunctionExecutionDUnitTest(String name) {
     super(name);
   }
-  
-  public void setUp() throws Exception {
-    super.setUp();
+
+  @Override
+  protected final void postSetUpRestAPITestBase() throws Exception {
     final Host host = Host.getHost(0);
   }
   

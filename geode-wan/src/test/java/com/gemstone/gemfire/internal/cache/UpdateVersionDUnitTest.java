@@ -81,7 +81,7 @@ public class UpdateVersionDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     closeCache();
     Invoke.invokeInEveryVM(new SerializableRunnable() { public void run() {
       closeCache();

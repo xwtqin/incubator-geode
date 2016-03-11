@@ -82,12 +82,8 @@ public class ClientMembershipDUnitTest extends ClientServerTestCase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     InternalClientMembership.unregisterAllListeners();
   }
 

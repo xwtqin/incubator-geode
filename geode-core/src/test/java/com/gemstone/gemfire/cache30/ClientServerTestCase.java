@@ -55,14 +55,17 @@ public class ClientServerTestCase extends CacheTestCase {
   public static boolean AUTO_LOAD_BALANCE = false;
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     // this makes sure we don't have any connection left over from previous tests
     disconnectAllFromDS();
+    postSetUpClientServerTestCase();
+  }
+
+  protected void postSetUpClientServerTestCase() throws Exception {
   }
   
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     preTearDownClientServerTestCase();
     // this makes sure we don't leave anything for the next tests
     disconnectAllFromDS();

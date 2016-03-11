@@ -40,6 +40,7 @@ import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
+import junit.framework.TestResult;
 
 /**
  * This class tests the ContiunousQuery mechanism in GemFire.
@@ -130,10 +131,9 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
   public CqResultSetUsingPoolDUnitTest(String name) {
     super(name);
   }
-  
-  public void setUp() throws Exception {
-    super.setUp();
-    
+
+  @Override
+  public final void postSetUp() throws Exception {
     // avoid IllegalStateException from HandShake by connecting all vms tor
     // system before creating ConnectionPools
     getSystem();
@@ -142,10 +142,12 @@ public class CqResultSetUsingPoolDUnitTest extends CacheTestCase {
         getSystem();
       }
     });
-    
+    postSetUpCqResultSetUsingPoolDUnitTest();
   }
-  
-  
+
+  protected void postSetUpCqResultSetUsingPoolDUnitTest() throws Exception {
+  }
+
   /**
    * Tests CQ Result Set.
    * 

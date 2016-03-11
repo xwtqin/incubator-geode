@@ -32,7 +32,8 @@ public class CacheMapDistTXDUnitTest extends CacheMapTxnDUnitTest {
     super(name);
   }
 
-  public void setUp() throws Exception {
+  @Override
+  public final void postSetUpCacheMapTxnDUnitTest() throws Exception {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
     VM vm1 = host.getVM(1);
@@ -40,7 +41,7 @@ public class CacheMapDistTXDUnitTest extends CacheMapTxnDUnitTest {
     vm0.invoke(() -> CacheMapDistTXDUnitTest.setDistributedTX());
     vm1.invoke(() -> CacheMapDistTXDUnitTest.setDistributedTX());
 
-    super.setUp(); // creates cache
+    // super call used to be here
 
     // make sure that "distributed-transactions" is true 
     vm0.invoke(() -> CacheMapDistTXDUnitTest.checkIsDistributedTX());

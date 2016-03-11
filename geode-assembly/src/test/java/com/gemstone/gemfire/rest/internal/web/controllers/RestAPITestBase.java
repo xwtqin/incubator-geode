@@ -47,8 +47,7 @@ public class RestAPITestBase extends DistributedTestCase {
   
   
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
     AgentUtil agentUtil = new AgentUtil(GemFireVersion.getGemFireVersion());
     if (agentUtil.findWarLocation("geode-web-api") == null) {
@@ -63,13 +62,17 @@ public class RestAPITestBase extends DistributedTestCase {
     // gradle sets a property telling us where the build is located
     final String buildDir = System.getProperty("geode.build.dir", System.getProperty("user.dir"));
     Invoke.invokeInEveryVM(()-> System.setProperty("geode.build.dir", buildDir));
-  }  
+    postSetUpRestAPITestBase();
+  }
+
+  protected void postSetUpRestAPITestBase() throws Exception {
+  }
   
   /**
    * close the clients and teh servers
    */
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     vm0.invoke(() -> closeCache());
     vm1.invoke(() -> closeCache());
     vm2.invoke(() -> closeCache());

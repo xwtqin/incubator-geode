@@ -110,10 +110,14 @@ public class ClientServerTransactionDUnitTest extends RemoteTransactionDUnitTest
   public ClientServerTransactionDUnitTest(String name) {
     super(name);
   }
-  
-  public void setUp() throws Exception {
-    super.setUp();
+
+  @Override
+  public final void postSetUp() throws Exception {
     IgnoredException.addIgnoredException("java.net.SocketException");
+    postSetUpClientServerTransactionDUnitTest();
+  }
+
+  protected void postSetUpClientServerTransactionDUnitTest() throws Exception {
   }
 
   private Integer createRegionsAndStartServer(VM vm, boolean accessor) {

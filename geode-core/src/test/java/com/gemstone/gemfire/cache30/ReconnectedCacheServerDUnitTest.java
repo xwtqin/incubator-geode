@@ -37,7 +37,7 @@ public class ReconnectedCacheServerDUnitTest extends CacheTestCase {
   private Cache cache;
 
   @Override
-  public void setUp() {
+  public final void postSetUp() {
     this.cache = getCache();
     if (this.cache.getCacheServers().isEmpty()) {
       this.cache.addCacheServer();
@@ -46,7 +46,7 @@ public class ReconnectedCacheServerDUnitTest extends CacheTestCase {
   }
   
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     if (addedCacheServer && this.cache != null && !this.cache.isClosed()) {
       // since I polluted the cache I should shut it down in order
       // to avoid affecting other tests

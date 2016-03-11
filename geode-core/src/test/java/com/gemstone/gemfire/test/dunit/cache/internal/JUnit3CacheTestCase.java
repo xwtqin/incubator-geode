@@ -17,49 +17,21 @@
 package com.gemstone.gemfire.test.dunit.cache.internal;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
-import java.util.Properties;
 
-import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheExistsException;
 import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.CacheTransactionManager;
-import com.gemstone.gemfire.cache.ExpirationAttributes;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.RegionExistsException;
 import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.cache.client.ClientCache;
 import com.gemstone.gemfire.cache.client.ClientCacheFactory;
-import com.gemstone.gemfire.cache.client.PoolManager;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
-import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
-import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
-import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
-import com.gemstone.gemfire.test.dunit.Invoke;
-import com.gemstone.gemfire.test.dunit.LogWriterUtils;
-import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.Wait;
-import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
-import org.apache.logging.log4j.Logger;
 
 /**
  * The abstract superclass of tests that require the creation of a
@@ -85,7 +57,7 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
    * Sets this test up with a CacheCreation as its cache.
    * Any existing cache is closed. Whoever calls this must also call finishCacheXml
    */
-  public static final synchronized void beginCacheXml() {
+  public static final void beginCacheXml() {
     JUnit4CacheTestCase.beginCacheXml();
   }
 
@@ -139,23 +111,19 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
     return delegate.getGemfireCache();
   }
 
-  public static synchronized final boolean hasCache() {
+  public static final boolean hasCache() {
     return JUnit4CacheTestCase.hasCache();
   }
 
   /**
    * Return current cache without creating one.
    */
-  public static synchronized final Cache basicGetCache() {
+  public static final Cache basicGetCache() {
     return JUnit4CacheTestCase.basicGetCache();
   }
 
-//  public static synchronized final void disconnectFromDS() {
-//    JUnit4CacheTestCase.disconnectFromDS();
-//  }
-
   /** Close the cache */
-  public static synchronized final void closeCache() {
+  public static final void closeCache() {
     JUnit4CacheTestCase.closeCache();
   }
 
@@ -180,7 +148,7 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
   /**
    * Local destroy all root regions and close the cache.
    */
-  protected final synchronized static void remoteTearDown() {
+  protected static final void remoteTearDown() {
     JUnit4CacheTestCase.remoteTearDown();
   }
 
@@ -219,7 +187,7 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
    * @deprecated Please use {@link IgnoredException#addIgnoredException(String)} instead.
    */
   @Deprecated
-  public CacheSerializableRunnable addExceptionTag1(final String exceptionStringToIgnore) {
+  public final CacheSerializableRunnable addExceptionTag1(final String exceptionStringToIgnore) {
     return delegate.addExceptionTag1(exceptionStringToIgnore);
   }
 
@@ -227,7 +195,7 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
    * @deprecated Please use {@link IgnoredException#remove()} instead.
    */
   @Deprecated
-  public CacheSerializableRunnable removeExceptionTag1(final String exceptionStringToIgnore) {
+  public final CacheSerializableRunnable removeExceptionTag1(final String exceptionStringToIgnore) {
     return delegate.removeExceptionTag1(exceptionStringToIgnore);
   }
 

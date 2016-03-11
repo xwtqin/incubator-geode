@@ -48,10 +48,6 @@ public class SenderWithTransportFilterDUnitTest extends WANTestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
   public void testSerialSenderWithTansportFilter() {
     Integer lnPort = (Integer)vm0.invoke(() -> WANTestBase.createFirstLocatorWithDSId( 1 ));
 

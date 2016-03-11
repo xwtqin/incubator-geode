@@ -375,7 +375,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
     postTearDownCacheTestCase();
   }
 
-  public final void tearDownCacheTestCase() {
+  public final void tearDownCacheTestCase() { // TODO: make private
     // locally destroy all root regions and close the cache
     remoteTearDown();
     // Now invoke it in every VM
@@ -390,16 +390,22 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
 
   @Override
   public void preTearDownCacheTestCase() throws Exception {
+    if (this.cacheTestFixture != this) {
+      this.cacheTestFixture.preTearDownCacheTestCase();
+    }
   }
 
   @Override
   public void postTearDownCacheTestCase() throws Exception {
+    if (this.cacheTestFixture != this) {
+      this.cacheTestFixture.postTearDownCacheTestCase();
+    }
   }
 
   /**
    * Local destroy all root regions and close the cache.
    */
-  protected static synchronized void remoteTearDown() {
+  protected static final synchronized void remoteTearDown() {
     try {
       DistributionMessageObserver.setInstance(null);
       destroyRegions(cache);

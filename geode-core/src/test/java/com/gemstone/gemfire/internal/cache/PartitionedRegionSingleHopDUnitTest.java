@@ -108,8 +108,8 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     IgnoredException.addIgnoredException("Connection refused");
     Host host = Host.getHost(0);
     member0 = host.getVM(0);
@@ -119,7 +119,7 @@ public class PartitionedRegionSingleHopDUnitTest extends CacheTestCase {
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     try {
       closeCacheAndDisconnect();
       

@@ -65,15 +65,14 @@ public class ShowDeadlockDUnitTest extends CacheTestCase {
   private static final Map<String, String> EMPTY_ENV = Collections.emptyMap();
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     // This test does not require an actual Gfsh connection to work, however when run as part of a suite, prior tests
     // may mess up the environment causing this test to fail. Setting this prevents false failures.
     CliUtil.isGfshVM = false;
   }
 
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       private static final long serialVersionUID = 1L;
 

@@ -102,10 +102,13 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    * @throws Exception -
    *           thrown in any problem occurs in setUp
    */
-  public void setUp() throws Exception
-  {
+  @Override
+  public final void preSetUp() throws Exception {
     disconnectAllFromDS();
-    super.setUp();
+  }
+
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     server = host.getVM(0);
     client = host.getVM(1);
@@ -113,7 +116,6 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
     int PORT2 = ((Integer)server.invoke(() -> Bug36853EventsExpiryDUnitTest.createServerCache())).intValue();
 
     client.invoke(() -> Bug36853EventsExpiryDUnitTest.createClientCache( NetworkUtils.getServerHostName(host), new Integer(PORT2) ));
-
   }
 
   /**
@@ -292,7 +294,7 @@ public class Bug36853EventsExpiryDUnitTest extends CacheTestCase
    *           thrown if any problem occurs in closing client and server caches.
    */
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception
+  public final void preTearDownCacheTestCase() throws Exception
   {
     // close client
     client.invoke(() -> Bug36853EventsExpiryDUnitTest.unSetExpiryTimeAndCloseCache());

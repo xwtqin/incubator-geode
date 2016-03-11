@@ -110,13 +110,17 @@ public class PRClientServerTestBase extends CacheTestCase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     Host host = Host.getHost(0);
     server1 = host.getVM(0);
     server2 = host.getVM(1);
     server3 = host.getVM(2);
     client = host.getVM(3);
+    postSetUpPRClientServerTestBase();
+  }
+
+  protected void postSetUpPRClientServerTestBase() throws Exception {
   }
 
   public ArrayList createCommonServerAttributes(String regionName,
@@ -682,7 +686,7 @@ public class PRClientServerTestBase extends CacheTestCase {
   }  
   
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     closeCacheAndDisconnect();
     client.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());
     server1.invoke(() -> PRClientServerTestBase.closeCacheAndDisconnect());

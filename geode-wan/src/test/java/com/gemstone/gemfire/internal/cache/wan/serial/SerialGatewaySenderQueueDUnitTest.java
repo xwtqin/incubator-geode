@@ -54,11 +54,6 @@ public class SerialGatewaySenderQueueDUnitTest extends WANTestBase{
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
-  
   public void testPrimarySecondaryQueueDrainInOrder_RR() throws Exception {
     Integer lnPort = (Integer)vm0.invoke(() -> WANTestBase.createFirstLocatorWithDSId( 1 ));
 

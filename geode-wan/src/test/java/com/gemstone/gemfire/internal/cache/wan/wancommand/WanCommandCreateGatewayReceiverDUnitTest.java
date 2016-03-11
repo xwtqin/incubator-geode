@@ -44,10 +44,6 @@ public class WanCommandCreateGatewayReceiverDUnitTest extends
     super(name);
   }
   
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
   /**
    * GatewayReceiver with all default attributes
    */

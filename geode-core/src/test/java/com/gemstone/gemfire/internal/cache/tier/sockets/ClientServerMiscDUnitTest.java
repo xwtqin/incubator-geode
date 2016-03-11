@@ -118,9 +118,8 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
     super(name);
   }
 
-  public void setUp() throws Exception
-  {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     host = Host.getHost(0);
     server1 = host.getVM(0);
     server2 = host.getVM(1);
@@ -1381,7 +1380,7 @@ public class ClientServerMiscDUnitTest extends CacheTestCase
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     // close the clients first
     closeCacheAndDisconnect();
     // then close the servers

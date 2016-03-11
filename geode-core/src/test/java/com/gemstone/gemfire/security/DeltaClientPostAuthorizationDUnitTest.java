@@ -59,9 +59,8 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     super(name);
   }
 
-  public void setUp() throws Exception {
-
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
     server2 = host.getVM(1);
@@ -75,7 +74,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
   }
 
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     // close the clients first
     client1.invoke(() -> SecurityTestUtil.closeCache());
     client2.invoke(() -> SecurityTestUtil.closeCache());

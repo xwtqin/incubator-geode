@@ -47,10 +47,9 @@ public class WANLocatorServerDUnitTest extends WANTestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  protected final void postSetUpWANTestBase() throws Exception {
     final Host host = Host.getHost(0);
-
   }
 
   public void test_3Locators_2Servers() {

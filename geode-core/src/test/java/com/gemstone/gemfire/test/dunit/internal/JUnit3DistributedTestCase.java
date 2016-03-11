@@ -18,12 +18,17 @@ package com.gemstone.gemfire.test.dunit.internal;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.internal.cache.HARegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import junit.framework.TestCase;
@@ -43,6 +48,8 @@ import org.junit.experimental.categories.Category;
 @Category(DistributedTest.class)
 public abstract class JUnit3DistributedTestCase extends TestCase implements DistributedTestFixture, Serializable {
 
+  private static final Logger logger = LogService.getLogger();
+
   private final JUnit4DistributedTestCase delegate = new JUnit4DistributedTestCase(this);
 
   /**
@@ -58,30 +65,37 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   // methods for tests
   //---------------------------------------------------------------------------
 
+  /**
+   * @deprecated Please override {@link #getDistributedSystemProperties()} instead.
+   */
+  @Deprecated
   public final void setSystem(final Properties props, final DistributedSystem ds) { // TODO: override getDistributedSystemProperties and then delete
     delegate.setSystem(props, ds);
   }
 
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the given
-   * <code>Properties</code>.  Note that this method uses hydra's
-   * configuration to determine the location of log files, etc.
-   * Note: "final" was removed so that WANTestBase can override this method.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the given {@code Properties}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
+   *
+   * <p>Note: "final" was removed so that WANTestBase can override this method.
    * This was part of the xd offheap merge.
    *
-   * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final
-    return delegate.defaultGetSystem(props);
+  public final InternalDistributedSystem getSystem(final Properties props) {
+    return delegate.getSystem(props);
   }
 
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the
-   * <code>Properties</code> returned by {@link
-   * #getDistributedSystemProperties}.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the {@code Properties} returned by
+   * {@link #getDistributedSystemProperties()}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
    *
    * @see #getSystem(Properties)
    *
@@ -104,8 +118,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   }
 
   /**
-   * Returns a loner distributed system that isn't connected to other
-   * vms
+   * Returns a loner distributed system that isn't connected to other vms.
    *
    * @since 6.5
    */
@@ -114,19 +127,16 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   }
 
   /**
-   * Returns whether or this VM is connected to a {@link
-   * DistributedSystem}.
+   * Returns whether or this VM is connected to a {@link DistributedSystem}.
    */
   public final boolean isConnectedToDS() {
     return delegate.isConnectedToDS();
   }
 
   /**
-   * Returns a <code>Properties</code> object used to configure a
-   * connection to a {@link
-   * com.gemstone.gemfire.distributed.DistributedSystem}.
-   * Unless overridden, this method will return an empty
-   * <code>Properties</code> object.
+   * Returns a {@code Properties} object used to configure a connection to a
+   * {@link DistributedSystem}. Unless overridden, this method will return an
+   * empty {@code Properties} object.
    *
    * @since 3.0
    */
@@ -203,8 +213,8 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
 
   /**
    * Tears down the DistributedTestCase.
-   * <p>
-   * Do not override this method. Override {@link #preTearDown()} with work that
+   *
+   * <p>Do not override this method. Override {@link #preTearDown()} with work that
    * needs to occur before tearDown() or override {@link #postTearDown()} with work
    * that needs to occur after tearDown().
    */
@@ -229,7 +239,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   public void postTearDown() throws Exception {
   }
 
-  public static void cleanupAllVms() { // TODO: make private
-    JUnit4DistributedTestCase.cleanupAllVms();
+  protected static final void destroyRegions(final Cache cache) {
+    JUnit4DistributedTestCase.destroyRegions(cache);
   }
 }

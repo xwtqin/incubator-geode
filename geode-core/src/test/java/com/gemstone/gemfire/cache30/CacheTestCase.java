@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.test.dunit.cache.internal.CacheTestFixture;
 import org.apache.logging.log4j.Logger;
 
 import com.gemstone.gemfire.InternalGemFireError;
@@ -63,6 +64,7 @@ import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 
 /**
  * The abstract superclass of tests that require the creation of a
@@ -71,23 +73,22 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  * @author David Whitlock
  * @since 3.0
  */
-public abstract class CacheTestCase extends DistributedTestCase {
+public abstract class CacheTestCase extends DistributedTestCase implements CacheTestFixture {
   private static final Logger logger = LogService.getLogger();
 
-  /** The Cache from which regions are obtained 
-   * 
-   * All references synchronized via <code>CacheTestCase.class</code>
-   * */
-  // static so it doesn't get serialized with SerializableRunnable inner classes
+  /**
+   * The Cache from which regions are obtained.
+   *
+   * <p>All references synchronized via {@code JUnit4CacheTestCase.class}.
+   *
+   * <p>Field is static so it doesn't get serialized with SerializableRunnable inner classes.
+   */
   private static Cache cache;
   
-  ////////  Constructors
-
   public CacheTestCase(String name) {
     super(name);
   }
 
-  ////////  Helper methods
   /**
    * Creates the <code>Cache</code> for this test
    */
@@ -162,12 +163,10 @@ public abstract class CacheTestCase extends DistributedTestCase {
    * Any existing cache is closed. Whoever calls this must also call finishCacheXml
    */
   public static final synchronized void beginCacheXml() {
-//    getLogWriter().info("before closeCache");
     closeCache();
-//    getLogWriter().info("before TestCacheCreation");
     cache = new TestCacheCreation();
-//    getLogWriter().info("after TestCacheCreation");
   }
+
   /**
    * Finish what beginCacheXml started. It does this be generating a cache.xml
    * file and then creating a real cache using that cache.xml.
@@ -272,11 +271,11 @@ public abstract class CacheTestCase extends DistributedTestCase {
       if (gfCache != null && !gfCache.isClosed()
           && gfCache.getCancelCriterion().cancelInProgress() != null) {
         Wait.waitForCriterion(new WaitCriterion() {
-
+          @Override
           public boolean done() {
             return gfCache.isClosed();
           }
-
+          @Override
           public String description() {
             return "waiting for cache to close";
           }
@@ -300,15 +299,16 @@ public abstract class CacheTestCase extends DistributedTestCase {
   public final GemFireCacheImpl getGemfireCache() {
     return (GemFireCacheImpl)getCache();
   }
+
   public static synchronized final boolean hasCache() {
-      return cache != null;
+    return cache != null;
   }
 
   /**
    * Return current cache without creating one.
    */
   public static synchronized final Cache basicGetCache() {
-      return cache;
+    return cache;
   }
 
   /** Close the cache */
@@ -356,7 +356,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   }
 
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     preTearDownCacheTestCase();
     
     // locally destroy all root regions and close the cache
@@ -373,10 +373,10 @@ public abstract class CacheTestCase extends DistributedTestCase {
     postTearDownCacheTestCase();
   }
   
-  protected void preTearDownCacheTestCase() throws Exception {
+  public void preTearDownCacheTestCase() throws Exception {
   }
 
-  protected void postTearDownCacheTestCase() throws Exception {
+  public void postTearDownCacheTestCase() throws Exception {
   }
 
   /**
@@ -480,6 +480,7 @@ public abstract class CacheTestCase extends DistributedTestCase {
   throws RegionExistsException, TimeoutException {
     return getCache().createRegion(rootName, attrs);
   }
+
   public final Region createExpiryRootRegion(String rootName, RegionAttributes attrs)
   throws RegionExistsException, TimeoutException {
     System.setProperty(LocalRegion.EXPIRY_MS_PROPERTY, "true");
@@ -489,55 +490,6 @@ public abstract class CacheTestCase extends DistributedTestCase {
       System.getProperties().remove(LocalRegion.EXPIRY_MS_PROPERTY);
     }
   }
-
-
-//  /**
-//   * send an unordered message requiring an ack to all connected members
-//   * in order to flush the unordered communication channel
-//   */
-//  public final void sendUnorderedMessageToAll() {
-//    //if (getCache() instanceof distcache.gemfire.GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage msg = new com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage();
-//        msg.send(InternalDistributedSystem.getConnectedInstance().getDM().getNormalDistributionManagerIds(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send unordered message due to exception", e);
-//      }
-//    //}
-//  }
-
-  /**
-   * send an unordered message requiring an ack to all connected admin members 
-   * in order to flush the unordered communication channel
-   */
-//  public void sendUnorderedMessageToAdminMembers() {
-//    //if (getCache() instanceof distcache.gemfire.GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage msg = new com.gemstone.gemfire.distributed.internal.HighPriorityAckedMessage();
-//        msg.send(DistributedSystemHelper.getAdminMembers(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send unordered message due to exception", e);
-//      }
-//    //}
-//  }
-
-//  /**
-//   * send an ordered message requiring an ack to all connected members
-//   * in order to flush the ordered communication channel
-//   */
-//  public final void sendSerialMessageToAll() {
-//    if (getCache() instanceof GemFireCacheImpl) {
-//      try {
-//        com.gemstone.gemfire.distributed.internal.SerialAckedMessage msg = new com.gemstone.gemfire.distributed.internal.SerialAckedMessage();
-//        msg.send(InternalDistributedSystem.getConnectedInstance().getDM().getNormalDistributionManagerIds(), false);
-//      }
-//      catch (Exception e) {
-//        throw new RuntimeException("Unable to send serial message due to exception", e);
-//      }
-//    }
-//  }
 
   /**
    * @deprecated Use DistributedTestCase.addExpectedException

@@ -61,8 +61,8 @@ public class BackwardCompatibilitySerializationDUnitTest extends CacheTestCase {
     super(name);
   }
 
-  @Before
-  public void setUp() {
+  @Override
+  public final void postSetUp() {
     baos = new ByteArrayOutputStream();
     // register TestMessage using an existing dsfid
     DSFIDFactory.registerDSFID(DataSerializableFixedID.PUTALL_VERSIONS_LIST,
@@ -70,7 +70,7 @@ public class BackwardCompatibilitySerializationDUnitTest extends CacheTestCase {
   }
 
   @After
-  protected final void preTearDownCacheTestCase() {
+  public final void preTearDownCacheTestCase() {
     resetFlags();
     // reset the class mapped to the dsfid
     DSFIDFactory.registerDSFID(DataSerializableFixedID.PUTALL_VERSIONS_LIST,

@@ -126,8 +126,8 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     vm1 = host.getVM(1);
@@ -1568,7 +1568,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
   
   @Override
-  protected final void postTearDown() throws Exception {
+  public final void postTearDown() throws Exception {
     cleanupVM();
     vm0.invoke(() -> AsyncEventQueueTestBase.cleanupVM());
     vm1.invoke(() -> AsyncEventQueueTestBase.cleanupVM());
@@ -1607,16 +1607,16 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     ((MyGatewaySenderEventListener)eventListener1).printMap();
   }
   
-
   @Override
-  public InternalDistributedSystem getSystem(Properties props) {
-    // For now all WANTestBase tests allocate off-heap memory even though
+  public final Properties getDistributedSystemProperties() {
+  // For now all WANTestBase tests allocate off-heap memory even though
     // many of them never use it.
     // The problem is that WANTestBase has static methods that create instances
     // of WANTestBase (instead of instances of the subclass). So we can't override
     // this method so that only the off-heap subclasses allocate off heap memory.
+    Properties props = new Properties();
     props.setProperty(DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "300m");
-    return super.getSystem(props);
+    return props;
   }
   
   /**

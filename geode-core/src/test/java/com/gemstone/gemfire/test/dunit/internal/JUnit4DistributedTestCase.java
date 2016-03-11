@@ -129,6 +129,10 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   // methods for tests
   //---------------------------------------------------------------------------
 
+  /**
+   * @deprecated Please override {@link #getDistributedSystemProperties()} instead.
+   */
+  @Deprecated
   public final void setSystem(final Properties props, final DistributedSystem ds) { // TODO: override getDistributedSystemProperties and then delete
     system = (InternalDistributedSystem)ds;
     lastSystemProperties = props;
@@ -136,25 +140,18 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the given
-   * <code>Properties</code>.  Note that this method uses hydra's
-   * configuration to determine the location of log files, etc.
-   * Note: "final" was removed so that WANTestBase can override this method.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the given {@code Properties}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
+   *
+   * <p>Note: "final" was removed so that WANTestBase can override this method.
    * This was part of the xd offheap merge.
    *
-   * see hydra.DistributedConnectionMgr#connect
    * @since 3.0
    */
-  @Override
-  public /*final*/ InternalDistributedSystem getSystem(final Properties props) { // TODO: make final and remove from DistributedTestFixture
-    if (this.distributedTestFixture != this) {
-      return this.distributedTestFixture.getSystem(props);
-    }
-  return defaultGetSystem(props);
-  }
-
-  final InternalDistributedSystem defaultGetSystem(final Properties props) {
+  public final InternalDistributedSystem getSystem(final Properties props) {
     // Setting the default disk store name is now done in setUp
     if (system == null) {
       system = InternalDistributedSystem.getAnyInstance();
@@ -214,10 +211,12 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   /**
-   * Returns this VM's connection to the distributed system.  If
-   * necessary, the connection will be lazily created using the
-   * <code>Properties</code> returned by {@link
-   * #getDistributedSystemProperties}.
+   * Returns this VM's connection to the distributed system.  If necessary, the
+   * connection will be lazily created using the {@code Properties} returned by
+   * {@link #getDistributedSystemProperties()}.
+   *
+   * <p>Do not override this method. Override {@link #getDistributedSystemProperties()}
+   * instead.
    *
    * @see #getSystem(Properties)
    *
@@ -228,7 +227,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   public final InternalDistributedSystem basicGetSystem() {
-    return this.system;
+    return system;
   }
 
   public final void nullSystem() { // TODO: delete
@@ -240,8 +239,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   /**
-   * Returns a loner distributed system that isn't connected to other
-   * vms
+   * Returns a loner distributed system that isn't connected to other vms.
    *
    * @since 6.5
    */
@@ -253,19 +251,16 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   /**
-   * Returns whether or this VM is connected to a {@link
-   * DistributedSystem}.
+   * Returns whether or this VM is connected to a {@link DistributedSystem}.
    */
   public final boolean isConnectedToDS() {
     return system != null && system.isConnected();
   }
 
   /**
-   * Returns a {@code Properties} object used to configure a
-   * connection to a {@link
-   * com.gemstone.gemfire.distributed.DistributedSystem}.
-   * Unless overridden, this method will return an empty
-   * {@code Properties} object.
+   * Returns a {@code Properties} object used to configure a connection to a
+   * {@link DistributedSystem}. Unless overridden, this method will return an
+   * empty {@code Properties} object.
    *
    * <p>Override this as needed. Default implementation returns empty {@code Properties}.
    *
@@ -291,8 +286,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   /**
    * Disconnects this VM from the distributed system
    */
-  public static final void disconnectFromDS() { // TODO: this is overridden by CacheTestCase
-    setTestMethodName(null);
+  public static final void disconnectFromDS() {
+    //setTestMethodName(null);
     GemFireCacheImpl.testCacheXml = null;
     if (system != null) {
       system.disconnect();
@@ -344,7 +339,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   /**
    * Sets up the DistributedTestCase.
    *
-   * <p> Do not override this method. Override {@link #preSetUp()} with work that
+   * <p>Do not override this method. Override {@link #preSetUp()} with work that
    * needs to occur before setUp() or override {@link #postSetUp()} with work
    * that needs to occur after setUp().
    */
@@ -391,7 +386,6 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   public void preSetUp() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.preSetUp();
-      return;
     }
   }
 
@@ -404,7 +398,6 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   public void postSetUp() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.postSetUp();
-      return;
     }
   }
 
@@ -496,7 +489,6 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   public void preTearDown() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.preTearDown();
-      return;
     }
   }
 
@@ -509,11 +501,10 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   public void postTearDown() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.postTearDown();
-      return;
     }
   }
 
-  public static final void cleanupAllVms() { // TODO: make private
+  private static final void cleanupAllVms() {
     tearDownVM();
     Invoke.invokeInEveryVM(()->tearDownVM());
     Invoke.invokeInLocator(()->{
@@ -558,7 +549,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
     IgnoredException.removeAllExpectedExceptions();
   }
 
-  private static final void closeCache() {
+  private static final void closeCache() { // TODO: this should move to CacheTestCase
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
     if (cache != null && !cache.isClosed()) {
       destroyRegions(cache);
@@ -566,7 +557,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
     }
   }
 
-  protected static final void destroyRegions(final Cache cache) { // TODO: make private
+  protected static final void destroyRegions(final Cache cache) { // TODO: this should move to CacheTestCase
     if (cache != null && !cache.isClosed()) {
       // try to destroy the root regions first so that we clean up any persistent files.
       for (Iterator itr = cache.rootRegions().iterator(); itr.hasNext();) {

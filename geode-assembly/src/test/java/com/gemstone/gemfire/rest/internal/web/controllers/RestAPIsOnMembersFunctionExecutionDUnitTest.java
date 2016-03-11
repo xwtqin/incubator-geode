@@ -68,8 +68,7 @@ public class RestAPIsOnMembersFunctionExecutionDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     Host host = Host.getHost(0);
     member1 = host.getVM(0);
     member2 = host.getVM(1);

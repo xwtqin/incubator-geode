@@ -38,10 +38,6 @@ public class WanCommandGatewaySenderStopDUnitTest extends WANCommandTestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
   private CommandResult executeCommandWithIgnoredExceptions(String command) {
     final IgnoredException exln = IgnoredException.addIgnoredException("Could not connect");
     CommandResult commandResult =  executeCommand(command);

@@ -30,7 +30,9 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.cache.internal.JUnit4CacheTestCase;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Make sure that create are distributed and done in
@@ -39,6 +41,7 @@ import org.junit.Test;
  * @author darrel
  * @since 5.0
  */
+@Category(DistributedTest.class)
 public class CachedAllEventsDUnitTest extends JUnit4CacheTestCase {
 
   private VM getOtherVm() {

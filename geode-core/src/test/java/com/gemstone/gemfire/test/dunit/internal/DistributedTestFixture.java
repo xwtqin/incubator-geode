@@ -63,8 +63,4 @@ public interface DistributedTestFixture {
    */
   public Properties getDistributedSystemProperties();
 
-  /**
-   * @deprecated Please override {@link #getDistributedSystemProperties()} instead. This should be removed.
-   */
-  public InternalDistributedSystem getSystem(final Properties props); // TODO: remove and make final in DistributedTestCase
 }

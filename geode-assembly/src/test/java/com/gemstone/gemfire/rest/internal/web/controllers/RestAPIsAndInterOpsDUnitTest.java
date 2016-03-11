@@ -170,9 +170,9 @@ public class RestAPIsAndInterOpsDUnitTest extends LocatorTestBase {
 
   }
 
-  public void setUp() throws Exception {
+  @Override
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
-    super.setUp();
   }
 
   @Override

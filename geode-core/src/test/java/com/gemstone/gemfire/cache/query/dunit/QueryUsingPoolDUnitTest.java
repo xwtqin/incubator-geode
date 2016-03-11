@@ -97,15 +97,14 @@ public class QueryUsingPoolDUnitTest extends CacheTestCase {
   ////////  Test Methods
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
     IgnoredException.addIgnoredException("Connection reset");
     IgnoredException.addIgnoredException("Socket input is shutdown");
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 

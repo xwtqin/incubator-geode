@@ -60,17 +60,20 @@ public class DistTXDebugDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     Host host = Host.getHost(0);
     dataStore1 = host.getVM(0);
     dataStore2 = host.getVM(1);
     dataStore3 = host.getVM(2);
     accessor = host.getVM(3);
+    postSetUpDistTXDebugDUnitTest();
+  }
+
+  protected void postSetUpDistTXDebugDUnitTest() throws Exception {
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableRunnable() {
       public void run() {
         InternalResourceManager.setResourceObserver(null);

@@ -97,9 +97,8 @@ public class HAConflationDUnitTest extends CacheTestCase
     super(name);
   }
 
-  public void setUp() throws Exception
-  {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     // Server1 VM
     server1 = host.getVM(0);
@@ -111,11 +110,10 @@ public class HAConflationDUnitTest extends CacheTestCase
     server1.invoke(() -> ConflationDUnitTest.setIsSlowStart());
     server1.invoke(() -> HAConflationDUnitTest.makeDispatcherSlow());
     client1.invoke(() -> HAConflationDUnitTest.createClientCache( NetworkUtils.getServerHostName(host), new Integer(PORT1), new Boolean(true) ));
-
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     client1.invoke(() -> HAConflationDUnitTest.closeCacheAndDisconnect());
     // close server
     server1.invoke(() -> HAConflationDUnitTest.closeCacheAndDisconnect());

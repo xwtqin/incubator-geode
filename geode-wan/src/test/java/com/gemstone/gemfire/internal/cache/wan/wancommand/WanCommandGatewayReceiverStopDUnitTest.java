@@ -39,10 +39,6 @@ public class WanCommandGatewayReceiverStopDUnitTest extends WANCommandTestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
   /**
    * Test wan commands for error in input 1> start gateway-sender command needs
    * only one of member or group.

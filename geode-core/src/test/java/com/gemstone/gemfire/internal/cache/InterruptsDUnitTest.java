@@ -51,7 +51,7 @@ public class InterruptsDUnitTest extends CacheTestCase {
   
   
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(new SerializableCallable() {
       
       @Override

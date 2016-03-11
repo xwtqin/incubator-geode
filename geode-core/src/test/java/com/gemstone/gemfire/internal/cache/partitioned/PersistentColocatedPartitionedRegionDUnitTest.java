@@ -71,7 +71,7 @@ public class PersistentColocatedPartitionedRegionDUnitTest extends
   }
   
   @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     FileUtil.delete(getBackupDir());
   }
   

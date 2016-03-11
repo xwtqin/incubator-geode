@@ -126,12 +126,7 @@ public class StatisticsDUnitTest extends CacheTestCase {
   }
   
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected final void preTearDownCacheTestCase() throws Exception {
+  public final void preTearDownCacheTestCase() throws Exception {
     Invoke.invokeInEveryVM(getClass(), "cleanup");
     disconnectAllFromDS(); // because this test enabled stat sampling!
   }

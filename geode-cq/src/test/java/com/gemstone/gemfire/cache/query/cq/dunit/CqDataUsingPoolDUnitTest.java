@@ -82,9 +82,9 @@ public class CqDataUsingPoolDUnitTest extends CacheTestCase {
   public CqDataUsingPoolDUnitTest(String name) {
     super(name);
   }
-  
-  public void setUp() throws Exception {
-    super.setUp();
+
+  @Override
+  public final void postSetUp() throws Exception {
     // avoid IllegalStateException from HandShake by connecting all vms tor
     // system before creating ConnectionPools
     getSystem();
@@ -93,7 +93,10 @@ public class CqDataUsingPoolDUnitTest extends CacheTestCase {
         getSystem();
       }
     });
-    
+    postSetUpCqDataUsingPoolDUnitTest();
+  }
+
+  protected void postSetUpCqDataUsingPoolDUnitTest() throws Exception {
   }
     
   /**

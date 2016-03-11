@@ -90,8 +90,8 @@ public class RestAPIOnRegionFunctionExecutionDUnitTest extends RestAPITestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  protected final void postSetUpRestAPITestBase() throws Exception {
     final Host host = Host.getHost(0);
   }
 

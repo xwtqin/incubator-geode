@@ -62,8 +62,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
     Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
       
@@ -75,7 +74,7 @@ public class TcpServerBackwardCompatDUnitTest extends DistributedTestCase {
   }
 
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set TcpServer.isTesting true") {
       
       @Override

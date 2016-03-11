@@ -78,17 +78,15 @@ public class HABug36738DUnitTest extends DistributedTestCase
     super(name);
   }
 
-  public void setUp() throws Exception
-  {
-    super.setUp();
+  @Override
+  public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
     server2 = host.getVM(1);
-
   }
 
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     server1.invoke(() -> HABug36738DUnitTest.closeCache());
     server2.invoke(() -> HABug36738DUnitTest.closeCache());
   }

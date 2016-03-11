@@ -37,10 +37,6 @@ public class WanCommandPauseResumeDUnitTest extends WANCommandTestBase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
   public void testPauseGatewaySender_ErrorConditions() {
 
     Integer punePort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));

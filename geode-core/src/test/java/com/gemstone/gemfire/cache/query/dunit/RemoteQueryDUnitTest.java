@@ -73,13 +73,12 @@ public class RemoteQueryDUnitTest extends CacheTestCase {
   ////////  Test Methods
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
+  public final void postTearDownCacheTestCase() throws Exception {
     disconnectAllFromDS();
   }
 

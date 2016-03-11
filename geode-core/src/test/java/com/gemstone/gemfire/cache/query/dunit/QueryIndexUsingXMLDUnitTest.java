@@ -58,6 +58,7 @@ import com.gemstone.gemfire.cache30.CertifiableTestCacheListener;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
@@ -132,27 +133,47 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     super(name);
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public final void preSetUp() throws Exception {
+    System.out.println("KIRK:preSetUp");
+  }
+
+  @Override
+  public final void postSetUp() throws Exception {
     //Workaround for #52008
     IgnoredException.addIgnoredException("Failed to create index");
   }
 
   @Override
-  protected final void postTearDownCacheTestCase() throws Exception {
-    // Get the disk store name.
-    GemFireCacheImpl cache = (GemFireCacheImpl)getCache();
-    String diskStoreName = cache.getDefaultDiskStoreName();
-    
-    //reset TestHook
+  public final void preTearDownCacheTestCase() throws Exception {
+    System.out.println("KIRK:preTearDownCacheTestCase");
+  }
+
+  @Override
+  public final void postTearDownCacheTestCase() throws Exception {
+    resetTestHook();
     Invoke.invokeInEveryVM(resetTestHook());
-    // close the cache.
-    closeCache();
-    disconnectFromDS();
-    
-    // remove the disk store.
-    File diskDir = new File(diskStoreName).getAbsoluteFile();
-    com.gemstone.gemfire.internal.FileUtil.delete(diskDir);
+
+    disconnectAllFromDS();
+
+    FileUtil.delete(new File(GemFireCacheImpl.DEFAULT_DS_NAME).getAbsoluteFile());
+    Invoke.invokeInEveryVM(()->FileUtil.delete(new File(GemFireCacheImpl.DEFAULT_DS_NAME).getAbsoluteFile()));
+
+//    // Get the disk store name.
+//    GemFireCacheImpl cache = (GemFireCacheImpl)getCache(); // TODO: don't create a new Cache just to get the diskStoreName
+//    String diskStoreName = cache.getDefaultDiskStoreName();
+//
+//    assertEquals(GemFireCacheImpl.DEFAULT_DS_NAME, diskStoreName);
+//
+//    //reset TestHook
+//    Invoke.invokeInEveryVM(resetTestHook());
+//    // close the cache.
+//    closeCache();
+//    disconnectFromDS();
+//
+//    // remove the disk store.
+//    File diskDir = new File(diskStoreName).getAbsoluteFile();
+//    com.gemstone.gemfire.internal.FileUtil.delete(diskDir);
   }
   
   /**
@@ -339,7 +360,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
-    vm0.invoke(createIndexThrougXML("vm0testPersistentPRRegion", persistentRegName, fileName));
+    vm0.invoke(createIndexThrougXML("vm0testPersistentPRRegion", persistentRegName, fileName)); // TODO: hangs
     // LoadRegion
     vm0.invoke(loadRegion(this.persistentRegName));
     vm0.invoke(loadRegion(noIndexRepReg));

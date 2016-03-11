@@ -61,10 +61,9 @@ public class CacheServerSSLConnectionDUnitTest extends DistributedTestCase {
   
   private static CacheServerSSLConnectionDUnitTest instance = new CacheServerSSLConnectionDUnitTest("CacheServerSSLConnectionDUnit");
   
-  
-  public void setUp() throws Exception {
+  @Override
+  public final void postSetUp() throws Exception {
     disconnectAllFromDS();
-    super.setUp();
   }
 
   public CacheServerSSLConnectionDUnitTest(String name) {
@@ -413,7 +412,7 @@ public class CacheServerSSLConnectionDUnitTest extends DistributedTestCase {
   }
   
   @Override
-  protected final void preTearDown() throws Exception {
+  public final void preTearDown() throws Exception {
     final Host host = Host.getHost(0);
     VM serverVM = host.getVM(1);
     VM clientVM = host.getVM(2);
