@@ -102,7 +102,6 @@ public class JUnit4BasicDUnitTest extends JUnit4DistributedTestCase {
     int vm0num = async0.getResult();
 
     assertEquals(0, vm0num);
-
   }
 
   @Ignore("Test was never implemented")

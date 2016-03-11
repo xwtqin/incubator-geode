@@ -98,7 +98,6 @@ public class BasicDUnitTest extends DistributedTestCase {
     int vm0num = async0.getResult();
 
     assertEquals(0, vm0num);
-
   }
 
   public void ignore_testRemoteInvocationBoolean() {
