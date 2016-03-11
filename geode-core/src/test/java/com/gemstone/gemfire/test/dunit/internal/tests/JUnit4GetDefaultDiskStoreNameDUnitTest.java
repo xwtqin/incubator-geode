@@ -14,35 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.tests;
+package com.gemstone.gemfire.test.dunit.internal.tests;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.junit.categories.DistributedTest;
-
-@SuppressWarnings("serial")
 @Category(DistributedTest.class)
-public class GetDefaultDiskStoreNameDUnitTest extends DistributedTestCase {
+public class JUnit4GetDefaultDiskStoreNameDUnitTest extends JUnit4DistributedTestCase {
 
-  public GetDefaultDiskStoreNameDUnitTest(final String name) {
-    super(name);
-  }
-
+  @Test
   public void testGetTestMethodName() {
     String expected = createDefaultDiskStoreName(0, -1, "testGetTestMethodName");
     assertGetDefaultDiskStoreName(expected);
   }
 
+  @Test
   public void testGetTestMethodNameChanges() {
     String expected = createDefaultDiskStoreName(0, -1, "testGetTestMethodNameChanges");
     assertGetDefaultDiskStoreName(expected);
   }
 
+  @Test
   public void testGetTestMethodNameInAllVMs() {
     String expected = createDefaultDiskStoreName(0, -1, "testGetTestMethodNameInAllVMs");
     assertGetDefaultDiskStoreName(expected);

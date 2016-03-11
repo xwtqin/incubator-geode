@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.tests;
+package com.gemstone.gemfire.test.dunit.internal.tests;
 
-import static com.gemstone.gemfire.test.dunit.Invoke.invokeInEveryVM;
+import static com.gemstone.gemfire.test.dunit.Invoke.*;
 
 import java.util.Properties;
 
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 
 /**
  * This class tests the basic functionality of the distributed unit
  * test framework.
  */
-public class BasicDUnitTest extends DistributedTestCase {
+public class JUnit3BasicDUnitTest extends JUnit3DistributedTestCase {
 
   private static Properties bindings;
 
-  public BasicDUnitTest(String name) {
+  public JUnit3BasicDUnitTest(String name) {
     super(name);
   }
 
@@ -148,7 +148,7 @@ public class BasicDUnitTest extends DistributedTestCase {
     assertNotNull("value must not be null", value);
     assertNotNull("bindings must not be null", bindings);
 
-    new BasicDUnitTest("").getSystem(); // forces connection
+    new JUnit3BasicDUnitTest("").getSystem(); // forces connection
     bindings.setProperty(name, value);
   }
 

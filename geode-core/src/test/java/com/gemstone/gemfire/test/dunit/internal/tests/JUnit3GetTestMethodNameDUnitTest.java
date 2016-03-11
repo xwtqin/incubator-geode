@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.tests;
+package com.gemstone.gemfire.test.dunit.internal.tests;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.experimental.categories.Category;
-
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
+import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.experimental.categories.Category;
 
 @SuppressWarnings("serial")
 @Category(DistributedTest.class)
-public class GetTestMethodNameDUnitTest extends DistributedTestCase {
+public class JUnit3GetTestMethodNameDUnitTest extends JUnit3DistributedTestCase {
 
-  public GetTestMethodNameDUnitTest(final String name) {
+  public JUnit3GetTestMethodNameDUnitTest(final String name) {
     super(name);
   }
 

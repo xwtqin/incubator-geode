@@ -17,18 +17,11 @@
 package com.gemstone.gemfire.test.dunit.internal;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.cache.HARegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import junit.framework.TestCase;
@@ -41,7 +34,7 @@ import org.junit.experimental.categories.Category;
  * tests/hydra/JUnitTestTask is the main DUnit driver. It supports two
  * additional public static methods if they are defined in the test case:
  *
- * public static void caseSetUp() -- comparable to JUnit's BeforeClass annotation
+ * public static void caseSetUp() -- comparable to JUnit's BeforeClass annotation // TODO: are these invoked by standalone dunit?
  *
  * public static void caseTearDown() -- comparable to JUnit's AfterClass annotation
  */
@@ -53,8 +46,8 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   private final JUnit4DistributedTestCase delegate = new JUnit4DistributedTestCase(this);
 
   /**
-   * Creates a new <code>JUnit3DistributedTestCase</code> test with the
-   * given name.
+   * Constructs a new distributed test. All JUnit 3 test classes need to have a
+   * String-arg constructor.
    */
   public JUnit3DistributedTestCase(final String name) {
     super(name);
@@ -239,7 +232,7 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   public void postTearDown() throws Exception {
   }
 
-  protected static final void destroyRegions(final Cache cache) {
+  protected static final void destroyRegions(final Cache cache) { // TODO: this should move to CacheTestCase
     JUnit4DistributedTestCase.destroyRegions(cache);
   }
 }

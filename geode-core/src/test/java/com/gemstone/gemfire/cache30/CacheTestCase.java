@@ -21,15 +21,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import com.gemstone.gemfire.test.dunit.cache.internal.CacheTestFixture;
-import org.apache.logging.log4j.Logger;
-
-import com.gemstone.gemfire.InternalGemFireError;
-import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
@@ -45,26 +39,23 @@ import com.gemstone.gemfire.cache.client.ClientCache;
 import com.gemstone.gemfire.cache.client.ClientCacheFactory;
 import com.gemstone.gemfire.cache.client.PoolManager;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.HARegion;
 import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.cache.internal.CacheTestFixture;
 import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The abstract superclass of tests that require the creation of a
@@ -73,7 +64,7 @@ import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
  * @author David Whitlock
  * @since 3.0
  */
-public abstract class CacheTestCase extends DistributedTestCase implements CacheTestFixture {
+public abstract class CacheTestCase extends JUnit3DistributedTestCase implements CacheTestFixture {
   private static final Logger logger = LogService.getLogger();
 
   /**
@@ -352,25 +343,20 @@ public abstract class CacheTestCase extends DistributedTestCase implements Cache
   /** Closed the cache in all VMs. */
   protected final void closeAllCache() {
     closeCache();
-    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
+    Invoke.invokeInEveryVM(()->closeCache());
   }
 
   @Override
   public final void preTearDown() throws Exception {
     preTearDownCacheTestCase();
-    
+    tearDownCacheTestCase();
+    postTearDownCacheTestCase();
+  }
+
+  private final void tearDownCacheTestCase() throws Exception {
     // locally destroy all root regions and close the cache
     remoteTearDown();
-    // Now invoke it in every VM
-    for (int h = 0; h < Host.getHostCount(); h++) {
-      Host host = Host.getHost(h);
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invoke(()->remoteTearDown());
-      }
-    }
-    
-    postTearDownCacheTestCase();
+    Invoke.invokeInEveryVM(()->remoteTearDown());
   }
   
   public void preTearDownCacheTestCase() throws Exception {

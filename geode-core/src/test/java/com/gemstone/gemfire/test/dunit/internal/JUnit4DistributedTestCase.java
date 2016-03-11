@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.test.dunit.internal;
 
+import static org.junit.Assert.*;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -118,6 +120,9 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   public final String getName() {
+    if (this.distributedTestFixture != this) {
+      return this.distributedTestFixture.getName();
+    }
     return this.testName.getMethodName();
   }
 
@@ -406,6 +411,8 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   }
 
   private static final void setUpVM(final String methodName, final String defaultDiskStoreName) {
+    assertNotNull("methodName must not be null", methodName);
+    assertNotNull("defaultDiskStoreName must not be null", defaultDiskStoreName);
     setTestMethodName(methodName);
     GemFireCacheImpl.setDefaultDiskStoreName(defaultDiskStoreName);
     System.setProperty(HoplogConfig.ALLOW_LOCAL_HDFS_PROP, "true");

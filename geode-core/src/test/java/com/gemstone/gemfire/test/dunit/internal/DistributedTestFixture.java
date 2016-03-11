@@ -20,8 +20,6 @@ package com.gemstone.gemfire.test.dunit.internal;
 
 import java.util.Properties;
 
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-
 /**
  * Defines the {@code DistributedTestCase} methods that can be overridden by its subclasses.
  */
@@ -62,5 +60,10 @@ public interface DistributedTestFixture {
    * {@code getSystem} methods in {@code DistributedTestCase}.
    */
   public Properties getDistributedSystemProperties();
+
+  /**
+   * Returns the {@code name} of the test method being executed.
+   */
+  public String getName();
 
 }

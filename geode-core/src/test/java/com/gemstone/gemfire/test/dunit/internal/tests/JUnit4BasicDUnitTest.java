@@ -14,44 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.tests;
+package com.gemstone.gemfire.test.dunit.internal.tests;
 
-import static com.gemstone.gemfire.test.dunit.Invoke.invokeInEveryVM;
+import static com.gemstone.gemfire.test.dunit.Assert.*;
+import static com.gemstone.gemfire.test.dunit.Invoke.*;
 
 import java.util.Properties;
 
-import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DUnitEnv;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * This class tests the basic functionality of the distributed unit
  * test framework.
  */
-public class BasicDUnitTest extends DistributedTestCase {
+public class JUnit4BasicDUnitTest extends JUnit4DistributedTestCase {
 
   private static Properties bindings;
 
-  public BasicDUnitTest(String name) {
-    super(name);
-  }
-
-  @Override
-  public void postSetUp() throws Exception {
-    bindings = new Properties();
+  @BeforeClass
+  public static void setUpJUnit4BasicDUnitTest() throws Exception {
     invokeInEveryVM(() -> bindings = new Properties());
   }
 
-  @Override
-  public void postTearDown() throws Exception {
-    bindings = null;
+  @AfterClass
+  public static void tearDownJUnit4BasicDUnitTest() {
     invokeInEveryVM(() -> bindings = null);
   }
 
+  @Test
   public void testPreconditions() {
     invokeInEveryVM(() -> assertNotNull("getUniqueName() must not return null", getUniqueName()));
     invokeInEveryVM(() -> assertNotNull("bindings must not be null", bindings));
@@ -60,12 +59,15 @@ public class BasicDUnitTest extends DistributedTestCase {
   /**
    * Tests how the Hydra framework handles an error
    */
-  public void ignore_testDontCatchRemoteException() throws Exception {
+  @Ignore
+  @Test
+  public void testDontCatchRemoteException() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
     vm.invoke(() -> remoteThrowException());
   }
 
+  @Test
   public void testRemoteInvocationWithException() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
@@ -78,6 +80,7 @@ public class BasicDUnitTest extends DistributedTestCase {
     }
   }
 
+  @Test
   public void testInvokeWithLambda() throws Exception {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
@@ -90,6 +93,7 @@ public class BasicDUnitTest extends DistributedTestCase {
     assertEquals(1, vm1Num);
   }
 
+  @Test
   public void testInvokeLambdaAsync() throws Throwable {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
@@ -101,34 +105,39 @@ public class BasicDUnitTest extends DistributedTestCase {
 
   }
 
-  public void ignore_testRemoteInvocationBoolean() {
+  @Ignore("Test was never implemented")
+  @Test
+  public void testRemoteInvocationBoolean() {
   }
 
+  @Test
   public void testRemoteInvokeAsync() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
-    String name = getUniqueName();
+    String name = this.getUniqueName();
     String value = "Hello";
 
-    AsyncInvocation ai = vm.invokeAsync(() -> remoteBind(name, value));
+    AsyncInvocation ai =
+            vm.invokeAsync(() -> this.remoteBind( name, value ));
     ai.join();
     // TODO shouldn't we call fail() here?
     if (ai.exceptionOccurred()) {
-      Assert.fail("remoteBind failed", ai.getException());
+      fail("remoteBind failed", ai.getException());
     }
 
-    ai = vm.invokeAsync(() -> remoteValidateBind(name, value ));
+    ai = vm.invokeAsync(() -> this.remoteValidateBind(name, value ));
     ai.join();
     if (ai.exceptionOccurred()) {
-      Assert.fail("remoteValidateBind failed", ai.getException());
+      fail("remoteValidateBind failed", ai.getException());
     }
   }
 
+  @Test
   public void testRemoteInvokeAsyncWithException() throws Exception {
     Host host = Host.getHost(0);
     VM vm = host.getVM(0);
 
-    AsyncInvocation ai = vm.invokeAsync(() -> remoteThrowException());
+    AsyncInvocation ai = vm.invokeAsync(() -> this.remoteThrowException());
     ai.join();
     assertTrue(ai.exceptionOccurred());
     Throwable ex = ai.getException();
@@ -148,7 +157,7 @@ public class BasicDUnitTest extends DistributedTestCase {
     assertNotNull("value must not be null", value);
     assertNotNull("bindings must not be null", bindings);
 
-    new BasicDUnitTest("").getSystem(); // forces connection
+    new JUnit4BasicDUnitTest().getSystem(); // forces connection
     bindings.setProperty(name, value);
   }
 

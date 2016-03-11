@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.test.dunit.tests;
+package com.gemstone.gemfire.test.dunit.internal.tests;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.SerializableRunnableIF;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 
 /**
  * This class tests the functionality of the {@link VM} class.
  */
-public class VMDUnitTest extends DistributedTestCase {
+public class JUnit3VMDUnitTest extends JUnit3DistributedTestCase {
 
   private static final AtomicInteger COUNTER = new AtomicInteger();
   private static final boolean BOOLEAN_VALUE = true;
@@ -37,7 +37,7 @@ public class VMDUnitTest extends DistributedTestCase {
   private static final long LONG_VALUE = 42L;
   private static final String STRING_VALUE = "BLAH BLAH BLAH";
 
-  public VMDUnitTest(String name) {
+  public JUnit3VMDUnitTest(String name) {
     super(name);
   }
 

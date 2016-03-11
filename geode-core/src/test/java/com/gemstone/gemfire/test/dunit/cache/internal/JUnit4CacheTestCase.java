@@ -40,8 +40,6 @@ import com.gemstone.gemfire.cache.client.ClientCacheFactory;
 import com.gemstone.gemfire.cache.client.PoolManager;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionMessageObserver;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.distributed.internal.SerialAckedMessage;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
@@ -50,7 +48,6 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
@@ -376,16 +373,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   public final void tearDownCacheTestCase() { // TODO: make private
-    // locally destroy all root regions and close the cache
     remoteTearDown();
-    // Now invoke it in every VM
-    for (int h = 0; h < Host.getHostCount(); h++) { // TODO: use Invoke
-      Host host = Host.getHost(h);
-      for (int v = 0; v < host.getVMCount(); v++) {
-        VM vm = host.getVM(v);
-        vm.invoke(()->remoteTearDown());
-      }
-    }
+    Invoke.invokeInEveryVM(()->remoteTearDown());
   }
 
   @Override

@@ -16,7 +16,6 @@
  */
 package com.gemstone.gemfire.test.dunit.cache.internal;
 
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.test.dunit.internal.DistributedTestFixture;
 
 /**
