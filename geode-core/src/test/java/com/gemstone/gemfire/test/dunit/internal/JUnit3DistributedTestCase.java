@@ -30,13 +30,6 @@ import org.junit.experimental.categories.Category;
 
 /**
  * This class is the superclass of all distributed tests using JUnit 3.
- *
- * tests/hydra/JUnitTestTask is the main DUnit driver. It supports two
- * additional public static methods if they are defined in the test case:
- *
- * public static void caseSetUp() -- comparable to JUnit's BeforeClass annotation // TODO: are these invoked by standalone dunit?
- *
- * public static void caseTearDown() -- comparable to JUnit's AfterClass annotation
  */
 @Category(DistributedTest.class)
 public abstract class JUnit3DistributedTestCase extends TestCase implements DistributedTestFixture, Serializable {

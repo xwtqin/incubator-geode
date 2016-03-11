@@ -64,13 +64,6 @@ import junit.framework.TestCase;
 
 /**
  * This class is the superclass of all distributed unit tests.
- * 
- * tests/hydra/JUnitTestTask is the main DUnit driver. It supports two 
- * additional public static methods if they are defined in the test case:
- * 
- * public static void caseSetUp() -- comparable to JUnit's BeforeClass annotation
- * 
- * public static void caseTearDown() -- comparable to JUnit's AfterClass annotation
  *
  * @author David Whitlock
  */
