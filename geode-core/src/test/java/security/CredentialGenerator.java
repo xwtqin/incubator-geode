@@ -191,20 +191,20 @@ public abstract class CredentialGenerator {
    */
   public static final class ClassCode {
 
+    private static byte nextOrdinal = 0;
+
     private static final byte ID_DUMMY = 1;
     private static final byte ID_LDAP = 2;
     private static final byte ID_PKCS = 3;
     private static final byte ID_SSL = 4;
 
+    private static final ClassCode[] VALUES = new ClassCode[10];
+    private static final Map CODE_NAME_MAP = new HashMap();
+
     public static final ClassCode DUMMY = new ClassCode(templates.security.DummyAuthenticator.class.getName() + ".create", ID_DUMMY);
     public static final ClassCode LDAP = new ClassCode(templates.security.LdapUserAuthenticator.class.getName() + ".create", ID_LDAP);
     public static final ClassCode PKCS = new ClassCode(templates.security.PKCSAuthenticator.class.getName() + ".create", ID_PKCS);
     public static final ClassCode SSL = new ClassCode("SSL", ID_SSL);
-
-    private static final ClassCode[] VALUES = new ClassCode[10];
-    private static final Map CODE_NAME_MAP = new HashMap();
-
-    private static byte nextOrdinal = 0;
 
     /** The name of this class. */
     private final String name;

@@ -323,16 +323,16 @@ public abstract class AuthzCredentialGenerator {
    */
   public static final class ClassCode {
 
+    private static byte nextOrdinal = 0;
+
     private static final byte ID_DUMMY = 1;
     private static final byte ID_XML = 2;
-
-    public static final ClassCode DUMMY = new ClassCode(templates.security.DummyAuthorization.class.getName() + ".create", ID_DUMMY);
-    public static final ClassCode XML = new ClassCode(templates.security.XmlAuthorization.class.getName() + ".create", ID_XML);
 
     private static final ClassCode[] VALUES = new ClassCode[10];
     private static final Map CODE_NAME_MAP = new HashMap();
 
-    private static byte nextOrdinal = 0;
+    public static final ClassCode DUMMY = new ClassCode(templates.security.DummyAuthorization.class.getName() + ".create", ID_DUMMY);
+    public static final ClassCode XML = new ClassCode(templates.security.XmlAuthorization.class.getName() + ".create", ID_XML);
 
     /** The name of this class. */
     private final String name;
