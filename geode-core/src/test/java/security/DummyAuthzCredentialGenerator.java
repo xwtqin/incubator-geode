@@ -30,49 +30,25 @@ import templates.security.UsernamePrincipal;
 public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   public static final byte READER_ROLE = 1;
-
   public static final byte WRITER_ROLE = 2;
-
   public static final byte ADMIN_ROLE = 3;
 
   private static Set readerOpsSet;
-
   private static Set writerOpsSet;
 
   static {
-
     readerOpsSet = new HashSet();
     for (int index = 0; index < DummyAuthorization.READER_OPS.length; index++) {
       readerOpsSet.add(DummyAuthorization.READER_OPS[index]);
     }
+
     writerOpsSet = new HashSet();
     for (int index = 0; index < DummyAuthorization.WRITER_OPS.length; index++) {
       writerOpsSet.add(DummyAuthorization.WRITER_OPS[index]);
     }
   }
 
-  public DummyAuthzCredentialGenerator() {
-  }
-
-  protected Properties init() throws IllegalArgumentException {
-
-    if (!this.cGen.classCode().isDummy()) {
-      throw new IllegalArgumentException(
-          "DummyAuthorization module only works with DummyAuthenticator");
-    }
-    return null;
-  }
-
-  public ClassCode classCode() {
-    return ClassCode.DUMMY;
-  }
-
-  public String getAuthorizationCallback() {
-    return templates.security.DummyAuthorization.class.getName() + ".create";
-  }
-
-  public static byte getRequiredRole(OperationCode[] opCodes) {
-
+  public static byte getRequiredRole(final OperationCode[] opCodes) {
     byte roleType = ADMIN_ROLE;
     boolean requiresReader = true;
     boolean requiresWriter = true;
@@ -94,29 +70,32 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return roleType;
   }
 
-  private Principal getPrincipal(byte roleType, int index) {
-
-    String[] admins = new String[] { "root", "admin", "administrator" };
-    switch (roleType) {
-      case READER_ROLE:
-        return new UsernamePrincipal("reader" + index);
-      case WRITER_ROLE:
-        return new UsernamePrincipal("writer" + index);
-      default:
-        return new UsernamePrincipal(admins[index % admins.length]);
+  @Override
+  protected Properties init() throws IllegalArgumentException {
+    if (!this.generator.classCode().isDummy()) {
+      throw new IllegalArgumentException("DummyAuthorization module only works with DummyAuthenticator");
     }
+    return null;
   }
 
-  protected Principal getAllowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
+  @Override
+  public ClassCode classCode() {
+    return ClassCode.DUMMY;
+  }
 
-    byte roleType = getRequiredRole(opCodes);
+  @Override
+  public String getAuthorizationCallback() {
+    return templates.security.DummyAuthorization.class.getName() + ".create";
+  }
+
+  @Override
+  protected Principal getAllowedPrincipal(final OperationCode[] opCodes, final String[] regionNames, final int index) {
+    final byte roleType = getRequiredRole(opCodes);
     return getPrincipal(roleType, index);
   }
 
-  protected Principal getDisallowedPrincipal(OperationCode[] opCodes,
-      String[] regionNames, int index) {
-
+  @Override
+  protected Principal getDisallowedPrincipal(final OperationCode[] opCodes, final String[] regionNames, final int index) {
     byte roleType = getRequiredRole(opCodes);
     byte disallowedRoleType;
     switch (roleType) {
@@ -133,9 +112,20 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
     return getPrincipal(disallowedRoleType, index);
   }
 
-  protected int getNumPrincipalTries(OperationCode[] opCodes,
-      String[] regionNames) {
+  @Override
+  protected int getNumPrincipalTries(final OperationCode[] opCodes,  final String[] regionNames) {
     return 5;
   }
 
+  private Principal getPrincipal(final byte roleType, final int index) {
+    String[] admins = new String[] { "root", "admin", "administrator" };
+    switch (roleType) {
+      case READER_ROLE:
+        return new UsernamePrincipal("reader" + index);
+      case WRITER_ROLE:
+        return new UsernamePrincipal("writer" + index);
+      default:
+        return new UsernamePrincipal(admins[index % admins.length]);
+    }
+  }
 }

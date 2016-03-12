@@ -22,17 +22,17 @@ import java.security.Principal;
 /**
  * An implementation of {@link Principal} class for a simple user name.
  * 
- * @author Kumar Neeraj
  * @since 5.5
  */
 public class UsernamePrincipal implements Principal, Serializable {
 
   private final String userName;
 
-  public UsernamePrincipal(String userName) {
+  public UsernamePrincipal(final String userName) {
     this.userName = userName;
   }
 
+  @Override
   public String getName() {
     return this.userName;
   }
@@ -41,5 +41,4 @@ public class UsernamePrincipal implements Principal, Serializable {
   public String toString() {
     return this.userName;
   }
-
 }

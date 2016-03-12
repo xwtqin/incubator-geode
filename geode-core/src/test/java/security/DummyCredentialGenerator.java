@@ -26,65 +26,66 @@ import java.util.Properties;
 
 public class DummyCredentialGenerator extends CredentialGenerator {
 
-  public DummyCredentialGenerator() {
-  }
-
+  @Override
   protected Properties initialize() throws IllegalArgumentException {
     return null;
   }
 
+  @Override
   public ClassCode classCode() {
     return ClassCode.DUMMY;
   }
 
+  @Override
   public String getAuthInit() {
     return templates.security.UserPasswordAuthInit.class.getName() + ".create";
   }
 
+  @Override
   public String getAuthenticator() {
     return templates.security.DummyAuthenticator.class.getName() + ".create";
   }
 
-  public Properties getValidCredentials(int index) {
+  @Override
+  public Properties getValidCredentials(final int index) {
+    final String[] validGroups = new String[] { "admin", "user", "reader", "writer" };
+    final String[] admins = new String[] { "root", "admin", "administrator" };
 
-    String[] validGroups = new String[] { "admin", "user", "reader", "writer" };
-    String[] admins = new String[] { "root", "admin", "administrator" };
+    final Properties props = new Properties();
+    final int groupNum = index % validGroups.length;
 
-    Properties props = new Properties();
-    int groupNum = (index % validGroups.length);
     String userName;
     if (groupNum == 0) {
       userName = admins[index % admins.length];
-    }
-    else {
+    } else {
       userName = validGroups[groupNum] + (index / validGroups.length);
     }
+
     props.setProperty(UserPasswordAuthInit.USER_NAME, userName);
     props.setProperty(UserPasswordAuthInit.PASSWORD, userName);
     return props;
   }
 
-  public Properties getValidCredentials(Principal principal) {
+  @Override
+  public Properties getValidCredentials(final Principal principal) {
+    final String userName = principal.getName();
 
-    String userName = principal.getName();
-    if (DummyAuthenticator.testValidName(userName)) {
+    if (DummyAuthenticator.checkValidName(userName)) {
       Properties props = new Properties();
       props.setProperty(UserPasswordAuthInit.USER_NAME, userName);
       props.setProperty(UserPasswordAuthInit.PASSWORD, userName);
       return props;
-    }
-    else {
-      throw new IllegalArgumentException("Dummy: [" + userName
-          + "] is not a valid user");
+
+    } else {
+      throw new IllegalArgumentException("Dummy: [" + userName + "] is not a valid user");
     }
   }
 
+  @Override
   public Properties getInvalidCredentials(int index) {
-
     Properties props = new Properties();
     props.setProperty(UserPasswordAuthInit.USER_NAME, "invalid" + index);
     props.setProperty(UserPasswordAuthInit.PASSWORD, "none");
     return props;
   }
-
 }

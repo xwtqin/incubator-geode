@@ -16,6 +16,12 @@
  */
 package templates.security;
 
+import java.security.Principal;
+import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.logging.LogService;
@@ -23,96 +29,73 @@ import com.gemstone.gemfire.security.AuthenticationFailedException;
 import com.gemstone.gemfire.security.Authenticator;
 import org.apache.logging.log4j.Logger;
 
-import java.security.Principal;
-import java.util.Properties;
-import javax.naming.Context;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-
 /**
- * @author Kumar Neeraj
+ * An implementation of {@link Authenticator} that uses LDAP.
+ *
  * @since 5.5
  */
 public class LdapUserAuthenticator implements Authenticator {
+
   private static final Logger logger = LogService.getLogger();
 
-  private String ldapServer = null;
-
-  private String basedn = null;
-
-  private String ldapUrlScheme = null;
-
   public static final String LDAP_SERVER_NAME = "security-ldap-server";
-
-  public static final String LDAP_BASEDN_NAME = "security-ldap-basedn";
-
+  public static final String LDAP_BASEDN_NAME = "security-ldap-baseDomainName";
   public static final String LDAP_SSL_NAME = "security-ldap-usessl";
+
+  private String ldapServer = null;
+  private String baseDomainName = null;
+  private String ldapUrlScheme = null;
 
   public static Authenticator create() {
     return new LdapUserAuthenticator();
   }
 
-  public LdapUserAuthenticator() {
-  }
-
-  public void init(Properties securityProps, LogWriter systemLogger,
-      LogWriter securityLogger) throws AuthenticationFailedException {
+  public void init(final Properties securityProps, final LogWriter systemLogWriter, final LogWriter securityLogWriter) throws AuthenticationFailedException {
     this.ldapServer = securityProps.getProperty(LDAP_SERVER_NAME);
     if (this.ldapServer == null || this.ldapServer.length() == 0) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: LDAP server property [" + LDAP_SERVER_NAME
-              + "] not specified");
+      throw new AuthenticationFailedException("LdapUserAuthenticator: LDAP server property [" + LDAP_SERVER_NAME + "] not specified");
     }
-    this.basedn = securityProps.getProperty(LDAP_BASEDN_NAME);
-    if (this.basedn == null || this.basedn.length() == 0) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: LDAP base DN property [" + LDAP_BASEDN_NAME
-              + "] not specified");
+
+    this.baseDomainName = securityProps.getProperty(LDAP_BASEDN_NAME);
+    if (this.baseDomainName == null || this.baseDomainName.length() == 0) {
+      throw new AuthenticationFailedException("LdapUserAuthenticator: LDAP base DN property [" + LDAP_BASEDN_NAME + "] not specified");
     }
-    String sslStr = securityProps.getProperty(LDAP_SSL_NAME);
-    if (sslStr != null && sslStr.toLowerCase().equals("true")) {
+
+    final String sslName = securityProps.getProperty(LDAP_SSL_NAME);
+    if (sslName != null && sslName.toLowerCase().equals("true")) {
       this.ldapUrlScheme = "ldaps://";
-    }
-    else {
+    } else {
       this.ldapUrlScheme = "ldap://";
     }
   }
 
-  public Principal authenticate(Properties props, DistributedMember member) {
-
-    String userName = props.getProperty(UserPasswordAuthInit.USER_NAME);
+  public Principal authenticate(final Properties credentials, final DistributedMember member) {
+    final String userName = credentials.getProperty(UserPasswordAuthInit.USER_NAME);
     if (userName == null) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: user name property ["
-              + UserPasswordAuthInit.USER_NAME + "] not provided");
-    }
-    String passwd = props.getProperty(UserPasswordAuthInit.PASSWORD);
-    if (passwd == null) {
-      passwd = "";
+      throw new AuthenticationFailedException("LdapUserAuthenticator: user name property [" + UserPasswordAuthInit.USER_NAME + "] not provided");
     }
 
-    Properties env = new Properties();
-    env
-        .put(Context.INITIAL_CONTEXT_FACTORY,
-            com.sun.jndi.ldap.LdapCtxFactory.class.getName());
-    env.put(Context.PROVIDER_URL, this.ldapUrlScheme + this.ldapServer + '/'
-        + this.basedn);
-    String fullentry = "uid=" + userName + "," + this.basedn;
-    env.put(Context.SECURITY_PRINCIPAL, fullentry);
-    env.put(Context.SECURITY_CREDENTIALS, passwd);
+    String password = credentials.getProperty(UserPasswordAuthInit.PASSWORD);
+    if (password == null) {
+      password = "";
+    }
+
+    final Properties env = new Properties();
+    env.put(Context.INITIAL_CONTEXT_FACTORY, com.sun.jndi.ldap.LdapCtxFactory.class.getName());
+    env.put(Context.PROVIDER_URL, this.ldapUrlScheme + this.ldapServer + '/' + this.baseDomainName);
+    env.put(Context.SECURITY_PRINCIPAL, "uid=" + userName + "," + this.baseDomainName);
+    env.put(Context.SECURITY_CREDENTIALS, password);
+
     try {
-      DirContext ctx = new InitialDirContext(env);
+      final DirContext ctx = new InitialDirContext(env);
       ctx.close();
+    } catch (Exception e) {
+      throw new AuthenticationFailedException("LdapUserAuthenticator: Failure with provided username, password combination for user name: " + userName, e);
     }
-    catch (Exception e) {
-      throw new AuthenticationFailedException(
-          "LdapUserAuthenticator: Failure with provided username, password "
-              + "combination for user name: " + userName, e);
-    }
+
     return new UsernamePrincipal(userName);
   }
 
   public void close() {
   }
-
 }

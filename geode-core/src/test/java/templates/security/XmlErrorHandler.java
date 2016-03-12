@@ -27,23 +27,21 @@ import org.xml.sax.SAXParseException;
  * Implementation of {@link ErrorHandler} interface to handle validation errors
  * while XML parsing.
  * 
- * This throws back exceptions raised for <code>error</code> and
- * <code>fatalError</code> cases while a {@link LogWriter#warning(String)} level
- * logging is done for the <code>warning</code> case.
+ * This throws back exceptions raised for {@code error} and {@code fatalError}
+ * cases while a {@link LogWriter#warning(String)} level logging is done for
+ * the {@code warning} case.
  * 
- * @author Sumedh Wale
  * @since 5.5
  */
 public class XmlErrorHandler implements ErrorHandler {
+
   private static final Logger logger = LogService.getLogger();
 
-  private LogWriter logWriter;
+  private final LogWriter systemLogWriter;
+  private final String xmlFileName;
 
-  private String xmlFileName;
-
-  public XmlErrorHandler(LogWriter logWriter, String xmlFileName) {
-
-    this.logWriter = logWriter;
+  public XmlErrorHandler(final LogWriter systemLogWriter, final String xmlFileName) {
+    this.systemLogWriter = systemLogWriter;
     this.xmlFileName = xmlFileName;
   }
 
@@ -51,31 +49,23 @@ public class XmlErrorHandler implements ErrorHandler {
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
-  public void error(SAXParseException exception) throws SAXException {
-    throw new SAXParseException("Error while parsing XML at line "
-        + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null, exception);
+  public void error(final SAXParseException exception) throws SAXException {
+    throw new SAXParseException("Error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null, exception);
   }
 
   /**
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
-  public void fatalError(SAXParseException exception) throws SAXException {
-    throw new SAXParseException("Fatal error while parsing XML at line "
-        + exception.getLineNumber() + " column " + exception.getColumnNumber()
-        + ": " + exception.getMessage(), null, exception);
+  public void fatalError(final SAXParseException exception) throws SAXException {
+    throw new SAXParseException("Fatal error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null, exception);
   }
 
   /**
    * Log the exception at {@link LogWriter#warning(String)} level with XML
    * filename and the position of exception in the file.
    */
-  public void warning(SAXParseException exception) throws SAXException {
-    this.logWriter.warning("Warning while parsing XML [" + this.xmlFileName
-        + "] at line " + exception.getLineNumber() + " column "
-        + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+  public void warning(final SAXParseException exception) throws SAXException {
+    this.systemLogWriter.warning("Warning while parsing XML [" + this.xmlFileName + "] at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
   }
-
-
 }

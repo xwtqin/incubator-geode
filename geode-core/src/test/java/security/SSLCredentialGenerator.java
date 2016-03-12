@@ -28,47 +28,87 @@ import java.security.Principal;
 import java.util.Properties;
 
 public class SSLCredentialGenerator extends CredentialGenerator {
+
   private static final Logger logger = LogService.getLogger();
 
+  @Override
+  protected Properties initialize() throws IllegalArgumentException {
+    this.javaProperties = getValidJavaSSLProperties();
+    return getSSLProperties();
+  }
+
+  @Override
+  public ClassCode classCode() {
+    return ClassCode.SSL;
+  }
+
+  @Override
+  public String getAuthInit() {
+    return null;
+  }
+
+  @Override
+  public String getAuthenticator() {
+    return null;
+  }
+
+  @Override
+  public Properties getValidCredentials(int index) {
+    this.javaProperties = getValidJavaSSLProperties();
+    return getSSLProperties();
+  }
+
+  @Override
+  public Properties getValidCredentials(final Principal principal) {
+    this.javaProperties = getValidJavaSSLProperties();
+    return getSSLProperties();
+  }
+
+  @Override
+  public Properties getInvalidCredentials(final int index) {
+    this.javaProperties = getInvalidJavaSSLProperties();
+    return getSSLProperties();
+  }
+
   private File findTrustedJKS() {
-    File ssldir = new File(System.getProperty("JTESTS") + "/ssl");
+    final File ssldir = new File(System.getProperty("JTESTS") + "/ssl");
     return new File(ssldir, "trusted.keystore");
   }
 
   private File findUntrustedJKS() {
-    File ssldir = new File(System.getProperty("JTESTS") + "/ssl");
+    final File ssldir = new File(System.getProperty("JTESTS") + "/ssl");
     return new File(ssldir, "untrusted.keystore");
   }
 
   private Properties getValidJavaSSLProperties() {
-    File jks = findTrustedJKS();
+    final File jks = findTrustedJKS();
+
     try {
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("javax.net.ssl.trustStore", jks.getCanonicalPath());
       props.setProperty("javax.net.ssl.trustStorePassword", "password");
       props.setProperty("javax.net.ssl.keyStore", jks.getCanonicalPath());
       props.setProperty("javax.net.ssl.keyStorePassword", "password");
       return props;
-    }
-    catch (IOException ex) {
-      throw new AuthenticationFailedException(
-          "SSL: Exception while opening the key store: " + ex.getMessage(), ex);
+
+    } catch (IOException ex) {
+      throw new AuthenticationFailedException("SSL: Exception while opening the key store: " + ex.getMessage(), ex);
     }
   }
 
   private Properties getInvalidJavaSSLProperties() {
-    File jks = findUntrustedJKS();
+    final File jks = findUntrustedJKS();
+
     try {
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("javax.net.ssl.trustStore", jks.getCanonicalPath());
       props.setProperty("javax.net.ssl.trustStorePassword", "password");
       props.setProperty("javax.net.ssl.keyStore", jks.getCanonicalPath());
       props.setProperty("javax.net.ssl.keyStorePassword", "password");
       return props;
-    }
-    catch (IOException ex) {
-      throw new AuthenticationFailedException(
-          "SSL: Exception while opening the key store: " + ex.getMessage(), ex);
+
+    } catch (IOException ex) {
+      throw new AuthenticationFailedException("SSL: Exception while opening the key store: " + ex.getMessage(), ex);
     }
   }
 
@@ -80,37 +120,4 @@ public class SSLCredentialGenerator extends CredentialGenerator {
     props.setProperty("ssl-protocols", "TLSv1");
     return props;
   }
-
-  protected Properties initialize() throws IllegalArgumentException {
-    this.javaProps = getValidJavaSSLProperties();
-    return getSSLProperties();
-  }
-
-  public ClassCode classCode() {
-    return ClassCode.SSL;
-  }
-
-  public String getAuthInit() {
-    return null;
-  }
-
-  public String getAuthenticator() {
-    return null;
-  }
-
-  public Properties getValidCredentials(int index) {
-    this.javaProps = getValidJavaSSLProperties();
-    return getSSLProperties();
-  }
-
-  public Properties getValidCredentials(Principal principal) {
-    this.javaProps = getValidJavaSSLProperties();
-    return getSSLProperties();
-  }
-
-  public Properties getInvalidCredentials(int index) {
-    this.javaProps = getInvalidJavaSSLProperties();
-    return getSSLProperties();
-  }
-
 }

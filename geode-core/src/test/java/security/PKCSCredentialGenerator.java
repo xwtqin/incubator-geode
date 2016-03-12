@@ -27,19 +27,14 @@ import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
 
-/**
- * @author kneeraj
- * 
- */
 public class PKCSCredentialGenerator extends CredentialGenerator {
 
   public static String keyStoreDir = getKeyStoreDir();
-
   public static boolean usesIBMJSSE;
 
   // Checks if the current JVM uses only IBM JSSE providers.
   private static boolean usesIBMProviders() {
-    Provider[] providers = Security.getProviders();
+    final Provider[] providers = Security.getProviders();
     for (int index = 0; index < providers.length; ++index) {
       if (!providers[index].getName().toLowerCase().startsWith("ibm")) {
         return false;
@@ -52,58 +47,71 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
     usesIBMJSSE = usesIBMProviders();
     if (usesIBMJSSE) {
       return "/lib/keys/ibm";
-    }
-    else {
+    } else {
       return "/lib/keys";
     }
   }
 
+  @Override
+  protected Properties initialize() throws IllegalArgumentException {
+    final String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/publickeyfile");
+
+    final Properties props = new Properties();
+    props.setProperty(PKCSAuthenticator.PUBLIC_KEY_FILE, keyStoreFile);
+    props.setProperty(PKCSAuthenticator.PUBLIC_KEYSTORE_PASSWORD, "gemfire");
+
+    return props;
+  }
+
+  @Override
   public ClassCode classCode() {
     return ClassCode.PKCS;
   }
 
+  @Override
   public String getAuthInit() {
     return templates.security.PKCSAuthInit.class.getName() + ".create";
   }
 
+  @Override
   public String getAuthenticator() {
     return templates.security.PKCSAuthenticator.class.getName() + ".create";
   }
 
+  @Override
   public Properties getInvalidCredentials(int index) {
-    Properties props = new Properties();
-    String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/gemfire11.keystore");
+    final String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/gemfire11.keystore");
+
+    final Properties props = new Properties();
     props.setProperty(PKCSAuthInit.KEYSTORE_FILE_PATH, keyStoreFile);
     props.setProperty(PKCSAuthInit.KEYSTORE_ALIAS, "gemfire11");
     props.setProperty(PKCSAuthInit.KEYSTORE_PASSWORD, "gemfire");
+
     return props;
   }
 
+  @Override
   public Properties getValidCredentials(int index) {
-    Properties props = new Properties();
-    int aliasnum = (index % 10) + 1;
-    String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/gemfire" + aliasnum + ".keystore");
+    final int aliasnum = (index % 10) + 1;
+    final String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/gemfire" + aliasnum + ".keystore");
+
+    final Properties props = new Properties();
     props.setProperty(PKCSAuthInit.KEYSTORE_FILE_PATH, keyStoreFile);
     props.setProperty(PKCSAuthInit.KEYSTORE_ALIAS, "gemfire" + aliasnum);
     props.setProperty(PKCSAuthInit.KEYSTORE_PASSWORD, "gemfire");
+
     return props;
   }
 
+  @Override
   public Properties getValidCredentials(Principal principal) {
-    Properties props = new Properties();
-    String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + principal.getName() + ".keystore");
+    final String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + principal.getName() + ".keystore");
+
+    final Properties props = new Properties();
     props.setProperty(PKCSAuthInit.KEYSTORE_FILE_PATH, keyStoreFile);
     props.setProperty(PKCSAuthInit.KEYSTORE_ALIAS, principal.getName());
     props.setProperty(PKCSAuthInit.KEYSTORE_PASSWORD, "gemfire");
+
     return props;
   }
-
-  protected Properties initialize() throws IllegalArgumentException {
-    Properties props = new Properties();
-    String keyStoreFile = TestUtil.getResourcePath(PKCSCredentialGenerator.class, keyStoreDir + "/publickeyfile");
-    props.setProperty(PKCSAuthenticator.PUBLIC_KEY_FILE, keyStoreFile);
-    props.setProperty(PKCSAuthenticator.PUBLIC_KEYSTORE_PASSWORD, "gemfire");
-    return props;
-  }
-
 }

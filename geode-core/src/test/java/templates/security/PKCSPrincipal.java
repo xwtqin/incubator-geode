@@ -20,18 +20,15 @@ package templates.security;
 import java.io.Serializable;
 import java.security.Principal;
 
-/**
- * @author kneeraj
- * 
- */
 public class PKCSPrincipal implements Principal, Serializable {
 
-  private String alias;
+  private final String alias;
 
-  public PKCSPrincipal(String alias) {
+  public PKCSPrincipal(final String alias) {
     this.alias = alias;
   }
 
+  @Override
   public String getName() {
     return this.alias;
   }
