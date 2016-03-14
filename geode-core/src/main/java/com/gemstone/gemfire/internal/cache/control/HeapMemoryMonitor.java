@@ -463,7 +463,7 @@ public void stopMonitoring() {
    * If necessary, change the state and send an event for the state change.
    */
   public void updateStateAndSendEvent() {
-    updateStateAndSendEvent(getBytesUsed());
+    updateStateAndSendEvent(testBytesUsedForThresholdSet > 0 ? testBytesUsedForThresholdSet : getBytesUsed());
   }
   
   /**
