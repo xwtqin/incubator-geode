@@ -52,6 +52,7 @@ public class CacheServerCreation extends AbstractCacheServer {
 
   CacheServerCreation(InternalCache cache, boolean attachListener) {
     super(cache, attachListener);
+    setPort(0);
   }
   
   /**
