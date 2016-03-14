@@ -88,7 +88,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   public static Integer createFirstLocatorWithDSId(int dsId) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
     props.setProperty(DistributionConfig.DISTRIBUTED_SYSTEM_ID_NAME, ""+dsId);
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port + "]");
@@ -101,7 +101,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
   public static Integer createFirstRemoteLocator(int dsId, int remoteLocPort) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME,"0");
     props.setProperty(DistributionConfig.DISTRIBUTED_SYSTEM_ID_NAME, ""+dsId);
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port + "]");
@@ -113,7 +113,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static void createCache(Integer locPort){
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
     InternalDistributedSystem ds = test.getSystem(props);
@@ -122,7 +122,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static void createCacheWithGroups(Integer locPort, String groups){
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort + "]");
     props.setProperty(DistributionConfig.GROUPS_NAME, groups);
@@ -215,7 +215,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static int createAndStartReceiver(int locPort) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
@@ -239,7 +239,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static int createReceiver(int locPort) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
@@ -257,7 +257,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static int createReceiverWithGroup(int locPort, String groups) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props =  test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
@@ -297,7 +297,7 @@ public class WANCommandTestBase extends CliCommandTestBase{
 
   public static int createAndStartReceiverWithGroup(int locPort, String groups) {
     WANCommandTestBase test = new WANCommandTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");

@@ -45,7 +45,11 @@ public class DurableClientBug39997DUnitTest extends CacheTestCase {
   public DurableClientBug39997DUnitTest(String name) {
     super(name);
   }
-  
+
+  public void postTearDownCacheTestCase() throws Exception {
+    Host.getHost(0).getVM(0).invoke(() -> disconnectFromDS());
+  }
+
   public void testNoServerAvailableOnStartup() {
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
@@ -120,6 +124,7 @@ public class DurableClientBug39997DUnitTest extends CacheTestCase {
   public Properties getClientProperties() {
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
+    props.setProperty("locators", "7");
     props.setProperty("durable-client-id", "my_id");
     return props;
   }

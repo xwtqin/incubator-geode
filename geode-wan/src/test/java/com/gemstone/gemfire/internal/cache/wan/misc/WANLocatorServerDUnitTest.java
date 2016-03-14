@@ -94,7 +94,7 @@ public class WANLocatorServerDUnitTest extends WANTestBase {
   public static void createLocator(Integer port1, Integer port2, Integer port3,
       Integer startingPort) {
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.DISTRIBUTED_SYSTEM_ID_NAME, "" + 1);
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port1
@@ -107,7 +107,7 @@ public class WANLocatorServerDUnitTest extends WANTestBase {
 
   public static void createReceiver(Integer port1, Integer port2, Integer port3) {
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port1
         + "],localhost[" + port2 + "],localhost[" + port3 + "]");
@@ -132,7 +132,7 @@ public class WANLocatorServerDUnitTest extends WANTestBase {
 
   public static void createServer(Integer port1, Integer port2, Integer port3) {
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port1
         + "],localhost[" + port2 + "],localhost[" + port3 + "]");

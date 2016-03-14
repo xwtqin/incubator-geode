@@ -42,7 +42,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);
@@ -132,7 +132,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);
@@ -232,7 +232,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);
@@ -325,7 +325,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);
@@ -401,7 +401,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);
@@ -474,7 +474,7 @@ public class WanCommandStatusDUnitTest extends WANCommandTestBase{
 
     Integer lnPort = (Integer) vm1.invoke(() -> WANCommandTestBase.createFirstLocatorWithDSId( 1 ));
 
-    Properties props = new Properties();
+    Properties props = getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + lnPort + "]");
     createDefaultSetup(props);

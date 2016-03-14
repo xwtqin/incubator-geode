@@ -408,7 +408,7 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Integer remoteLocPort = (Integer)vm1.invoke(() -> WANTestBase.createFirstRemoteLocator( 2, localLocPort ));
     
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + localLocPort + "]");
     InternalDistributedSystem ds = test.getSystem(props);
@@ -471,7 +471,7 @@ public class ParallelGatewaySenderQueueOverflowDUnitTest extends WANTestBase {
     Integer remoteLocPort = (Integer)vm1.invoke(() -> WANTestBase.createFirstRemoteLocator( 2, localLocPort ));
     
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + localLocPort + "]");
     InternalDistributedSystem ds = test.getSystem(props);

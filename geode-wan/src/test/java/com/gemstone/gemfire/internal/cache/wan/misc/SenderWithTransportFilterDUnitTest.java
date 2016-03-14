@@ -100,7 +100,7 @@ public class SenderWithTransportFilterDUnitTest extends WANTestBase {
   
   public static int createReceiverWithTransportFilters(int locPort) {
     WANTestBase test = new WANTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
