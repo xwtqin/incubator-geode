@@ -26,10 +26,6 @@ import java.util.Properties;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import security.CredentialGenerator;
-import security.DummyCredentialGenerator;
-import security.LdapUserCredentialGenerator;
-
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.Locator;

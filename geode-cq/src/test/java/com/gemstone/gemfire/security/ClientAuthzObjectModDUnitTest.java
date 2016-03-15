@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import security.CredentialGenerator;
-import security.DummyAuthzCredentialGenerator;
-import security.DummyCredentialGenerator;
 import templates.security.UserPasswordAuthInit;
 
 import com.gemstone.gemfire.DataSerializable;

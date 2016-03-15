@@ -23,9 +23,6 @@ package com.gemstone.gemfire.security;
 
 import java.util.Properties;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-
 import com.gemstone.gemfire.DeltaTestImpl;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.client.NoAvailableServersException;

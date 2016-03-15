@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.cache.query.CqAttributes;

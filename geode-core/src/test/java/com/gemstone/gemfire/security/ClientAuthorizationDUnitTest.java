@@ -26,11 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-import security.DummyCredentialGenerator;
-import security.XmlAuthzCredentialGenerator;
-
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.test.dunit.Host;

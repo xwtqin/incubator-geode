@@ -31,9 +31,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-import security.AuthzCredentialGenerator.ClassCode;
+import com.gemstone.gemfire.security.AuthzCredentialGenerator.ClassCode;
 
 import com.gemstone.gemfire.cache.DynamicRegionFactory;
 import com.gemstone.gemfire.cache.InterestResultPolicy;
@@ -65,9 +63,6 @@ import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
-
-import security.DummyCredentialGenerator;
-import security.XmlAuthzCredentialGenerator;
 
 /**
  * Base class for tests for authorization from client to server. It contains

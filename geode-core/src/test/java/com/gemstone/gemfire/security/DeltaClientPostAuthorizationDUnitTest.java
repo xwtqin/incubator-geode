@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import security.AuthzCredentialGenerator;
-import security.CredentialGenerator;
-
 import com.gemstone.gemfire.DeltaTestImpl;
 import com.gemstone.gemfire.cache.InterestResultPolicy;
 import com.gemstone.gemfire.cache.Region;
