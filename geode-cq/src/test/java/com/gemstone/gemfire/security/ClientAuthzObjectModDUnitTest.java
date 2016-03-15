@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+import com.gemstone.gemfire.internal.security.FilterPostAuthorization;
+import com.gemstone.gemfire.internal.security.FilterPreAuthorization;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyAuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
@@ -62,11 +64,9 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     super(name);
   }
 
-  private static final String preAccessor = "com.gemstone.gemfire.internal."
-      + "security.FilterPreAuthorization.create";
+  private static final String preAccessor = FilterPreAuthorization.class.getName() + ".create";
 
-  private static final String postAccessor = "com.gemstone.gemfire.internal."
-      + "security.FilterPostAuthorization.create";
+  private static final String postAccessor = FilterPostAuthorization.class.getName() + ".create";
 
   private static class TestPostCredentialGenerator implements
       TestCredentialGenerator {
