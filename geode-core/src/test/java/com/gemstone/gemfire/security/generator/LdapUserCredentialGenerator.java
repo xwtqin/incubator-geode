@@ -18,15 +18,20 @@ package com.gemstone.gemfire.security.generator;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HandShake;
+import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.util.test.TestUtil;
 import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
 import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
+import org.apache.logging.log4j.Logger;
 
 import java.security.Principal;
 import java.util.Properties;
 import java.util.Random;
 
 public class LdapUserCredentialGenerator extends CredentialGenerator {
+
+  private static final Logger logger = LogService.getLogger();
 
   private static final String USER_PREFIX = "gemfire";
   private static final Random RANDOM = new Random();
@@ -64,6 +69,10 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
       extraProps.setProperty(HandShake.PRIVATE_KEY_ALIAS_PROP, "gemfire1");
       extraProps.setProperty(HandShake.PRIVATE_KEY_PASSWD_PROP, "gemfire");
     }
+
+    Assert.assertNotNull(extraProps.getProperty(LdapUserAuthenticator.LDAP_BASEDN_NAME));
+
+    logger.info("Generating LdapUserCredentialGenerator with {}", extraProps);
 
     return extraProps;
   }

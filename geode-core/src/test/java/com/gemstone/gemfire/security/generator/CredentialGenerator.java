@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.internal.logging.LogService;
 import com.gemstone.gemfire.security.AuthInitialize;
 import com.gemstone.gemfire.security.Authenticator;
 import com.gemstone.gemfire.security.templates.DummyAuthenticator;
 import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
 import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Encapsulates obtaining valid and invalid credentials. Implementations will be
@@ -37,6 +39,8 @@ import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
  * @since 5.5
  */
 public abstract class CredentialGenerator {
+
+  private static final Logger logger = LogService.getLogger();
 
   /**
    * A set of properties that should be added to the Gemfire system properties
@@ -86,6 +90,7 @@ public abstract class CredentialGenerator {
    */
   public void init() throws IllegalArgumentException {
     this.systemProperties = initialize();
+    logger.info("Generating CredentialGenerator with {}", this.systemProperties);
   }
 
   /**

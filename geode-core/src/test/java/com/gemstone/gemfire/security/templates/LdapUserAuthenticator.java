@@ -51,6 +51,8 @@ public class LdapUserAuthenticator implements Authenticator {
   }
 
   public void init(final Properties securityProps, final LogWriter systemLogWriter, final LogWriter securityLogWriter) throws AuthenticationFailedException {
+    logger.info("Initializing LdapUserAuthenticator with {}", securityProps);
+
     this.ldapServer = securityProps.getProperty(LDAP_SERVER_NAME);
     if (this.ldapServer == null || this.ldapServer.length() == 0) {
       throw new AuthenticationFailedException("LdapUserAuthenticator: LDAP server property [" + LDAP_SERVER_NAME + "] not specified");
