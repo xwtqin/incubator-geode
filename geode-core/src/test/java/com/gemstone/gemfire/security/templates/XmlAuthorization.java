@@ -131,7 +131,7 @@ public class XmlAuthorization implements AccessControl {
   /**
    * Public static factory method to create an instance of
    * {@code XmlAuthorization}. The fully qualified name of the class
-   * ({@code templates.security.XmlAuthorization.create})
+   * ({@code com.gemstone.gemfire.security.templates.XmlAuthorization.create})
    * should be mentioned as the {@code security-client-accessor} system
    * property to enable pre-operation authorization checks as implemented in
    * this class.
