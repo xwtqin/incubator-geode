@@ -22,8 +22,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import templates.security.DummyAuthorization;
-import templates.security.UsernamePrincipal;
+import com.gemstone.gemfire.security.templates.DummyAuthorization;
+import com.gemstone.gemfire.security.templates.UsernamePrincipal;
 
 public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
@@ -83,7 +83,7 @@ public class DummyAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   @Override
   public String getAuthorizationCallback() {
-    return templates.security.DummyAuthorization.class.getName() + ".create";
+    return DummyAuthorization.class.getName() + ".create";
   }
 
   @Override

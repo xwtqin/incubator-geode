@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.security.templates.DummyAuthenticator;
+import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
+import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
+
 /**
  * Encapsulates obtaining valid and invalid credentials. Implementations will be
  * for different kinds of authentication schemes.
@@ -196,9 +200,9 @@ public abstract class CredentialGenerator {
     private static final ClassCode[] VALUES = new ClassCode[10];
     private static final Map CODE_NAME_MAP = new HashMap();
 
-    public static final ClassCode DUMMY = new ClassCode(templates.security.DummyAuthenticator.class.getName() + ".create", ID_DUMMY);
-    public static final ClassCode LDAP = new ClassCode(templates.security.LdapUserAuthenticator.class.getName() + ".create", ID_LDAP);
-    public static final ClassCode PKCS = new ClassCode(templates.security.PKCSAuthenticator.class.getName() + ".create", ID_PKCS);
+    public static final ClassCode DUMMY = new ClassCode(DummyAuthenticator.class.getName() + ".create", ID_DUMMY);
+    public static final ClassCode LDAP = new ClassCode(LdapUserAuthenticator.class.getName() + ".create", ID_LDAP);
+    public static final ClassCode PKCS = new ClassCode(PKCSAuthenticator.class.getName() + ".create", ID_PKCS);
     public static final ClassCode SSL = new ClassCode("SSL", ID_SSL);
 
     /** The name of this class. */

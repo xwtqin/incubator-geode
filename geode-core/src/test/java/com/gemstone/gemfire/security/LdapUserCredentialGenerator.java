@@ -19,8 +19,8 @@ package com.gemstone.gemfire.security;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HandShake;
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.LdapUserAuthenticator;
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 import java.security.Principal;
 import java.util.Properties;
@@ -75,12 +75,12 @@ public class LdapUserCredentialGenerator extends CredentialGenerator {
 
   @Override
   public String getAuthInit() {
-    return templates.security.UserPasswordAuthInit.class.getName() + ".create";
+    return UserPasswordAuthInit.class.getName() + ".create";
   }
 
   @Override
   public String getAuthenticator() {
-    return templates.security.LdapUserAuthenticator.class.getName() + ".create";
+    return LdapUserAuthenticator.class.getName() + ".create";
   }
 
   @Override

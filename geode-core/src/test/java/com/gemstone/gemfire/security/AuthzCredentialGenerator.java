@@ -18,6 +18,8 @@ package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.security.templates.DummyAuthorization;
+import com.gemstone.gemfire.security.templates.XmlAuthorization;
 import org.apache.logging.log4j.Logger;
 
 import java.security.Principal;
@@ -328,8 +330,8 @@ public abstract class AuthzCredentialGenerator {
     private static final ClassCode[] VALUES = new ClassCode[10];
     private static final Map CODE_NAME_MAP = new HashMap();
 
-    public static final ClassCode DUMMY = new ClassCode(templates.security.DummyAuthorization.class.getName() + ".create", ID_DUMMY);
-    public static final ClassCode XML = new ClassCode(templates.security.XmlAuthorization.class.getName() + ".create", ID_XML);
+    public static final ClassCode DUMMY = new ClassCode(DummyAuthorization.class.getName() + ".create", ID_DUMMY);
+    public static final ClassCode XML = new ClassCode(XmlAuthorization.class.getName() + ".create", ID_XML);
 
     /** The name of this class. */
     private final String name;

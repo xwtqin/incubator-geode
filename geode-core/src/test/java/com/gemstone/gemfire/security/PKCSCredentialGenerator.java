@@ -17,8 +17,8 @@
 package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.PKCSAuthInit;
-import templates.security.PKCSAuthenticator;
+import com.gemstone.gemfire.security.templates.PKCSAuthInit;
+import com.gemstone.gemfire.security.templates.PKCSAuthenticator;
 
 import java.security.Principal;
 import java.security.Provider;
@@ -68,12 +68,12 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
 
   @Override
   public String getAuthInit() {
-    return templates.security.PKCSAuthInit.class.getName() + ".create";
+    return PKCSAuthInit.class.getName() + ".create";
   }
 
   @Override
   public String getAuthenticator() {
-    return templates.security.PKCSAuthenticator.class.getName() + ".create";
+    return PKCSAuthenticator.class.getName() + ".create";
   }
 
   @Override

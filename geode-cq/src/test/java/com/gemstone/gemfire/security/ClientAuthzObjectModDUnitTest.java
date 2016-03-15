@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;

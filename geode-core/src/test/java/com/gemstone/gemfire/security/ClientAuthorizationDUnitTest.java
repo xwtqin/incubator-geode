@@ -33,7 +33,7 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 /**
  * Tests for authorization from client to server. This tests for authorization

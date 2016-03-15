@@ -17,7 +17,7 @@
 package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.distributed.DistributedMember;
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 import java.util.Iterator;
 import java.util.Properties;

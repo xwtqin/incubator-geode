@@ -18,8 +18,8 @@ package com.gemstone.gemfire.security;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.util.test.TestUtil;
-import templates.security.UsernamePrincipal;
-import templates.security.XmlAuthorization;
+import com.gemstone.gemfire.security.templates.UsernamePrincipal;
+import com.gemstone.gemfire.security.templates.XmlAuthorization;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -120,7 +120,7 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
 
   @Override
   public String getAuthorizationCallback() {
-    return templates.security.XmlAuthorization.class.getName() + ".create";
+    return XmlAuthorization.class.getName() + ".create";
   }
 
   private Principal getDummyPrincipal(final byte roleType, final int index) {

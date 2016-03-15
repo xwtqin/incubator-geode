@@ -16,8 +16,8 @@
  */
 package com.gemstone.gemfire.security;
 
-import templates.security.DummyAuthenticator;
-import templates.security.UserPasswordAuthInit;
+import com.gemstone.gemfire.security.templates.DummyAuthenticator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 
 import java.security.Principal;
 import java.util.Properties;
@@ -36,12 +36,12 @@ public class DummyCredentialGenerator extends CredentialGenerator {
 
   @Override
   public String getAuthInit() {
-    return templates.security.UserPasswordAuthInit.class.getName() + ".create";
+    return UserPasswordAuthInit.class.getName() + ".create";
   }
 
   @Override
   public String getAuthenticator() {
-    return templates.security.DummyAuthenticator.class.getName() + ".create";
+    return DummyAuthenticator.class.getName() + ".create";
   }
 
   @Override
