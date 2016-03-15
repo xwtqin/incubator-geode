@@ -27,15 +27,18 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.RMIException;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * This class tests the basic functionality of the distributed unit
  * test framework.
  */
+@Category(DistributedTest.class)
 public class JUnit4BasicDUnitTest extends JUnit4DistributedTestCase {
 
   private static Properties bindings;

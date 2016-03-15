@@ -190,9 +190,7 @@ public class WANTestBase extends DistributedTestCase{
     //this is done to vary the number of dispatchers for sender
     //during every test method run
     shuffleNumDispatcherThreads();
-//    Invoke.invokeInEveryVM(WANTestBase.class,"setNumDispatcherThreadsForTheRun",
-//            new Object[]{dispatcherThreads.get(0)});
-    Invoke.invokeInEveryVM(() -> setNumDispatcherThreadsForTheRun(dispatcherThreads.get(0))); // TODO: does this work? if so delete previous line
+    Invoke.invokeInEveryVM(() -> setNumDispatcherThreadsForTheRun(dispatcherThreads.get(0)));
     IgnoredException.addIgnoredException("Connection refused");
     IgnoredException.addIgnoredException("Software caused connection abort");
     IgnoredException.addIgnoredException("Connection reset");

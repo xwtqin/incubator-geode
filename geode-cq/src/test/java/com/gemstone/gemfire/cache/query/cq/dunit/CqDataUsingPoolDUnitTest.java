@@ -859,7 +859,8 @@ public class CqDataUsingPoolDUnitTest extends CacheTestCase {
   }
 
   public void testCqStatInitializationTimingIssue() {
-    
+    disconnectAllFromDS();
+
     //The async close can cause this exception on the server
     IgnoredException.addIgnoredException("java.net.SocketException: Broken pipe");
     final String regionName = "testCqStatInitializationTimingIssue";
@@ -1115,6 +1116,8 @@ public class CqDataUsingPoolDUnitTest extends CacheTestCase {
   }
   
   public void testGetDurableCqsFromServer() {
+    disconnectAllFromDS();
+
     final String regionName = "testGetAllDurableCqsFromServer";
     final String cq1Name = "testCq1";
     final Host host = Host.getHost(0);
@@ -1175,6 +1178,8 @@ public class CqDataUsingPoolDUnitTest extends CacheTestCase {
   }
   
   public void testGetDurableCqsFromServerCycleClients() {
+    disconnectAllFromDS();
+
     final String regionName = "testGetAllDurableCqsFromServerCycleClients";
     final Host host = Host.getHost(0);
     VM server = host.getVM(0);

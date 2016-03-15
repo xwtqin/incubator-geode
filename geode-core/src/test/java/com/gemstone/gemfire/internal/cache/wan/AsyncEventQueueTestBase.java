@@ -127,7 +127,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   }
 
   @Override
-  public final void postSetUp() throws Exception {
+  public final void preSetUp() throws Exception {
     final Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     vm1 = host.getVM(1);
@@ -137,12 +137,14 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     vm5 = host.getVM(5);
     vm6 = host.getVM(6);
     vm7 = host.getVM(7);
+  }
+
+  @Override
+  public final void postSetUp() throws Exception {
     // this is done to vary the number of dispatchers for sender
     // during every test method run
     shuffleNumDispatcherThreads();
-    Invoke.invokeInEveryVM(AsyncEventQueueTestBase.class,
-        "setNumDispatcherThreadsForTheRun",
-        new Object[] { dispatcherThreads.get(0) });
+    Invoke.invokeInEveryVM(() -> setNumDispatcherThreadsForTheRun(dispatcherThreads.get(0)));
   }
 
   public static void shuffleNumDispatcherThreads() {
@@ -159,7 +161,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
     }
     AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     //props.setProperty(DistributionConfig.DISTRIBUTED_SYSTEM_ID_NAME, "" + dsId);
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port
@@ -173,7 +175,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
   public static Integer createFirstRemoteLocator(int dsId, int remoteLocPort) {
     AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
     int port = AvailablePortHelper.getRandomAvailablePortForDUnitSite();
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.DISTRIBUTED_SYSTEM_ID_NAME, "" + dsId);
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + port
@@ -692,7 +694,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   protected static void createCache(Integer locPort) {
     AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");
@@ -702,7 +704,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static void createCacheWithoutLocator(Integer mCastPort) {
     AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "" + mCastPort);
     InternalDistributedSystem ds = test.getSystem(props);
     cache = CacheFactory.create(ds);
@@ -941,7 +943,7 @@ public class AsyncEventQueueTestBase extends DistributedTestCase {
 
   public static int createReceiver(int locPort) {
     AsyncEventQueueTestBase test = new AsyncEventQueueTestBase(getTestMethodName());
-    Properties props = new Properties();
+    Properties props = test.getDistributedSystemProperties();
     props.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     props.setProperty(DistributionConfig.LOCATORS_NAME, "localhost[" + locPort
         + "]");

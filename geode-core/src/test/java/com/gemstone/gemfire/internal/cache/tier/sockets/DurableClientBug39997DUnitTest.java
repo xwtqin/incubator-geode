@@ -124,7 +124,7 @@ public class DurableClientBug39997DUnitTest extends CacheTestCase {
   public Properties getClientProperties() {
     Properties props = new Properties();
     props.setProperty("mcast-port", "0");
-    props.setProperty("locators", "7");
+    props.setProperty("locators", "");
     props.setProperty("durable-client-id", "my_id");
     return props;
   }
