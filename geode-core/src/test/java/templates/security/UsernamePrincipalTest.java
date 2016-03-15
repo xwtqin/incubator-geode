@@ -16,14 +16,14 @@
  */
 package templates.security;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.io.Serializable;
-
 import com.gemstone.gemfire.test.junit.categories.UnitTest;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.io.Serializable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link UsernamePrincipal}

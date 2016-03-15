@@ -26,10 +26,16 @@ sourceSets {
 }
 
 dependencies {
+
+
+
+
+  runtime 'org.springframework:spring-aop:' + project.'springframework.version'
   compile 'org.springframework:spring-beans:' + project.'springframework.version'
   compile 'org.springframework:spring-context:' + project.'springframework.version'
   compile 'org.springframework:spring-core:' + project.'springframework.version'
   compile 'org.springframework:spring-web:' + project.'springframework.version'
+  runtime 'org.springframework:spring-webmvc:' + project.'springframework.version'
   
   compile 'commons-beanutils:commons-beanutils:' + project.'commons-beanutils.version'
   compile 'commons-collections:commons-collections:' + project.'commons-collections.version'
