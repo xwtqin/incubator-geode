@@ -107,6 +107,30 @@ public class JUnit4BasicDUnitTest extends JUnit4DistributedTestCase {
     assertEquals(0, vm0num);
   }
 
+  @Test
+  public void testInvokeWithNamedLambda() {
+    Host host = Host.getHost(0);
+    VM vm0 = host.getVM(0);
+    VM vm1 = host.getVM(1);
+
+    int vm0Num = vm0.invoke("getVMID", () -> DUnitEnv.get().getVMID());
+    int vm1Num = vm1.invoke("getVMID", () -> DUnitEnv.get().getVMID());
+
+    assertEquals(0, vm0Num);
+    assertEquals(1, vm1Num);
+  }
+
+  @Test
+  public void testInvokeNamedLambdaAsync() throws Throwable {
+    Host host = Host.getHost(0);
+    VM vm0 = host.getVM(0);
+
+    AsyncInvocation<Integer> async0 = vm0.invokeAsync("getVMID", () -> DUnitEnv.get().getVMID());
+    int vm0num = async0.getResult();
+
+    assertEquals(0, vm0num);
+  }
+
   @Ignore("Test was never implemented")
   @Test
   public void testRemoteInvocationBoolean() {
