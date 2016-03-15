@@ -24,6 +24,8 @@ package com.gemstone.gemfire.security;
 import java.util.Iterator;
 import java.util.Properties;
 
+import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.VM;
 
 import com.gemstone.gemfire.cache.Region;

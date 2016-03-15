@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.security;
+package com.gemstone.gemfire.security.generator;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.security.AuthInitialize;
+import com.gemstone.gemfire.security.Authenticator;
 import com.gemstone.gemfire.security.templates.DummyAuthenticator;
 import com.gemstone.gemfire.security.templates.LdapUserAuthenticator;
 import com.gemstone.gemfire.security.templates.PKCSAuthenticator;

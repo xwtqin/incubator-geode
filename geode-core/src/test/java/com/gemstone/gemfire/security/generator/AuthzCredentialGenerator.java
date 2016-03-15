@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.security;
+package com.gemstone.gemfire.security.generator;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.logging.LogService;
+import com.gemstone.gemfire.security.AccessControl;
 import com.gemstone.gemfire.security.templates.DummyAuthorization;
 import com.gemstone.gemfire.security.templates.XmlAuthorization;
 import org.apache.logging.log4j.Logger;

@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.security;
 
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
+import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import hydra.Log;
 
 import java.io.IOException;

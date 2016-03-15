@@ -35,6 +35,8 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.logging.InternalLogWriter;
+import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
@@ -137,7 +139,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
   }
 
   private void doTest(Integer numOfUsers, Integer numOfPuts,
-      Boolean[] postAuthzAllowed, AuthzCredentialGenerator gen, Boolean keepAlive)
+                      Boolean[] postAuthzAllowed, AuthzCredentialGenerator gen, Boolean keepAlive)
       throws Exception {
     CredentialGenerator cGen = gen.getCredentialGenerator();
     Properties extraAuthProps = cGen.getSystemProperties();

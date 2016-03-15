@@ -31,7 +31,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
-import com.gemstone.gemfire.security.AuthzCredentialGenerator.ClassCode;
+import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
+import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator.ClassCode;
 
 import com.gemstone.gemfire.cache.DynamicRegionFactory;
 import com.gemstone.gemfire.cache.InterestResultPolicy;
@@ -57,6 +58,9 @@ import com.gemstone.gemfire.internal.AvailablePort.Keeper;
 import com.gemstone.gemfire.internal.cache.AbstractRegionEntry;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.util.Callable;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
+import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
+import com.gemstone.gemfire.security.generator.XmlAuthzCredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;

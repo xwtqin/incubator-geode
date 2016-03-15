@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.security;
+package com.gemstone.gemfire.security.generator;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.util.test.TestUtil;
@@ -90,7 +90,7 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
   @Override
   protected Properties init() throws IllegalArgumentException {
     final Properties sysProps = new Properties();
-    final String dirName = "/lib/";
+    final String dirName = "/com/gemstone/gemfire/security/generator/lib/";
 
     if (this.generator.classCode().isDummy()) {
       final String xmlFilename = TestUtil.getResourcePath(XmlAuthzCredentialGenerator.class, dirName + dummyXml);

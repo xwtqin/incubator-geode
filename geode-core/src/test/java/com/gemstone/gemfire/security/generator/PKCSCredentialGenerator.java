@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gemstone.gemfire.security;
+package com.gemstone.gemfire.security.generator;
 
 import com.gemstone.gemfire.util.test.TestUtil;
 import com.gemstone.gemfire.security.templates.PKCSAuthInit;
@@ -44,9 +44,9 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
   private static String getKeyStoreDir() {
     usesIBMJSSE = usesIBMProviders();
     if (usesIBMJSSE) {
-      return "/lib/keys/ibm";
+      return "/com/gemstone/gemfire/security/generator/lib/keys/ibm";
     } else {
-      return "/lib/keys";
+      return "/com/gemstone/gemfire/security/generator/lib/keys";
     }
   }
 
