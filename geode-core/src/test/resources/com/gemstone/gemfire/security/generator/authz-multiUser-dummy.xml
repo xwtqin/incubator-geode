@@ -18,42 +18,53 @@
   -->
 
 <!DOCTYPE acl PUBLIC "-//GemStone Systems, Inc.//GemFire XML Authorization 1.0//EN"
-        "com/gemstone/gemfire/security/generator/lib/templates/authz5_5.dtd" >
+        "com/gemstone/gemfire/security/templates/authz6_0.dtd" >
 <acl>
 
   <role name="reader">
-    <user>gemfire1</user>
-    <user>gemfire2</user>
-    <user>gemfire3</user>
-    <user>gemfire4</user>
-    <user>gemfire5</user>
+    <user>user1</user>
+    <user>user2</user>
+    <user>root</user>
+    <user>admin</user>
+    <user>administrator</user>
   </role>
 
   <role name="writer">
-    <user>gemfire1</user>
-    <user>gemfire2</user>
-    <user>gemfire6</user>
-    <user>gemfire7</user>
-    <user>gemfire8</user>
+    <user>user3</user>
+    <user>user4</user>
+    <user>root</user>
+    <user>admin</user>
+    <user>administrator</user>
   </role>
-
+  
   <role name="cacheOps">
-    <user>gemfire1</user>
-    <user>gemfire2</user>
+    <user>user1</user>
+    <user>user2</user>
+    <user>root</user>
+    <user>admin</user>
+    <user>administrator</user>
   </role>
 
   <role name="queryRegions">
-    <user>gemfire9</user>
-    <user>gemfire10</user>
+    <user>user5</user>
+    <user>user6</user>
   </role>
 
+  <role name="registerInterest">
+    <user>user7</user>
+    <user>user8</user>
+  </role>
+
+  <role name="unregisterInterest">
+    <user>user5</user>
+    <user>user7</user>
+  </role>
+  
   <permission role="cacheOps">
     <operation>QUERY</operation>
     <operation>EXECUTE_CQ</operation>
     <operation>STOP_CQ</operation>
     <operation>CLOSE_CQ</operation>
-    <operation>REGION_CREATE</operation>
-    <operation>REGION_DESTROY</operation>
   </permission>
 
   <permission role="reader">
@@ -73,11 +84,21 @@
     <operation>REGION_CLEAR</operation>
   </permission>
 
-  <permission role="queryRegions" regions="Portfolios,/Positions//,/AuthRegion">
+  <permission role="queryRegions" regions="//Portfolios,/Positions/,AuthRegion">
     <operation>QUERY</operation>
     <operation>EXECUTE_CQ</operation>
     <operation>STOP_CQ</operation>
     <operation>CLOSE_CQ</operation>
+  </permission>
+  
+  <permission role="registerInterest">
+    <operation>REGISTER_INTEREST</operation>
+    <operation>GET</operation>
+  </permission>
+
+  <permission role="unregisterInterest">
+    <operation>UNREGISTER_INTEREST</operation>
+    <operation>GET</operation>
   </permission>
 
 </acl>

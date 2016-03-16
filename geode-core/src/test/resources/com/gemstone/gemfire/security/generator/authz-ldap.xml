@@ -18,54 +18,33 @@
   -->
 
 <!DOCTYPE acl PUBLIC "-//GemStone Systems, Inc.//GemFire XML Authorization 1.0//EN"
-        "com/gemstone/gemfire/security/generator/lib/templates/authz6_0.dtd" >
+        "com/gemstone/gemfire/security/templates/authz5_5.dtd" >
 <acl>
 
   <role name="reader">
-    <user>reader0</user>
-    <user>reader1</user>
-    <user>reader2</user>
-    <user>root</user>
-    <user>admin</user>
-    <user>administrator</user>
+    <user>gemfire1</user>
+    <user>gemfire2</user>
+    <user>gemfire3</user>
+    <user>gemfire4</user>
+    <user>gemfire5</user>
   </role>
 
   <role name="writer">
-    <user>writer0</user>
-    <user>writer1</user>
-    <user>writer2</user>
-    <user>root</user>
-    <user>admin</user>
-    <user>administrator</user>
+    <user>gemfire1</user>
+    <user>gemfire2</user>
+    <user>gemfire6</user>
+    <user>gemfire7</user>
+    <user>gemfire8</user>
   </role>
 
   <role name="cacheOps">
-    <user>root</user>
-    <user>admin</user>
-    <user>administrator</user>
+    <user>gemfire1</user>
+    <user>gemfire2</user>
   </role>
 
   <role name="queryRegions">
-    <user>reader3</user>
-    <user>reader4</user>
-  </role>
-
-  <role name="registerInterest">
-    <user>reader5</user>
-    <user>reader6</user>
-  </role>
-
-  <role name="unregisterInterest">
-    <user>reader5</user>
-    <user>reader7</user>
-  </role>
-  
-  <role name="onRegionFunctionExecutor">
-    <user>reader8</user>
-  </role>
-  
-  <role name="onServerFunctionExecutor">
-    <user>reader9</user>
+    <user>gemfire9</user>
+    <user>gemfire10</user>
   </role>
 
   <permission role="cacheOps">
@@ -94,31 +73,11 @@
     <operation>REGION_CLEAR</operation>
   </permission>
 
-  <permission role="queryRegions" regions="//Portfolios,/Positions/,AuthRegion">
+  <permission role="queryRegions" regions="Portfolios,/Positions//,/AuthRegion">
     <operation>QUERY</operation>
     <operation>EXECUTE_CQ</operation>
     <operation>STOP_CQ</operation>
     <operation>CLOSE_CQ</operation>
-  </permission>
-  
-  <permission role="onRegionFunctionExecutor" regions="secureRegion,Positions">
-    <operation>PUT</operation>
-    <operation functionIds="SecureFunction,OptimizationFunction" optimizeForWrite="false" keySet="KEY-0,KEY-1">EXECUTE_FUNCTION</operation>
-  </permission>
-  
-  <permission role="onServerFunctionExecutor" >
-    <operation>PUT</operation>
-    <operation functionIds="SecureFunction,OptimizationFunction">EXECUTE_FUNCTION</operation>
-  </permission>
-
-  <permission role="registerInterest">
-    <operation>REGISTER_INTEREST</operation>
-    <operation>GET</operation>
-  </permission>
-
-  <permission role="unregisterInterest">
-    <operation>UNREGISTER_INTEREST</operation>
-    <operation>GET</operation>
   </permission>
 
 </acl>

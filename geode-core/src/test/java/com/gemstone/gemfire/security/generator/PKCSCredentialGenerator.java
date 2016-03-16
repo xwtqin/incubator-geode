@@ -44,9 +44,9 @@ public class PKCSCredentialGenerator extends CredentialGenerator {
   private static String getKeyStoreDir() {
     usesIBMJSSE = usesIBMProviders();
     if (usesIBMJSSE) {
-      return "/com/gemstone/gemfire/security/generator/lib/keys/ibm";
+      return "/com/gemstone/gemfire/security/generator/keys/ibm";
     } else {
-      return "/com/gemstone/gemfire/security/generator/lib/keys";
+      return "/com/gemstone/gemfire/security/generator/keys";
     }
   }
 

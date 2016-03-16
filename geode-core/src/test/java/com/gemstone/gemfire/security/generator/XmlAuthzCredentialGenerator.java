@@ -90,7 +90,7 @@ public class XmlAuthzCredentialGenerator extends AuthzCredentialGenerator {
   @Override
   protected Properties init() throws IllegalArgumentException {
     final Properties sysProps = new Properties();
-    final String dirName = "/com/gemstone/gemfire/security/generator/lib/";
+    final String dirName = "/com/gemstone/gemfire/security/generator/";
 
     if (this.generator.classCode().isDummy()) {
       final String xmlFilename = TestUtil.getResourcePath(XmlAuthzCredentialGenerator.class, dirName + dummyXml);
