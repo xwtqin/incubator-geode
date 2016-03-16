@@ -47,11 +47,29 @@ public interface DistributedTestFixture {
   public void preTearDown() throws Exception;
 
   /**
-   * {@code postTearDown()</code> is invoked after {@code DistributedTestCase#tearDown()}.
+   * {@code postTearDown()} is invoked after {@code DistributedTestCase#tearDown()}.
    *
    * <p>Override this as needed. Default implementation is empty.
    */
   public void postTearDown() throws Exception;
+
+  /**
+   * {@code preTearDownAssertions()} is invoked before any tear down methods
+   * have been invoked. If this method throws anything, tear down methods will
+   * still be invoked.
+   *
+   * <p>Override this as needed. Default implementation is empty.
+   */
+  public void preTearDownAssertions() throws Exception;
+
+  /**
+   * {@code postTearDownAssertions()} is invoked after all tear down methods
+   * have completed. This method will not be invoked if
+   * {@code preTearDownAssertions()} throws.
+   *
+   * <p>Override this as needed. Default implementation is empty.
+   */
+  public void postTearDownAssertions() throws Exception;
 
   /**
    * Returns the {@code Properties} used to define the {@code DistributedSystem}.

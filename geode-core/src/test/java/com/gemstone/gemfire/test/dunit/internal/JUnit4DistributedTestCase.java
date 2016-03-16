@@ -473,9 +473,14 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
    */
   @After
   public final void tearDown() throws Exception {
-    preTearDown();
-    tearDownDistributedTestCase();
-    postTearDown();
+    try {
+      preTearDownAssertions();
+    } finally {
+      preTearDown();
+      tearDownDistributedTestCase();
+      postTearDown();
+    }
+    postTearDownAssertions();
   }
 
   private final void tearDownDistributedTestCase() throws Exception {
@@ -510,6 +515,20 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   public void postTearDown() throws Exception {
     if (this.distributedTestFixture != this) {
       this.distributedTestFixture.postTearDown();
+    }
+  }
+
+  @Override
+  public void preTearDownAssertions() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.preTearDownAssertions();
+    }
+  }
+
+  @Override
+  public void postTearDownAssertions() throws Exception {
+    if (this.distributedTestFixture != this) {
+      this.distributedTestFixture.postTearDownAssertions();
     }
   }
 

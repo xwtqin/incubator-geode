@@ -225,6 +225,26 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
   public void postTearDown() throws Exception {
   }
 
+  /**
+   * {@code preTearDownAssertions()} is invoked before any tear down methods
+   * have been invoked. If this method throws anything, tear down methods will
+   * still be invoked.
+   *
+   * <p>Override this as needed. Default implementation is empty.
+   */
+  public void preTearDownAssertions() throws Exception {
+  }
+
+  /**
+   * {@code postTearDownAssertions()} is invoked after all tear down methods
+   * have completed. This method will not be invoked if
+   * {@code preTearDownAssertions()} throws.
+   *
+   * <p>Override this as needed. Default implementation is empty.
+   */
+  public void postTearDownAssertions() throws Exception {
+  }
+
   protected static final void destroyRegions(final Cache cache) { // TODO: this should move to CacheTestCase
     JUnit4DistributedTestCase.destroyRegions(cache);
   }
