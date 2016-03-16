@@ -19,10 +19,8 @@ package com.gemstone.gemfire.test.dunit.tests;
 import static com.gemstone.gemfire.test.dunit.Invoke.*;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.process.ProcessUtils;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 
 /**
