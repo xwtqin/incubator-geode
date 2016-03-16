@@ -111,7 +111,7 @@ public class GMSAuthenticator implements Authenticator {
    */
   @Override
   public String authenticate(InternalDistributedMember member, Object credentials) throws AuthenticationFailedException {
-    return authenticate(member, credentials, securityProps, services.getJoinLeave().getMemberID());
+    return authenticate(member, credentials, this.securityProps, this.services.getJoinLeave().getMemberID());
   }
 
   /**
@@ -124,7 +124,7 @@ public class GMSAuthenticator implements Authenticator {
       return null;
     }
 
-    InternalLogWriter securityLogWriter = services.getSecurityLogWriter();
+    InternalLogWriter securityLogWriter = this.services.getSecurityLogWriter();
     String failMsg = null;
     if (credentials != null) {
       try {
@@ -156,9 +156,10 @@ public class GMSAuthenticator implements Authenticator {
         throw new AuthenticationFailedException(HandShake_AUTHENTICATOR_INSTANCE_COULD_NOT_BE_OBTAINED.toLocalizedString());
       }
 
-      LogWriter logWriter = services.getLogWriter();
-      LogWriter securityLogWriter = services.getSecurityLogWriter();
-      auth.init(securityProps, logWriter, securityLogWriter);
+      LogWriter logWriter = this.services.getLogWriter();
+      LogWriter securityLogWriter = this.services.getSecurityLogWriter();
+
+      auth.init(this.securityProps, logWriter, securityLogWriter); // this.securityProps contains security-ldap-basedn but security-ldap-baseDomainName is expected
       return auth.authenticate((Properties) credentials, member);
 
     } catch (GemFireSecurityException gse) {
