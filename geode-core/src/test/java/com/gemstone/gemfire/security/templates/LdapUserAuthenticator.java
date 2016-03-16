@@ -39,7 +39,7 @@ public class LdapUserAuthenticator implements Authenticator {
   private static final Logger logger = LogService.getLogger();
 
   public static final String LDAP_SERVER_NAME = "security-ldap-server";
-  public static final String LDAP_BASEDN_NAME = "security-ldap-baseDomainName";
+  public static final String LDAP_BASEDN_NAME = "security-ldap-basedn";
   public static final String LDAP_SSL_NAME = "security-ldap-usessl";
 
   private String ldapServer = null;
