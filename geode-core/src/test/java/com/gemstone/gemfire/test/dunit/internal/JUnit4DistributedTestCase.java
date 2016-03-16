@@ -481,10 +481,12 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
   private final void tearDownDistributedTestCase() throws Exception {
     Invoke.invokeInEveryVM(()->tearDownCreationStackGenerator());
     if (logPerTest) {
-      disconnectFromDS();
-      Invoke.invokeInEveryVM(()->disconnectFromDS());
+      disconnectAllFromDS();
     }
     cleanupAllVms();
+    if (!getDistributedSystemProperties().isEmpty()) {
+      disconnectAllFromDS();
+    }
   }
 
   /**
