@@ -99,7 +99,7 @@ public abstract class OffHeapRegionBase {
       assertEquals(offHeapSize, ma.getFreeMemory());
       assertEquals(0, ma.getUsedMemory());
       // do an allocation larger than the slab size
-      // TODO: currently the defragment will product slabs bigger than the max slab size
+      // TODO: currently the defragment will produce slabs bigger than the max slab size
       // (see the todo comment on defragment() in FreeListManager).
       // So we request 20m here since that it the total size.
       try {

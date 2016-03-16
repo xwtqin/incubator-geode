@@ -69,7 +69,7 @@ public class OffHeapStorage implements OffHeapMemoryStats {
     
     final String usedMemoryDesc = "The amount of off-heap memory, in bytes, that is being used to store data.";
     final String defragmentationDesc = "The total number of times off-heap memory has been defragmented.";
-    final String defragmentationTimeDesc = "The total time spent deframenting off-heap memory.";
+    final String defragmentationTimeDesc = "The total time spent defragmenting off-heap memory.";
     final String fragmentationDesc = "The percentage of off-heap free memory that is fragmented.  Updated every time a defragmentation is performed.";
     final String fragmentsDesc = "The number of fragments of free off-heap memory. Updated every time a defragmentation is done.";
     final String freeMemoryDesc = "The amount of off-heap memory, in bytes, that is not being used.";

@@ -51,7 +51,7 @@ public class MemoryAllocatorFillPatternJUnitTest {
   private static final int DEFRAGMENTATION_CHUNK_SIZE = (SLAB_SIZE / DEFRAGMENTATION_CHUNKS) - 1024;
   
   /** This should force defragmentation when allocated. */
-  private static final int FORCE_DEFRAGMENATATION_CHUNK_SIZE = DEFRAGMENTATION_CHUNK_SIZE * 2;
+  private static final int FORCE_DEFRAGMENTATION_CHUNK_SIZE = DEFRAGMENTATION_CHUNK_SIZE * 2;
 
   /** Our test victim. */
   private MemoryAllocatorImpl allocator = null;
@@ -173,7 +173,7 @@ public class MemoryAllocatorFillPatternJUnitTest {
      * our initial chunks.  This should force a defragmentation causing our
      * memory to look like [            ][      ].
      */
-    OffHeapStoredObject slightlyLargerChunk = (OffHeapStoredObject) this.allocator.allocate(FORCE_DEFRAGMENATATION_CHUNK_SIZE);
+    OffHeapStoredObject slightlyLargerChunk = (OffHeapStoredObject) this.allocator.allocate(FORCE_DEFRAGMENTATION_CHUNK_SIZE);
     
     /*
      * Make sure the defragmented memory has the fill validation.
