@@ -46,32 +46,32 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
   }
 
   /**
-   * Creates the <code>Cache</code> for this test that is not connected
-   * to other members
+   * Creates the {@code Cache} for this test that is not connected to other
+   * members.
    */
   public final Cache createLonerCache() {
     return delegate.createLonerCache();
   }
 
   /**
-   * Sets this test up with a CacheCreation as its cache.
-   * Any existing cache is closed. Whoever calls this must also call finishCacheXml
+   * Sets this test up with a {@code CacheCreation} as its cache. Any existing
+   * cache is closed. Whoever calls this must also call {@code finishCacheXml}.
    */
   public static final void beginCacheXml() {
     JUnit4CacheTestCase.beginCacheXml();
   }
 
   /**
-   * Finish what beginCacheXml started. It does this be generating a cache.xml
-   * file and then creating a real cache using that cache.xml.
+   * Finish what {@code beginCacheXml} started. It does this be generating a
+   * cache.xml file and then creating a real cache using that cache.xml.
    */
   public final void finishCacheXml(final String name) {
     delegate.finishCacheXml(name);
   }
 
   /**
-   * Finish what beginCacheXml started. It does this be generating a cache.xml
-   * file and then creating a real cache using that cache.xml.
+   * Finish what {@code beginCacheXml} started. It does this be generating a
+   * cache.xml file and then creating a real cache using that cache.xml.
    */
   public final void finishCacheXml(final String name, final boolean useSchema, final String xmlVersion) {
     delegate.finishCacheXml(name, useSchema, xmlVersion);
@@ -97,7 +97,8 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
   }
 
   /**
-   * creates a client cache from the factory if one does not already exist
+   * Creates a client cache from the factory if one does not already exist.
+   *
    * @since 6.5
    */
   public final ClientCache getClientCache(final ClientCacheFactory factory) {
@@ -105,7 +106,8 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
   }
 
   /**
-   * same as {@link #getCache()} but with casting
+   * Invokes {@link #getCache()} and casts the return to
+   * {@code GemFireCacheImpl}.
    */
   public final GemFireCacheImpl getGemfireCache() { // TODO: remove?
     return delegate.getGemfireCache();
@@ -122,12 +124,16 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
     return JUnit4CacheTestCase.basicGetCache();
   }
 
-  /** Close the cache */
+  /**
+   * Close the cache.
+   */
   public static final void closeCache() {
     JUnit4CacheTestCase.closeCache();
   }
 
-  /** Closed the cache in all VMs. */
+  /**
+   * Closed the cache in all VMs.
+   */
   protected final void closeAllCache() {
     delegate.closeAllCache();
   }
@@ -204,10 +210,8 @@ public abstract class JUnit3CacheTestCase extends JUnit3DistributedTestCase impl
   }
 
   /**
-   * Return a set of disk directories
-   * for persistence tests. These directories
-   * will be automatically cleaned up
-   * on test case closure.
+   * Return a set of disk directories for persistence tests. These directories
+   * will be automatically cleaned up during tear down.
    */
   public static final File[] getDiskDirs() {
     return JUnit4CacheTestCase.getDiskDirs();

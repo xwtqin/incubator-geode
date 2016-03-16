@@ -136,8 +136,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * Creates the {@code Cache} for this test that is not connected
-   * to other members
+   * Creates the {@code Cache} for this test that is not connected to other
+   * members.
    */
   public final Cache createLonerCache() {
     synchronized(JUnit4CacheTestCase.class) {
@@ -161,8 +161,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * Sets this test up with a CacheCreation as its cache.
-   * Any existing cache is closed. Whoever calls this must also call finishCacheXml
+   * Sets this test up with a {@code CacheCreation} as its cache. Any existing
+   * cache is closed. Whoever calls this must also call {@code finishCacheXml}.
    */
   public static final synchronized void beginCacheXml() {
     closeCache();
@@ -170,8 +170,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * Finish what beginCacheXml started. It does this be generating a cache.xml
-   * file and then creating a real cache using that cache.xml.
+   * Finish what {@code beginCacheXml} started. It does this be generating a
+   * cache.xml file and then creating a real cache using that cache.xml.
    */
   public final void finishCacheXml(final String name) {
     synchronized(JUnit4CacheTestCase.class) {
@@ -194,8 +194,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * Finish what beginCacheXml started. It does this be generating a cache.xml
-   * file and then creating a real cache using that cache.xml.
+   * Finish what {@code beginCacheXml} started. It does this be generating a
+   * cache.xml file and then creating a real cache using that cache.xml.
    */
   public final void finishCacheXml(final String name, final boolean useSchema, final String xmlVersion) {
     synchronized(JUnit4CacheTestCase.class) {
@@ -262,7 +262,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * creates a client cache from the factory if one does not already exist
+   * Creates a client cache from the factory if one does not already exist.
    *
    * @since 6.5
    */
@@ -295,7 +295,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * same as {@link #getCache()} but with casting
+   * Invokes {@link #getCache()} and casts the return to
+   * {@code GemFireCacheImpl}.
    */
   public final GemFireCacheImpl getGemfireCache() { // TODO: remove?
     return (GemFireCacheImpl)getCache();
@@ -312,13 +313,8 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
     return cache;
   }
 
-//  public static final synchronized void disconnectFromDS() {
-//    closeCache();
-//    JUnit4DistributedTestCase.disconnectFromDS();
-//  }
-
   /**
-   * Close the cache
+   * Close the cache.
    */
   public static final synchronized void closeCache() {
     // Workaround for that fact that some classes are now extending
@@ -372,7 +368,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
     postTearDownCacheTestCase();
   }
 
-  public final void tearDownCacheTestCase() { // TODO: make private
+  private final void tearDownCacheTestCase() {
     remoteTearDown();
     Invoke.invokeInEveryVM(()->remoteTearDown());
   }
@@ -414,7 +410,7 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
   }
 
   /**
-   * Returns a region with the given name and attributes
+   * Returns a region with the given name and attributes.
    */
   public final Region createRegion(final String name, final RegionAttributes attributes) throws CacheException {
     return createRegion(name, "root", attributes);
@@ -524,22 +520,6 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
     return removeExceptionTag;
   }
 
-  /**
-   * Used to generate a cache.xml. Basically just a CacheCreation with a few
-   * more methods implemented.
-   */
-  private static final class TestCacheCreation extends CacheCreation {
-    private boolean closed = false;
-    @Override
-    public void close() {
-      this.closed = true;
-    }
-    @Override
-    public boolean isClosed() {
-      return this.closed;
-    }
-  }
-
   public static final File getDiskDir() {
     int vmNum = VM.getCurrentVMNum();
     File dir = new File("diskDir", "disk" + String.valueOf(vmNum)).getAbsoluteFile();
@@ -566,6 +546,22 @@ public class JUnit4CacheTestCase extends JUnit4DistributedTestCase implements Ca
 
     for(File file: defaultStoreFiles) {
       FileUtil.delete(file);
+    }
+  }
+
+  /**
+   * Used to generate a cache.xml. Basically just a {@code CacheCreation} with
+   * a few more methods implemented.
+   */
+  private static final class TestCacheCreation extends CacheCreation {
+    private boolean closed = false;
+    @Override
+    public void close() {
+      this.closed = true;
+    }
+    @Override
+    public boolean isClosed() {
+      return this.closed;
     }
   }
 }
