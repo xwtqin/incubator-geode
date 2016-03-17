@@ -110,7 +110,7 @@ import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VMRegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.logging.LogService;
-import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
+import com.gemstone.gemfire.internal.offheap.MemoryAllocatorImpl;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.test.dunit.AsyncInvocation;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
@@ -1999,7 +1999,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(1, region.size());
             if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
               GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-              SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+              MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
               LocalRegion reRegion;
               reRegion = (LocalRegion) region;
               RegionEntry re = reRegion.getRegionEntry(key2);
@@ -2065,7 +2065,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(1, region.size());
             if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
               GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-              SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+              MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
               assertEquals(1, ma.getStats().getObjects());
             }
           }
@@ -2086,7 +2086,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertEquals(2, region.size());
           if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
             GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-            SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+            MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
             assertEquals(2, ma.getStats().getObjects());
             LocalRegion reRegion;
             reRegion = (LocalRegion) region;
@@ -2152,7 +2152,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(2, region.size());
             if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
               GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-              SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+              MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
               assertEquals(2, ma.getStats().getObjects());
               LocalRegion reRegion;
               reRegion = (LocalRegion) region;
@@ -2176,7 +2176,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertEquals(2, region.size());
           if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
             GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-            SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+            MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
             assertEquals(2, ma.getStats().getObjects());
           }
         }
@@ -2236,7 +2236,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(2, region.size());
             if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
               GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-              SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+              MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
               assertEquals(2, ma.getStats().getObjects());
             }
           }
@@ -2256,7 +2256,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertEquals(1, region.size());
           if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
             GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-            SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+            MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
             assertEquals(1, ma.getStats().getObjects());
           }
        }
@@ -2311,7 +2311,7 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
             assertEquals(1, region.size());
             if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
               GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-              SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+              MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
               assertEquals(1, ma.getStats().getObjects());
             }
           }
@@ -2330,13 +2330,13 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
           assertEquals(1, region.size());
           if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
             GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-            SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+            MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
             assertEquals(1, ma.getStats().getObjects());
           }
           region.destroyRegion(arg);
           if (region.getAttributes().getOffHeap() && !(region instanceof PartitionedRegion)) {
             GemFireCacheImpl gfc = (GemFireCacheImpl) getCache();
-            final SimpleMemoryAllocatorImpl ma = (SimpleMemoryAllocatorImpl) gfc.getOffHeapStore();
+            final MemoryAllocatorImpl ma = (MemoryAllocatorImpl) gfc.getOffHeapStore();
             WaitCriterion waitForStatChange = new WaitCriterion() {
               public boolean done() {
                 return ma.getStats().getObjects() == 0;
