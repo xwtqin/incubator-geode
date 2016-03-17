@@ -141,6 +141,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
 
   @Override
   public final void postTearDownCacheTestCase() throws Exception {
+    // avoid creating a new cache just to get the diskstore name
     Invoke.invokeInEveryVM(resetTestHook());
     disconnectFromDS();
     FileUtil.delete(new File(GemFireCacheImpl.DEFAULT_DS_NAME).getAbsoluteFile());
@@ -330,7 +331,7 @@ public class QueryIndexUsingXMLDUnitTest extends CacheTestCase {
     com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
         "Creating index using an xml file name : " + fileName);
     
-    vm0.invoke(createIndexThrougXML("vm0testPersistentPRRegion", persistentRegName, fileName)); // TODO: hangs
+    vm0.invoke(createIndexThrougXML("vm0testPersistentPRRegion", persistentRegName, fileName));
     // LoadRegion
     vm0.invoke(loadRegion(this.persistentRegName));
     vm0.invoke(loadRegion(noIndexRepReg));
