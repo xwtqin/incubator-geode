@@ -31,7 +31,7 @@ import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableCallable;
 
-public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitTest {
+public class DistTXPersistentDebugDUnitTest extends DistTXDebugDUnitDisabledTest {
 
   public DistTXPersistentDebugDUnitTest(String name) {
     super(name);
