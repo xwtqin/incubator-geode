@@ -50,6 +50,7 @@ public class LdapUserAuthenticator implements Authenticator {
     return new LdapUserAuthenticator();
   }
 
+  @Override
   public void init(final Properties securityProps, final LogWriter systemLogWriter, final LogWriter securityLogWriter) throws AuthenticationFailedException {
     logger.info("Initializing LdapUserAuthenticator with {}", securityProps);
 
@@ -71,6 +72,7 @@ public class LdapUserAuthenticator implements Authenticator {
     }
   }
 
+  @Override
   public Principal authenticate(final Properties credentials, final DistributedMember member) {
     final String userName = credentials.getProperty(UserPasswordAuthInit.USER_NAME);
     if (userName == null) {
@@ -98,6 +100,7 @@ public class LdapUserAuthenticator implements Authenticator {
     return new UsernamePrincipal(userName);
   }
 
+  @Override
   public void close() {
   }
 }

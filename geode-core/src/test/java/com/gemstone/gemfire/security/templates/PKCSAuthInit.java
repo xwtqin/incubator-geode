@@ -57,6 +57,7 @@ public class PKCSAuthInit implements AuthInitialize {
     return new PKCSAuthInit();
   }
 
+  @Override
   public void init(final LogWriter systemLogWriter, final LogWriter securityLogWriter) throws AuthenticationFailedException {
     this.systemLogWriter = systemLogWriter;
     this.securityLogWriter = securityLogWriter;

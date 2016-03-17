@@ -46,6 +46,7 @@ public class UserPasswordWithExtraPropsAuthInit extends UserPasswordAuthInit {
     super();
   }
 
+  @Override
   public Properties getCredentials(final Properties securityProperties, final DistributedMember server, final boolean isPeer) throws AuthenticationFailedException {
     final Properties securityPropertiesCopy = super.getCredentials(securityProperties, server, isPeer);
     final String extraProps = securityProperties.getProperty(EXTRA_PROPS);

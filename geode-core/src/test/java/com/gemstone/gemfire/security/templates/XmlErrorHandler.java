@@ -49,6 +49,7 @@ public class XmlErrorHandler implements ErrorHandler {
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
+  @Override
   public void error(final SAXParseException exception) throws SAXException {
     throw new SAXParseException("Error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null, exception);
   }
@@ -57,6 +58,7 @@ public class XmlErrorHandler implements ErrorHandler {
    * Throws back the exception with the name of the XML file and the position
    * where the exception occurred.
    */
+  @Override
   public void fatalError(final SAXParseException exception) throws SAXException {
     throw new SAXParseException("Fatal error while parsing XML at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), null, exception);
   }
@@ -65,6 +67,7 @@ public class XmlErrorHandler implements ErrorHandler {
    * Log the exception at {@link LogWriter#warning(String)} level with XML
    * filename and the position of exception in the file.
    */
+  @Override
   public void warning(final SAXParseException exception) throws SAXException {
     this.systemLogWriter.warning("Warning while parsing XML [" + this.xmlFileName + "] at line " + exception.getLineNumber() + " column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
   }
