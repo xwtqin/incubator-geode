@@ -55,7 +55,7 @@ public class SSLNoClientAuthDUnitTest extends DistributedTestCase {
   private static SSLNoClientAuthDUnitTest instance = new SSLNoClientAuthDUnitTest("SSLNoClientAuthDUnitTest");
   
   @Override
-  public final void postSetUp() throws Exception {
+  public final void preSetUp() throws Exception {
     disconnectAllFromDS();
   }
 

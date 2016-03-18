@@ -95,13 +95,9 @@ public class QueryDataInconsistencyDUnitTest extends CacheTestCase {
   }
 
   @Override
-  public final void preTearDownCacheTestCase() throws Exception {
-    Invoke.invokeInEveryVM(CacheTestCase.class, "disconnectFromDS");
-  }
-  
-  @Override
   public final void postTearDownCacheTestCase() throws Exception {
-    Invoke.invokeInEveryVM(QueryObserverHolder.class, "reset");
+    Invoke.invokeInEveryVM(() -> disconnectFromDS());
+    Invoke.invokeInEveryVM(() -> QueryObserverHolder.reset());
   }
 
   @Override

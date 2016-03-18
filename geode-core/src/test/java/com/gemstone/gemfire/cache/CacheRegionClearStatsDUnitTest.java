@@ -61,6 +61,7 @@ public class CacheRegionClearStatsDUnitTest extends DistributedTestCase {
     super(name);
   }
 
+  @Override
   public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);

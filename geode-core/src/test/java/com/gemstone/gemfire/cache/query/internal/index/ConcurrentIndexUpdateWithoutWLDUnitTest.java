@@ -94,8 +94,8 @@ public class ConcurrentIndexUpdateWithoutWLDUnitTest extends
    */
   @Override
   public final void preTearDown() throws Exception {
-    Invoke.invokeInEveryVM(ConcurrentIndexUpdateWithoutWLDUnitTest.class, "destroyRegions");
-    Invoke.invokeInEveryVM(CacheTestCase.class, "closeCache");
+    Invoke.invokeInEveryVM(() -> ConcurrentIndexUpdateWithoutWLDUnitTest.destroyRegions());
+    Invoke.invokeInEveryVM(() -> CacheTestCase.closeCache());
   }
 
   public static synchronized void destroyRegions() {

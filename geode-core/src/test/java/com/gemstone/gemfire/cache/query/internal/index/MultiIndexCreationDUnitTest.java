@@ -174,12 +174,12 @@ public class MultiIndexCreationDUnitTest extends CacheTestCase {
   @Override
   public final void preTearDownCacheTestCase() throws Exception {
     hooked = false;
-    Invoke.invokeInEveryVM(CacheTestCase.class, "disconnectFromDS");
+    Invoke.invokeInEveryVM(() -> disconnectFromDS());
   }
   
   @Override
   public final void postTearDownCacheTestCase() throws Exception {
-    Invoke.invokeInEveryVM(QueryObserverHolder.class, "reset");
+    Invoke.invokeInEveryVM(() -> QueryObserverHolder.reset());
   }
 
   private static class MultiIndexCreationTestHook implements TestHook {

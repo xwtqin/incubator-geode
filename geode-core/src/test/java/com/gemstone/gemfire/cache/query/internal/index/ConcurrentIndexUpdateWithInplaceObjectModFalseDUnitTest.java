@@ -91,7 +91,7 @@ public class ConcurrentIndexUpdateWithInplaceObjectModFalseDUnitTest extends
   }
 
   @Override
-  public final void postSetUp() throws Exception {
+  public final void preSetUp() throws Exception {
     Invoke.invokeInEveryVM(new CacheSerializableRunnable("Set INPLACE_OBJECT_MODIFICATION false") {
       
       @Override
