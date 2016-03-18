@@ -56,7 +56,7 @@ public class PartitionedRegionCompactRangeIndexDUnitTest extends DistributedTest
   }
   
   public void postSetUp() throws Exception {
-    this.disconnectAllFromDS();
+    disconnectAllFromDS();
   }
   
   @Override
