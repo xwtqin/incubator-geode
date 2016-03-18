@@ -22,12 +22,11 @@ import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.query.CqQuery;
 import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.cache.query.internal.DefaultQueryService;
+import com.gemstone.gemfire.cache.query.internal.cq.CqService;
 import com.gemstone.gemfire.cache.query.internal.cq.InternalCqQuery;
 import com.gemstone.gemfire.cache.query.internal.cq.ServerCQImpl;
-import com.gemstone.gemfire.cache.query.internal.cq.CqService;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.cache30.CacheTestCase;
@@ -40,10 +39,9 @@ import com.gemstone.gemfire.test.dunit.NetworkUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
-import junit.framework.TestResult;
 
 /**
- * This class tests the ContiunousQuery mechanism in GemFire.
+ * This class tests the ContinuousQuery mechanism in GemFire.
  *
  * @author anil
  */

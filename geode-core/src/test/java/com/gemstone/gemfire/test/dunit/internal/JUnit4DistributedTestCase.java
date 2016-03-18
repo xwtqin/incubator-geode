@@ -325,7 +325,7 @@ public class JUnit4DistributedTestCase implements DistributedTestFixture, Serial
     return testMethodName;
   }
 
-  public static final void setTestMethodName(final String testMethodName) { // TODO: delete
+  private static final void setTestMethodName(final String testMethodName) {
     JUnit4DistributedTestCase.testMethodName = testMethodName;
   }
 

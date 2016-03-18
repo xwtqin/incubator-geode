@@ -89,7 +89,7 @@ public class CacheServerManagementDUnitTest extends LocatorTestBase {
   }
 
   @Override
-  public final void postSetUp() throws Exception {
+  public final void preSetUp() throws Exception {
     disconnectAllFromDS();
   }
 

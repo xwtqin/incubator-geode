@@ -149,10 +149,6 @@ public abstract class JUnit3DistributedTestCase extends TestCase implements Dist
     return JUnit4DistributedTestCase.getTestMethodName();
   }
 
-  public static void setTestMethodName(final String testMethodName) { // TODO: delete
-    JUnit4DistributedTestCase.setTestMethodName(testMethodName);
-  }
-
   /**
    * Returns a unique name for this test method.  It is based on the
    * name of the class as well as the name of the method.

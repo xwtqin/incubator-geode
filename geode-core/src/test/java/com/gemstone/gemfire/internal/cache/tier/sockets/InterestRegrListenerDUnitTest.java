@@ -74,7 +74,7 @@ public class InterestRegrListenerDUnitTest extends DistributedTestCase {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public final void postSetUp() throws Exception {
+  public final void preSetUp() throws Exception {
     disconnectAllFromDS();
   }
   
