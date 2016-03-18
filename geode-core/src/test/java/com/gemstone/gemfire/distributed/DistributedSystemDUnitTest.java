@@ -45,12 +45,10 @@ import com.gemstone.gemfire.distributed.internal.membership.gms.mgr.GMSMembershi
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
-import com.gemstone.gemfire.test.dunit.internal.JUnit3DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
@@ -64,11 +62,7 @@ import org.junit.experimental.categories.Category;
  * @author David Whitlock
  */
 @Category(DistributedTest.class)
-public class DistributedSystemDUnitTest extends JUnit3DistributedTestCase {
-
-  public DistributedSystemDUnitTest(String name) {
-    super(name);
-  }
+public class DistributedSystemDUnitTest extends JUnit4DistributedTestCase {
 
   public void postSetUp() throws Exception {
     disconnectAllFromDS();

@@ -69,7 +69,7 @@ public class SlowRecDUnitTest extends CacheTestCase {
 
   @Override
   public final void preSetUp() throws Exception {
-    disconnectAllFromDS(); // TODO: this should probably be postSetUp() but this maintains original order
+    disconnectAllFromDS();
   }
   
   @Override
