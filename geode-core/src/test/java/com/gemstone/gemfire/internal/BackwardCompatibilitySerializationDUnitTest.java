@@ -69,7 +69,7 @@ public class BackwardCompatibilitySerializationDUnitTest extends CacheTestCase {
         TestMessage.class);
   }
 
-  @After
+  @Override
   public final void preTearDownCacheTestCase() {
     resetFlags();
     // reset the class mapped to the dsfid
