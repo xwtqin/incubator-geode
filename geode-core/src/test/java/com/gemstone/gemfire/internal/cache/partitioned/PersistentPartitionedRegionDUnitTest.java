@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.internal.cache.partitioned;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.DataInput;
@@ -2051,6 +2052,14 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     vm2Primaries = getPrimaryBucketList(vm2);
     int totalPrimaries = vm0Primaries.size() + vm1Primaries.size() + vm2Primaries.size();
     assertEquals("Expected a total of " + numBuckets + " primaries:", numBuckets, totalPrimaries);
+    
+    /*
+     * As worst case the primaries sould be 1 less than evenly being distributed,
+     * so assert primaries to be between 9 and 11 (both inclusive).
+     */
+    assertThat(vm0Primaries.size()).isBetween(9, 11);
+    assertThat(vm0Primaries.size()).isBetween(9, 11);
+    assertThat(vm0Primaries.size()).isBetween(9, 11);
   }
 
   public void testConcurrencyChecksEnabled() {
