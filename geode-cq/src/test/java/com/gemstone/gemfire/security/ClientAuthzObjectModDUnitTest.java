@@ -54,7 +54,6 @@ import org.junit.experimental.categories.Category;
  * This enables testing of object and callback modification both in
  * pre-processing and post-processing phases.
  * 
- * @author sumedh
  * @since 5.5
  */
 @Category(DistributedTest.class)

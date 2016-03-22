@@ -40,7 +40,6 @@ import org.junit.experimental.categories.Category;
  * with post-process callbacks in case return values of operations and for
  * notifications along-with failover.
  * 
- * @author sumedh
  * @since 5.5
  */
 @Category(DistributedTest.class)
