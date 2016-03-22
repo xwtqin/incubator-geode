@@ -28,7 +28,10 @@ import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.junit.Retry;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import com.gemstone.gemfire.test.junit.rules.RetryRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -43,6 +46,9 @@ import org.junit.experimental.categories.Category;
 @Category(DistributedTest.class)
 public class ClientPostAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
+
+  @Rule
+  public RetryRule retryRule = new RetryRule();
 
   @Override
   public final void postSetUp() throws Exception {
@@ -59,6 +65,7 @@ public class ClientPostAuthorizationDUnitTest extends
   }
 
   @Test
+  @Retry(2)
   public void testAllPostOps() {
 
     OperationWithAction[] allOps = {
