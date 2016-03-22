@@ -2050,7 +2050,7 @@ public class PersistentPartitionedRegionDUnitTest extends PersistentPartitionedR
     vm1Primaries = getPrimaryBucketList(vm1);
     vm2Primaries = getPrimaryBucketList(vm2);
     int totalPrimaries = vm0Primaries.size() + vm1Primaries.size() + vm2Primaries.size();
-    assertEquals(numBuckets, totalPrimaries);
+    assertEquals("Expected a total of " + numBuckets + " primaries:", numBuckets, totalPrimaries);
   }
 
   public void testConcurrencyChecksEnabled() {
