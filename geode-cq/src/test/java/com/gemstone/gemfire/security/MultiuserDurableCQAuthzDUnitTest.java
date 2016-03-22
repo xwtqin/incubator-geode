@@ -51,7 +51,7 @@ import org.junit.experimental.categories.Category;
 public class MultiuserDurableCQAuthzDUnitTest extends
     ClientAuthorizationTestBase {
   
-  public static final Map<String, String> cqNameToQueryStrings = new HashMap<String, String>();
+  private Map<String, String> cqNameToQueryStrings = new HashMap<String, String>();
 
   @Override
   public final void postSetUp() throws Exception {
@@ -159,9 +159,11 @@ public class MultiuserDurableCQAuthzDUnitTest extends
 
     Properties opCredentials;
     cGen = tgen.getCredentialGenerator();
-    Properties javaProps2 = null;
+    final Properties javaProps2;
     if (cGen != null) {
       javaProps2 = cGen.getJavaProperties();
+    } else {
+      javaProps2 = null;
     }
 
     int[] indices = new int[numOfPuts];
@@ -205,20 +207,18 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     server1.invoke(() -> SecurityTestUtil.closeCache());
     server2.invoke(() -> SecurityTestUtil.closeCache());
 
-    server1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.createServerCache(serverProps, javaProps, locatorPort, port1));
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class,
-        "createClientCache", new Object[] {javaProps2, authInit, authProps,
-            new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed});
+    server1.invoke(() -> createServerCache(serverProps, javaProps, locatorPort, port1));
+    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps,
+            new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
 
 //    client2.invoke(SecurityTestUtil.class, "createCacheClient",
 //        new Object[] {authInit, client2Credentials, javaProps2,
 //            new Integer[] {port1, port2}, null, SecurityTestUtil.NO_EXCEPTION});
 
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class, "executeCQ",
-        new Object[] {numOfUsers, new Boolean[] {false, false}, numOfPuts,
-            new String[numOfUsers]});
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.readyForEvents());
+    client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
+    client1.invoke(() -> executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts,
+            new String[numOfUsers]));
+    client1.invoke(() -> readyForEvents());
 
     if (keepAlive == null) {
       client1.invoke(() -> SecurityTestUtil.closeCache());
@@ -226,58 +226,54 @@ public class MultiuserDurableCQAuthzDUnitTest extends
       client1.invoke(() -> SecurityTestUtil.closeCache(keepAlive));
     }
 
-    server1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.doPuts(numOfPuts, Boolean.TRUE/* put last key */));
+    server1.invoke(() -> doPuts(numOfPuts, Boolean.TRUE/* put last key */));
 
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class,
-        "createClientCache", new Object[] {javaProps2, authInit, authProps,
-            new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed});
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class, "executeCQ",
-        new Object[] {numOfUsers, new Boolean[] {false, false}, numOfPuts,
-            new String[numOfUsers]});
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.readyForEvents());
+    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps,
+            new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
+    client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
+    client1.invoke(() ->executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts,
+            new String[numOfUsers]));
+    client1.invoke(() -> readyForEvents());
 
     if (!postAuthzAllowed[0] || keepAlive == null || !keepAlive) {
       // Don't wait as no user is authorized to receive cq events.
       Thread.sleep(1000);
     } else {
-      client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.waitForLastKey(Integer.valueOf(0), Boolean.TRUE));
+      client1.invoke(() -> waitForLastKey(Integer.valueOf(0), Boolean.TRUE));
     }
     Integer numOfCreates = (keepAlive == null) ? 0
         : (keepAlive) ? (numOfPuts + 1/* last key */) : 0;
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.checkCQListeners(numOfUsers, postAuthzAllowed, numOfCreates, 0));
+    client1.invoke(() -> checkCQListeners(numOfUsers, postAuthzAllowed, numOfCreates, 0));
 
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class, "proxyCacheClose",
-        new Object[] {new Integer[] {0, 1}, keepAlive});
+    client1.invoke(() -> proxyCacheClose(new Integer[] {0, 1}, keepAlive));
 
     client1.invoke(SecurityTestUtil.class, "createProxyCache",
         new Object[] {new Integer[] {0, 1}, authProps});
 
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(MultiuserDurableCQAuthzDUnitTest.class, "executeCQ",
-        new Object[] {numOfUsers, new Boolean[] {false, false}, numOfPuts,
-            new String[numOfUsers]});
+    client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
+    client1.invoke(() -> executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts,
+            new String[numOfUsers]));
 
-    server1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.doPuts(numOfPuts, Boolean.TRUE/* put last key */));
+    server1.invoke(() -> doPuts(numOfPuts, Boolean.TRUE/* put last key */));
 
     if (!postAuthzAllowed[0] || keepAlive == null || !keepAlive) {
       // Don't wait as no user is authorized to receive cq events.
       Thread.sleep(1000);
     } else {
-      client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.waitForLastKey(Integer.valueOf(0), Boolean.FALSE));
+      client1.invoke(() -> waitForLastKey(Integer.valueOf(0), Boolean.FALSE));
     }
     Integer numOfUpdates = numOfPuts + 1;
-    client1.invoke(() -> MultiuserDurableCQAuthzDUnitTest.checkCQListeners(numOfUsers, postAuthzAllowed, 0, numOfUpdates));
+    client1.invoke(() -> checkCQListeners(numOfUsers, postAuthzAllowed, 0, numOfUpdates));
   }
 
-  public static void createServerCache(Properties serverProps,
+  private void createServerCache(Properties serverProps,
       Properties javaProps, Integer locatorPort, Integer serverPort) {
     SecurityTestUtil.createCacheServer((Properties)serverProps, javaProps,
         locatorPort, null, serverPort, Boolean.TRUE, new Integer(
             SecurityTestUtil.NO_EXCEPTION));
   }
 
-  public static void createClientCache(Properties javaProps,
+  private void createClientCache(Properties javaProps,
       String authInit, Properties[] authProps, Integer ports[],
       Integer numOfUsers, Boolean[] postAuthzAllowed) {
     SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit,
@@ -285,11 +281,11 @@ public class MultiuserDurableCQAuthzDUnitTest extends
         SecurityTestUtil.NO_EXCEPTION);
   }
 
-  public static void readyForEvents() {
+  private void readyForEvents() {
     GemFireCacheImpl.getInstance().readyForEvents();
   }
 
-  public static void createClientCache(Properties javaProps,
+  private void createClientCache(Properties javaProps,
       String authInit, Properties[] authProps, Integer ports[],
       Integer numOfUsers, String durableId, Boolean[] postAuthzAllowed) {
     SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit,
@@ -297,11 +293,11 @@ public class MultiuserDurableCQAuthzDUnitTest extends
         SecurityTestUtil.NO_EXCEPTION);
   }
 
-  public static void createCQ(Integer num) {
+  private void createCQ(Integer num) {
     createCQ(num, false);
   }
 
-  public static void createCQ(Integer num, Boolean isDurable) {
+  private void createCQ(Integer num, Boolean isDurable) {
     for (int i = 0; i < num; i++) {
       QueryService cqService = SecurityTestUtil.proxyCaches[i].getQueryService();
       String cqName = "CQ_" + i;
@@ -329,7 +325,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     }
   }
 
-  public static void executeCQ(Integer num, Boolean[] initialResults,
+  private void executeCQ(Integer num, Boolean[] initialResults,
       Integer expectedResultsSize, String[] expectedErr) {
     InternalLogWriter logWriter = InternalDistributedSystem.getStaticInternalLogWriter();
     for (int i = 0; i < num; i++) {
@@ -411,7 +407,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     }
   }
 
-  public static void doPuts(Integer num, Boolean putLastKey) {
+  private void doPuts(Integer num, Boolean putLastKey) {
     Region region = GemFireCacheImpl.getInstance().getRegion(regionName);
     for (int i = 0; i < num; i++) {
       region.put("CQ_key"+i, "CQ_value"+i);
@@ -421,12 +417,12 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     }
   }
 
-  public static void putLastKey() {
+  private void putLastKey() {
     Region region = GemFireCacheImpl.getInstance().getRegion(regionName);
     region.put("LAST_KEY", "LAST_KEY");
   }
 
-  public static void waitForLastKey(Integer cqIndex, Boolean isCreate) {
+  private void waitForLastKey(Integer cqIndex, Boolean isCreate) {
     String cqName = "CQ_" + cqIndex;
     QueryService qService = SecurityTestUtil.proxyCaches[cqIndex].getQueryService();
     ClientCQImpl cqQuery = (ClientCQImpl)qService.getCq(cqName);
@@ -439,7 +435,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     }
   }
 
-  public static void checkCQListeners(Integer numOfUsers,
+  private void checkCQListeners(Integer numOfUsers,
       Boolean[] expectedListenerInvocation, Integer createEventsSize,
       Integer updateEventsSize) {
     for (int i = 0; i < numOfUsers; i++) {
@@ -461,11 +457,11 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     }
   }
 
-  public static void proxyCacheClose(Integer[] userIndices) {
+  private void proxyCacheClose(Integer[] userIndices) {
     proxyCacheClose(userIndices, null);
   }
 
-  public static void proxyCacheClose(Integer[] userIndices, Boolean keepAliveFlags) {
+  private void proxyCacheClose(Integer[] userIndices, Boolean keepAliveFlags) {
     if (keepAliveFlags != null) {
       for (int i : userIndices) {
         SecurityTestUtil.proxyCaches[i].close(keepAliveFlags);

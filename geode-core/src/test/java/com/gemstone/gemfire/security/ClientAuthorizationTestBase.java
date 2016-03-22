@@ -69,7 +69,6 @@ import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
  * Base class for tests for authorization from client to server. It contains
  * utility functions for the authorization tests from client to server.
  * 
- * @author sumedh
  * @since 5.5
  */
 public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {

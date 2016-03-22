@@ -44,9 +44,9 @@ import org.junit.experimental.categories.Category;
 public class DeltaClientAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
 
-  protected static final DeltaTestImpl[] deltas = new DeltaTestImpl[8];
+  private DeltaTestImpl[] deltas = new DeltaTestImpl[8];
 
-  private static final void setUpDeltas() {
+  private final void setUpDeltas() {
     for (int i = 0; i < 8; i++) {
       deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
           new TestObject1("0", 0));
@@ -96,6 +96,11 @@ public class DeltaClientAuthorizationDUnitTest extends
   }
 
   @Override
+  public final void preSetUp() throws Exception {
+    setUpDeltas();
+  }
+
+  @Override
   public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
     server1 = host.getVM(0);
@@ -107,8 +112,6 @@ public class DeltaClientAuthorizationDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
     client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
-
-    setUpDeltas();
   }
 
   @Override
@@ -166,13 +169,13 @@ public class DeltaClientAuthorizationDUnitTest extends
       createClient2(javaProps, authInit, port1, port2, getCredentials);
 
       // Perform some put operations from client1
-      client1.invoke(() -> DeltaClientAuthorizationDUnitTest.doPuts(
+      client1.invoke(() -> doPuts(
           new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION), Boolean.FALSE ));
       Thread.sleep(5000);
       assertTrue("Delta feature NOT used", (Boolean)client1.invoke(() -> DeltaTestImpl.toDeltaFeatureUsed()));
 
       // Verify that the gets succeed
-      client2.invoke(() -> DeltaClientAuthorizationDUnitTest.doGets(
+      client2.invoke(() -> doGets(
           new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION), Boolean.FALSE  ));
   }
 
@@ -202,7 +205,7 @@ public class DeltaClientAuthorizationDUnitTest extends
     return port1;
   }
 
-  public static void doPuts(Integer num, Integer expectedResult,
+  public void doPuts(Integer num, Integer expectedResult,
       boolean newVals) {
 
     assertTrue(num.intValue() <= SecurityTestUtil.keys.length);
@@ -280,7 +283,7 @@ public class DeltaClientAuthorizationDUnitTest extends
     }
   }
 
-  public static void doGets(Integer num, Integer expectedResult,
+  public void doGets(Integer num, Integer expectedResult,
       boolean newVals) {
 
     assertTrue(num.intValue() <= SecurityTestUtil.keys.length);

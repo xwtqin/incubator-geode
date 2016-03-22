@@ -35,6 +35,7 @@ import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.cache.query.CqException;
 import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest;
 import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
@@ -55,6 +56,61 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
 
   private static final int PAUSE = 5 * 1000; // TODO: replace with Awaitility
+
+  private DeltaTestImpl[] deltas = new DeltaTestImpl[8];
+
+  private final void setUpDeltas() {
+    for (int i = 0; i < 8; i++) {
+      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
+              new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("0", 0));
+    }
+    deltas[1].setIntVar(5);
+    deltas[2].setIntVar(5);
+    deltas[3].setIntVar(5);
+    deltas[4].setIntVar(5);
+    deltas[5].setIntVar(5);
+    deltas[6].setIntVar(5);
+    deltas[7].setIntVar(5);
+
+    deltas[2].resetDeltaStatus();
+    deltas[2].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[3].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[4].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[5].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    //deltas[6].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    //deltas[7].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+
+    deltas[3].resetDeltaStatus();
+    deltas[3].setDoubleVar(new Double(5));
+    deltas[4].setDoubleVar(new Double(5));
+    deltas[5].setDoubleVar(new Double(5));
+    deltas[6].setDoubleVar(new Double(5));
+    deltas[7].setDoubleVar(new Double(5));
+
+    deltas[4].resetDeltaStatus();
+    deltas[4].setStr("str changed");
+    deltas[5].setStr("str changed");
+    deltas[6].setStr("str changed");
+    //deltas[7].setStr("str changed");
+
+    deltas[5].resetDeltaStatus();
+    deltas[5].setIntVar(100);
+    deltas[5].setTestObj(new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("CHANGED", 100));
+    deltas[6].setTestObj(new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("CHANGED", 100));
+    deltas[7].setTestObj(new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("CHANGED", 100));
+
+    deltas[6].resetDeltaStatus();
+    deltas[6].setByteArr(new byte[] { 1, 2, 3 });
+    deltas[7].setByteArr(new byte[] { 1, 2, 3 });
+
+    deltas[7].resetDeltaStatus();
+    deltas[7].setStr("delta string");
+  }
+
+  @Override
+  public final void preSetUp() throws Exception {
+    setUpDeltas();
+  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -290,7 +346,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     }
   }
 
-  private static Region createSubregion(Region region) {
+  private Region createSubregion(Region region) {
 
     Region subregion = getSubregion();
     if (subregion == null) {
@@ -299,12 +355,12 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     return subregion;
   }
 
-  public static void doOp(Byte opCode, int[] indices, Integer flagsI,
-      Integer expectedResult) {
+  public void doOp(Byte opCode, int[] indices, int flagsI,
+      int expectedResult) {
 
     OperationCode op = OperationCode.fromOrdinal(opCode.byteValue());
     boolean operationOmitted = false;
-    final int flags = flagsI.intValue();
+    final int flags = flagsI;
     Region region = getRegion();
 //    for (int i = 0; i < indices.length; i++) {
 //      region.put(SecurityTestUtil.keys[i],
@@ -359,10 +415,10 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     final String[] keys = SecurityTestUtil.keys;
     final DeltaTestImpl[] vals;
     if ((flags & OpFlags.USE_NEWVAL) > 0) {
-      vals = DeltaClientAuthorizationDUnitTest.deltas;
+      vals = deltas;
     }
     else {
-      vals = DeltaClientAuthorizationDUnitTest.deltas;
+      vals = deltas;
     }
     InterestResultPolicy policy = InterestResultPolicy.KEYS_VALUES;
     if ((flags & OpFlags.REGISTER_POLICY_NONE) > 0) {
@@ -494,7 +550,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
         else {
           fail("doOp: Unhandled operation " + op);
         }
-        if (expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
+        if (expectedResult != SecurityTestUtil.NO_EXCEPTION) {
           if (!operationOmitted && !op.isUnregisterInterest()) {
             fail("Expected an exception while performing operation op =" + op +
                 "flags = " + OpFlags.description(flags));
@@ -505,7 +561,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
         exceptionOccured = true;
         if ((ex instanceof ServerConnectivityException
             || ex instanceof QueryInvocationTargetException || ex instanceof CqException)
-            && (expectedResult.intValue() == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
+            && (expectedResult == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
             && (ex.getCause() instanceof NotAuthorizedException)) {
           LogWriterUtils.getLogWriter().info(
               "doOp: Got expected NotAuthorizedException when doing operation ["
@@ -513,7 +569,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
                   + ": " + ex.getCause());
           continue;
         }
-        else if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
+        else if (expectedResult == SecurityTestUtil.OTHER_EXCEPTION) {
           LogWriterUtils.getLogWriter().info(
               "doOp: Got expected exception when doing operation: "
                   + ex.toString());
@@ -526,7 +582,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
       }
     }
     if (!exceptionOccured && !operationOmitted
-        && expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
+        && expectedResult != SecurityTestUtil.NO_EXCEPTION) {
       fail("Expected an exception while performing operation: " + op + 
           " flags = " + OpFlags.description(flags));
     }
