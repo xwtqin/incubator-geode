@@ -1,6 +1,3 @@
-
-package com.gemstone.gemfire.security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,9 +6,9 @@ package com.gemstone.gemfire.security;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,7 +16,9 @@ package com.gemstone.gemfire.security;
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.util.Properties;
 
@@ -34,16 +33,20 @@ import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * @since 6.1
  */
+@Category(DistributedTest.class)
 public class DeltaClientAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
 
   protected static final DeltaTestImpl[] deltas = new DeltaTestImpl[8];
 
-  static {
+  private static final void setUpDeltas() {
     for (int i = 0; i < 8; i++) {
       deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
           new TestObject1("0", 0));
@@ -92,11 +95,6 @@ public class DeltaClientAuthorizationDUnitTest extends
     
   }
 
-  /** constructor */
-  public DeltaClientAuthorizationDUnitTest(String name) {
-    super(name);
-  }
-
   @Override
   public final void postSetUp() throws Exception {
     final Host host = Host.getHost(0);
@@ -109,6 +107,8 @@ public class DeltaClientAuthorizationDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
     client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
+
+    setUpDeltas();
   }
 
   @Override
@@ -122,6 +122,7 @@ public class DeltaClientAuthorizationDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 
+  @Test
   public void testAllowPutsGets() throws Exception {
       AuthzCredentialGenerator gen = this.getXmlAuthzGenerator();
       CredentialGenerator cGen = gen.getCredentialGenerator();

@@ -28,6 +28,9 @@ import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests for authorization from client to server. This tests for authorization
@@ -37,14 +40,9 @@ import com.gemstone.gemfire.test.dunit.LogWriterUtils;
  * @author sumedh
  * @since 5.5
  */
+@Category(DistributedTest.class)
 public class ClientPostAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
-
-
-  /** constructor */
-  public ClientPostAuthorizationDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -60,8 +58,7 @@ public class ClientPostAuthorizationDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  // Region: Tests
-
+  @Test
   public void testAllPostOps() {
 
     OperationWithAction[] allOps = {
@@ -180,6 +177,7 @@ public class ClientPostAuthorizationDUnitTest extends
     }
   }
 
+  @Test
   public void testAllOpsNotifications() {
 
     OperationWithAction[] allOps = {

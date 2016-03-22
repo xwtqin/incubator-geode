@@ -1,6 +1,3 @@
-
-package com.gemstone.gemfire.security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,9 +6,9 @@ package com.gemstone.gemfire.security;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,7 +16,9 @@ package com.gemstone.gemfire.security;
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,12 +31,14 @@ import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.security.generator.XmlAuthzCredentialGenerator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
-
-import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests for authorization from client to server. This tests for authorization
@@ -48,12 +49,8 @@ import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
  * @author sumedh
  * @since 5.5
  */
+@Category(DistributedTest.class)
 public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
-
-  /** constructor */
-  public ClientAuthorizationDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -196,8 +193,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
     }
   }
 
-  // Region: Tests
-
+  @Test
   public void testAllowPutsGets() {
       AuthzCredentialGenerator gen = getXmlAuthzGenerator();
       CredentialGenerator cGen = gen.getCredentialGenerator();
@@ -251,6 +247,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION) ));
   }
 
+  @Test
   public void testPutAllWithSecurity() {
     AuthzCredentialGenerator gen = getXmlAuthzGenerator();
     CredentialGenerator cGen = gen.getCredentialGenerator();
@@ -306,6 +303,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
     return port1;
   }
 
+  @Test
   public void testDisallowPutsGets() {
 
       AuthzCredentialGenerator gen = getXmlAuthzGenerator();
@@ -380,6 +378,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new Integer(2), new Integer(SecurityTestUtil.NOTAUTHZ_EXCEPTION) ));
   }
 
+  @Test
   public void testInvalidAccessor() {
       AuthzCredentialGenerator gen = getXmlAuthzGenerator();
       CredentialGenerator cGen = gen.getCredentialGenerator();
@@ -454,6 +453,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
             javaProps ));
   }
 
+  @Test
   public void testPutsGetsWithFailover() {
       AuthzCredentialGenerator gen = getXmlAuthzGenerator();
       CredentialGenerator cGen = gen.getCredentialGenerator();
@@ -563,6 +563,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
           new Integer(4), new Integer(SecurityTestUtil.NOTAUTHZ_EXCEPTION) ));
   }
 
+  @Test
   public void testUnregisterInterestWithFailover() {
 
     OperationWithAction[] unregisterOps = {
@@ -693,7 +694,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
     }
   }
 
-  
+  @Test
   public void testAllOpsWithFailover() {
     IgnoredException.addIgnoredException("Read timed out");
 

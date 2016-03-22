@@ -1,6 +1,3 @@
-
-package com.gemstone.gemfire.security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,9 +6,9 @@ package com.gemstone.gemfire.security;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,14 +16,10 @@ package com.gemstone.gemfire.security;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package com.gemstone.gemfire.security;
 
 import java.util.Iterator;
 import java.util.Properties;
-
-import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
-import com.gemstone.gemfire.security.generator.CredentialGenerator;
-import com.gemstone.gemfire.test.dunit.VM;
 
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.execute.Function;
@@ -34,15 +27,17 @@ import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.execute.PRClientServerTestBase;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
+import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
+import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(DistributedTest.class)
 public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
-
-  /** constructor */
-  public ClientMultiUserAuthzDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -58,8 +53,11 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  // Tests with one user authorized to do puts/gets/containsKey/destroys and
-  // another not authorized for the same.
+  /**
+   * Tests with one user authorized to do puts/gets/containsKey/destroys and
+   * another not authorized for the same.
+   */
+  @Test
   public void testOps1() throws Exception {
     Iterator iter = getDummyGeneratorCombos().iterator();
     while (iter.hasNext()) {
@@ -335,7 +333,10 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     region.put("key2", "value2");
   }
 
-  // Test query/function execute
+  /**
+   * Test query/function execute
+   */
+  @Test
   public void testOps2() throws Exception {
     AuthzCredentialGenerator gen = getXmlAuthzGenerator();
     CredentialGenerator cGen = gen.getCredentialGenerator();

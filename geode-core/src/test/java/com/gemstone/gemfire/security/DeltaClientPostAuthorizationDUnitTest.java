@@ -1,6 +1,3 @@
-
-package com.gemstone.gemfire.security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,9 +6,9 @@ package com.gemstone.gemfire.security;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,7 +16,9 @@ package com.gemstone.gemfire.security;
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,19 +43,18 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * @since 6.1
- * 
  */
+@Category(DistributedTest.class)
 public class DeltaClientPostAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
-  private static final int PAUSE = 5 * 1000;
 
-  /** constructor */
-  public DeltaClientPostAuthorizationDUnitTest(String name) {
-    super(name);
-  }
+  private static final int PAUSE = 5 * 1000; // TODO: replace with Awaitility
 
   @Override
   public final void postSetUp() throws Exception {
@@ -83,6 +81,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 
+  @Test
   public void testPutPostOpNotifications() throws Exception {
     IgnoredException.addIgnoredException("Unexpected IOException");
     IgnoredException.addIgnoredException("SocketException");

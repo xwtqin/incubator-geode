@@ -16,13 +16,10 @@
  */
 package com.gemstone.gemfire.security;
 
-import com.gemstone.gemfire.security.generator.CredentialGenerator;
-import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
-import hydra.Log;
+import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -36,17 +33,18 @@ import com.gemstone.gemfire.cache.query.Query;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PoolManagerImpl;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
+import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(DistributedTest.class)
 public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
-
-  /** constructor */
-  public MultiuserAPIDUnitTest(String name) {
-    super(name);
-  }
 
   private VM server1 = null;
 
@@ -162,6 +160,7 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
             multiUser, new Integer(SecurityTestUtil.NO_EXCEPTION)));
   }
 
+  @Test
   public void testSingleUserUnsupportedAPIs() {
       // Start servers
       // Start clients with multiuser-authentication set to false
@@ -169,6 +168,7 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
       client1.invoke(() -> MultiuserAPIDUnitTest.verifyDisallowedOps(Boolean.FALSE));
   }
 
+  @Test
   public void testMultiUserUnsupportedAPIs() {
       // Start servers.
       // Start clients with multiuser-authentication set to true.
@@ -186,7 +186,7 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
         op = "Pool.createSecureUserCache()";
         GemFireCacheImpl.getInstance().createAuthenticatedView(new Properties(), "testPool");
       } catch (IllegalStateException uoe) {
-        Log.getLogWriter().info(op + ": Got expected exception: " + uoe);
+        LogWriterUtils.getLogWriter().info(op + ": Got expected exception: " + uoe);
         success = true;
       } catch (Exception e) {
         Assert.fail("Got unexpected exception while doing " + op, e);
@@ -357,7 +357,7 @@ public class MultiuserAPIDUnitTest extends ClientAuthorizationTestBase {
               break;
           }
         } catch (UnsupportedOperationException uoe) {
-          Log.getLogWriter().info(op + ": Got expected exception: " + uoe);
+          LogWriterUtils.getLogWriter().info(op + ": Got expected exception: " + uoe);
           success = true;
         } catch (Exception e) {
           Assert.fail("Got unexpected exception while doing " + op, e);

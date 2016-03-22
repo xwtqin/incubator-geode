@@ -19,6 +19,9 @@ package com.gemstone.gemfire.security;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests for authorization from client to server. This tests for authorization
@@ -32,14 +35,9 @@ import com.gemstone.gemfire.test.dunit.IgnoredException;
  * @author sumedh
  * @since 5.5
  */
+@Category(DistributedTest.class)
 public class ClientAuthorizationTwoDUnitTest extends
     ClientAuthorizationTestBase {
-
-  
-  /** constructor */
-  public ClientAuthorizationTwoDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -56,8 +54,7 @@ public class ClientAuthorizationTwoDUnitTest extends
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
   }
 
-  // Region: Tests
-
+  @Test
   public void testAllOpsWithFailover2() {
     IgnoredException.addIgnoredException("Read timed out");
     IgnoredException.addIgnoredException("Connection reset");

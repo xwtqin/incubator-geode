@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,27 +49,21 @@ import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 /**
  * This is for multiuser-authentication
  * 
  * @author ashetkar
  *
  */
+@Category(DistributedTest.class)
 public class ClientCQPostAuthorizationDUnitTest extends
     ClientAuthorizationTestBase {
 
-//  public static final String regionName = "ClientCQPostAuthorizationDUnitTest_region";
-
   public static final Map<String, String> cqNameToQueryStrings = new HashMap<String, String>();
-
-  static {
-    cqNameToQueryStrings.put("CQ_0", "SELECT * FROM ");
-    cqNameToQueryStrings.put("CQ_1", "SELECT * FROM ");
-  }
-
-  public ClientCQPostAuthorizationDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -88,6 +84,9 @@ public class ClientCQPostAuthorizationDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
     client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
+
+    cqNameToQueryStrings.put("CQ_0", "SELECT * FROM ");
+    cqNameToQueryStrings.put("CQ_1", "SELECT * FROM ");
   }
 
   @Override
@@ -96,8 +95,10 @@ public class ClientCQPostAuthorizationDUnitTest extends
     client2.invoke(() -> SecurityTestUtil.closeCache());
     server1.invoke(() -> SecurityTestUtil.closeCache());
     server2.invoke(() -> SecurityTestUtil.closeCache());
+    cqNameToQueryStrings.clear();
   }
 
+  @Test
   public void testAllowCQForAllMultiusers() throws Exception {
     /*
      * Start a server
@@ -110,6 +111,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
       true});
   }
 
+  @Test
   public void testDisallowCQForAllMultiusers() throws Exception {
     /*
      * Start a server
@@ -122,6 +124,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
       false});
   }
 
+  @Test
   public void testDisallowCQForSomeMultiusers() throws Exception {
     /*
      * Start a server
@@ -135,6 +138,7 @@ public class ClientCQPostAuthorizationDUnitTest extends
         false});
   }
 
+  @Test
   public void testAllowCQForAllMultiusersWithFailover() throws Exception {
     /*
      * Start a server1

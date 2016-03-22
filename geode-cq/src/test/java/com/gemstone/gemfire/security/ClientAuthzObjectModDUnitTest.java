@@ -21,23 +21,24 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import com.gemstone.gemfire.internal.security.FilterPostAuthorization;
-import com.gemstone.gemfire.internal.security.FilterPreAuthorization;
-import com.gemstone.gemfire.security.generator.CredentialGenerator;
-import com.gemstone.gemfire.security.generator.DummyAuthzCredentialGenerator;
-import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
-import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
-
 import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.security.FilterPostAuthorization;
+import com.gemstone.gemfire.internal.security.FilterPreAuthorization;
 import com.gemstone.gemfire.internal.security.ObjectWithAuthz;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
+import com.gemstone.gemfire.security.generator.CredentialGenerator;
+import com.gemstone.gemfire.security.generator.DummyAuthzCredentialGenerator;
+import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
+import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
 import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Tests for authorization callback that modify objects and callbacks from
@@ -56,13 +57,8 @@ import com.gemstone.gemfire.test.dunit.SerializableRunnable;
  * @author sumedh
  * @since 5.5
  */
+@Category(DistributedTest.class)
 public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
-
-
-  /** constructor */
-  public ClientAuthzObjectModDUnitTest(String name) {
-    super(name);
-  }
 
   private static final String preAccessor = FilterPreAuthorization.class.getName() + ".create";
 
@@ -182,10 +178,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
         serverPort, Boolean.FALSE, new Integer(SecurityTestUtil.NO_EXCEPTION));
   }
 
-  // End Region: Utility and static functions invoked by the tests
-
-  // Region: Tests
-
+  @Test
   public void testAllOpsObjectModWithFailover() {
 
     OperationWithAction[] allOps = {

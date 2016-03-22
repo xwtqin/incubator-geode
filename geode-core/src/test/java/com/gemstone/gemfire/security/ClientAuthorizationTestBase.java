@@ -18,6 +18,8 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,10 +60,10 @@ import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.security.generator.XmlAuthzCredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.DistributedTestCase;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
+import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 
 /**
  * Base class for tests for authorization from client to server. It contains
@@ -70,12 +72,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  * @author sumedh
  * @since 5.5
  */
-public class ClientAuthorizationTestBase extends DistributedTestCase {
-
-  /** constructor */
-  public ClientAuthorizationTestBase(String name) {
-    super(name);
-  }
+public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
 
   protected static VM server1 = null;
 

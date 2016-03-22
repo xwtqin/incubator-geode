@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -41,24 +43,15 @@ import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.Invoke;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
+import com.gemstone.gemfire.test.junit.categories.DistributedTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-/**
- * @author ashetkar
- *
- */
+@Category(DistributedTest.class)
 public class MultiuserDurableCQAuthzDUnitTest extends
     ClientAuthorizationTestBase {
   
   public static final Map<String, String> cqNameToQueryStrings = new HashMap<String, String>();
-
-  static {
-    cqNameToQueryStrings.put("CQ_0", "SELECT * FROM ");
-    cqNameToQueryStrings.put("CQ_1", "SELECT * FROM ");
-  }
-
-  public MultiuserDurableCQAuthzDUnitTest(String name) {
-    super(name);
-  }
 
   @Override
   public final void postSetUp() throws Exception {
@@ -79,8 +72,17 @@ public class MultiuserDurableCQAuthzDUnitTest extends
     server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
     client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
     SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
+
+    cqNameToQueryStrings.put("CQ_0", "SELECT * FROM ");
+    cqNameToQueryStrings.put("CQ_1", "SELECT * FROM ");
   }
 
+  @Override
+  public final void postTearDown() throws Exception {
+    cqNameToQueryStrings.clear();
+  }
+
+  @Test
   public void testCQForDurableClientsWithDefaultClose() throws Exception {
     /*
      *  1. Start a server.
@@ -100,6 +102,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
           getXmlAuthzGenerator(), null);
   }
 
+  @Test
   public void testCQForDurableClientsWithCloseKeepAliveTrue() throws Exception {
     /*
      *  1. Start a server.
@@ -119,6 +122,7 @@ public class MultiuserDurableCQAuthzDUnitTest extends
           getXmlAuthzGenerator(), Boolean.TRUE);
   }
 
+  @Test
   public void testCQForDurableClientsWithCloseKeepAliveFalse() throws Exception {
     /*
      *  1. Start a server.
