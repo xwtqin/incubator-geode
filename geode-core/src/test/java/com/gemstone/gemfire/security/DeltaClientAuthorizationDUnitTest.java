@@ -31,7 +31,6 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitT
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
@@ -46,76 +45,13 @@ public class DeltaClientAuthorizationDUnitTest extends
 
   private DeltaTestImpl[] deltas = new DeltaTestImpl[8];
 
-  private final void setUpDeltas() {
-    for (int i = 0; i < 8; i++) {
-      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
-          new TestObject1("0", 0));
-    }
-    deltas[1].setIntVar(5);
-    deltas[2].setIntVar(5);
-    deltas[3].setIntVar(5);
-    deltas[4].setIntVar(5);
-    deltas[5].setIntVar(5);
-    deltas[6].setIntVar(5);
-    deltas[7].setIntVar(5);
-
-    deltas[2].resetDeltaStatus();
-    deltas[2].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-    deltas[3].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-    deltas[4].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-    deltas[5].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-    //deltas[6].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-    //deltas[7].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
-
-    deltas[3].resetDeltaStatus();
-    deltas[3].setDoubleVar(new Double(5));
-    deltas[4].setDoubleVar(new Double(5));
-    deltas[5].setDoubleVar(new Double(5));
-    deltas[6].setDoubleVar(new Double(5));
-    deltas[7].setDoubleVar(new Double(5));
-
-    deltas[4].resetDeltaStatus();
-    deltas[4].setStr("str changed");
-    deltas[5].setStr("str changed");
-    deltas[6].setStr("str changed");
-    //deltas[7].setStr("str changed");
-
-    deltas[5].resetDeltaStatus();
-    deltas[5].setIntVar(100);
-    deltas[5].setTestObj(new TestObject1("CHANGED", 100));
-    deltas[6].setTestObj(new TestObject1("CHANGED", 100));
-    deltas[7].setTestObj(new TestObject1("CHANGED", 100));
-
-    deltas[6].resetDeltaStatus();
-    deltas[6].setByteArr(new byte[] { 1, 2, 3 });
-    deltas[7].setByteArr(new byte[] { 1, 2, 3 });
-
-    deltas[7].resetDeltaStatus();
-    deltas[7].setStr("delta string");
-    
-  }
-
   @Override
-  public final void preSetUp() throws Exception {
+  protected final void preSetUpClientAuthorizationTestBase() throws Exception {
     setUpDeltas();
   }
 
   @Override
-  public final void postSetUp() throws Exception {
-    final Host host = Host.getHost(0);
-    server1 = host.getVM(0);
-    server2 = host.getVM(1);
-    client1 = host.getVM(2);
-    client2 = host.getVM(3);
-
-    server1.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
-    SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
-  }
-
-  @Override
-  public final void preTearDown() throws Exception {
+  public final void preTearDownClientAuthorizationTestBase() throws Exception {
     // close the clients first
     client1.invoke(() -> SecurityTestUtil.closeCache());
     client2.invoke(() -> SecurityTestUtil.closeCache());
@@ -179,36 +115,36 @@ public class DeltaClientAuthorizationDUnitTest extends
           new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION), Boolean.FALSE  ));
   }
 
-  protected void createClient2(Properties javaProps, String authInit,
+  private void createClient2(Properties javaProps, String authInit,
       Integer port1, Integer port2, Properties getCredentials) {
     client2.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, getCredentials, javaProps, port1, port2,
             null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
   }
 
-  protected void createClient1(Properties javaProps, String authInit,
+  private void createClient1(Properties javaProps, String authInit,
       Integer port1, Integer port2, Properties createCredentials) {
     client1.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, createCredentials, javaProps, port1, port2,
             null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
   }
 
-  protected Integer createServer2(Properties javaProps,
+  private Integer createServer2(Properties javaProps,
       Properties serverProps) {
     Integer port2 = ((Integer)server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(
             SecurityTestUtil.getLocatorPort(), serverProps, javaProps )));
     return port2;
   }
 
-  protected Integer createServer1(Properties javaProps,
+  private Integer createServer1(Properties javaProps,
       Properties serverProps) {
     Integer port1 = ((Integer)server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(
             SecurityTestUtil.getLocatorPort(), serverProps, javaProps )));
     return port1;
   }
 
-  public void doPuts(Integer num, Integer expectedResult,
+  private void doPuts(Integer num, Integer expectedResult,
       boolean newVals) {
 
-    assertTrue(num.intValue() <= SecurityTestUtil.keys.length);
+    assertTrue(num.intValue() <= SecurityTestUtil.KEYS.length);
     Region region = null;
     try {
       region = SecurityTestUtil.getCache().getRegion(regionName);
@@ -223,11 +159,11 @@ public class DeltaClientAuthorizationDUnitTest extends
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
-      region.put(SecurityTestUtil.keys[index], deltas[0]);
+      region.put(SecurityTestUtil.KEYS[index], deltas[0]);
     }
     for (int index = 0; index < num.intValue(); ++index) {
       try {
-        region.put(SecurityTestUtil.keys[index], deltas[index]);
+        region.put(SecurityTestUtil.KEYS[index], deltas[index]);
         if (expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing puts");
         }
@@ -283,10 +219,10 @@ public class DeltaClientAuthorizationDUnitTest extends
     }
   }
 
-  public void doGets(Integer num, Integer expectedResult,
+  private void doGets(Integer num, Integer expectedResult,
       boolean newVals) {
 
-    assertTrue(num.intValue() <= SecurityTestUtil.keys.length);
+    assertTrue(num.intValue() <= SecurityTestUtil.KEYS.length);
     Region region = null;
     try {
       region = SecurityTestUtil.getCache().getRegion(regionName);
@@ -304,11 +240,11 @@ public class DeltaClientAuthorizationDUnitTest extends
       Object value = null;
       try {
         try {
-          region.localInvalidate(SecurityTestUtil.keys[index]);
+          region.localInvalidate(SecurityTestUtil.KEYS[index]);
         }
         catch (Exception ex) {
         }
-        value = region.get(SecurityTestUtil.keys[index]);
+        value = region.get(SecurityTestUtil.KEYS[index]);
         if (expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing gets");
         }
@@ -352,4 +288,52 @@ public class DeltaClientAuthorizationDUnitTest extends
     }
   }
 
+  private final void setUpDeltas() {
+    for (int i = 0; i < 8; i++) {
+      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
+              new TestObject1("0", 0));
+    }
+    deltas[1].setIntVar(5);
+    deltas[2].setIntVar(5);
+    deltas[3].setIntVar(5);
+    deltas[4].setIntVar(5);
+    deltas[5].setIntVar(5);
+    deltas[6].setIntVar(5);
+    deltas[7].setIntVar(5);
+
+    deltas[2].resetDeltaStatus();
+    deltas[2].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[3].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[4].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    deltas[5].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    //deltas[6].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+    //deltas[7].setByteArr(new byte[] { 1, 2, 3, 4, 5 });
+
+    deltas[3].resetDeltaStatus();
+    deltas[3].setDoubleVar(new Double(5));
+    deltas[4].setDoubleVar(new Double(5));
+    deltas[5].setDoubleVar(new Double(5));
+    deltas[6].setDoubleVar(new Double(5));
+    deltas[7].setDoubleVar(new Double(5));
+
+    deltas[4].resetDeltaStatus();
+    deltas[4].setStr("str changed");
+    deltas[5].setStr("str changed");
+    deltas[6].setStr("str changed");
+    //deltas[7].setStr("str changed");
+
+    deltas[5].resetDeltaStatus();
+    deltas[5].setIntVar(100);
+    deltas[5].setTestObj(new TestObject1("CHANGED", 100));
+    deltas[6].setTestObj(new TestObject1("CHANGED", 100));
+    deltas[7].setTestObj(new TestObject1("CHANGED", 100));
+
+    deltas[6].resetDeltaStatus();
+    deltas[6].setByteArr(new byte[] { 1, 2, 3 });
+    deltas[7].setByteArr(new byte[] { 1, 2, 3 });
+
+    deltas[7].resetDeltaStatus();
+    deltas[7].setStr("delta string");
+
+  }
 }

@@ -52,18 +52,14 @@ import org.junit.experimental.categories.Category;
 public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
   @Override
-  public final void postSetUp() throws Exception {
-    final Host host = Host.getHost(0);
-    server1 = host.getVM(0);
-    server2 = host.getVM(1);
-    client1 = host.getVM(2);
-    client2 = host.getVM(3);
-
-    server1.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    client1.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
-    client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
-    SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
+  public final void preTearDownClientAuthorizationTestBase() throws Exception {
+    // close the clients first
+    client1.invoke(() -> SecurityTestUtil.closeCache());
+    client2.invoke(() -> SecurityTestUtil.closeCache());
+    SecurityTestUtil.closeCache();
+    // then close the servers
+    server1.invoke(() -> SecurityTestUtil.closeCache());
+    server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 
   private Properties getUserPassword(String userName) {
@@ -566,7 +562,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
   public void testUnregisterInterestWithFailover() {
 
     OperationWithAction[] unregisterOps = {
-        // Register interest in all keys using one key at a time
+        // Register interest in all KEYS using one key at a time
         new OperationWithAction(OperationCode.REGISTER_INTEREST,
             OperationCode.UNREGISTER_INTEREST, 3, OpFlags.NONE, 4),
         new OperationWithAction(OperationCode.REGISTER_INTEREST, 2),
@@ -575,7 +571,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         new OperationWithAction(OperationCode.GET, 2, OpFlags.USE_OLDCONN
             | OpFlags.LOCAL_OP, 4),
 
-        // Unregister interest in all keys using one key at a time
+        // Unregister interest in all KEYS using one key at a time
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 3,
             OpFlags.USE_OLDCONN | OpFlags.CHECK_NOTAUTHZ, 4),
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 2,
@@ -588,7 +584,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
         OperationWithAction.OPBLOCK_END,
 
-        // Register interest in all keys using list
+        // Register interest in all KEYS using list
         new OperationWithAction(OperationCode.REGISTER_INTEREST,
             OperationCode.UNREGISTER_INTEREST, 3, OpFlags.USE_LIST, 4),
         new OperationWithAction(OperationCode.REGISTER_INTEREST, 1,
@@ -598,7 +594,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         new OperationWithAction(OperationCode.GET, 1, OpFlags.USE_OLDCONN
             | OpFlags.LOCAL_OP, 4),
 
-        // Unregister interest in all keys using list
+        // Unregister interest in all KEYS using list
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 3,
             OpFlags.USE_OLDCONN | OpFlags.USE_LIST | OpFlags.CHECK_NOTAUTHZ, 4),
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 1,
@@ -611,7 +607,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
         OperationWithAction.OPBLOCK_END,
 
-        // Register interest in all keys using regular expression
+        // Register interest in all KEYS using regular expression
         new OperationWithAction(OperationCode.REGISTER_INTEREST,
             OperationCode.UNREGISTER_INTEREST, 3, OpFlags.USE_REGEX, 4),
         new OperationWithAction(OperationCode.REGISTER_INTEREST, 2,
@@ -621,7 +617,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         new OperationWithAction(OperationCode.GET, 2, OpFlags.USE_OLDCONN
             | OpFlags.LOCAL_OP, 4),
 
-        // Unregister interest in all keys using regular expression
+        // Unregister interest in all KEYS using regular expression
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 3,
             OpFlags.USE_OLDCONN | OpFlags.USE_REGEX | OpFlags.CHECK_NOTAUTHZ, 4),
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 2,
@@ -742,7 +738,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         new OperationWithAction(OperationCode.CONTAINS_KEY, 3,
             OpFlags.CHECK_NOTAUTHZ, 4),
         new OperationWithAction(OperationCode.CONTAINS_KEY),
-        // Destroy the keys and check for failure in CONTAINS_KEY
+        // Destroy the KEYS and check for failure in CONTAINS_KEY
         new OperationWithAction(OperationCode.DESTROY, 2),
         new OperationWithAction(OperationCode.CONTAINS_KEY, 3,
             OpFlags.CHECK_FAIL | OpFlags.CHECK_NOTAUTHZ, 4),
@@ -767,7 +763,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
         OperationWithAction.OPBLOCK_END,
 
-        // Register interest in all keys using one key at a time
+        // Register interest in all KEYS using one key at a time
         new OperationWithAction(OperationCode.REGISTER_INTEREST, 3,
             OpFlags.CHECK_NOTAUTHZ, 4),
         new OperationWithAction(OperationCode.REGISTER_INTEREST, 2),
@@ -776,7 +772,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         new OperationWithAction(OperationCode.GET, 2, OpFlags.USE_OLDCONN
             | OpFlags.LOCAL_OP, 4),
 
-        // Unregister interest in all keys using one key at a time
+        // Unregister interest in all KEYS using one key at a time
         new OperationWithAction(OperationCode.UNREGISTER_INTEREST, 2,
             OpFlags.USE_OLDCONN, 4),
         // UPDATE and test with GET for no updates
@@ -794,18 +790,5 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         OperationWithAction.OPBLOCK_END };
 
     runOpsWithFailover(allOps, "testAllOpsWithFailover");
-  }
-
-  // End Region: Tests
-
-  @Override
-  public final void preTearDown() throws Exception {
-    // close the clients first
-    client1.invoke(() -> SecurityTestUtil.closeCache());
-    client2.invoke(() -> SecurityTestUtil.closeCache());
-    SecurityTestUtil.closeCache();
-    // then close the servers
-    server1.invoke(() -> SecurityTestUtil.closeCache());
-    server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 }

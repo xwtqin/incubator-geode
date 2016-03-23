@@ -29,7 +29,6 @@ import com.gemstone.gemfire.internal.cache.execute.PRClientServerTestBase;
 import com.gemstone.gemfire.internal.cache.functions.TestFunction;
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
@@ -40,17 +39,14 @@ import org.junit.experimental.categories.Category;
 public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
 
   @Override
-  public final void postSetUp() throws Exception {
-    final Host host = Host.getHost(0);
-    server1 = host.getVM(0);
-    server2 = host.getVM(1);
-    client1 = host.getVM(2);
-    client2 = host.getVM(3);
-
-    server1.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( serverExpectedExceptions ));
-    client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions( clientExpectedExceptions ));
-    SecurityTestUtil.registerExpectedExceptions(clientExpectedExceptions);
+  public final void preTearDownClientAuthorizationTestBase() throws Exception {
+    // close the clients first
+    client1.invoke(() -> SecurityTestUtil.closeCache());
+    client2.invoke(() -> SecurityTestUtil.closeCache());
+    SecurityTestUtil.closeCache();
+    // then close the servers
+    server1.invoke(() -> SecurityTestUtil.closeCache());
+    server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 
   /**
@@ -328,7 +324,7 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
   }
 
   public static void doPuts() {
-    Region region = GemFireCacheImpl.getInstance().getRegion(SecurityTestUtil.regionName);
+    Region region = GemFireCacheImpl.getInstance().getRegion(SecurityTestUtil.REGION_NAME);
     region.put("key1", "value1");
     region.put("key2", "value2");
   }
@@ -505,18 +501,5 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
       }
       verifyContainsKeyDestroys(false, false);
     }
-  }
-
-  // End Region: Tests
-
-  @Override
-  public final void preTearDown() throws Exception {
-    // close the clients first
-    client1.invoke(() -> SecurityTestUtil.closeCache());
-    client2.invoke(() -> SecurityTestUtil.closeCache());
-    SecurityTestUtil.closeCache();
-    // then close the servers
-    server1.invoke(() -> SecurityTestUtil.closeCache());
-    server2.invoke(() -> SecurityTestUtil.closeCache());
   }
 }

@@ -1,5 +1,3 @@
-package com.gemstone.gemfire.security;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,9 +6,9 @@ package com.gemstone.gemfire.security;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +16,12 @@ package com.gemstone.gemfire.security;
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.test.dunit.Assert.*;
+import static com.gemstone.gemfire.test.dunit.DistributedTestUtils.*;
+import static com.gemstone.gemfire.test.dunit.NetworkUtils.*;
+import static com.gemstone.gemfire.test.dunit.Wait.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,11 +85,7 @@ import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.pdx.PdxReader;
 import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
-import com.gemstone.gemfire.test.dunit.Assert;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.DistributedTestUtils;
-import com.gemstone.gemfire.test.dunit.NetworkUtils;
-import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
@@ -96,42 +95,29 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  * @author sumedh
  * @since 5.5
  */
-public class SecurityTestUtil extends DistributedTestCase {
+public final class SecurityTestUtil {
 
-  public SecurityTestUtil(String name) {
-    super(name);
-  }
+  private final DistributedTestCase distributedTestCase = new DistributedTestCase(getClass().getSimpleName()) {};
 
   private static Locator locator = null;
-
   private static Cache cache = null;
-
   private static Properties currentJavaProps = null;
-
   private static String locatorString = null;
-
   private static Integer mcastPort = null;
 
   public static final int NO_EXCEPTION = 0;
-
   public static final int AUTHREQ_EXCEPTION = 1;
-
   public static final int AUTHFAIL_EXCEPTION = 2;
-
   public static final int CONNREFUSED_EXCEPTION = 3;
-
   public static final int NOTAUTHZ_EXCEPTION = 4;
-
   public static final int OTHER_EXCEPTION = 5;
-  
   public static final int NO_AVAILABLE_SERVERS = 6;
-
   // Indicates that AuthReqException may not necessarily be thrown
   public static final int NOFORCE_AUTHREQ_EXCEPTION = 16;
 
-  protected static final String regionName = "AuthRegion";
+  protected static final String REGION_NAME = "AuthRegion";
 
-  protected static final String[] keys = { "key1", "key2", "key3", "key4",
+  protected static final String[] KEYS = { "key1", "key2", "key3", "key4",
       "key5", "key6", "key7", "key8" };
 
   protected static final String[] values = { "value1", "value2", "value3",
@@ -141,6 +127,9 @@ public class SecurityTestUtil extends DistributedTestCase {
       "nvalue4", "nvalue5", "nvalue6", "nvalue7", "nvalue8" };
 
   static String[] expectedExceptions = null;
+  static String[] expectedExceptions() {
+    return expectedExceptions;
+  }
 
   private static Pool pool = null;
 
@@ -149,6 +138,9 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static final int numberOfUsers = 1;
 
   static ProxyCache[] proxyCaches = new ProxyCache[numberOfUsers];
+  static ProxyCache[] proxyCaches() {
+    return proxyCaches();
+  }
 
   private static Region regionRef = null;
 
@@ -172,6 +164,9 @@ public class SecurityTestUtil extends DistributedTestCase {
     }
   }
 
+  public SecurityTestUtil(String name) {
+  }
+
   public static void setJavaProps(Properties javaProps) {
 
     removeJavaProperties(currentJavaProps);
@@ -185,7 +180,7 @@ public class SecurityTestUtil extends DistributedTestCase {
     clearStaticSSLContext();
     setJavaProps(javaProps);
 
-    DistributedSystem dsys = getSystem(sysProps);
+    DistributedSystem dsys = distributedTestCase.getSystem(sysProps);
     assertNotNull(dsys);
     addExpectedExceptions(SecurityTestUtil.expectedExceptions, dsys
         .getLogWriter());
@@ -194,9 +189,9 @@ public class SecurityTestUtil extends DistributedTestCase {
 
   void openCache() {
 
-    assertNotNull(basicGetSystem());
-    assertTrue(basicGetSystem().isConnected());
-    cache = CacheFactory.create(basicGetSystem());
+    assertNotNull(distributedTestCase.basicGetSystem());
+    assertTrue(distributedTestCase.basicGetSystem().isConnected());
+    cache = CacheFactory.create(distributedTestCase.basicGetSystem());
     assertNotNull(cache);
   }
 
@@ -216,7 +211,7 @@ public class SecurityTestUtil extends DistributedTestCase {
 
     Integer locatorPort = new Integer(AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET));
-    String addr = NetworkUtils.getIPLiteral();
+    String addr = getIPLiteral();
     if (locatorString == null) {
       locatorString = addr + "[" + locatorPort + ']';
     }
@@ -296,10 +291,10 @@ public class SecurityTestUtil extends DistributedTestCase {
       authProps.setProperty(DistributionConfig.LOCATORS_NAME, locatorString);
       if (locatorPort != null) {
         authProps.setProperty(DistributionConfig.START_LOCATOR_NAME,
-            NetworkUtils.getIPLiteral() + "[" + locatorPort.toString() + ']');
+            getIPLiteral() + "[" + locatorPort.toString() + ']');
       }
     } else {
-      authProps.setProperty("locators", "localhost["+DistributedTestUtils.getDUnitLocatorPort()+"]");
+      authProps.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
     }
     authProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
     com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Set the server properties to: " + authProps);
@@ -318,7 +313,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         return new Integer(0);
       }
       else {
-        Assert.fail("Got unexpected exception when starting peer", ex);
+        fail("Got unexpected exception when starting peer", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -327,11 +322,11 @@ public class SecurityTestUtil extends DistributedTestCase {
         return new Integer(0);
       }
       else {
-        Assert.fail("Got unexpected exception when starting peer", ex);
+        fail("Got unexpected exception when starting peer", ex);
       }
     }
     catch (Exception ex) {
-      Assert.fail("Got unexpected exception when starting peer", ex);
+      fail("Got unexpected exception when starting peer", ex);
     }
 
     if (setupDynamicRegionFactory.booleanValue()) {
@@ -342,7 +337,7 @@ public class SecurityTestUtil extends DistributedTestCase {
     factory.setScope(Scope.DISTRIBUTED_ACK);
     factory.setDataPolicy(DataPolicy.REPLICATE);
     RegionAttributes attrs = factory.create();
-    cache.createRegion(regionName, attrs);
+    cache.createRegion(REGION_NAME, attrs);
     int port;
     if (serverPort == null || serverPort.intValue() <= 0) {
       port = 0;
@@ -357,7 +352,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       server1.start();
     }
     catch (Exception ex) {
-      Assert.fail("Got unexpected exception when starting CacheServer", ex);
+      fail("Got unexpected exception when starting CacheServer", ex);
     }
     return new Integer(server1.getPort());
   }
@@ -431,7 +426,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         //poolFactory.setSubscriptionEnabled(false);
       }
       pool = ClientServerTestCase.configureConnectionPoolWithNameAndFactory(factory,
-          NetworkUtils.getIPLiteral(), portsI, subscriptionEnabled, 0,
+          getIPLiteral(), portsI, subscriptionEnabled, 0,
           numConnections == null ? -1 : numConnections.intValue(), null, null,
           poolFactory);
 
@@ -450,7 +445,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected UnsupportedOperationException in single-user mode");
         }
         else {
-          Assert.fail("Got unexpected exception in multi-user mode ", uoe);
+          fail("Got unexpected exception in multi-user mode ", uoe);
         }
       }
 
@@ -459,7 +454,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         factory.setDataPolicy(DataPolicy.EMPTY);
       }
       RegionAttributes attrs = factory.create();
-      cache.createRegion(regionName, attrs);
+      cache.createRegion(REGION_NAME, attrs);
 
       if (expectedResult.intValue() != NO_EXCEPTION
           && expectedResult.intValue() != NOFORCE_AUTHREQ_EXCEPTION) {
@@ -475,7 +470,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -484,7 +479,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (ServerRefusedConnectionException ex) {
@@ -493,11 +488,11 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (Exception ex) {
-      Assert.fail("Got unexpected exception when starting client", ex);
+      fail("Got unexpected exception when starting client", ex);
     }
   }
 
@@ -573,7 +568,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       poolFactory.setMultiuserAuthentication(multiUserAuthMode);
       poolFactory.setSubscriptionEnabled(true);
       pool = ClientServerTestCase.configureConnectionPoolWithNameAndFactory(factory,
-          NetworkUtils.getIPLiteral(), portsI, true, 1,
+          getIPLiteral(), portsI, true, 1,
           numConnections == null ? -1 : numConnections.intValue(), null, null,
           poolFactory);
 
@@ -588,7 +583,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       factory.setScope(Scope.LOCAL);
       factory.setDataPolicy(DataPolicy.EMPTY);
       RegionAttributes attrs = factory.create();
-      cache.createRegion(regionName, attrs);
+      cache.createRegion(REGION_NAME, attrs);
 
       if (expectedResult.intValue() != NO_EXCEPTION
           && expectedResult.intValue() != NOFORCE_AUTHREQ_EXCEPTION) {
@@ -604,7 +599,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (AuthenticationFailedException ex) {
@@ -613,7 +608,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (ServerRefusedConnectionException ex) {
@@ -622,11 +617,11 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected exception when starting client: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when starting client", ex);
+        fail("Got unexpected exception when starting client", ex);
       }
     }
     catch (Exception ex) {
-      Assert.fail("Got unexpected exception when starting client", ex);
+      fail("Got unexpected exception when starting client", ex);
     }
   }
 
@@ -656,7 +651,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         server.start();
       }
       catch (Exception ex) {
-        Assert.fail("Unexpected exception when restarting cache servers", ex);
+        fail("Unexpected exception when restarting cache servers", ex);
       }
       assertTrue(server.isRunning());
     }
@@ -673,7 +668,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       }
       authProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
       authProps.setProperty(DistributionConfig.LOCATORS_NAME, 
-                            NetworkUtils.getIPLiteral() + "[" + port + "]");
+                            getIPLiteral() + "[" + port + "]");
       authProps.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
       clearStaticSSLContext();
       setJavaProps((Properties)javaProps);
@@ -687,7 +682,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           authProps);
     }
     catch (IOException ex) {
-      Assert.fail("While starting locator on port " + port.intValue(), ex);
+      fail("While starting locator on port " + port.intValue(), ex);
     }
   }
 
@@ -699,7 +694,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           .getDistributedSystem().getLogWriter());
     }
     catch (Exception ex) {
-      Assert.fail("While stopping locator on port " + port.intValue(), ex);
+      fail("While stopping locator on port " + port.intValue(), ex);
     }
   }
 
@@ -721,7 +716,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           return ((Boolean)cond.call()).booleanValue();
         }
         catch (Exception e) {
-          Assert.fail("Unexpected exception", e);
+          fail("Unexpected exception", e);
         }
         return false; // NOTREACHED
       }
@@ -729,7 +724,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         return null;
       }
     };
-    Wait.waitForCriterion(ev, sleepMillis * numTries, 200, true);
+    waitForCriterion(ev, sleepMillis * numTries, 200, true);
   }
 
   public static Object getLocalValue(Region region, Object key) {
@@ -752,15 +747,15 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static void doPutsP(Integer num, Integer multiUserIndex,
       Integer expectedResult, boolean newVals) {
 
-    assertTrue(num.intValue() <= keys.length);
+    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
         regionRef = region;
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -769,16 +764,16 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing puts", ex);
+        fail("Got unexpected exception when doing puts", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
       try {
         if (newVals) {
-          region.put(keys[index], nvalues[index]);
+          region.put(KEYS[index], nvalues[index]);
         }
         else {
-          region.put(keys[index], values[index]);
+          region.put(KEYS[index], values[index]);
         }
         if (expectedResult.intValue() != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing puts");
@@ -792,7 +787,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
+          fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -821,7 +816,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
+          fail("Got unexpected exception when doing puts", ex);
         }
       }
       catch (Exception ex) {
@@ -829,7 +824,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
+          fail("Got unexpected exception when doing puts", ex);
         }
       }
     }
@@ -868,7 +863,7 @@ public class SecurityTestUtil extends DistributedTestCase {
   }
   
   public static void doPutAllP() throws Exception {    
-    Region region = getCache().getRegion(regionName);
+    Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
     Map map = new LinkedHashMap();
     map.put("1010L", new Employee(1010L, "John", "Doe"));
@@ -880,10 +875,10 @@ public class SecurityTestUtil extends DistributedTestCase {
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -892,7 +887,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing getAll: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing getAll", ex);
+        fail("Got unexpected exception when doing getAll", ex);
       }
     }
     try {
@@ -922,7 +917,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing getAll: "
                 + ex.getCause());
       } else {
-        Assert.fail("Got unexpected exception when doing getAll", ex);
+        fail("Got unexpected exception when doing getAll", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -933,13 +928,13 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing getAll", ex);
+        fail("Got unexpected exception when doing getAll", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing getAll", ex);
+        fail("Got unexpected exception when doing getAll", ex);
       }
     }
   }
@@ -952,14 +947,14 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static void doGetsP(Integer num, Integer multiUserIndex,
       Integer expectedResult, boolean newVals) {
 
-    assertTrue(num.intValue() <= keys.length);
+    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -968,18 +963,18 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing gets", ex);
+        fail("Got unexpected exception when doing gets", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
       Object value = null;
       try {
         try {
-          region.localInvalidate(keys[index]);
+          region.localInvalidate(KEYS[index]);
         }
         catch (Exception ex) {
         }
-        value = region.get(keys[index]);
+        value = region.get(KEYS[index]);
         if (expectedResult.intValue() != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing gets");
         }
@@ -992,7 +987,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("Got unexpected exception when doing gets", ex);
+          fail("Got unexpected exception when doing gets", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1007,7 +1002,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing gets", ex);
+          fail("Got unexpected exception when doing gets", ex);
         }
       }
       catch (Exception ex) {
@@ -1015,7 +1010,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing gets", ex);
+          fail("Got unexpected exception when doing gets", ex);
         }
       }
       assertNotNull(value);
@@ -1030,15 +1025,15 @@ public class SecurityTestUtil extends DistributedTestCase {
 
   private static void doLocalGetsP(int num, boolean checkNVals) {
 
-    assertTrue(num <= keys.length);
+    assertTrue(num <= KEYS.length);
     String[] vals = values;
     if (checkNVals) {
       vals = nvalues;
     }
-    final Region region = getCache().getRegion(regionName);
+    final Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
     for (int index = 0; index < num; ++index) {
-      final String key = keys[index];
+      final String key = KEYS[index];
       final String expectedVal = vals[index];
       waitForCondition(new Callable() {
         public Object call() throws Exception {
@@ -1048,7 +1043,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       }, 1000, 30 / num);
     }
     for (int index = 0; index < num; ++index) {
-      Region.Entry entry = region.getEntry(keys[index]);
+      Region.Entry entry = region.getEntry(KEYS[index]);
       assertNotNull(entry);
       assertEquals(vals[index], entry.getValue());
     }
@@ -1059,9 +1054,9 @@ public class SecurityTestUtil extends DistributedTestCase {
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiuserIndex].getRegion(regionName);
+        region = proxyCaches[multiuserIndex].getRegion(REGION_NAME);
       } else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     } catch (Exception ex) {
@@ -1069,7 +1064,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing region destroy", ex);
+        fail("Got unexpected exception when doing region destroy", ex);
       }
     }
 
@@ -1079,9 +1074,9 @@ public class SecurityTestUtil extends DistributedTestCase {
         fail("Expected a NotAuthorizedException while doing region destroy");
       }
       if (multiUserAuthMode) {
-        region = proxyCaches[multiuserIndex].getRegion(regionName);
+        region = proxyCaches[multiuserIndex].getRegion(REGION_NAME);
       } else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNull(region);
     } catch (NoAvailableServersException ex) {
@@ -1090,7 +1085,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing region destroy: "
                 + ex.getCause());
       } else {
-        Assert.fail("Got unexpected exception when doing region destroy", ex);
+        fail("Got unexpected exception when doing region destroy", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1102,14 +1097,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing region destroy", ex);
+        fail("Got unexpected exception when doing region destroy", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when doing region destroy: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing region destroy", ex);
+        fail("Got unexpected exception when doing region destroy", ex);
       }
     }
   }
@@ -1117,14 +1112,14 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static void doDestroysP(Integer num, Integer multiUserIndex,
       Integer expectedResult, boolean newVals) {
 
-    assertTrue(num.intValue() <= keys.length);
+    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -1133,12 +1128,12 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing destroys: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing destroys", ex);
+        fail("Got unexpected exception when doing destroys", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
       try {
-        region.destroy(keys[index]);
+        region.destroy(KEYS[index]);
         if (expectedResult.intValue() != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing destroys");
         }
@@ -1151,7 +1146,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("Got unexpected exception when doing destroys", ex);
+          fail("Got unexpected exception when doing destroys", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1166,7 +1161,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing destroys: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing destroys", ex);
+          fail("Got unexpected exception when doing destroys", ex);
         }
       }
       catch (Exception ex) {
@@ -1174,7 +1169,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing destroys: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing destroys", ex);
+          fail("Got unexpected exception when doing destroys", ex);
         }
       }
     }
@@ -1183,14 +1178,14 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static void doInvalidatesP(Integer num, Integer multiUserIndex,
       Integer expectedResult, boolean newVals) {
 
-    assertTrue(num.intValue() <= keys.length);
+    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -1199,12 +1194,12 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing invalidates: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing invalidates", ex);
+        fail("Got unexpected exception when doing invalidates", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
       try {
-        region.invalidate(keys[index]);
+        region.invalidate(KEYS[index]);
         if (expectedResult.intValue() != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing invalidates");
         }
@@ -1217,7 +1212,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("Got unexpected exception when doing invalidates", ex);
+          fail("Got unexpected exception when doing invalidates", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1232,7 +1227,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing invalidates: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing invalidates", ex);
+          fail("Got unexpected exception when doing invalidates", ex);
         }
       }
       catch (Exception ex) {
@@ -1240,7 +1235,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing invalidates: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing invalidates", ex);
+          fail("Got unexpected exception when doing invalidates", ex);
         }
       }
     }
@@ -1249,14 +1244,14 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static void doContainsKeysP(Integer num, Integer multiUserIndex,
       Integer expectedResult, boolean newVals, boolean expectedValue) {
 
-    assertTrue(num.intValue() <= keys.length);
+    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       }
       else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     }
@@ -1265,13 +1260,13 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing containsKey: " + ex);
       }
       else {
-        Assert.fail("Got unexpected exception when doing containsKey", ex);
+        fail("Got unexpected exception when doing containsKey", ex);
       }
     }
     for (int index = 0; index < num.intValue(); ++index) {
       boolean result = false;
       try {
-        result = region.containsKeyOnServer(keys[index]);
+        result = region.containsKeyOnServer(KEYS[index]);
         if (expectedResult.intValue() != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing containsKey");
         }
@@ -1284,7 +1279,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("Got unexpected exception when doing containsKey", ex);
+          fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       catch (ServerConnectivityException ex) {
@@ -1299,7 +1294,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing containsKey: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing containsKey", ex);
+          fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       catch (Exception ex) {
@@ -1307,7 +1302,7 @@ public class SecurityTestUtil extends DistributedTestCase {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing containsKey: " + ex);
         }
         else {
-          Assert.fail("Got unexpected exception when doing containsKey", ex);
+          fail("Got unexpected exception when doing containsKey", ex);
         }
       }
       assertEquals(expectedValue, result);
@@ -1319,16 +1314,16 @@ public class SecurityTestUtil extends DistributedTestCase {
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       } else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing queries", ex);
+        fail("Got unexpected exception when doing queries", ex);
       }
     }
     String queryStr = "SELECT DISTINCT * FROM " + region.getFullPath();
@@ -1345,7 +1340,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when doing queries: "
                 + ex.getCause());
       } else {
-        Assert.fail("Got unexpected exception when doing queries", ex);
+        fail("Got unexpected exception when doing queries", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1356,7 +1351,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing queries", ex);
+        fail("Got unexpected exception when doing queries", ex);
       }
     } catch (QueryInvocationTargetException qite) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1367,13 +1362,13 @@ public class SecurityTestUtil extends DistributedTestCase {
       } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing queries: " + qite);
       } else {
-        Assert.fail("Got unexpected exception when doing queries", qite);
+        fail("Got unexpected exception when doing queries", qite);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when doing queries", ex);
+        fail("Got unexpected exception when doing queries", ex);
       }
     }
   }
@@ -1384,9 +1379,9 @@ public class SecurityTestUtil extends DistributedTestCase {
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       } else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     } catch (Exception ex) {
@@ -1394,7 +1389,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing function", ex);
+        fail("Got unexpected exception when executing function", ex);
       }
     }
     try {
@@ -1425,7 +1420,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when executing function: "
                 + ex.getCause());
       } else {
-        Assert.fail("Got unexpected exception when executing function", ex);
+        fail("Got unexpected exception when executing function", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1437,7 +1432,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing function", ex);
+        fail("Got unexpected exception when executing function", ex);
       }
     } catch (FunctionException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1451,14 +1446,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing function", ex);
+        fail("Got unexpected exception when executing function", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing function: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing function", ex);
+        fail("Got unexpected exception when executing function", ex);
       }
     }
   }
@@ -1468,9 +1463,9 @@ public class SecurityTestUtil extends DistributedTestCase {
     Region region = null;
     try {
       if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(regionName);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       } else {
-        region = getCache().getRegion(regionName);
+        region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
     } catch (Exception ex) {
@@ -1478,7 +1473,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing query", ex);
+        fail("Got unexpected exception when executing query", ex);
       }
     }
     try {
@@ -1501,7 +1496,7 @@ public class SecurityTestUtil extends DistributedTestCase {
             "Got expected NoAvailableServers when executing query: "
                 + ex.getCause());
       } else {
-        Assert.fail("Got unexpected exception when executing query", ex);
+        fail("Got unexpected exception when executing query", ex);
       }
     } catch (ServerConnectivityException ex) {
       if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
@@ -1513,14 +1508,14 @@ public class SecurityTestUtil extends DistributedTestCase {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing query", ex);
+        fail("Got unexpected exception when executing query", ex);
       }
     } catch (Exception ex) {
       if (expectedResult.intValue() == OTHER_EXCEPTION) {
         com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().info(
             "Got expected exception when executing query: " + ex);
       } else {
-        Assert.fail("Got unexpected exception when executing query", ex);
+        fail("Got unexpected exception when executing query", ex);
       }
     }
   }
@@ -1748,7 +1743,7 @@ public class SecurityTestUtil extends DistributedTestCase {
         }
       } catch (Exception e) {
         if (!e.getClass().getSimpleName().endsWith(expectedResult)) {
-          Assert.fail("Expected " + expectedResult + " but found "
+          fail("Expected " + expectedResult + " but found "
               + e.getClass().getSimpleName() + " in doSimplePut()", e);
         } else {
           com.gemstone.gemfire.test.dunit.LogWriterUtils.getLogWriter().fine(
@@ -1875,7 +1870,7 @@ public class SecurityTestUtil extends DistributedTestCase {
   private static LogWriter getLogger() {
 
     LogWriter logger = null;
-    DistributedSystem dsys = getSystemStatic();
+    DistributedSystem dsys = DistributedTestCase.getSystemStatic();
     if (dsys == null || !dsys.isConnected()) {
       while ((dsys = InternalDistributedSystem.getAnyInstance()) != null
           && !dsys.isConnected()) {
@@ -1899,7 +1894,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       sys.disconnect();
       cache = null;
     }
-    disconnectFromDS();
+    DistributedTestCase.disconnectFromDS();
   }
 
   public static void closeCache(Boolean keepAlive) {
@@ -1913,7 +1908,7 @@ public class SecurityTestUtil extends DistributedTestCase {
       sys.disconnect();
       cache = null;
     }
-    disconnectFromDS();
+    DistributedTestCase.disconnectFromDS();
   }
 
 }

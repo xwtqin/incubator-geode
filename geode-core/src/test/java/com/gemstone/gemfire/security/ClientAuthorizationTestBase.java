@@ -18,6 +18,7 @@
  */
 package com.gemstone.gemfire.security;
 
+//import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator.ClassCod
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.security.generator.XmlAuthzCredentialGenerator;
-import com.gemstone.gemfire.test.dunit.Assert;
+import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.VM;
 import com.gemstone.gemfire.test.dunit.Wait;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
@@ -74,18 +75,14 @@ import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
 public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
 
   protected static VM server1 = null;
-
   protected static VM server2 = null;
-
   protected static VM client1 = null;
-
   protected static VM client2 = null;
 
-  protected static final String regionName = SecurityTestUtil.regionName;
-
+  protected static final String regionName = SecurityTestUtil.REGION_NAME;
   protected static final String subregionName = "AuthSubregion";
 
-  protected static final String[] serverExpectedExceptions = {
+  private static final String[] serverIgnoredExceptions = {
       "Connection refused",
       AuthenticationRequiredException.class.getName(),
       AuthenticationFailedException.class.getName(),
@@ -94,10 +91,56 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
       RegionDestroyedException.class.getName(),
       ClassNotFoundException.class.getName() };
 
-  protected static final String[] clientExpectedExceptions = {
+  private static final String[] clientIgnoredExceptions = {
       AuthenticationFailedException.class.getName(),
       NotAuthorizedException.class.getName(),
       RegionDestroyedException.class.getName() };
+
+  @Override
+  public final void preSetUp() throws Exception {
+  }
+
+  @Override
+  public final void postSetUp() throws Exception {
+    preSetUpClientAuthorizationTestBase();
+    setUpClientAuthorizationTestBase();
+    postSetUpClientAuthorizationTestBase();
+  }
+
+  private final void setUpClientAuthorizationTestBase() throws Exception {
+    final Host host = Host.getHost(0);
+    server1 = host.getVM(0);
+    server2 = host.getVM(1);
+    client1 = host.getVM(2);
+    client2 = host.getVM(3);
+
+    server1.invoke(() -> SecurityTestUtil.registerExpectedExceptions(serverIgnoredExceptions));
+    server2.invoke(() -> SecurityTestUtil.registerExpectedExceptions(serverIgnoredExceptions));
+    client2.invoke(() -> SecurityTestUtil.registerExpectedExceptions(clientIgnoredExceptions));
+    SecurityTestUtil.registerExpectedExceptions(clientIgnoredExceptions);
+  }
+
+  protected void preSetUpClientAuthorizationTestBase() throws Exception {
+  }
+
+  protected void postSetUpClientAuthorizationTestBase() throws Exception {
+  }
+
+  @Override
+  public final void preTearDown() throws Exception {
+    preTearDownClientAuthorizationTestBase();
+    postTearDownClientAuthorizationTestBase();
+  }
+
+  @Override
+  public final void postTearDown() throws Exception {
+  }
+
+  protected void preTearDownClientAuthorizationTestBase() throws Exception {
+  }
+
+  protected void postTearDownClientAuthorizationTestBase() throws Exception {
+  }
 
   protected static Properties buildProperties(String authenticator,
       String accessor, boolean isAccessorPP, Properties extraAuthProps,
@@ -244,7 +287,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     else {
       assertNotNull(region);
     }
-    final String[] keys = SecurityTestUtil.keys;
+    final String[] keys = SecurityTestUtil.KEYS;
     final String[] vals;
     if ((flags & OpFlags.USE_NEWVAL) > 0) {
       vals = SecurityTestUtil.nvalues;
@@ -293,7 +336,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
               int keyNum = indices[keyNumIndex];
               searchKey = keys[keyNum];
               keyList.add(searchKey);
-              // local invalidate some keys to force fetch of those keys from
+              // local invalidate some KEYS to force fetch of those KEYS from
               // server
               if ((flags & OpFlags.CHECK_NOKEY) > 0) {
                 AbstractRegionEntry entry = (AbstractRegionEntry)((LocalRegion)region).getRegionEntry(searchKey);
@@ -678,7 +721,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
           continue;
         }
         else {
-          Assert.fail("doOp: Got unexpected exception when doing operation. Policy = " 
+          fail("doOp: Got unexpected exception when doing operation. Policy = "
               + policy + " flags = " + OpFlags.description(flags), ex);
         }
       }
@@ -984,7 +1027,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
         boolean foundKey = false;
         while (eventIter.hasNext()) {
           CqEvent event = (CqEvent)eventIter.next();
-          if (SecurityTestUtil.keys[index].equals(event.getKey())) {
+          if (SecurityTestUtil.KEYS[index].equals(event.getKey())) {
             assertEquals(vals[index], event.getNewValue());
             foundKey = true;
             break;
@@ -1036,7 +1079,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     public static final int USE_NEWVAL = 0x10;
 
     /**
-     * Register all keys. For GET operations indicates using getAll().
+     * Register all KEYS. For GET operations indicates using getAll().
      */
     public static final int USE_ALL_KEYS = 0x20;
 
@@ -1046,7 +1089,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     public static final int USE_REGEX = 0x40;
 
     /**
-     * Register a list of keys.
+     * Register a list of KEYS.
      */
     public static final int USE_LIST = 0x80;
 
@@ -1185,7 +1228,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     private int flags;
 
     /**
-     * Indices of the keys array to be used for operations.
+     * Indices of the KEYS array to be used for operations.
      */
     private int[] indices;
 
@@ -1328,14 +1371,14 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
 
     /**
      * Get allowed credentials for the given set of operations in the given
-     * regions and indices of keys in the <code>keys</code> array
+     * regions and indices of KEYS in the <code>KEYS</code> array
      */
     public Properties getAllowedCredentials(OperationCode[] opCodes,
         String[] regionNames, int[] keyIndices, int num);
 
     /**
      * Get disallowed credentials for the given set of operations in the given
-     * regions and indices of keys in the <code>keys</code> array
+     * regions and indices of KEYS in the <code>KEYS</code> array
      */
     public Properties getDisallowedCredentials(OperationCode[] opCodes,
         String[] regionNames, int[] keyIndices, int num);
