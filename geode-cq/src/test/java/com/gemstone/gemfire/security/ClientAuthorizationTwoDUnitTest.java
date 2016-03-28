@@ -16,9 +16,10 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
+
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,26 +40,20 @@ public class ClientAuthorizationTwoDUnitTest extends ClientAuthorizationTestBase
 
   @Override
   public final void postSetUpClientAuthorizationTestBase() throws Exception {
-    IgnoredException.addIgnoredException("Read timed out");
-    IgnoredException.addIgnoredException("Connection reset");
-    IgnoredException.addIgnoredException("SocketTimeoutException");
-    IgnoredException.addIgnoredException("ServerConnectivityException");
-    IgnoredException.addIgnoredException("Socket Closed");
+    addIgnoredException("Read timed out");
+    addIgnoredException("Connection reset");
+    addIgnoredException("SocketTimeoutException");
+    addIgnoredException("ServerConnectivityException");
+    addIgnoredException("Socket Closed");
   }
 
   @Override
   public final void preTearDownClientAuthorizationTestBase() throws Exception {
-    // close the clients first
-    client1.invoke(() -> SecurityTestUtil.closeCache());
-    client2.invoke(() -> SecurityTestUtil.closeCache());
-    SecurityTestUtil.closeCache();
-    // then close the servers
-    server1.invoke(() -> SecurityTestUtil.closeCache());
-    server2.invoke(() -> SecurityTestUtil.closeCache());
+    closeCache();
   }
 
   @Test
-  public void testAllOpsWithFailover2() {
+  public void testAllOpsWithFailover2() throws Exception {
     runOpsWithFailover(allOps(), "testAllOpsWithFailover2");
   }
 

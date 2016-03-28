@@ -18,20 +18,18 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
+import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
 import java.util.Properties;
 
 import com.gemstone.gemfire.DeltaTestImpl;
 import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.client.NoAvailableServersException;
-import com.gemstone.gemfire.cache.client.ServerConnectivityException;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1;
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
-import com.gemstone.gemfire.test.dunit.Assert;
-import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,8 +38,7 @@ import org.junit.experimental.categories.Category;
  * @since 6.1
  */
 @Category(DistributedTest.class)
-public class DeltaClientAuthorizationDUnitTest extends
-    ClientAuthorizationTestBase {
+public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
   private DeltaTestImpl[] deltas = new DeltaTestImpl[8];
 
@@ -52,236 +49,98 @@ public class DeltaClientAuthorizationDUnitTest extends
 
   @Override
   public final void preTearDownClientAuthorizationTestBase() throws Exception {
-    // close the clients first
-    client1.invoke(() -> SecurityTestUtil.closeCache());
-    client2.invoke(() -> SecurityTestUtil.closeCache());
-    SecurityTestUtil.closeCache();
-    // then close the servers
-    server1.invoke(() -> SecurityTestUtil.closeCache());
-    server2.invoke(() -> SecurityTestUtil.closeCache());
+    closeCache();
   }
 
   @Test
   public void testAllowPutsGets() throws Exception {
-      AuthzCredentialGenerator gen = this.getXmlAuthzGenerator();
-      CredentialGenerator cGen = gen.getCredentialGenerator();
-      Properties extraAuthProps = cGen.getSystemProperties();
-      Properties javaProps = cGen.getJavaProperties();
-      Properties extraAuthzProps = gen.getSystemProperties();
-      String authenticator = cGen.getAuthenticator();
-      String authInit = cGen.getAuthInit();
-      String accessor = gen.getAuthorizationCallback();
+    AuthzCredentialGenerator gen = this.getXmlAuthzGenerator();
+    CredentialGenerator cGen = gen.getCredentialGenerator();
 
-      LogWriterUtils.getLogWriter().info("testAllowPutsGets: Using authinit: " + authInit);
-      LogWriterUtils.getLogWriter().info(
-          "testAllowPutsGets: Using authenticator: " + authenticator);
-      LogWriterUtils.getLogWriter().info("testAllowPutsGets: Using accessor: " + accessor);
+    Properties extraAuthProps = cGen.getSystemProperties();
+    Properties javaProps = cGen.getJavaProperties();
+    Properties extraAuthzProps = gen.getSystemProperties();
 
-      // Start servers with all required properties
-      Properties serverProps = buildProperties(authenticator, accessor, false,
-          extraAuthProps, extraAuthzProps);
-      Integer port1 = createServer1(javaProps, serverProps);
-      Integer port2 = createServer2(javaProps, serverProps);
+    String authenticator = cGen.getAuthenticator();
+    String authInit = cGen.getAuthInit();
+    String accessor = gen.getAuthorizationCallback();
 
-      // Start client1 with valid CREATE credentials
-      Properties createCredentials = gen.getAllowedCredentials(
-          new OperationCode[] { OperationCode.PUT },
-          new String[] { regionName }, 1);
-      javaProps = cGen.getJavaProperties();
-      LogWriterUtils.getLogWriter().info(
-          "testAllowPutsGets: For first client credentials: "
-              + createCredentials);
-      createClient1(javaProps, authInit, port1, port2, createCredentials);
+    getLogWriter().info("testAllowPutsGets: Using authinit: " + authInit);
+    getLogWriter().info("testAllowPutsGets: Using authenticator: " + authenticator);
+    getLogWriter().info("testAllowPutsGets: Using accessor: " + accessor);
 
-      // Start client2 with valid GET credentials
-      Properties getCredentials = gen.getAllowedCredentials(
-          new OperationCode[] { OperationCode.GET },
-          new String[] { regionName }, 2);
-      javaProps = cGen.getJavaProperties();
-      LogWriterUtils.getLogWriter()
-          .info(
-              "testAllowPutsGets: For second client credentials: "
-                  + getCredentials);
-      createClient2(javaProps, authInit, port1, port2, getCredentials);
+    // Start servers with all required properties
+    Properties serverProps = buildProperties(authenticator, accessor, false, extraAuthProps, extraAuthzProps);
 
-      // Perform some put operations from client1
-      client1.invoke(() -> doPuts(
-          new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION), Boolean.FALSE ));
-      Thread.sleep(5000);
-      assertTrue("Delta feature NOT used", (Boolean)client1.invoke(() -> DeltaTestImpl.toDeltaFeatureUsed()));
+    Integer port1 = createServer1(javaProps, serverProps);
+    Integer port2 = createServer2(javaProps, serverProps);
 
-      // Verify that the gets succeed
-      client2.invoke(() -> doGets(
-          new Integer(2), new Integer(SecurityTestUtil.NO_EXCEPTION), Boolean.FALSE  ));
+    // Start client1 with valid CREATE credentials
+    Properties createCredentials = gen.getAllowedCredentials(new OperationCode[] { OperationCode.PUT }, new String[] { REGION_NAME }, 1);
+    javaProps = cGen.getJavaProperties();
+
+    getLogWriter().info("testAllowPutsGets: For first client credentials: " + createCredentials);
+    createClient1(javaProps, authInit, port1, port2, createCredentials);
+
+    // Start client2 with valid GET credentials
+    Properties getCredentials = gen.getAllowedCredentials(new OperationCode[] { OperationCode.GET }, new String[] { REGION_NAME }, 2);
+    javaProps = cGen.getJavaProperties();
+    getLogWriter().info("testAllowPutsGets: For second client credentials: " + getCredentials);
+
+    createClient2(javaProps, authInit, port1, port2, getCredentials);
+
+    // Perform some put operations from client1
+    client1.invoke(() -> doPuts(2, NO_EXCEPTION));
+
+    Thread.sleep(5000);
+    assertTrue("Delta feature NOT used", client1.invoke(() -> DeltaTestImpl.toDeltaFeatureUsed()));
+
+    // Verify that the gets succeed
+    client2.invoke(() -> doGets(2, NO_EXCEPTION));
   }
 
-  private void createClient2(Properties javaProps, String authInit,
-      Integer port1, Integer port2, Properties getCredentials) {
-    client2.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, getCredentials, javaProps, port1, port2,
-            null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
+  private void createClient2(Properties javaProps, String authInit, int port1, int port2, Properties getCredentials) {
+    client2.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, getCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
-  private void createClient1(Properties javaProps, String authInit,
-      Integer port1, Integer port2, Properties createCredentials) {
-    client1.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, createCredentials, javaProps, port1, port2,
-            null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
+  private void createClient1(Properties javaProps, String authInit, int port1, int port2, Properties createCredentials) {
+    client1.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, createCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
-  private Integer createServer2(Properties javaProps,
-      Properties serverProps) {
-    Integer port2 = ((Integer)server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(
-            SecurityTestUtil.getLocatorPort(), serverProps, javaProps )));
-    return port2;
+  private Integer createServer2(Properties javaProps, Properties serverProps) {
+    return server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
-  private Integer createServer1(Properties javaProps,
-      Properties serverProps) {
-    Integer port1 = ((Integer)server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(
-            SecurityTestUtil.getLocatorPort(), serverProps, javaProps )));
-    return port1;
+  private Integer createServer1(Properties javaProps, Properties serverProps) {
+    return server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
-  private void doPuts(Integer num, Integer expectedResult,
-      boolean newVals) {
-
-    assertTrue(num.intValue() <= SecurityTestUtil.KEYS.length);
-    Region region = null;
-    try {
-      region = SecurityTestUtil.getCache().getRegion(regionName);
-      assertNotNull(region);
+  private void doPuts(int num, int expectedResult) {
+    assertTrue(num <= KEYS.length);
+    Region region = getCache().getRegion(REGION_NAME);
+    assertNotNull(region);
+    for (int index = 0; index < num; ++index) {
+      region.put(KEYS[index], deltas[0]);
     }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-        LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
-      }
-      else {
-        Assert.fail("Got unexpected exception when doing puts", ex);
-      }
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      region.put(SecurityTestUtil.KEYS[index], deltas[0]);
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      try {
-        region.put(SecurityTestUtil.KEYS[index], deltas[index]);
-        if (expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
-          fail("Expected a NotAuthorizedException while doing puts");
-        }
-      }
-      catch (NoAvailableServersException ex) {
-        if (expectedResult.intValue() == SecurityTestUtil.NO_AVAILABLE_SERVERS) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected NoAvailableServers when doing puts: "
-                  + ex.getCause());
-          continue;
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
-        }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
-            && (ex.getCause() instanceof NotAuthorizedException)) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected NotAuthorizedException when doing puts: "
-                  + ex.getCause());
-          continue;
-        }
-        if ((expectedResult.intValue() == SecurityTestUtil.AUTHREQ_EXCEPTION)
-            && (ex.getCause() instanceof AuthenticationRequiredException)) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected AuthenticationRequiredException when doing puts: "
-                  + ex.getCause());
-          continue;
-        }
-        if ((expectedResult.intValue() == SecurityTestUtil.AUTHFAIL_EXCEPTION)
-            && (ex.getCause() instanceof AuthenticationFailedException)) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected AuthenticationFailedException when doing puts: "
-                  + ex.getCause());
-          continue;
-        }
-        else if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
-        }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          LogWriterUtils.getLogWriter().info("Got expected exception when doing puts: " + ex);
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
-        }
+    for (int index = 0; index < num; ++index) {
+      region.put(KEYS[index], deltas[index]);
+      if (expectedResult != NO_EXCEPTION) {
+        fail("Expected a NotAuthorizedException while doing puts");
       }
     }
   }
 
-  private void doGets(Integer num, Integer expectedResult,
-      boolean newVals) {
+  private void doGets(int num, int expectedResult) {
+    assertTrue(num <= KEYS.length);
 
-    assertTrue(num.intValue() <= SecurityTestUtil.KEYS.length);
-    Region region = null;
-    try {
-      region = SecurityTestUtil.getCache().getRegion(regionName);
-      assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-        LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
-      }
-      else {
-        Assert.fail("Got unexpected exception when doing gets", ex);
-      }
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      Object value = null;
-      try {
-        try {
-          region.localInvalidate(SecurityTestUtil.KEYS[index]);
-        }
-        catch (Exception ex) {
-        }
-        value = region.get(SecurityTestUtil.KEYS[index]);
-        if (expectedResult.intValue() != SecurityTestUtil.NO_EXCEPTION) {
-          fail("Expected a NotAuthorizedException while doing gets");
-        }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == SecurityTestUtil.NO_AVAILABLE_SERVERS) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected NoAvailableServers when doing puts: "
-              + ex.getCause());
-          continue;
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing puts", ex);
-        }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == SecurityTestUtil.NOTAUTHZ_EXCEPTION)
-            && (ex.getCause() instanceof NotAuthorizedException)) {
-          LogWriterUtils.getLogWriter().info(
-              "Got expected NotAuthorizedException when doing gets: "
-                  + ex.getCause());
-          continue;
-        }
-        else if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing gets", ex);
-        }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == SecurityTestUtil.OTHER_EXCEPTION) {
-          LogWriterUtils.getLogWriter().info("Got expected exception when doing gets: " + ex);
-        }
-        else {
-          Assert.fail("Got unexpected exception when doing gets", ex);
-        }
+    Region region = SecurityTestUtil.getCache().getRegion(REGION_NAME);
+    assertNotNull(region);
+
+    for (int index = 0; index < num; ++index) {
+      region.localInvalidate(KEYS[index]);
+      Object value = region.get(KEYS[index]);
+      if (expectedResult != NO_EXCEPTION) {
+        fail("Expected a NotAuthorizedException while doing gets");
       }
       assertNotNull(value);
       assertEquals(deltas[index], value);
@@ -290,8 +149,7 @@ public class DeltaClientAuthorizationDUnitTest extends
 
   private final void setUpDeltas() {
     for (int i = 0; i < 8; i++) {
-      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
-              new TestObject1("0", 0));
+      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0], new TestObject1("0", 0));
     }
     deltas[1].setIntVar(5);
     deltas[2].setIntVar(5);
@@ -334,6 +192,5 @@ public class DeltaClientAuthorizationDUnitTest extends
 
     deltas[7].resetDeltaStatus();
     deltas[7].setStr("delta string");
-
   }
 }

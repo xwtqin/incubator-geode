@@ -152,10 +152,8 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     LogWriterUtils.getLogWriter().info(
         "testOps1: For first client credentials: " + client1Credentials[0]
             + "\n" + client1Credentials[1]);
-    client1.invoke(SecurityTestUtil.class, "createCacheClientForMultiUserMode",
-        new Object[] {Integer.valueOf(2), authInit, client1Credentials,
-            javaProps, new Integer[] {port1, port2}, null, Boolean.FALSE,
-            SecurityTestUtil.NO_EXCEPTION});
+    final Properties finalJavaProps = javaProps;
+    client1.invoke(() -> SecurityTestUtil.createCacheClientForMultiUserMode(2, authInit, client1Credentials, finalJavaProps, new int[] {port1, port2}, -1, false, SecurityTestUtil.NO_EXCEPTION));
 
     // Start client2 with valid/invalid client2OpCodes credentials
     Properties[] client2Credentials = new Properties[] {
@@ -182,17 +180,12 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
         "testOps1: For second client credentials: " + client2Credentials[0]
             + "\n" + client2Credentials[1]);
     if (bothClientsInMultiuserMode) {
-      client2.invoke(SecurityTestUtil.class,
-          "createCacheClientForMultiUserMode", new Object[] {
-              Integer.valueOf(2), authInit, client2Credentials, javaProps,
-              new Integer[] {port1, port2}, null, Boolean.FALSE,
-              SecurityTestUtil.NO_EXCEPTION});
+      final Properties finalJavaProps2 = javaProps;
+      client2.invoke(() -> SecurityTestUtil.createCacheClientForMultiUserMode(2, authInit, client2Credentials, finalJavaProps2, new int[] {port1, port2}, -1, false, SecurityTestUtil.NO_EXCEPTION));
     } else {
       int credentialsIndex = allowOp ? 0 : 1;
-      client2.invoke(SecurityTestUtil.class, "createCacheClient", new Object[] {
-          authInit, client2Credentials[credentialsIndex], javaProps,
-          new Integer[] {port1, port2}, null, Boolean.FALSE, "false",
-          SecurityTestUtil.NO_EXCEPTION});
+      final Properties finalJavaProps2 = javaProps;
+      client2.invoke(() -> SecurityTestUtil.createCacheClient(authInit, client2Credentials[credentialsIndex], finalJavaProps2, new int[] {port1, port2}, -1, false, false, SecurityTestUtil.NO_EXCEPTION));
     }
     return true;
   }
@@ -204,25 +197,15 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
   private void verifyPutsGets(Boolean isMultiuser, Boolean opAllowed)
       throws Exception {
     // Perform some put operations from client1
-    client1.invoke(SecurityTestUtil.class, "doMultiUserPuts", new Object[] {
-        Integer.valueOf(2),
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserPuts(2, 2, new Integer[] { SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
 
     // Verify that the gets succeed/fail
     if (isMultiuser) {
-      client2.invoke(SecurityTestUtil.class, "doMultiUserGets", new Object[] {
-          Integer.valueOf(2),
-          Integer.valueOf(2),
-          new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-              SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserGets(2, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
     } else {
       int expectedResult = (opAllowed) ? SecurityTestUtil.NO_EXCEPTION
           : SecurityTestUtil.NOTAUTHZ_EXCEPTION;
-      client2.invoke(SecurityTestUtil.class, "doMultiUserGets", new Object[] {
-          Integer.valueOf(1), Integer.valueOf(1),
-          new Integer[] {expectedResult}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserGets(1, 1, new Integer[] {expectedResult}));
     }
   }
 
@@ -233,33 +216,16 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
   private void verifyContainsKeyDestroys(Boolean isMultiuser, Boolean opAllowed)
       throws Exception {
     // Do puts before verifying containsKey
-    client1.invoke(SecurityTestUtil.class, "doMultiUserPuts", new Object[] {
-        Integer.valueOf(2),
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NO_EXCEPTION}});
-    client1.invoke(SecurityTestUtil.class, "doMultiUserContainsKeys",
-        new Object[] {
-            Integer.valueOf(1),
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION},
-            new Boolean[] {Boolean.TRUE, Boolean.FALSE}});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserPuts(2, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NO_EXCEPTION}));
+    client1.invoke(() -> SecurityTestUtil.doMultiUserContainsKeys(1, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Boolean[] {Boolean.TRUE, Boolean.FALSE}));
 
     // Verify that the destroys succeed/fail
     if (isMultiuser) {
-      client2.invoke(SecurityTestUtil.class, "doMultiUserDestroys",
-          new Object[] {
-              Integer.valueOf(2),
-              Integer.valueOf(2),
-              new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                  SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserDestroys(2, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
     } else {
       int expectedResult = (opAllowed) ? SecurityTestUtil.NO_EXCEPTION
           : SecurityTestUtil.NOTAUTHZ_EXCEPTION;
-      client2.invoke(SecurityTestUtil.class, "doMultiUserDestroys",
-          new Object[] {Integer.valueOf(1), Integer.valueOf(1),
-              new Integer[] {expectedResult}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserDestroys(1, 1, new Integer[] {expectedResult}));
     }
   }
 
@@ -270,57 +236,30 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
   private void verifyContainsKeyInvalidates(Boolean isMultiuser, Boolean opAllowed)
       throws Exception {
     // Do puts before verifying containsKey
-    client1.invoke(SecurityTestUtil.class, "doMultiUserPuts", new Object[] {
-        Integer.valueOf(2),
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NO_EXCEPTION}});
-    client1.invoke(SecurityTestUtil.class, "doMultiUserContainsKeys",
-        new Object[] {
-            Integer.valueOf(1),
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION},
-            new Boolean[] {Boolean.TRUE, Boolean.FALSE}});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserPuts(2, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NO_EXCEPTION}));
+    client1.invoke(() -> SecurityTestUtil.doMultiUserContainsKeys(1, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Boolean[] {Boolean.TRUE, Boolean.FALSE}));
 
     // Verify that the invalidates succeed/fail
     if (isMultiuser) {
-      client2.invoke(SecurityTestUtil.class, "doMultiUserInvalidates",
-          new Object[] {
-              Integer.valueOf(2),
-              Integer.valueOf(2),
-              new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                  SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserInvalidates(2, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
     } else {
       int expectedResult = (opAllowed) ? SecurityTestUtil.NO_EXCEPTION
           : SecurityTestUtil.NOTAUTHZ_EXCEPTION;
-      client2.invoke(SecurityTestUtil.class, "doMultiUserInvalidates",
-          new Object[] {Integer.valueOf(1), Integer.valueOf(1),
-              new Integer[] {expectedResult}});
+      client2.invoke(() -> SecurityTestUtil.doMultiUserInvalidates(1, 1, new Integer[] {expectedResult}));
     }
   }
 
   private void verifyGetAllInTX() {
     server1.invoke(() -> ClientMultiUserAuthzDUnitTest.doPuts());
-    client1.invoke(SecurityTestUtil.class, "doMultiUserGetAll", new Object[] {
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Boolean.TRUE/*use TX*/});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserGetAll(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Boolean.TRUE/*use TX*/));
   }
 
   private void verifyGetAllRegionDestroys() {
     server1.invoke(() -> ClientMultiUserAuthzDUnitTest.doPuts());
-    client1.invoke(SecurityTestUtil.class, "doMultiUserGetAll", new Object[] {
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserGetAll(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
 
     // Verify that the region destroys succeed/fail
-    client2.invoke(SecurityTestUtil.class, "doMultiUserRegionDestroys",
-        new Object[] {
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+    client2.invoke(() -> SecurityTestUtil.doMultiUserRegionDestroys(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
   }
 
   public static void doPuts() {
@@ -369,11 +308,8 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     LogWriterUtils.getLogWriter().info(
         "testOps2: For first client credentials: " + client1Credentials[0]
             + "\n" + client1Credentials[1]);
-    client1.invoke(SecurityTestUtil.class,
-        "createCacheClientForMultiUserMode", new Object[] {
-            Integer.valueOf(2), authInit, client1Credentials, javaProps,
-            new Integer[] {port1, port2}, null, Boolean.FALSE,
-            SecurityTestUtil.NO_EXCEPTION});
+    final Properties finalJavaProps = javaProps;
+    client1.invoke(() -> SecurityTestUtil.createCacheClientForMultiUserMode(2, authInit, client1Credentials, finalJavaProps, new int[] {port1, port2}, -1, false, SecurityTestUtil.NO_EXCEPTION));
 
     // Start client2 with valid/invalid EXECUTE_FUNCTION credentials
     Properties[] client2Credentials = new Properties[] {
@@ -386,79 +322,37 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
     LogWriterUtils.getLogWriter().info(
         "testOps2: For second client credentials: " + client2Credentials[0]
             + "\n" + client2Credentials[1]);
-    client2.invoke(SecurityTestUtil.class,
-        "createCacheClientForMultiUserMode", new Object[] {
-            Integer.valueOf(2), authInit, client2Credentials, javaProps,
-            new Integer[] {port1, port2}, null, Boolean.FALSE,
-            SecurityTestUtil.NO_EXCEPTION});
-    Function function = new TestFunction(true,TestFunction.TEST_FUNCTION1);
-    server1.invoke(PRClientServerTestBase.class,
-        "registerFunction", new Object []{function});
+    final Properties finalJavaProps2 = javaProps;
+    client2.invoke(() -> SecurityTestUtil.createCacheClientForMultiUserMode(2, authInit, client2Credentials, finalJavaProps2, new int[] {port1, port2}, -1, false, SecurityTestUtil.NO_EXCEPTION));
 
-    server2.invoke(PRClientServerTestBase.class,
-        "registerFunction", new Object []{function});
+    Function function = new TestFunction(true,TestFunction.TEST_FUNCTION1);
+    server1.invoke(() -> PRClientServerTestBase.registerFunction(function));
+
+    server2.invoke(() -> PRClientServerTestBase.registerFunction(function));
 
     // Perform some put operations before verifying queries
-    client1.invoke(SecurityTestUtil.class, "doMultiUserPuts", new Object[] {
-        Integer.valueOf(4),
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
-    client1.invoke(SecurityTestUtil.class, "doMultiUserQueries",
-        new Object[] {
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Integer.valueOf(4)});
-    client1.invoke(SecurityTestUtil.class, "doMultiUserQueryExecute",
-        new Object[] {
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Integer.valueOf(4)});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserPuts(4, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
+    client1.invoke(() -> SecurityTestUtil.doMultiUserQueries(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> SecurityTestUtil.doMultiUserQueryExecute(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, 4));
 
     // Verify that the FE succeeds/fails
-    client2.invoke(SecurityTestUtil.class, "doMultiUserFE", new Object[] {
-        Integer.valueOf(2),
-        function,
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Object[] {null, null},
-        Boolean.FALSE});
+    client2.invoke(() ->SecurityTestUtil.doMultiUserFE(2, function, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Object[] {null, null}, false));
 
     // Failover
     server1.invoke(() -> SecurityTestUtil.closeCache());
     Thread.sleep(2000);
 
-    client1.invoke(SecurityTestUtil.class, "doMultiUserPuts", new Object[] {
-        Integer.valueOf(4),
-        Integer.valueOf(2),
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserPuts(4, 2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}));
 
-    client1.invoke(SecurityTestUtil.class, "doMultiUserQueries",
-        new Object[] {
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Integer.valueOf(4)});
-    client1.invoke(SecurityTestUtil.class, "doMultiUserQueryExecute",
-        new Object[] {
-            Integer.valueOf(2),
-            new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-                SecurityTestUtil.NOTAUTHZ_EXCEPTION}, Integer.valueOf(4)});
+    client1.invoke(() -> SecurityTestUtil.doMultiUserQueries(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> SecurityTestUtil.doMultiUserQueryExecute(2, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, 4));
 
     // Verify that the FE succeeds/fails
-    client2.invoke(SecurityTestUtil.class, "doMultiUserFE", new Object[] {
-        Integer.valueOf(2),
-        function,
-        new Integer[] {SecurityTestUtil.NO_EXCEPTION,
-            SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Object[] {null, null},
-        Boolean.TRUE});
-
-
+    client2.invoke(() -> SecurityTestUtil.doMultiUserFE(2, function, new Integer[] {SecurityTestUtil.NO_EXCEPTION, SecurityTestUtil.NOTAUTHZ_EXCEPTION}, new Object[] {null, null}, true));
   }
 
-
   protected Integer createCacheServerOnVM(VM server, Properties javaProps, Properties serverProps) {
-    return (Integer)server.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), serverProps,
-        javaProps));
+    return server.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), serverProps, javaProps));
 
   }
 

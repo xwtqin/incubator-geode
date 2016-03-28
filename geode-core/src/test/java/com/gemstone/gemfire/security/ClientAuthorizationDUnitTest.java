@@ -18,6 +18,7 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.security.generator.XmlAuthzCredentialGenerator;
 import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
-import com.gemstone.gemfire.test.dunit.Host;
 import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -72,7 +72,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
   private void executeRIOpBlock(List opBlock, Integer port1, Integer port2,
       String authInit, Properties extraAuthProps, Properties extraAuthzProps,
-      Properties javaProps) {
+      Properties javaProps) throws InterruptedException {
 
     Iterator opIter = opBlock.iterator();
     while (opIter.hasNext()) {
@@ -150,16 +150,10 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
             "executeRIOpBlock: For client" + clientNum + credentialsTypeStr
                 + " credentials: " + opCredentials);
         if (useThisVM) {
-          createCacheClient(authInit, clientProps, javaProps, new Integer[] {
-              port1, port2 }, null, Boolean.valueOf(false), new Integer(
-              SecurityTestUtil.NO_EXCEPTION));
+          SecurityTestUtil.createCacheClientWithDynamicRegion(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, false, NO_EXCEPTION);
         }
         else {
-          clientVM.invoke(ClientAuthorizationTestBase.class,
-              "createCacheClient", new Object[] { authInit, clientProps,
-                  javaProps, new Integer[] { port1, port2 }, null,
-                  Boolean.valueOf(false),
-                  new Integer(SecurityTestUtil.NO_EXCEPTION) });
+          clientVM.invoke(() -> createCacheClient(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, false, SecurityTestUtil.NO_EXCEPTION));
         }
       }
       int expectedResult;
@@ -274,14 +268,14 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
   
   protected void createClient2NoException(Properties javaProps, String authInit,
       Integer port1, Integer port2, Properties getCredentials) {
-    client2.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, getCredentials, javaProps, port1, port2,
-            null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
+    client2.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, getCredentials, javaProps, port1, port2,
+            0, SecurityTestUtil.NO_EXCEPTION));
   }
 
   protected void createClient1NoException(Properties javaProps, String authInit,
       Integer port1, Integer port2, Properties createCredentials) {
-    client1.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, createCredentials, javaProps, port1, port2,
-            null, new Integer(SecurityTestUtil.NO_EXCEPTION) ));
+    client1.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, createCredentials, javaProps, port1, port2,
+            0, SecurityTestUtil.NO_EXCEPTION));
   }
 
   protected Integer createServer2(Properties javaProps,
@@ -410,13 +404,13 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       LogWriterUtils.getLogWriter().info(
           "testInvalidAccessor: For second client GET credentials: "
               + getCredentials);
-      client1.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, createCredentials, createJavaProps, port1,
-              port2, null, Boolean.FALSE, Boolean.FALSE,
+      client1.invoke(() -> ClientAuthenticationUtils.createCacheClient( authInit, createCredentials, createJavaProps, port1,
+              port2, 0, Boolean.FALSE, Boolean.FALSE,
               Integer.valueOf(SecurityTestUtil.NO_EXCEPTION) ));
       client1.invoke(() -> SecurityTestUtil.doPuts(
           new Integer(1), new Integer(SecurityTestUtil.AUTHFAIL_EXCEPTION) ));
-      client2.invoke(() -> ClientAuthenticationDUnitTest.createCacheClient( authInit, getCredentials, getJavaProps, port1, port2,
-              null, Boolean.FALSE, Boolean.FALSE,
+      client2.invoke(() -> ClientAuthenticationUtils.createCacheClient( authInit, getCredentials, getJavaProps, port1, port2,
+              0, Boolean.FALSE, Boolean.FALSE,
               Integer.valueOf(SecurityTestUtil.NO_EXCEPTION) ));
       client2.invoke(() -> SecurityTestUtil.doPuts(
           new Integer(1), new Integer(SecurityTestUtil.AUTHFAIL_EXCEPTION) ));
@@ -559,7 +553,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
   }
 
   @Test
-  public void testUnregisterInterestWithFailover() {
+  public void testUnregisterInterestWithFailover() throws InterruptedException {
 
     OperationWithAction[] unregisterOps = {
         // Register interest in all KEYS using one key at a time
@@ -690,7 +684,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
   }
 
   @Test
-  public void testAllOpsWithFailover() {
+  public void testAllOpsWithFailover() throws InterruptedException {
     IgnoredException.addIgnoredException("Read timed out");
 
     OperationWithAction[] allOps = {

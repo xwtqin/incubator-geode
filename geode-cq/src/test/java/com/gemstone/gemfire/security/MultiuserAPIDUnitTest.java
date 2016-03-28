@@ -106,7 +106,7 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
 
     } else { // multiuser mode
       Region realRegion = GemFireCacheImpl.getInstance().getRegion(SecurityTestUtil.REGION_NAME);
-      Region proxyRegion = SecurityTestUtil.proxyCaches[0].getRegion(SecurityTestUtil.REGION_NAME);
+      Region proxyRegion = SecurityTestUtil.getProxyCaches(0).getRegion(SecurityTestUtil.REGION_NAME);
       Pool pool = PoolManagerImpl.getPMI().find("testPool");
 
       for (int i = 0; i <= 27; i++) {
@@ -235,15 +235,15 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
             // expect an exception, fail otherwise.
             case 23:
               op = "ProxyQueryService().getIndexes()";
-              SecurityTestUtil.proxyCaches[0].getQueryService().getIndexes(null);
+              SecurityTestUtil.getProxyCaches(0).getQueryService().getIndexes(null);
               break;
             case 24:
               op = "ProxyQueryService().createIndex()";
-              SecurityTestUtil.proxyCaches[0].getQueryService().createIndex(null, null, null );
+              SecurityTestUtil.getProxyCaches(0).getQueryService().createIndex(null, null, null );
               break;
             case 25:
               op = "ProxyQueryService().removeIndexes()";
-              SecurityTestUtil.proxyCaches[0].getQueryService().removeIndexes();
+              SecurityTestUtil.getProxyCaches(0).getQueryService().removeIndexes();
               break;
             case 26:
               op = "ProxyRegion.localDestroy()";
@@ -280,40 +280,44 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
     getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
 
     // Start the servers
-    Integer locPort1 = SecurityTestUtil.getLocatorPort();
-    Integer locPort2 = SecurityTestUtil.getLocatorPort();
+    int locPort1 = SecurityTestUtil.getLocatorPort();
+    int locPort2 = SecurityTestUtil.getLocatorPort();
     String locString = SecurityTestUtil.getLocatorString();
-    Integer port1 = (Integer)server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
-    Integer port2 = (Integer)server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
+
+    int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
+    int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
 
     // Start the clients with valid credentials
     Properties credentials1 = gen.getValidCredentials(1);
     Properties javaProps1 = gen.getJavaProperties();
     getLogWriter().info("testValidCredentials: For first client credentials: " + credentials1 + " : " + javaProps1);
+
     Properties credentials2 = gen.getValidCredentials(2);
     Properties javaProps2 = gen.getJavaProperties();
     getLogWriter().info("testValidCredentials: For second client credentials: " + credentials2 + " : " + javaProps2);
-    client1.invoke(() -> createCacheClient(authInit, credentials1, javaProps1, port1, port2, null, multiUser, new Integer(SecurityTestUtil.NO_EXCEPTION)));
+
+    client1.invoke(() -> createCacheClient(authInit, credentials1, javaProps1, port1, port2, 0, multiUser, NO_EXCEPTION));
   }
 
-  private Integer createCacheServer(Object dsPort, Object locatorString, Object authenticator, Object extraProps, Object javaProps) {
+  private Integer createCacheServer(int dsPort, String locatorString, String authenticator, Properties extraProps, Properties javaProps) {
     Properties authProps = new Properties();
     if (extraProps != null) {
-      authProps.putAll((Properties)extraProps);
+      authProps.putAll(extraProps);
     }
 
     if (authenticator != null) {
       authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator.toString());
     }
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, (Integer)dsPort, (String)locatorString, null, new Integer(SecurityTestUtil.NO_EXCEPTION));
+    return SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
   }
 
-  private void createCacheClient(Object authInit, Object authProps, Object javaProps, Integer port1, Integer port2, Object numConnections, Boolean multiUserMode, Integer expectedResult) {
-    createCacheClient(authInit, (Properties)authProps, (Properties)javaProps, new Integer[] {port1, port2}, numConnections, multiUserMode, expectedResult);
+  // a
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, int expectedResult) {
+    SecurityTestUtil.createCacheClient(authInit, authProps, javaProps, ports, numConnections, multiUserMode, expectedResult); // invokes SecurityTestUtil 2
   }
 
-  private void createCacheClient(Object authInit, Properties authProps, Properties javaProps, Integer[] ports, Object numConnections, Boolean multiUserMode, Integer expectedResult) {
-    String authInitStr = (authInit == null ? null : authInit.toString());
-    SecurityTestUtil.createCacheClient(authInitStr, authProps, javaProps, ports, numConnections, multiUserMode.toString(), expectedResult);
+  // b
+  private void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int port2, int numConnections, boolean multiUserMode, int expectedResult) {
+    createCacheClient(authInit, authProps, javaProps, new int[] {port1, port2}, numConnections, multiUserMode, expectedResult); // invokes a
   }
 }

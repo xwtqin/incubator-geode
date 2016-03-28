@@ -88,9 +88,9 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
      *  7. Confirm that the users receive the events which were enqueued at server while they were away.
      *  8. Same for ProxyCache.close()
      */
-    Integer numOfUsers = 2;
-    Integer numOfPuts = 5;
-    Boolean[] postAuthzAllowed = new Boolean[] {Boolean.TRUE, Boolean.TRUE};
+    int numOfUsers = 2;
+    int numOfPuts = 5;
+    boolean[] postAuthzAllowed = new boolean[] {true, true};
 
     doTest(numOfUsers, numOfPuts, postAuthzAllowed, getXmlAuthzGenerator(), null);
   }
@@ -107,9 +107,9 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
      *  7. Observer the behaviour.
      *  8. Same for ProxyCache.close(false)
      */
-    Integer numOfUsers = 2;
-    Integer numOfPuts = 5;
-    Boolean[] postAuthzAllowed = new Boolean[] {Boolean.TRUE, Boolean.TRUE};
+    int numOfUsers = 2;
+    int numOfPuts = 5;
+    boolean[] postAuthzAllowed = new boolean[] {true, true};
 
     doTest(numOfUsers, numOfPuts, postAuthzAllowed, getXmlAuthzGenerator(), Boolean.TRUE);
   }
@@ -126,14 +126,14 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
      *  7. Observer the behaviour.
      *  8. Same for ProxyCache.close(true)
      */
-    Integer numOfUsers = 2;
-    Integer numOfPuts = 5;
-    Boolean[] postAuthzAllowed = new Boolean[] {Boolean.TRUE, Boolean.TRUE};
+    int numOfUsers = 2;
+    int numOfPuts = 5;
+    boolean[] postAuthzAllowed = new boolean[] {true, true};
 
     doTest(numOfUsers, numOfPuts, postAuthzAllowed, getXmlAuthzGenerator(), Boolean.FALSE);
   }
 
-  private void doTest(Integer numOfUsers, Integer numOfPuts, Boolean[] postAuthzAllowed, AuthzCredentialGenerator authzGenerator, Boolean keepAlive) throws Exception {
+  private void doTest(int numOfUsers, int numOfPuts, boolean[] postAuthzAllowed, final AuthzCredentialGenerator authzGenerator, final Boolean keepAlive) throws Exception {
     CredentialGenerator credentialGenerator = authzGenerator.getCredentialGenerator();
     Properties extraAuthProps = credentialGenerator.getSystemProperties();
     Properties javaProps = credentialGenerator.getJavaProperties();
@@ -198,10 +198,10 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
     server2.invoke(() -> SecurityTestUtil.closeCache());
 
     server1.invoke(() -> createServerCache(serverProps, javaProps, locatorPort, port1));
-    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps, new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
+    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps, new int[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
 
     client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(() -> executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
+    client1.invoke(() -> executeCQ(numOfUsers, new boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
     client1.invoke(() -> readyForEvents());
 
     if (keepAlive == null) {
@@ -212,9 +212,9 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
 
     server1.invoke(() -> doPuts(numOfPuts, Boolean.TRUE/* put last key */));
 
-    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps, new Integer[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
+    client1.invoke(() -> createClientCache(javaProps2, authInit, authProps, new int[] {port1, port2}, numOfUsers, durableClientId, postAuthzAllowed));
     client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(() ->executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
+    client1.invoke(() ->executeCQ(numOfUsers, new boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
     client1.invoke(() -> readyForEvents());
 
     if (!postAuthzAllowed[0] || keepAlive == null || !keepAlive) {
@@ -226,10 +226,10 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
 
     Integer numOfCreates = keepAlive == null ? 0 : (keepAlive ? numOfPuts + 1/* last key */ : 0);
     client1.invoke(() -> checkCQListeners(numOfUsers, postAuthzAllowed, numOfCreates, 0));
-    client1.invoke(() -> proxyCacheClose(new Integer[] {0, 1}, keepAlive));
+    client1.invoke(() -> proxyCacheClose(new int[] {0, 1}, keepAlive));
     client1.invoke(() -> SecurityTestUtil.createProxyCache(new Integer[] {0, 1}, authProps));
     client1.invoke(() -> createCQ(numOfUsers, Boolean.TRUE));
-    client1.invoke(() -> executeCQ(numOfUsers, new Boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
+    client1.invoke(() -> executeCQ(numOfUsers, new boolean[] {false, false}, numOfPuts, new String[numOfUsers]));
 
     server1.invoke(() -> doPuts(numOfPuts, Boolean.TRUE/* put last key */));
 
@@ -245,30 +245,30 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
   }
 
   private void createServerCache(Properties serverProps, Properties javaProps, Integer locatorPort, Integer serverPort) {
-    SecurityTestUtil.createCacheServer((Properties)serverProps, javaProps, locatorPort, null, serverPort, Boolean.TRUE, new Integer(SecurityTestUtil.NO_EXCEPTION));
+    SecurityTestUtil.createCacheServer((Properties)serverProps, javaProps, locatorPort, null, serverPort, true, NO_EXCEPTION);
   }
 
-  private void createClientCache(Properties javaProps, String authInit, Properties[] authProps, Integer ports[], Integer numOfUsers, Boolean[] postAuthzAllowed) {
-    SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit, authProps, javaProps, ports, null, Boolean.FALSE, SecurityTestUtil.NO_EXCEPTION);
+  private void createClientCache(Properties javaProps, String authInit, Properties[] authProps, int ports[], int numOfUsers, boolean[] postAuthzAllowed) {
+    SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit, authProps, javaProps, ports, 0, false, NO_EXCEPTION);
   }
 
   private void readyForEvents() {
     GemFireCacheImpl.getInstance().readyForEvents();
   }
 
-  private void createClientCache(Properties javaProps, String authInit, Properties[] authProps, Integer ports[], Integer numOfUsers, String durableId, Boolean[] postAuthzAllowed) {
-    SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit, authProps, javaProps, ports, null, Boolean.FALSE, durableId, SecurityTestUtil.NO_EXCEPTION);
+  private void createClientCache(Properties javaProps, String authInit, Properties[] authProps, int ports[], int numOfUsers, String durableId, boolean[] postAuthzAllowed) {
+    SecurityTestUtil.createCacheClientForMultiUserMode(numOfUsers, authInit, authProps, javaProps, ports, 0, false, durableId, NO_EXCEPTION);
   }
 
   private void createCQ(Integer num) throws CqException, CqExistsException {
     createCQ(num, false);
   }
 
-  private void createCQ(Integer num, Boolean isDurable) throws CqException, CqExistsException {
+  private void createCQ(int num, boolean isDurable) throws CqException, CqExistsException {
     for (int i = 0; i < num; i++) {
-      QueryService cqService = SecurityTestUtil.proxyCaches[i].getQueryService();
+      QueryService cqService = SecurityTestUtil.getProxyCaches(i).getQueryService();
       String cqName = "CQ_" + i;
-      String queryStr = cqNameToQueryStrings.get(cqName) + SecurityTestUtil.proxyCaches[i].getRegion(regionName).getFullPath();
+      String queryStr = cqNameToQueryStrings.get(cqName) + SecurityTestUtil.getProxyCaches(i).getRegion(regionName).getFullPath();
 
       // Create CQ Attributes.
       CqAttributesFactory cqf = new CqAttributesFactory();
@@ -284,7 +284,7 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
     }
   }
 
-  private void executeCQ(Integer num, Boolean[] initialResults, Integer expectedResultsSize, String[] expectedErr) throws CqException, RegionNotFoundException {
+  private void executeCQ(int num, boolean[] initialResults, int expectedResultsSize, String[] expectedErr) throws CqException, RegionNotFoundException {
     InternalLogWriter logWriter = InternalDistributedSystem.getStaticInternalLogWriter();
 
     for (int i = 0; i < num; i++) {
@@ -295,8 +295,8 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
 
         CqQuery cq1 = null;
         String cqName = "CQ_" + i;
-        String queryStr = cqNameToQueryStrings.get(cqName) + SecurityTestUtil.proxyCaches[i].getRegion(regionName).getFullPath();
-        QueryService cqService = SecurityTestUtil.proxyCaches[i].getQueryService();
+        String queryStr = cqNameToQueryStrings.get(cqName) + SecurityTestUtil.getProxyCaches(i).getRegion(regionName).getFullPath();
+        QueryService cqService = SecurityTestUtil.getProxyCaches(i).getQueryService();
 
         // Get CqQuery object.
         cq1 = cqService.getCq(cqName);
@@ -318,8 +318,7 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
           assertTrue("executeWithInitialResults() state mismatch", cq1
               .getState().isRunning());
           if (expectedResultsSize >= 0) {
-            assertEquals("unexpected results size", expectedResultsSize
-                .intValue(), cqResults.size());
+            assertEquals("unexpected results size", expectedResultsSize, cqResults.size());
           }
 
         } else {
@@ -350,9 +349,9 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
     region.put("LAST_KEY", "LAST_KEY");
   }
 
-  private void waitForLastKey(Integer cqIndex, Boolean isCreate) {
+  private void waitForLastKey(int cqIndex, boolean isCreate) {
     String cqName = "CQ_" + cqIndex;
-    QueryService qService = SecurityTestUtil.proxyCaches[cqIndex].getQueryService();
+    QueryService qService = SecurityTestUtil.getProxyCaches(cqIndex).getQueryService();
     ClientCQImpl cqQuery = (ClientCQImpl)qService.getCq(cqName);
     if (isCreate) {
       ((CqQueryTestListener)cqQuery.getCqListeners()[cqIndex]).waitForCreated("LAST_KEY");
@@ -361,16 +360,16 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
     }
   }
 
-  private void checkCQListeners(Integer numOfUsers,Boolean[] expectedListenerInvocation, Integer createEventsSize, Integer updateEventsSize) {
+  private void checkCQListeners(int numOfUsers, boolean[] expectedListenerInvocation, int createEventsSize, int updateEventsSize) {
     for (int i = 0; i < numOfUsers; i++) {
       String cqName = "CQ_" + i;
-      QueryService qService = SecurityTestUtil.proxyCaches[i].getQueryService();
+      QueryService qService = SecurityTestUtil.getProxyCaches(i).getQueryService();
       ClientCQImpl cqQuery = (ClientCQImpl)qService.getCq(cqName);
 
       if (expectedListenerInvocation[i]) {
         for (CqListener listener : cqQuery.getCqListeners()) {
-          assertEquals(createEventsSize.intValue(), ((CqQueryTestListener)listener).getCreateEventCount());
-          assertEquals(updateEventsSize.intValue(), ((CqQueryTestListener)listener).getUpdateEventCount());
+          assertEquals(createEventsSize, ((CqQueryTestListener)listener).getCreateEventCount());
+          assertEquals(updateEventsSize, ((CqQueryTestListener)listener).getUpdateEventCount());
         }
 
       } else {
@@ -381,19 +380,19 @@ public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBas
     }
   }
 
-  private void proxyCacheClose(Integer[] userIndices) {
+  private void proxyCacheClose(int[] userIndices) {
     proxyCacheClose(userIndices, null);
   }
 
-  private void proxyCacheClose(Integer[] userIndices, Boolean keepAliveFlags) {
+  private void proxyCacheClose(int[] userIndices, Boolean keepAliveFlags) {
     if (keepAliveFlags != null) {
       for (int i : userIndices) {
-        SecurityTestUtil.proxyCaches[i].close(keepAliveFlags);
+        SecurityTestUtil.getProxyCaches(i).close(keepAliveFlags);
       }
 
     } else {
       for (int i : userIndices) {
-        SecurityTestUtil.proxyCaches[i].close();
+        SecurityTestUtil.getProxyCaches(i).close();
       }
     }
   }

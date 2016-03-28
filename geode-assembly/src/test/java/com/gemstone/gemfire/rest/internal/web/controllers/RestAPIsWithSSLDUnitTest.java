@@ -92,6 +92,7 @@ public class RestAPIsWithSSLDUnitTest extends LocatorTestBase {
   @Override
   public final void preSetUp() throws Exception {
     disconnectAllFromDS();
+    // add ignoredexception
   }
 
   @Override

@@ -16,6 +16,10 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.internal.AvailablePort.*;
+import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -25,7 +29,6 @@ import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.security.FilterPostAuthorization;
 import com.gemstone.gemfire.internal.security.FilterPreAuthorization;
 import com.gemstone.gemfire.internal.security.ObjectWithAuthz;
@@ -33,8 +36,6 @@ import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyAuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.DummyCredentialGenerator;
 import com.gemstone.gemfire.security.templates.UserPasswordAuthInit;
-import com.gemstone.gemfire.test.dunit.Host;
-import com.gemstone.gemfire.test.dunit.LogWriterUtils;
 import com.gemstone.gemfire.test.dunit.SerializableRunnable;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Test;
@@ -78,7 +79,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
   }
   
   @Test
-  public void testAllOpsObjectModWithFailover() {
+  public void testAllOpsObjectModWithFailover() throws Exception {
     OperationWithAction[] allOps = allOps();
 
     TestPostCredentialGenerator tgen = new TestPostCredentialGenerator();
@@ -90,16 +91,17 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     String authInit = credentialGenerator.getAuthInit();
     String authenticator = credentialGenerator.getAuthenticator();
 
-    LogWriterUtils.getLogWriter().info("testPutsGetsObjectModWithFailover: Using authinit: " + authInit);
-    LogWriterUtils.getLogWriter().info("testPutsGetsObjectModWithFailover: Using authenticator: " + authenticator);
-    LogWriterUtils.getLogWriter().info("testPutsGetsObjectModWithFailover: Using pre-operation accessor: " + preAccessor);
-    LogWriterUtils.getLogWriter().info("testPutsGetsObjectModWithFailover: Using post-operation accessor: " + postAccessor);
+    getLogWriter().info("testPutsGetsObjectModWithFailover: Using authinit: " + authInit);
+    getLogWriter().info("testPutsGetsObjectModWithFailover: Using authenticator: " + authenticator);
+    getLogWriter().info("testPutsGetsObjectModWithFailover: Using pre-operation accessor: " + preAccessor);
+    getLogWriter().info("testPutsGetsObjectModWithFailover: Using post-operation accessor: " + postAccessor);
 
     // Start servers with all required properties
     Properties serverProps = buildProperties(authenticator, extraProps, preAccessor, postAccessor);
+
     // Get ports for the servers
-    Integer port1 = new Integer(AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
-    Integer port2 = new Integer(AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET));
+    int port1 = getRandomAvailablePort(SOCKET);
+    int port2 =getRandomAvailablePort(SOCKET);
 
     // Perform all the ops on the clients
     List opBlock = new ArrayList();
@@ -112,13 +114,13 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
         // End of current operation block; execute all the operations on the servers with failover
         if (opBlock.size() > 0) {
           // Start the first server and execute the operation block
-          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), port1, serverProps, javaProps ));
-          server2.invoke(() -> SecurityTestUtil.closeCache());
+          server1.invoke(() -> createCacheServer(getLocatorPort(), port1, serverProps, javaProps ));
+          server2.invoke(() -> closeCache());
           executeOpBlock(opBlock, port1, port2, authInit, extraProps, null, tgen, rnd);
           if (!currentOp.equals(OperationWithAction.OPBLOCK_NO_FAILOVER)) {
             // Failover to the second server and run the block again
-            server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), port2, serverProps, javaProps ));
-            server1.invoke(() -> SecurityTestUtil.closeCache());
+            server2.invoke(() -> createCacheServer(getLocatorPort(), port2, serverProps, javaProps ));
+            server1.invoke(() -> closeCache());
             executeOpBlock(opBlock, port1, port2, authInit, extraProps, null, tgen, rnd);
           }
           opBlock.clear();
@@ -209,7 +211,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
   }
 
 
-  private Properties buildProperties(String authenticator, Properties extraProps, String preAccessor, String postAccessor) {
+  private Properties buildProperties(final String authenticator, final Properties extraProps, final String preAccessor, final String postAccessor) {
     Properties authProps = new Properties();
     if (authenticator != null) {
       authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
@@ -232,7 +234,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
       this(ObjectWithAuthz.class, ObjectWithAuthz.CLASSID);
     }
 
-    public MyInstantiator(Class clazz, int classId) {
+    public MyInstantiator(final Class clazz, final int classId) {
       super(clazz, classId);
     }
 
@@ -248,7 +250,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     }
 
     @Override
-    public Properties getAllowedCredentials(OperationCode[] opCodes, String[] regionNames, int[] keyIndices, int num) {
+    public Properties getAllowedCredentials(final OperationCode[] opCodes, final String[] regionNames, final int[] keyIndices, final int num) {
       int userIndex = 1;
       byte role = DummyAuthzCredentialGenerator.getRequiredRole(opCodes);
       if (role == DummyAuthzCredentialGenerator.READER_ROLE) {
@@ -261,7 +263,7 @@ public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
     }
 
     @Override
-    public Properties getDisallowedCredentials(OperationCode[] opCodes, String[] regionNames, int[] keyIndices, int num) {
+    public Properties getDisallowedCredentials(final OperationCode[] opCodes, final String[] regionNames, final int[] keyIndices, final int num) {
       int userIndex = 0;
       for (int index = 0; index < keyIndices.length; ++index) {
         if (keyIndices[index] != index) {
