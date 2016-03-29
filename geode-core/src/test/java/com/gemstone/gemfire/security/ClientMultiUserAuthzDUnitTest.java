@@ -53,8 +53,8 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
    */
   @Test
   public void testOps1() throws Exception {
-    for (Iterator iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
-      AuthzCredentialGenerator gen = (AuthzCredentialGenerator)iter.next();
+    for (Iterator<AuthzCredentialGenerator> iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
+      AuthzCredentialGenerator gen = iter.next();
       CredentialGenerator cGen = gen.getCredentialGenerator();
       Properties extraAuthProps = cGen.getSystemProperties();
       Properties javaProps = cGen.getJavaProperties();
@@ -155,30 +155,30 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
     server2.invoke(() -> PRClientServerTestBase.registerFunction(function));
 
     // Perform some put operations before verifying queries
-    client1.invoke(() -> doMultiUserPuts(4, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
-    client1.invoke(() -> doMultiUserQueries(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
-    client1.invoke(() -> doMultiUserQueryExecute(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> doMultiUserPuts(4, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    client1.invoke(() -> doMultiUserQueries(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> doMultiUserQueryExecute(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
 
     // Verify that the FE succeeds/fails
-    client2.invoke(() ->doMultiUserFE(2, function, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new Object[] {null, null}, false));
+    client2.invoke(() ->doMultiUserFE(2, function, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, false));
 
     // Failover
     server1.invoke(() -> closeCache());
     Thread.sleep(2000);
 
-    client1.invoke(() -> doMultiUserPuts(4, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    client1.invoke(() -> doMultiUserPuts(4, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
-    client1.invoke(() -> doMultiUserQueries(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
-    client1.invoke(() -> doMultiUserQueryExecute(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> doMultiUserQueries(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
+    client1.invoke(() -> doMultiUserQueryExecute(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, 4));
 
     // Verify that the FE succeeds/fails
-    client2.invoke(() -> doMultiUserFE(2, function, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new Object[] {null, null}, true));
+    client2.invoke(() -> doMultiUserFE(2, function, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, true));
   }
 
   @Test
   public void testOpsWithClientsInDifferentModes() throws Exception {
-    for (Iterator iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
-      AuthzCredentialGenerator gen = (AuthzCredentialGenerator)iter.next();
+    for (Iterator<AuthzCredentialGenerator> iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
+      AuthzCredentialGenerator gen = iter.next();
       CredentialGenerator cGen = gen.getCredentialGenerator();
       Properties extraAuthProps = cGen.getSystemProperties();
       Properties javaProps = cGen.getJavaProperties();
@@ -270,15 +270,15 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
 
   private void verifyPutsGets(final boolean isMultiuser, final boolean opAllowed) throws Exception {
     // Perform some put operations from client1
-    client1.invoke(() -> doMultiUserPuts(2, 2, new Integer[] { NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    client1.invoke(() -> doMultiUserPuts(2, 2, new int[] { NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
     // Verify that the gets succeed/fail
     if (isMultiuser) {
-      client2.invoke(() -> doMultiUserGets(2, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+      client2.invoke(() -> doMultiUserGets(2, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
     } else {
       int expectedResult = (opAllowed) ? NO_EXCEPTION : NOTAUTHZ_EXCEPTION;
-      client2.invoke(() -> doMultiUserGets(1, 1, new Integer[] {expectedResult}));
+      client2.invoke(() -> doMultiUserGets(1, 1, new int[] {expectedResult}));
     }
   }
 
@@ -286,18 +286,18 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
     verifyContainsKeyDestroys(true, false /* unused */);
   }
 
-  private void verifyContainsKeyDestroys(final boolean isMultiuser, final boolean opAllowed) throws Exception {
+  private void verifyContainsKeyDestroys(final boolean isMultiUser, final boolean opAllowed) throws Exception {
     // Do puts before verifying containsKey
-    client1.invoke(() -> doMultiUserPuts(2, 2, new Integer[] {NO_EXCEPTION, NO_EXCEPTION}));
-    client1.invoke(() -> doMultiUserContainsKeys(1, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new Boolean[] {true, false}));
+    client1.invoke(() -> doMultiUserPuts(2, 2, new int[] {NO_EXCEPTION, NO_EXCEPTION}));
+    client1.invoke(() -> doMultiUserContainsKeys(1, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new boolean[] {true, false}));
 
     // Verify that the destroys succeed/fail
-    if (isMultiuser) {
-      client2.invoke(() -> doMultiUserDestroys(2, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    if (isMultiUser) {
+      client2.invoke(() -> doMultiUserDestroys(2, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
     } else {
       int expectedResult = (opAllowed) ? NO_EXCEPTION : NOTAUTHZ_EXCEPTION;
-      client2.invoke(() -> doMultiUserDestroys(1, 1, new Integer[] {expectedResult}));
+      client2.invoke(() -> doMultiUserDestroys(1, 1, new int[] {expectedResult}));
     }
   }
 
@@ -305,32 +305,32 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
     verifyContainsKeyInvalidates(true, false /* unused */);
   }
 
-  private void verifyContainsKeyInvalidates(final boolean isMultiuser, final boolean opAllowed) throws Exception {
+  private void verifyContainsKeyInvalidates(final boolean isMultiUser, final boolean opAllowed) throws Exception {
     // Do puts before verifying containsKey
-    client1.invoke(() -> doMultiUserPuts(2, 2, new Integer[] {NO_EXCEPTION, NO_EXCEPTION}));
-    client1.invoke(() -> doMultiUserContainsKeys(1, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new Boolean[] {true, false}));
+    client1.invoke(() -> doMultiUserPuts(2, 2, new int[] {NO_EXCEPTION, NO_EXCEPTION}));
+    client1.invoke(() -> doMultiUserContainsKeys(1, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, new boolean[] {true, false}));
 
     // Verify that the invalidates succeed/fail
-    if (isMultiuser) {
-      client2.invoke(() -> doMultiUserInvalidates(2, 2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    if (isMultiUser) {
+      client2.invoke(() -> doMultiUserInvalidates(2, 2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
     } else {
       int expectedResult = (opAllowed) ? NO_EXCEPTION : NOTAUTHZ_EXCEPTION;
-      client2.invoke(() -> doMultiUserInvalidates(1, 1, new Integer[] {expectedResult}));
+      client2.invoke(() -> doMultiUserInvalidates(1, 1, new int[] {expectedResult}));
     }
   }
 
   private void verifyGetAllInTX() {
     server1.invoke(() -> doPuts());
-    client1.invoke(() -> doMultiUserGetAll(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, true/*use TX*/));
+    client1.invoke(() -> doMultiUserGetAll(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}, true/*use TX*/));
   }
 
   private void verifyGetAllRegionDestroys() {
     server1.invoke(() -> doPuts());
-    client1.invoke(() -> doMultiUserGetAll(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    client1.invoke(() -> doMultiUserGetAll(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
 
     // Verify that the region destroys succeed/fail
-    client2.invoke(() -> doMultiUserRegionDestroys(2, new Integer[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
+    client2.invoke(() -> doMultiUserRegionDestroys(2, new int[] {NO_EXCEPTION, NOTAUTHZ_EXCEPTION}));
   }
 
   private void doPuts() {

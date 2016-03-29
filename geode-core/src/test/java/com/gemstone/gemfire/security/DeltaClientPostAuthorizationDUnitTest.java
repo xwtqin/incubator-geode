@@ -123,10 +123,10 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
   }
 
   @Override
-  protected final void executeOpBlock(List opBlock, Integer port1, Integer port2, String authInit, Properties extraAuthProps, Properties extraAuthzProps, TestCredentialGenerator gen, Random rnd) throws InterruptedException {
-    for (Iterator opIter = opBlock.iterator(); opIter.hasNext();) {
+  protected final void executeOpBlock(final List<OperationWithAction> opBlock, final int port1, final int port2, final String authInit, final Properties extraAuthProps, final Properties extraAuthzProps, final TestCredentialGenerator credentialGenerator, final Random random) throws InterruptedException {
+    for (Iterator<OperationWithAction> opIter = opBlock.iterator(); opIter.hasNext();) {
       // Start client with valid credentials as specified in OperationWithAction
-      OperationWithAction currentOp = (OperationWithAction)opIter.next();
+      OperationWithAction currentOp = opIter.next();
       OperationCode opCode = currentOp.getOperationCode();
       int opFlags = currentOp.getFlags();
       int clientNum = currentOp.getClientNum();
@@ -152,24 +152,24 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
 
       if ((opFlags & OpFlags.USE_OLDCONN) == 0) {
         Properties opCredentials;
-        int newRnd = rnd.nextInt(100) + 1;
+        int newRnd = random.nextInt(100) + 1;
         String currentRegionName = '/' + regionName;
         if ((opFlags & OpFlags.USE_SUBREGION) > 0) {
-          currentRegionName += ('/' + subregionName);
+          currentRegionName += ('/' + SUBREGION_NAME);
         }
 
         String credentialsTypeStr;
         OperationCode authOpCode = currentOp.getAuthzOperationCode();
         int[] indices = currentOp.getIndices();
-        CredentialGenerator cGen = gen.getCredentialGenerator();
+        CredentialGenerator cGen = credentialGenerator.getCredentialGenerator();
         final Properties javaProps = cGen == null ? null : cGen.getJavaProperties();
 
         if ((opFlags & OpFlags.CHECK_NOTAUTHZ) > 0 || (opFlags & OpFlags.USE_NOTAUTHZ) > 0) {
-          opCredentials = gen.getDisallowedCredentials(new OperationCode[] { authOpCode }, new String[] { currentRegionName }, indices, newRnd);
+          opCredentials = credentialGenerator.getDisallowedCredentials(new OperationCode[] { authOpCode }, new String[] { currentRegionName }, indices, newRnd);
           credentialsTypeStr = " unauthorized " + authOpCode;
 
         } else {
-          opCredentials = gen.getAllowedCredentials(new OperationCode[] {opCode, authOpCode }, new String[] { currentRegionName }, indices, newRnd);
+          opCredentials = credentialGenerator.getAllowedCredentials(new OperationCode[] {opCode, authOpCode }, new String[] { currentRegionName }, indices, newRnd);
           credentialsTypeStr = " authorized " + authOpCode;
         }
 

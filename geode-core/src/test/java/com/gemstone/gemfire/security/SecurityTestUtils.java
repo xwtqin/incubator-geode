@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
@@ -78,7 +79,6 @@ import com.gemstone.gemfire.cache.query.SelectResults;
 import com.gemstone.gemfire.cache.server.CacheServer;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.Locator;
-import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.pdx.PdxReader;
 import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
@@ -165,7 +165,7 @@ public final class SecurityTestUtils {
     DynamicRegionFactory.get().open(new DynamicRegionFactory.Config(null, null, false, true));
   }
 
-  protected static Integer getLocatorPort() {
+  protected static int getLocatorPort() {
     int locatorPort = getRandomAvailablePort(SOCKET);
     String addr = getIPLiteral();
     if (locatorString == null) {
@@ -200,8 +200,8 @@ public final class SecurityTestUtils {
     SecurityTestUtils.ignoredExceptions = expectedExceptions;
   }
 
-  protected static int createCacheServer(final Properties authProps, final Properties javaProps, final int dsPort, final String locatorString, final int serverPort, final int expectedResult) {
-    return createCacheServer(authProps, javaProps, dsPort, locatorString, serverPort, false, expectedResult);
+  protected static int createCacheServer(final Properties authProps, final Properties javaProps, final int locatorPort, final String locatorString, final int serverPort, final int expectedResult) {
+    return createCacheServer(authProps, javaProps, locatorPort, locatorString, serverPort, false, expectedResult);
   }
 
   protected static int createCacheServer(Properties authProps, final Properties javaProps, final int locatorPort, final String locatorString, final int serverPort, final boolean setupDynamicRegionFactory, final int expectedResult) {
@@ -216,6 +216,7 @@ public final class SecurityTestUtils {
       authProps.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
     }
     authProps.setProperty(SECURITY_LOG_LEVEL_NAME, "finest");
+
     getLogWriter().info("Set the server properties to: " + authProps);
     getLogWriter().info("Set the java properties to: " + javaProps);
 
@@ -225,54 +226,53 @@ public final class SecurityTestUtils {
       if (expectedResult != NO_EXCEPTION) {
         fail("Expected a security exception when starting peer");
       }
-    }
-    catch (AuthenticationRequiredException ex) {
+
+    } catch (AuthenticationRequiredException ex) {
       if (expectedResult == AUTHREQ_EXCEPTION) {
         getLogWriter().info("Got expected exception when starting peer: " + ex);
         return 0;
-      }
-      else {
+      } else {
         fail("Got unexpected exception when starting peer", ex);
       }
-    }
-    catch (AuthenticationFailedException ex) {
+
+    } catch (AuthenticationFailedException ex) {
       if (expectedResult == AUTHFAIL_EXCEPTION) {
         getLogWriter().info("Got expected exception when starting peer: " + ex);
         return 0;
-      }
-      else {
+      } else {
         fail("Got unexpected exception when starting peer", ex);
       }
-    }
-    catch (Exception ex) {
+
+    } catch (Exception ex) {
       fail("Got unexpected exception when starting peer", ex);
     }
 
     if (setupDynamicRegionFactory) {
       initDynamicRegionFactory();
     }
+
     tmpInstance.openCache();
+
     AttributesFactory factory = new AttributesFactory();
     factory.setScope(Scope.DISTRIBUTED_ACK);
     factory.setDataPolicy(DataPolicy.REPLICATE);
+
     RegionAttributes attrs = factory.create();
+
     cache.createRegion(REGION_NAME, attrs);
-    int port;
-    if (serverPort <= 0) {
-      port = 0;
-    }
-    else {
-      port = serverPort;
-    }
+
+    int port = serverPort <= 0 ? 0 : serverPort;
+
     CacheServer server1 = cache.addCacheServer();
+
     server1.setPort(port);
     server1.setNotifyBySubscription(true);
     try {
       server1.start();
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       fail("Got unexpected exception when starting CacheServer", ex);
     }
+
     return server1.getPort();
   }
 
@@ -292,23 +292,14 @@ public final class SecurityTestUtils {
   }
 
   // 4
-  protected static void createCacheClient(final String authInitModule,
-                                          final Properties authProps, final Properties javaProps, final int[] ports,
-                                          final int numConnections, final boolean setupDynamicRegionFactory,
-                                          final boolean multiUserMode, final int expectedResult) {
-    createCacheClient(authInitModule, authProps, javaProps, ports,
-        numConnections, setupDynamicRegionFactory, multiUserMode, Boolean.TRUE,
-        expectedResult);
+  protected static void createCacheClient(final String authInitModule, final Properties authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean setupDynamicRegionFactory, final boolean multiUserMode, final int expectedResult) {
+    createCacheClient(authInitModule, authProps, javaProps, ports, numConnections, setupDynamicRegionFactory, multiUserMode, true, expectedResult);
   }
 
   // 5
-  protected static void createCacheClient(final String authInitModule,
-                                          Properties authProps, final Properties javaProps, int[] ports,
-                                          final int numConnections, final boolean setupDynamicRegionFactory,
-                                          final boolean multiUserMode, final boolean subscriptionEnabled,
-                                          final int expectedResult) {
+  protected static void createCacheClient(final String authInitModule, Properties authProps, final Properties javaProps, int[] ports, final int numConnections, final boolean setupDynamicRegionFactory, final boolean multiUserMode, final boolean subscriptionEnabled, final int expectedResult) {
+    multiUserAuthMode = multiUserMode;
 
-    multiUserAuthMode = Boolean.valueOf(multiUserMode);
     if (authProps == null) {
       authProps = new Properties();
     }
@@ -317,13 +308,14 @@ public final class SecurityTestUtils {
     authProps.setProperty(SECURITY_LOG_LEVEL_NAME, "finest");
     // TODO (ashetkar) Add " && (!multiUserAuthMode)" below.
     if (authInitModule != null) {
-      authProps.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME,
-          authInitModule);
+      authProps.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
     }
 
     SecurityTestUtils tmpInstance = new SecurityTestUtils("temp");
     tmpInstance.createSystem(authProps, javaProps);
+
     AttributesFactory factory = new AttributesFactory();
+
     int[] portsI = new int[ports.length];
     for(int z=0;z<ports.length;z++) {
       portsI[z] = ports[z];
@@ -332,21 +324,20 @@ public final class SecurityTestUtils {
     try {
       PoolFactory poolFactory = PoolManager.createFactory();
       poolFactory.setRetryAttempts(200);
+
       if (multiUserAuthMode) {
         poolFactory.setMultiuserAuthentication(multiUserAuthMode);
-        // [sumedh] Why is this false here only to be overridden in
-        // ClientServerTestCase.configureConnectionPoolWithNameAndFactory below?
-        // Actually setting it to false causes MultiuserAPIDUnitTest to fail.
+        // [sumedh] Why is this false here only to be overridden in ClientServerTestCase.configureConnectionPoolWithNameAndFactory below?
+        // Actually setting it to false causes MultiUserAPIDUnitTest to fail.
         //poolFactory.setSubscriptionEnabled(false);
       }
-      pool = configureConnectionPoolWithNameAndFactory(factory,
-          getIPLiteral(), portsI, subscriptionEnabled, 0,
-          numConnections, null, null,
-          poolFactory);
+
+      pool = configureConnectionPoolWithNameAndFactory(factory, getIPLiteral(), portsI, subscriptionEnabled, 0, numConnections, null, null, poolFactory);
 
       if (setupDynamicRegionFactory) {
         initClientDynamicRegionFactory(pool.getName());
       }
+
       tmpInstance.openCache();
       try {
         getLogWriter().info("multi-user mode " + multiUserAuthMode);
@@ -354,11 +345,11 @@ public final class SecurityTestUtils {
         if (!multiUserAuthMode) {
           fail("Expected a UnsupportedOperationException but got none in single-user mode");
         }
+
       } catch (UnsupportedOperationException uoe) {
         if (!multiUserAuthMode) {
           getLogWriter().info("Got expected UnsupportedOperationException in single-user mode");
-        }
-        else {
+        } else {
           fail("Got unexpected exception in multi-user mode ", uoe);
         }
       }
@@ -367,96 +358,82 @@ public final class SecurityTestUtils {
       if (multiUserAuthMode) {
         factory.setDataPolicy(DataPolicy.EMPTY);
       }
+
       RegionAttributes attrs = factory.create();
+
       cache.createRegion(REGION_NAME, attrs);
 
-      if (expectedResult != NO_EXCEPTION
-          && expectedResult != NOFORCE_AUTHREQ_EXCEPTION) {
+      if (expectedResult != NO_EXCEPTION && expectedResult != NOFORCE_AUTHREQ_EXCEPTION) {
         if (!multiUserAuthMode) {
           fail("Expected an exception when starting client");
         }
       }
-    }
-    catch (AuthenticationRequiredException ex) {
-      if (expectedResult == AUTHREQ_EXCEPTION
-          || expectedResult == NOFORCE_AUTHREQ_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+
+    } catch (AuthenticationRequiredException ex) {
+      if (expectedResult == AUTHREQ_EXCEPTION || expectedResult == NOFORCE_AUTHREQ_EXCEPTION) {
+        getLogWriter().info( "Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (AuthenticationFailedException ex) {
+
+    } catch (AuthenticationFailedException ex) {
       if (expectedResult == AUTHFAIL_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+        getLogWriter().info("Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (ServerRefusedConnectionException ex) {
+
+    } catch (ServerRefusedConnectionException ex) {
       if (expectedResult == CONNREFUSED_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+        getLogWriter().info("Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (Exception ex) {
+
+    } catch (Exception ex) {
       fail("Got unexpected exception when starting client", ex);
     }
   }
 
-  protected static void createCacheClientForMultiUserMode(final int numOfUsers,
-                                                          final String authInitModule, final Properties[] authProps, final Properties javaProps,
-                                                          final int[] ports, final int numConnections,
-                                                          final boolean setupDynamicRegionFactory, final int expectedResult) {
-    createCacheClientForMultiUserMode(numOfUsers, authInitModule, authProps,
-        javaProps, ports, numConnections, setupDynamicRegionFactory, null,
-        expectedResult);
+  protected static void createCacheClientForMultiUserMode(final int numOfUsers, final String authInitModule, final Properties[] authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean setupDynamicRegionFactory, final int expectedResult) {
+    createCacheClientForMultiUserMode(numOfUsers, authInitModule, authProps, javaProps, ports, numConnections, setupDynamicRegionFactory, null, expectedResult);
   }
 
-  protected static void createCacheClientForMultiUserMode(final int numOfUsers,
-                                                          final String authInitModule, final Properties[] authProps, final Properties javaProps,
-                                                          final int[] ports, final int numConnections,
-                                                          final boolean setupDynamicRegionFactory, final String durableClientId,
-                                                          final int expectedResult) {
-
+  protected static void createCacheClientForMultiUserMode(final int numOfUsers, final String authInitModule, final Properties[] authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean setupDynamicRegionFactory, final String durableClientId, final int expectedResult) {
     if (numOfUsers < 1) {
       fail("Number of users cannot be less than one");
     }
+
     multiUserAuthMode = true;
+
     if (numOfUsers != authProps.length) {
-      fail("Number of authProps provided does not match with numOfUsers specified, "
-          + authProps.length);
+      fail("Number of authProps provided does not match with numOfUsers specified, " + authProps.length);
     }
+
     if (authProps[0] == null) {
       authProps[0] = new Properties();
     }
     authProps[0].setProperty(MCAST_PORT_NAME, "0");
     authProps[0].setProperty(LOCATORS_NAME, "");
-    authProps[0].setProperty(SECURITY_LOG_LEVEL_NAME,
-        "finest");
+    authProps[0].setProperty(SECURITY_LOG_LEVEL_NAME, "finest");
+
     Properties props = new Properties();
+
     if (authInitModule != null) {
-      authProps[0].setProperty(
-          SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
-      props.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME,
-          authInitModule);
+      authProps[0].setProperty(SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
+      props.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
     }
+
     if (durableClientId != null) {
-      props.setProperty(DURABLE_CLIENT_ID_NAME,
-          durableClientId);
-      props.setProperty(DURABLE_CLIENT_TIMEOUT_NAME, String
-          .valueOf(DEFAULT_DURABLE_CLIENT_TIMEOUT));
+      props.setProperty(DURABLE_CLIENT_ID_NAME, durableClientId);
+      props.setProperty(DURABLE_CLIENT_TIMEOUT_NAME, String.valueOf(DEFAULT_DURABLE_CLIENT_TIMEOUT));
     }
 
     SecurityTestUtils tmpInstance = new SecurityTestUtils("temp");
     tmpInstance.createSystem(props, javaProps);
+
     AttributesFactory factory = new AttributesFactory();
+
     int[] portsI = new int[ports.length];
     for(int z=0;z<ports.length;z++) {
       portsI[z] = ports[z];
@@ -464,18 +441,18 @@ public final class SecurityTestUtils {
    
     try {
       tmpInstance.openCache();
+
       PoolFactory poolFactory = PoolManager.createFactory();
       poolFactory.setRetryAttempts(200);
       poolFactory.setMultiuserAuthentication(multiUserAuthMode);
       poolFactory.setSubscriptionEnabled(true);
-      pool = configureConnectionPoolWithNameAndFactory(factory,
-          getIPLiteral(), portsI, true, 1,
-          numConnections, null, null,
-          poolFactory);
+
+      pool = configureConnectionPoolWithNameAndFactory(factory, getIPLiteral(), portsI, true, 1, numConnections, null, null, poolFactory);
 
       if (setupDynamicRegionFactory) {
         initClientDynamicRegionFactory(pool.getName());
       }
+
       proxyCaches = new ProxyCache[numOfUsers];
       for (int i=0; i<numOfUsers; i++) {
         proxyCaches[i] = (ProxyCache)((PoolImpl) pool).createAuthenticatedCacheView(authProps[i]);
@@ -484,44 +461,37 @@ public final class SecurityTestUtils {
       factory.setScope(Scope.LOCAL);
       factory.setDataPolicy(DataPolicy.EMPTY);
       RegionAttributes attrs = factory.create();
+
       cache.createRegion(REGION_NAME, attrs);
 
-      if (expectedResult != NO_EXCEPTION
-          && expectedResult != NOFORCE_AUTHREQ_EXCEPTION) {
+      if (expectedResult != NO_EXCEPTION && expectedResult != NOFORCE_AUTHREQ_EXCEPTION) {
         if (!multiUserAuthMode) {
           fail("Expected an exception when starting client");
         }
       }
-    }
-    catch (AuthenticationRequiredException ex) {
-      if (expectedResult == AUTHREQ_EXCEPTION
-          || expectedResult == NOFORCE_AUTHREQ_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+
+    } catch (AuthenticationRequiredException ex) {
+      if (expectedResult == AUTHREQ_EXCEPTION || expectedResult == NOFORCE_AUTHREQ_EXCEPTION) {
+        getLogWriter().info("Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (AuthenticationFailedException ex) {
+
+    } catch (AuthenticationFailedException ex) {
       if (expectedResult == AUTHFAIL_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+        getLogWriter().info("Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (ServerRefusedConnectionException ex) {
+
+    } catch (ServerRefusedConnectionException ex) {
       if (expectedResult == CONNREFUSED_EXCEPTION) {
-        getLogWriter().info(
-            "Got expected exception when starting client: " + ex);
-      }
-      else {
+        getLogWriter().info("Got expected exception when starting client: " + ex);
+      } else {
         fail("Got unexpected exception when starting client", ex);
       }
-    }
-    catch (Exception ex) {
+
+    } catch (Exception ex) {
       fail("Got unexpected exception when starting client", ex);
     }
   }
@@ -529,45 +499,46 @@ public final class SecurityTestUtils {
   protected static void createProxyCache(final int[] userIndices, final Properties[] props) {
     int j = 0;
     for (int i : userIndices) {
-      proxyCaches[i] = (ProxyCache)((PoolImpl) pool)
-          .createAuthenticatedCacheView(props[j]);
+      proxyCaches[i] = (ProxyCache)((PoolImpl) pool).createAuthenticatedCacheView(props[j]);
       j++;
     }
   }
 
-  protected static void startLocator(final String name, Integer port, final Object extraProps,
-                                     final Object javaProps, final String[] expectedExceptions) {
-    File logFile = new File(name + "-locator" + port.intValue() + ".log");
+  protected static void startLocator(final String name, int port, final Properties extraProps, final Properties javaProps, final String[] expectedExceptions) {
     try {
       Properties authProps = new Properties();
+
       if (extraProps != null) {
-        authProps.putAll((Properties)extraProps);
+        authProps.putAll(extraProps);
       }
       authProps.setProperty(MCAST_PORT_NAME, "0");
-      authProps.setProperty(LOCATORS_NAME, 
-                            getIPLiteral() + "[" + port + "]");
+      authProps.setProperty(LOCATORS_NAME, getIPLiteral() + "[" + port + "]");
       authProps.setProperty(ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
+
       clearStaticSSLContext();
-      setJavaProps((Properties)javaProps);
+
+      setJavaProps(javaProps);
+
+      File logFile = new File(name + "-locator" + port + ".log");
       FileOutputStream logOut = new FileOutputStream(logFile);
       PrintStream logStream = new PrintStream(logOut);
       addIgnoredExceptions(expectedExceptions);
       logStream.flush();
-      locator = Locator.startLocatorAndDS(port.intValue(), logFile, null,
-          authProps);
-    }
-    catch (IOException ex) {
-      fail("While starting locator on port " + port.intValue(), ex);
+
+      locator = Locator.startLocatorAndDS(port, logFile, null, authProps);
+
+    } catch (IOException ex) {
+      fail("While starting locator on port " + port, ex);
     }
   }
 
-  protected static void stopLocator(final Integer port, final String[] expectedExceptions) {
+  protected static void stopLocator(final int port, final String[] expectedExceptions) {
     try {
       locator.stop();
       removeExpectedExceptions(expectedExceptions);
-    }
-    catch (Exception ex) {
-      fail("While stopping locator on port " + port.intValue(), ex);
+
+    } catch (Exception ex) {
+      fail("While stopping locator on port " + port, ex);
     }
   }
 
@@ -575,24 +546,22 @@ public final class SecurityTestUtils {
     return cache;
   }
 
-  // Some useful region methods used by security tests
-
-  protected static void waitForCondition(final Callable cond) {
-    waitForCondition(cond, 100, 120);
+  protected static void waitForCondition(final Callable<Boolean> condition) {
+    waitForCondition(condition, 100, 120);
   }
 
-  protected static void waitForCondition(final Callable cond, final int sleepMillis,
-                                         final int numTries) {
+  protected static void waitForCondition(final Callable<Boolean> condition, final int sleepMillis, final int numTries) {
     WaitCriterion ev = new WaitCriterion() {
+      @Override
       public boolean done() {
         try {
-          return ((Boolean)cond.call()).booleanValue();
-        }
-        catch (Exception e) {
+          return condition.call();
+        } catch (Exception e) {
           fail("Unexpected exception", e);
         }
         return false; // NOTREACHED
       }
+      @Override
       public String description() {
         return null;
       }
@@ -611,197 +580,184 @@ public final class SecurityTestUtils {
     }
   }
 
-
   protected static void doPutAllP() throws Exception {
     Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
-    Map map = new LinkedHashMap();
+
+    Map<String, Employee> map = new LinkedHashMap<>();
     map.put("1010L", new Employee(1010L, "John", "Doe"));
+
     region.putAll(map);
   }
   
-  protected static void doPuts(final Integer num) {
-    doPutsP(num, new Integer(NO_EXCEPTION), false);
+  protected static void doPuts(final int num) {
+    doPutsP(num, NO_EXCEPTION, false);
   }
 
-  protected static void doPuts(final Integer num, final Integer expectedResult) {
+  protected static void doPuts(final int num, final int expectedResult) {
     doPutsP(num, expectedResult, false);
   }
 
-  protected static void doMultiUserPuts(final Integer num, final Integer numOfUsers,
-                                        final Integer[] expectedResults) {
+  protected static void doMultiUserPuts(final int num, final int numOfUsers, final int[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserPuts(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserPuts(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("PUT: MultiUser# " + i);
-      doPutsP(num, Integer.valueOf(i), expectedResults[i], false);
+      doPutsP(num, i, expectedResults[i], false);
     }
   }
 
-  protected static void doGets(final Integer num) {
-    doGetsP(num, new Integer(NO_EXCEPTION), false);
+  protected static void doGets(final int num) {
+    doGetsP(num, NO_EXCEPTION, false);
   }
 
-  protected static void doGets(final Integer num, final Integer expectedResult) {
+  protected static void doGets(final int num, final int expectedResult) {
     doGetsP(num, expectedResult, false);
   }
 
-  protected static void doMultiUserGetAll(final Integer numOfUsers, final Integer[] expectedResults) {
+  protected static void doMultiUserGetAll(final int numOfUsers, final int[] expectedResults) {
     doMultiUserGetAll(numOfUsers, expectedResults, false);
   }
 
-  protected static void doMultiUserGetAll(final Integer numOfUsers,
-                                          final Integer[] expectedResults, final boolean useTX) {
+  protected static void doMultiUserGetAll(final int numOfUsers, final int[] expectedResults, final boolean useTX) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserGetAll(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserGetAll(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
-      getLogWriter().info(
-          "GET_ALL" + (useTX ? " in TX" : "") + ": MultiUser# " + i);
-      doGetAllP(Integer.valueOf(i), expectedResults[i], useTX);
+      getLogWriter().info("GET_ALL" + (useTX ? " in TX" : "") + ": MultiUser# " + i);
+      doGetAllP(i, expectedResults[i], useTX);
     }
   }
 
-  protected static void doMultiUserGets(final Integer num, final Integer numOfUsers,
-                                        final Integer[] expectedResults) {
+  protected static void doMultiUserGets(final int num, final int numOfUsers, final int[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserGets(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserGets(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("GET: MultiUser# " + i);
-      doGetsP(num, Integer.valueOf(i), expectedResults[i], false);
+      doGetsP(num, i, expectedResults[i], false);
     }
   }
 
-  protected static void doMultiUserRegionDestroys(final Integer numOfUsers,
-                                                  final Integer[] expectedResults) {
+  protected static void doMultiUserRegionDestroys(final int numOfUsers, final int[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserRegionDestroys(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserRegionDestroys(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = numOfUsers-1; i >= 0; i--) {
       getLogWriter().info("DESTROY: MultiUser# " + i);
-      doRegionDestroysP(Integer.valueOf(i), expectedResults[i]);
+      doRegionDestroysP(i, expectedResults[i]);
     }
   }
 
-  protected static void doMultiUserDestroys(final Integer num, final Integer numOfUsers,
-                                            final Integer[] expectedResults) {
+  protected static void doMultiUserDestroys(final int num, final int numOfUsers, final int[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserDestroys(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserDestroys(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("DESTROY: MultiUser# " + i);
-      doDestroysP(num, Integer.valueOf(i), expectedResults[i], false);
+      doDestroysP(num, i, expectedResults[i]);
     }
   }
 
-  protected static void doMultiUserInvalidates(final Integer num, final Integer numOfUsers,
-                                               final Integer[] expectedResults) {
+  protected static void doMultiUserInvalidates(final int num, final int numOfUsers, final int[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserInvalidates(): numOfUsers = " + numOfUsers
-          + ", but expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserInvalidates(): numOfUsers = " + numOfUsers + ", but expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("INVALIDATE: MultiUser# " + i);
-      doInvalidatesP(num, Integer.valueOf(i), expectedResults[i], false);
+      doInvalidatesP(num, i, expectedResults[i]);
     }
   }
 
-  protected static void doMultiUserContainsKeys(final Integer num, final Integer numOfUsers,
-                                                final Integer[] expectedResults, final Boolean[] results) {
+  protected static void doMultiUserContainsKeys(final int num, final int numOfUsers, final int[] expectedResults, final boolean[] results) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
-          + ", but #expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers + ", but #expected results " + expectedResults.length);
     }
+
     if (numOfUsers != results.length) {
-      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
-          + ", but #expected output " + results.length);
+      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers + ", but #expected output " + results.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("CONTAINS_KEY: MultiUser# " + i);
-      doContainsKeysP(num, Integer.valueOf(i), expectedResults[i], false, results[i]);
+      doContainsKeysP(num, i, expectedResults[i], results[i]);
     }
   }
 
-  protected static void doMultiUserQueries(final Integer numOfUsers,
-                                           final Integer[] expectedResults, final Integer valueSize) {
+  protected static void doMultiUserQueries(final int numOfUsers, final int[] expectedResults, final int valueSize) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserQueries(): numOfUsers = " + numOfUsers
-          + ", but #expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserQueries(): numOfUsers = " + numOfUsers + ", but #expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("QUERY: MultiUser# " + i);
-      doQueriesP(Integer.valueOf(i), expectedResults[i], valueSize);
+      doQueriesP(i, expectedResults[i], valueSize);
     }
   }
 
-  protected static void doMultiUserFE(final Integer numOfUsers, final Function function,
-                                      final Integer[] expectedResults, final Object[] results, final Boolean isFailoverCase) {
+  protected static void doMultiUserFE(final int numOfUsers, final Function function, final int[] expectedResults, final boolean isFailOverCase) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
-          + ", but #expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers + ", but #expected results " + expectedResults.length);
     }
-    if (numOfUsers != results.length) {
-      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
-          + ", but #expected output " + results.length);
-    }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("FunctionExecute:onRegion MultiUser# " + i);
-      doFunctionExecuteP(Integer.valueOf(i), function, expectedResults[i], results[i], "region");
+      doFunctionExecuteP(i, function, expectedResults[i], "region");
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("FunctionExecute:onServer MultiUser# " + i);
-      doFunctionExecuteP(Integer.valueOf(i), function, expectedResults[i], results[i], "server");
+      doFunctionExecuteP(i, function, expectedResults[i], "server");
     }
-    if (!isFailoverCase) {
+
+    if (!isFailOverCase) {
       for (int i = 0; i < numOfUsers; i++) {
         getLogWriter().info("FunctionExecute:onServers MultiUser# " + i);
-        doFunctionExecuteP(Integer.valueOf(i), function, expectedResults[i],
-            results[i], "servers");
+        doFunctionExecuteP(i, function, expectedResults[i], "servers");
       }
     }
   }
 
-  protected static void doMultiUserQueryExecute(final Integer numOfUsers,
-                                                final Integer[] expectedResults, final Integer result) {
+  protected static void doMultiUserQueryExecute(final int numOfUsers, final int[] expectedResults, final int result) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
-          + ", but #expected results " + expectedResults.length);
+      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers + ", but #expected results " + expectedResults.length);
     }
+
     for (int i = 0; i < numOfUsers; i++) {
       getLogWriter().info("QueryExecute: MultiUser# " + i);
-      doQueryExecuteP(Integer.valueOf(i), expectedResults[i], result);
+      doQueryExecuteP(i, expectedResults[i], result);
     }
   }
 
-  protected static void doLocalGets(final Integer num) {
-    doLocalGetsP(num.intValue(), false);
+  protected static void doLocalGets(final int num) {
+    doLocalGetsP(num, false);
   }
 
-  protected static void doNPuts(final Integer num) {
-    doPutsP(num, new Integer(NO_EXCEPTION), true);
+  protected static void doNPuts(final int num) {
+    doPutsP(num, NO_EXCEPTION, true);
   }
 
-  protected static void doNPuts(final Integer num, final Integer expectedResult) {
+  protected static void doNPuts(final int num, final int expectedResult) {
     doPutsP(num, expectedResult, true);
   }
 
-  protected static void doNGets(final Integer num) {
-    doGetsP(num, new Integer(NO_EXCEPTION), true);
+  protected static void doNGets(final int num) {
+    doGetsP(num, NO_EXCEPTION, true);
   }
 
-  protected static void doNGets(final Integer num, final Integer expectedResult) {
+  protected static void doNGets(final int num, final int expectedResult) {
     doGetsP(num, expectedResult, true);
   }
 
-  protected static void doNLocalGets(final Integer num) {
-    doLocalGetsP(num.intValue(), true);
+  protected static void doNLocalGets(final int num) {
+    doLocalGetsP(num, true);
   }
 
   protected static void doSimpleGet(final String expectedResult) {
@@ -811,14 +767,12 @@ public final class SecurityTestUtils {
         if (expectedResult != null && expectedResult.endsWith("Exception")) {
           fail("Expected " + expectedResult + " but found none in doSimpleGet()");
         }
+
       } catch (Exception e) {
         if (!e.getClass().getSimpleName().endsWith(expectedResult)) {
-          fail("Expected " + expectedResult + " but found "
-              + e.getClass().getSimpleName() + " in doSimpleGet()");
+          fail("Expected " + expectedResult + " but found " + e.getClass().getSimpleName() + " in doSimpleGet()");
         } else {
-          getLogWriter().fine(
-              "Got expected " + e.getClass().getSimpleName()
-                  + " in doSimpleGet()");
+          getLogWriter().fine("Got expected " + e.getClass().getSimpleName() + " in doSimpleGet()");
         }
       }
     }
@@ -831,75 +785,75 @@ public final class SecurityTestUtils {
         if (expectedResult != null && expectedResult.endsWith("Exception")) {
           fail("Expected " + expectedResult + " but found none in doSimplePut()");
         }
+
       } catch (Exception e) {
         if (!e.getClass().getSimpleName().endsWith(expectedResult)) {
-          fail("Expected " + expectedResult + " but found "
-              + e.getClass().getSimpleName() + " in doSimplePut()", e);
+          fail("Expected " + expectedResult + " but found " + e.getClass().getSimpleName() + " in doSimplePut()", e);
         } else {
-          getLogWriter().fine(
-              "Got expected " + e.getClass().getSimpleName()
-                  + " in doSimplePut()");
+          getLogWriter().fine("Got expected " + e.getClass().getSimpleName() + " in doSimplePut()");
         }
       }
     }
   }
 
-  // This is a hack using reflection to clear the static objects in JSSE since
-  // otherwise changing the javax.* store related properties has no effect
-  // during the course of running dunit suite unless the VMs are restarted.
+  /**
+   * This is a hack using reflection to clear the static objects in JSSE since
+   * otherwise changing the javax.* store related properties has no effect
+   * during the course of running dunit suite unless the VMs are restarted.
+   */
   protected static void clearStaticSSLContext() {
     ServerSocketFactory defaultServerFact = SSLServerSocketFactory.getDefault();
-    // Get the class of this and use reflection to blank out any static
-    // SSLContext objects inside
-    Map contextMap = getSSLFields(defaultServerFact, new Class[] {
-        SSLContext.class, SSLContextSpi.class });
+
+    // Get the class of this and use reflection to blank out any static SSLContext objects inside
+    Map<Field, Object> contextMap = getSSLFields(defaultServerFact, new Class[] { SSLContext.class, SSLContextSpi.class });
     makeNullSSLFields(defaultServerFact, contextMap);
-    Iterator contextObjsIter = contextMap.values().iterator();
-    while (contextObjsIter.hasNext()) {
+
+    for (Iterator contextObjsIter = contextMap.values().iterator(); contextObjsIter.hasNext();) {
       Object contextObj = contextObjsIter.next();
-      Map contextObjsMap = getSSLFields(contextObj, new Class[] {
-          TrustManager.class, KeyManager.class, TrustManager[].class,
-          KeyManager[].class });
+      Map<Field, Object> contextObjsMap = getSSLFields(contextObj, new Class[] { TrustManager.class, KeyManager.class, TrustManager[].class, KeyManager[].class });
       makeNullSSLFields(contextObj, contextObjsMap);
     }
+
     makeNullStaticField(SSLServerSocketFactory.class);
 
     // Do the same for normal SSL socket factory
     SocketFactory defaultFact = SSLSocketFactory.getDefault();
-    contextMap = getSSLFields(defaultFact, new Class[] { SSLContext.class,
-        SSLContextSpi.class });
+    contextMap = getSSLFields(defaultFact, new Class[] { SSLContext.class, SSLContextSpi.class });
     makeNullSSLFields(defaultFact, contextMap);
-    contextObjsIter = contextMap.values().iterator();
-    while (contextObjsIter.hasNext()) {
+
+    for (Iterator contextObjsIter = contextMap.values().iterator(); contextObjsIter.hasNext();) {
       Object contextObj = contextObjsIter.next();
-      Map contextObjsMap = getSSLFields(contextObj, new Class[] {
-          TrustManager.class, KeyManager.class, TrustManager[].class,
-          KeyManager[].class });
+      Map<Field, Object> contextObjsMap = getSSLFields(contextObj, new Class[] { TrustManager.class, KeyManager.class, TrustManager[].class, KeyManager[].class });
       makeNullSSLFields(contextObj, contextObjsMap);
     }
+
     makeNullStaticField(SSLSocketFactory.class);
     makeNullStaticField(SSLContext.class);
   }
 
   protected static void closeCache() {
     removeExpectedExceptions(ignoredExceptions);
+
     if (cache != null && !cache.isClosed()) {
       DistributedSystem sys = cache.getDistributedSystem();
       cache.close();
       sys.disconnect();
       cache = null;
     }
+
     DistributedTestCase.disconnectFromDS();
   }
 
   protected static void closeCache(final Boolean keepAlive) {
     removeExpectedExceptions(ignoredExceptions);
+
     if (cache != null && !cache.isClosed()) {
       DistributedSystem sys = cache.getDistributedSystem();
       cache.close(keepAlive);
       sys.disconnect();
       cache = null;
     }
+
     DistributedTestCase.disconnectFromDS();
   }
 
@@ -911,8 +865,7 @@ public final class SecurityTestUtils {
 
   private static void addJavaProperties(final Properties javaProps) {
     if (javaProps != null) {
-      Iterator iter = javaProps.entrySet().iterator();
-      while (iter.hasNext()) {
+      for (Iterator iter = javaProps.entrySet().iterator(); iter.hasNext();) {
         Map.Entry entry = (Map.Entry)iter.next();
         System.setProperty((String)entry.getKey(), (String)entry.getValue());
       }
@@ -922,178 +875,166 @@ public final class SecurityTestUtils {
   private static void removeJavaProperties(final Properties javaProps) {
     if (javaProps != null) {
       Properties props = System.getProperties();
-      Iterator iter = javaProps.keySet().iterator();
-      while (iter.hasNext()) {
+
+      for (Iterator iter = javaProps.keySet().iterator(); iter.hasNext();) {
         props.remove(iter.next());
       }
+
       System.setProperties(props);
     }
   }
 
-  private static void doPutsP(final Integer num, final Integer expectedResult,
-                              final boolean newVals) {
-    doPutsP(num, Integer.valueOf(0), expectedResult, newVals);
+  private static void doPutsP(final int num, final int expectedResult, final boolean newVals) {
+    doPutsP(num, 0, expectedResult, newVals);
   }
 
-  private static void doPutsP(final Integer num, final Integer multiUserIndex,
-                              final Integer expectedResult, final boolean newVals) {
-    assertTrue(num.intValue() <= KEYS.length);
+  private static void doPutsP(final int num, final int multiUserIndex, final int expectedResult, final boolean newVals) {
+    assertTrue(num <= KEYS.length);
     Region region = null;
+
     try {
       if (multiUserAuthMode) {
         region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
         regionRef = region;
-      }
-      else {
+      } else {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing puts: " + ex);
-      }
-      else {
+      } else {
         fail("Got unexpected exception when doing puts", ex);
       }
     }
-    for (int index = 0; index < num.intValue(); ++index) {
+
+    for (int index = 0; index < num; ++index) {
       try {
         if (newVals) {
           region.put(KEYS[index], NVALUES[index]);
-        }
-        else {
+        } else {
           region.put(KEYS[index], VALUES[index]);
         }
-        if (expectedResult.intValue() != NO_EXCEPTION) {
+        if (expectedResult != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing puts");
         }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-          getLogWriter().info(
-                  "Got expected NoAvailableServers when doing puts: "
-                          + ex.getCause());
+
+      } catch(NoAvailableServersException ex) {
+        if(expectedResult == NO_AVAILABLE_SERVERS) {
+          getLogWriter().info("Got expected NoAvailableServers when doing puts: " + ex.getCause());
           continue;
-        }
-        else {
+        } else {
           fail("Got unexpected exception when doing puts", ex);
         }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-                && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
-                  "Got expected NotAuthorizedException when doing puts: "
-                          + ex.getCause());
+
+      } catch (ServerConnectivityException ex) {
+        if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+          getLogWriter().info("Got expected NotAuthorizedException when doing puts: " + ex.getCause());
           continue;
         }
-        if ((expectedResult.intValue() == AUTHREQ_EXCEPTION)
-                && (ex.getCause() instanceof AuthenticationRequiredException)) {
-          getLogWriter().info(
-                  "Got expected AuthenticationRequiredException when doing puts: "
-                          + ex.getCause());
+
+        if ((expectedResult == AUTHREQ_EXCEPTION) && (ex.getCause() instanceof AuthenticationRequiredException)) {
+          getLogWriter().info("Got expected AuthenticationRequiredException when doing puts: " + ex.getCause());
           continue;
         }
-        if ((expectedResult.intValue() == AUTHFAIL_EXCEPTION)
-                && (ex.getCause() instanceof AuthenticationFailedException)) {
-          getLogWriter().info(
-                  "Got expected AuthenticationFailedException when doing puts: "
-                          + ex.getCause());
+
+        if ((expectedResult == AUTHFAIL_EXCEPTION) && (ex.getCause() instanceof AuthenticationFailedException)) {
+          getLogWriter().info("Got expected AuthenticationFailedException when doing puts: " + ex.getCause());
           continue;
-        }
-        else if (expectedResult.intValue() == OTHER_EXCEPTION) {
+        } else if (expectedResult == OTHER_EXCEPTION) {
           getLogWriter().info("Got expected exception when doing puts: " + ex);
-        }
-        else {
+        } else {
           fail("Got unexpected exception when doing puts", ex);
         }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == OTHER_EXCEPTION) {
+
+      } catch (Exception ex) {
+        if (expectedResult == OTHER_EXCEPTION) {
           getLogWriter().info("Got expected exception when doing puts: " + ex);
-        }
-        else {
+        } else {
           fail("Got unexpected exception when doing puts", ex);
         }
       }
     }
   }
 
-  private static HashMap getSSLFields(final Object obj, final Class[] classes) {
-    HashMap resultFields = new HashMap();
+  private static Map<Field, Object> getSSLFields(final Object obj, final Class[] classes) {
+    Map<Field, Object> resultFields = new HashMap<>();
     Field[] fields = obj.getClass().getDeclaredFields();
+
     for (int index = 0; index < fields.length; ++index) {
       Field field = fields[index];
+
       try {
         field.setAccessible(true);
         Object fieldObj = field.get(obj);
         boolean isInstance = false;
+
         for (int classIndex = 0; classIndex < classes.length; ++classIndex) {
           if ((isInstance = classes[classIndex].isInstance(fieldObj)) == true) {
             break;
           }
         }
+
         if (isInstance) {
           resultFields.put(field, fieldObj);
         }
-      }
-      catch (IllegalAccessException ex) {
+
+      } catch (IllegalAccessException ex) {
         getLogWriter().warning("Exception while getting SSL fields.", ex);
       }
     }
     return resultFields;
   }
 
-  private static void makeNullSSLFields(final Object obj, final Map fieldMap) {
-    Iterator fieldIter = fieldMap.entrySet().iterator();
-    while (fieldIter.hasNext()) {
-      Map.Entry entry = (Map.Entry)fieldIter.next();
-      Field field = (Field)entry.getKey();
+  private static void makeNullSSLFields(final Object obj, final Map<Field, Object> fieldMap) {
+    for (Iterator<Map.Entry<Field, Object>> fieldIter = fieldMap.entrySet().iterator(); fieldIter.hasNext();) {
+      Map.Entry<Field, Object> entry = fieldIter.next();
+      Field field = entry.getKey();
       Object fieldObj = entry.getValue();
+
       try {
         field.setAccessible(true);
         makeNullStaticField(fieldObj.getClass());
         field.set(obj, null);
         assertNull(field.get(obj));
-      }
-      catch (IllegalAccessException ex) {
+
+      } catch (IllegalAccessException ex) {
         getLogWriter().warning("Exception while clearing SSL fields.", ex);
       }
     }
   }
 
-  // Deal with javax SSL properties
-  private static void makeNullStaticField(final Class cls) {
-    Field[] fields = cls.getDeclaredFields();
+  /**
+   * Deal with javax SSL properties
+   */
+  private static void makeNullStaticField(final Class sslClass) {
+    Field[] fields = sslClass.getDeclaredFields();
     for (int index = 0; index < fields.length; ++index) {
       Field field = fields[index];
+
       try {
         if (Modifier.isStatic(field.getModifiers())) {
           field.setAccessible(true);
           if (field.getClass().equals(boolean.class)) {
             field.setBoolean(null, false);
             assertFalse(field.getBoolean(null));
-          }
-          else if (cls.isInstance(field.get(null))) {
+
+          } else if (sslClass.isInstance(field.get(null))) {
             field.set(null, null);
             assertNull(field.get(null));
           }
         }
-      }
-      catch (IllegalAccessException ex) {
-        getLogWriter()
-                .warning("Exception while clearing static SSL field.", ex);
-      }
-      catch (ClassCastException ex) {
-        getLogWriter()
-                .warning("Exception while clearing static SSL field.", ex);
+
+      } catch (IllegalAccessException ex) {
+        getLogWriter().warning("Exception while clearing static SSL field.", ex);
+      } catch (ClassCastException ex) {
+        getLogWriter().warning("Exception while clearing static SSL field.", ex);
       }
     }
   }
 
-  private static void doQueryExecuteP(final Integer multiUserIndex,
-                                      final Integer expectedResult, final Integer expectedValue) {
+  private static void doQueryExecuteP(final int multiUserIndex, final int expectedResult, final int expectedValue) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1102,61 +1043,57 @@ public final class SecurityTestUtils {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing query: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing query: " + ex);
       } else {
         fail("Got unexpected exception when executing query", ex);
       }
     }
+
     try {
       String queryString = "SELECT DISTINCT * FROM " + region.getFullPath();
       Query query = null;
+
       if (multiUserAuthMode) {
         query = proxyCaches[multiUserIndex].getQueryService().newQuery(queryString);
-      }
-      else {
+      } else {
         region.getCache().getQueryService().newQuery(queryString);
       }
+
       SelectResults result = (SelectResults)query.execute();
-      if (expectedResult.intValue() != NO_EXCEPTION) {
+      if (expectedResult != NO_EXCEPTION) {
         fail("Expected a NotAuthorizedException while executing function");
       }
-      assertEquals(expectedValue.intValue(), result.asList().size());
+      assertEquals(expectedValue, result.asList().size());
+
     } catch (NoAvailableServersException ex) {
-      if (expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-        getLogWriter().info(
-                "Got expected NoAvailableServers when executing query: "
-                        + ex.getCause());
+      if (expectedResult == NO_AVAILABLE_SERVERS) {
+        getLogWriter().info("Got expected NoAvailableServers when executing query: " + ex.getCause());
       } else {
         fail("Got unexpected exception when executing query", ex);
       }
+
     } catch (ServerConnectivityException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (ex.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when executing query: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing query: " + ex);
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when executing query: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing query: " + ex);
       } else {
         fail("Got unexpected exception when executing query", ex);
       }
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing query: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing query: " + ex);
       } else {
         fail("Got unexpected exception when executing query", ex);
       }
     }
   }
 
-  private static void doFunctionExecuteP(final Integer multiUserIndex,
-                                         final Function function, Integer expectedResult, final Object expectedValue,
-                                         final String method) {
+  private static void doFunctionExecuteP(final int multiUserIndex, final Function function, int expectedResult, final String method) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1165,25 +1102,29 @@ public final class SecurityTestUtils {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing function: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing function: " + ex);
       } else {
         fail("Got unexpected exception when executing function", ex);
       }
     }
+
     try {
       FunctionService.registerFunction(function);
       Execution execution = null;
+
       if ("region".equals(method)) {
         execution = FunctionService.onRegion(region);
+
       } else if ("server".equals(method)) {
         if (multiUserAuthMode) {
           execution = FunctionService.onServer(proxyCaches[multiUserIndex]);
         } else {
           execution = FunctionService.onServer(pool);
         }
+
       } else { // if ("servers".equals(method)) {
         if (multiUserAuthMode) {
           execution = FunctionService.onServers(proxyCaches[multiUserIndex]);
@@ -1191,56 +1132,48 @@ public final class SecurityTestUtils {
           execution = FunctionService.onServers(pool);
         }
       }
+
       execution.execute(function.getId());
-      if (expectedResult.intValue() != NO_EXCEPTION) {
+      if (expectedResult != NO_EXCEPTION) {
         fail("Expected a NotAuthorizedException while executing function");
       }
+
     } catch (NoAvailableServersException ex) {
-      if (expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-        getLogWriter().info(
-                "Got expected NoAvailableServers when executing function: "
-                        + ex.getCause());
+      if (expectedResult == NO_AVAILABLE_SERVERS) {
+        getLogWriter().info("Got expected NoAvailableServers when executing function: " + ex.getCause());
       } else {
         fail("Got unexpected exception when executing function", ex);
       }
+
     } catch (ServerConnectivityException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (ex.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when executing function: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing function: " + ex);
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when executing function: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing function: " + ex);
       } else {
         fail("Got unexpected exception when executing function", ex);
       }
+
     } catch (FunctionException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && ((ex.getCause() instanceof NotAuthorizedException) || ((ex
-              .getCause() instanceof ServerOperationException) && (((ServerOperationException)ex
-              .getCause()).getCause() instanceof NotAuthorizedException)))) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when executing function: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing function: " + ex);
+      // if NOTAUTHZ_EXCEPTION AND (cause is NotAuthorizedException OR (cause is ServerOperationException AND cause.cause is NotAuthorizedException))
+      if (expectedResult == NOTAUTHZ_EXCEPTION && (ex.getCause() instanceof NotAuthorizedException || (ex.getCause() instanceof ServerOperationException && ex.getCause().getCause() instanceof NotAuthorizedException)) ) {
+        getLogWriter().info("Got expected NotAuthorizedException when executing function: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing function: " + ex);
       } else {
         fail("Got unexpected exception when executing function", ex);
       }
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when executing function: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when executing function: " + ex);
       } else {
         fail("Got unexpected exception when executing function", ex);
       }
     }
   }
 
-  private static void doQueriesP(final Integer multiUserIndex,
-                                 final Integer expectedResult, final Integer expectedValue) {
+  private static void doQueriesP(final int multiUserIndex, final int expectedResult, final int expectedValue) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1249,53 +1182,51 @@ public final class SecurityTestUtils {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
         fail("Got unexpected exception when doing queries", ex);
       }
     }
+
     String queryStr = "SELECT DISTINCT * FROM " + region.getFullPath();
     try {
       SelectResults queryResults = region.query(queryStr);
       Set resultSet = queryResults.asSet();
-      assertEquals(expectedValue.intValue(), resultSet.size());
-      if (expectedResult.intValue() != NO_EXCEPTION) {
+      assertEquals(expectedValue, resultSet.size());
+      if (expectedResult != NO_EXCEPTION) {
         fail("Expected a NotAuthorizedException while doing queries");
       }
+
     } catch (NoAvailableServersException ex) {
-      if (expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-        getLogWriter().info(
-                "Got expected NoAvailableServers when doing queries: "
-                        + ex.getCause());
+      if (expectedResult == NO_AVAILABLE_SERVERS) {
+        getLogWriter().info("Got expected NoAvailableServers when doing queries: " + ex.getCause());
       } else {
         fail("Got unexpected exception when doing queries", ex);
       }
+
     } catch (ServerConnectivityException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (ex.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when doing queries: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when doing queries: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
         fail("Got unexpected exception when doing queries", ex);
       }
+
     } catch (QueryInvocationTargetException qite) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (qite.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when doing queries: "
-                        + qite.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (qite.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when doing queries: " + qite.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + qite);
       } else {
         fail("Got unexpected exception when doing queries", qite);
       }
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing queries: " + ex);
       } else {
         fail("Got unexpected exception when doing queries", ex);
@@ -1303,218 +1234,188 @@ public final class SecurityTestUtils {
     }
   }
 
-  private static void doContainsKeysP(final Integer num, final Integer multiUserIndex,
-                                      final Integer expectedResult, final boolean newVals, final boolean expectedValue) {
+  private static void doContainsKeysP(final int num, final int multiUserIndex, final int expectedResult, final boolean expectedValue) {
+    assertTrue(num <= KEYS.length);
 
-    assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
       if (multiUserAuthMode) {
         region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
-      }
-      else {
-        region = getCache().getRegion(REGION_NAME);
-      }
-      assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info("Got expected exception when doing containsKey: " + ex);
-      }
-      else {
-        fail("Got unexpected exception when doing containsKey", ex);
-      }
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      boolean result = false;
-      try {
-        result = region.containsKeyOnServer(KEYS[index]);
-        if (expectedResult.intValue() != NO_EXCEPTION) {
-          fail("Expected a NotAuthorizedException while doing containsKey");
-        }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-          getLogWriter().info(
-                  "Got expected NoAvailableServers when doing containsKey: "
-                          + ex.getCause());
-          continue;
-        }
-        else {
-          fail("Got unexpected exception when doing containsKey", ex);
-        }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-                && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
-                  "Got expected NotAuthorizedException when doing containsKey: "
-                          + ex.getCause());
-          continue;
-        }
-        else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing containsKey: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing containsKey", ex);
-        }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing containsKey: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing containsKey", ex);
-        }
-      }
-      assertEquals(expectedValue, result);
-    }
-  }
-
-  private static void doInvalidatesP(final Integer num, final Integer multiUserIndex,
-                                     final Integer expectedResult, final boolean newVals) {
-    assertTrue(num.intValue() <= KEYS.length);
-    Region region = null;
-    try {
-      if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
-      }
-      else {
-        region = getCache().getRegion(REGION_NAME);
-      }
-      assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info("Got expected exception when doing invalidates: " + ex);
-      }
-      else {
-        fail("Got unexpected exception when doing invalidates", ex);
-      }
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      try {
-        region.invalidate(KEYS[index]);
-        if (expectedResult.intValue() != NO_EXCEPTION) {
-          fail("Expected a NotAuthorizedException while doing invalidates");
-        }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-          getLogWriter().info(
-                  "Got expected NoAvailableServers when doing invalidates: "
-                          + ex.getCause());
-          continue;
-        }
-        else {
-          fail("Got unexpected exception when doing invalidates", ex);
-        }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-                && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
-                  "Got expected NotAuthorizedException when doing invalidates: "
-                          + ex.getCause());
-          continue;
-        }
-        else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing invalidates: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing invalidates", ex);
-        }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing invalidates: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing invalidates", ex);
-        }
-      }
-    }
-  }
-
-  private static void doDestroysP(final Integer num, final Integer multiUserIndex,
-                                  final Integer expectedResult, final boolean newVals) {
-    assertTrue(num.intValue() <= KEYS.length);
-    Region region = null;
-    try {
-      if (multiUserAuthMode) {
-        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
-      }
-      else {
-        region = getCache().getRegion(REGION_NAME);
-      }
-      assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info("Got expected exception when doing destroys: " + ex);
-      }
-      else {
-        fail("Got unexpected exception when doing destroys", ex);
-      }
-    }
-    for (int index = 0; index < num.intValue(); ++index) {
-      try {
-        region.destroy(KEYS[index]);
-        if (expectedResult.intValue() != NO_EXCEPTION) {
-          fail("Expected a NotAuthorizedException while doing destroys");
-        }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-          getLogWriter().info(
-                  "Got expected NoAvailableServers when doing destroys: "
-                          + ex.getCause());
-          continue;
-        }
-        else {
-          fail("Got unexpected exception when doing destroys", ex);
-        }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-                && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
-                  "Got expected NotAuthorizedException when doing destroys: "
-                          + ex.getCause());
-          continue;
-        }
-        else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing destroys: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing destroys", ex);
-        }
-      }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing destroys: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing destroys", ex);
-        }
-      }
-    }
-  }
-
-  private static void doRegionDestroysP(final Integer multiuserIndex,
-                                        final Integer expectedResult) {
-    Region region = null;
-    try {
-      if (multiUserAuthMode) {
-        region = proxyCaches[multiuserIndex].getRegion(REGION_NAME);
       } else {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when doing region destroy: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing containsKey: " + ex);
+      } else {
+        fail("Got unexpected exception when doing containsKey", ex);
+      }
+    }
+
+    for (int index = 0; index < num; ++index) {
+      boolean result = false;
+
+      try {
+        result = region.containsKeyOnServer(KEYS[index]);
+        if (expectedResult != NO_EXCEPTION) {
+          fail("Expected a NotAuthorizedException while doing containsKey");
+        }
+
+      } catch(NoAvailableServersException ex) {
+        if(expectedResult == NO_AVAILABLE_SERVERS) {
+          getLogWriter().info("Got expected NoAvailableServers when doing containsKey: " + ex.getCause());
+          continue;
+        } else {
+          fail("Got unexpected exception when doing containsKey", ex);
+        }
+
+      } catch (ServerConnectivityException ex) {
+        if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+          getLogWriter().info("Got expected NotAuthorizedException when doing containsKey: " + ex.getCause());
+          continue;
+        } else if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing containsKey: " + ex);
+        } else {
+          fail("Got unexpected exception when doing containsKey", ex);
+        }
+
+      } catch (Exception ex) {
+        if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing containsKey: " + ex);
+        } else {
+          fail("Got unexpected exception when doing containsKey", ex);
+        }
+      }
+
+      assertEquals(expectedValue, result);
+    }
+  }
+
+  private static void doInvalidatesP(final int num, final int multiUserIndex, final int expectedResult) {
+    assertTrue(num <= KEYS.length);
+
+    Region region = null;
+    try {
+      if (multiUserAuthMode) {
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
+      } else {
+        region = getCache().getRegion(REGION_NAME);
+      }
+      assertNotNull(region);
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing invalidates: " + ex);
+      } else {
+        fail("Got unexpected exception when doing invalidates", ex);
+      }
+    }
+
+    for (int index = 0; index < num; ++index) {
+      try {
+        region.invalidate(KEYS[index]);
+        if (expectedResult != NO_EXCEPTION) {
+          fail("Expected a NotAuthorizedException while doing invalidates");
+        }
+
+      } catch(NoAvailableServersException ex) {
+        if (expectedResult == NO_AVAILABLE_SERVERS) {
+          getLogWriter().info("Got expected NoAvailableServers when doing invalidates: " + ex.getCause());
+          continue;
+        } else {
+          fail("Got unexpected exception when doing invalidates", ex);
+        }
+
+      } catch (ServerConnectivityException ex) {
+        if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+          getLogWriter().info("Got expected NotAuthorizedException when doing invalidates: " + ex.getCause());
+          continue;
+        } else if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing invalidates: " + ex);
+        } else {
+          fail("Got unexpected exception when doing invalidates", ex);
+        }
+
+      } catch (Exception ex) {
+        if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing invalidates: " + ex);
+        } else {
+          fail("Got unexpected exception when doing invalidates", ex);
+        }
+      }
+    }
+  }
+
+  private static void doDestroysP(final int num, final int multiUserIndex, final int expectedResult) {
+    assertTrue(num <= KEYS.length);
+
+    Region region = null;
+    try {
+      if (multiUserAuthMode) {
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
+      } else {
+        region = getCache().getRegion(REGION_NAME);
+      }
+      assertNotNull(region);
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing destroys: " + ex);
+      } else {
+        fail("Got unexpected exception when doing destroys", ex);
+      }
+    }
+
+    for (int index = 0; index < num; ++index) {
+      try {
+        region.destroy(KEYS[index]);
+        if (expectedResult != NO_EXCEPTION) {
+          fail("Expected a NotAuthorizedException while doing destroys");
+        }
+
+      } catch(NoAvailableServersException ex) {
+        if(expectedResult == NO_AVAILABLE_SERVERS) {
+          getLogWriter().info("Got expected NoAvailableServers when doing destroys: " + ex.getCause());
+          continue;
+        } else {
+          fail("Got unexpected exception when doing destroys", ex);
+        }
+
+      } catch (ServerConnectivityException ex) {
+        if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+          getLogWriter().info("Got expected NotAuthorizedException when doing destroys: " + ex.getCause());
+          continue;
+        } else if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing destroys: " + ex);
+        } else {
+          fail("Got unexpected exception when doing destroys", ex);
+        }
+
+      } catch (Exception ex) {
+        if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing destroys: " + ex);
+        } else {
+          fail("Got unexpected exception when doing destroys", ex);
+        }
+      }
+    }
+  }
+
+  private static void doRegionDestroysP(final int multiUserIndex, final int expectedResult) {
+    Region region = null;
+    try {
+      if (multiUserAuthMode) {
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
+      } else {
+        region = getCache().getRegion(REGION_NAME);
+      }
+      assertNotNull(region);
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing region destroy: " + ex);
       } else {
         fail("Got unexpected exception when doing region destroy", ex);
       }
@@ -1522,39 +1423,36 @@ public final class SecurityTestUtils {
 
     try {
       region.destroyRegion();
-      if (expectedResult.intValue() != NO_EXCEPTION) {
+      if (expectedResult != NO_EXCEPTION) {
         fail("Expected a NotAuthorizedException while doing region destroy");
       }
+
       if (multiUserAuthMode) {
-        region = proxyCaches[multiuserIndex].getRegion(REGION_NAME);
+        region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
       } else {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNull(region);
+
     } catch (NoAvailableServersException ex) {
-      if (expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-        getLogWriter().info(
-                "Got expected NoAvailableServers when doing region destroy: "
-                        + ex.getCause());
+      if (expectedResult == NO_AVAILABLE_SERVERS) {
+        getLogWriter().info("Got expected NoAvailableServers when doing region destroy: " + ex.getCause());
       } else {
         fail("Got unexpected exception when doing region destroy", ex);
       }
+
     } catch (ServerConnectivityException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (ex.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when doing region destroy: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when doing region destroy: " + ex);
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when doing region destroy: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing region destroy: " + ex);
       } else {
         fail("Got unexpected exception when doing region destroy", ex);
       }
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
-        getLogWriter().info(
-                "Got expected exception when doing region destroy: " + ex);
+      if (expectedResult == OTHER_EXCEPTION) {
+        getLogWriter().info("Got expected exception when doing region destroy: " + ex);
       } else {
         fail("Got unexpected exception when doing region destroy", ex);
       }
@@ -1563,22 +1461,21 @@ public final class SecurityTestUtils {
 
   private static void doLocalGetsP(final int num, final boolean checkNVals) {
     assertTrue(num <= KEYS.length);
+
     String[] vals = VALUES;
     if (checkNVals) {
       vals = NVALUES;
     }
+
     final Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
+
     for (int index = 0; index < num; ++index) {
       final String key = KEYS[index];
       final String expectedVal = vals[index];
-      waitForCondition(new Callable() {
-        public Object call() throws Exception {
-          Object value = getLocalValue(region, key);
-          return Boolean.valueOf(expectedVal.equals(value));
-        }
-      }, 1000, 30 / num);
+      waitForCondition(() -> expectedVal.equals(getLocalValue(region, key)), 1000, 30 / num);
     }
+
     for (int index = 0; index < num; ++index) {
       Region.Entry entry = region.getEntry(KEYS[index]);
       assertNotNull(entry);
@@ -1586,68 +1483,70 @@ public final class SecurityTestUtils {
     }
   }
 
-  private static void doGetAllP(final Integer multiUserIndex,
-                                final Integer expectedResult, final boolean useTX) {
+  private static void doGetAllP(final int multiUserIndex, final int expectedResult, final boolean useTX) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
         region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
-      }
-      else {
+      } else {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
-      }
-      else {
+      } else {
         fail("Got unexpected exception when doing getAll", ex);
       }
     }
+
     try {
       List keys = new ArrayList();
       keys.add("key1");
       keys.add("key2");
+
       if (useTX) {
         getCache().getCacheTransactionManager().begin();
       }
+
       Map entries = region.getAll(keys);
+
       // Also check getEntry()
       region.getEntry("key1");
+
       if (useTX) {
         getCache().getCacheTransactionManager().commit();
       }
+
       assertNotNull(entries);
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)) {
+
+      if ((expectedResult == NOTAUTHZ_EXCEPTION)) {
         assertEquals(0, entries.size());
-      } else if ((expectedResult.intValue() == NO_EXCEPTION)) {
+      } else if ((expectedResult == NO_EXCEPTION)) {
         assertEquals(2, entries.size());
         assertEquals("value1", entries.get("key1"));
         assertEquals("value2", entries.get("key2"));
       }
+
     } catch (NoAvailableServersException ex) {
-      if (expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-        getLogWriter().info(
-                "Got expected NoAvailableServers when doing getAll: "
-                        + ex.getCause());
+      if (expectedResult == NO_AVAILABLE_SERVERS) {
+        getLogWriter().info("Got expected NoAvailableServers when doing getAll: " + ex.getCause());
       } else {
         fail("Got unexpected exception when doing getAll", ex);
       }
+
     } catch (ServerConnectivityException ex) {
-      if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-              && (ex.getCause() instanceof NotAuthorizedException)) {
-        getLogWriter().info(
-                "Got expected NotAuthorizedException when doing getAll: "
-                        + ex.getCause());
-      } else if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+        getLogWriter().info("Got expected NotAuthorizedException when doing getAll: " + ex.getCause());
+      } else if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
         fail("Got unexpected exception when doing getAll", ex);
       }
+
     } catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing getAll: " + ex);
       } else {
         fail("Got unexpected exception when doing getAll", ex);
@@ -1655,84 +1554,75 @@ public final class SecurityTestUtils {
     }
   }
 
-  private static void doGetsP(final Integer num, final Integer expectedResult,
-                              final boolean newVals) {
-    doGetsP(num, Integer.valueOf(0), expectedResult, newVals);
+  private static void doGetsP(final int num, final int expectedResult, final boolean newVals) {
+    doGetsP(num, 0, expectedResult, newVals);
   }
 
-  private static void doGetsP(final Integer num, final Integer multiUserIndex,
-                              final Integer expectedResult, final boolean newVals) {
-    assertTrue(num.intValue() <= KEYS.length);
+  private static void doGetsP(final int num, final int multiUserIndex, final int expectedResult, final boolean newVals) {
+    assertTrue(num <= KEYS.length);
+
     Region region = null;
     try {
       if (multiUserAuthMode) {
         region = proxyCaches[multiUserIndex].getRegion(REGION_NAME);
-      }
-      else {
+      } else {
         region = getCache().getRegion(REGION_NAME);
       }
       assertNotNull(region);
-    }
-    catch (Exception ex) {
-      if (expectedResult.intValue() == OTHER_EXCEPTION) {
+
+    } catch (Exception ex) {
+      if (expectedResult == OTHER_EXCEPTION) {
         getLogWriter().info("Got expected exception when doing gets: " + ex);
-      }
-      else {
+      } else {
         fail("Got unexpected exception when doing gets", ex);
       }
     }
-    for (int index = 0; index < num.intValue(); ++index) {
+
+    for (int index = 0; index < num; ++index) {
       Object value = null;
       try {
+
         try {
           region.localInvalidate(KEYS[index]);
+        } catch (Exception ex) {
         }
-        catch (Exception ex) {
-        }
+
         value = region.get(KEYS[index]);
-        if (expectedResult.intValue() != NO_EXCEPTION) {
+        if (expectedResult != NO_EXCEPTION) {
           fail("Expected a NotAuthorizedException while doing gets");
         }
-      }
-      catch(NoAvailableServersException ex) {
-        if(expectedResult.intValue() == NO_AVAILABLE_SERVERS) {
-          getLogWriter().info(
-                  "Got expected NoAvailableServers when doing gets: "
-                          + ex.getCause());
+
+      } catch(NoAvailableServersException ex) {
+        if(expectedResult == NO_AVAILABLE_SERVERS) {
+          getLogWriter().info("Got expected NoAvailableServers when doing gets: " + ex.getCause());
           continue;
-        }
-        else {
+        } else {
           fail("Got unexpected exception when doing gets", ex);
         }
-      }
-      catch (ServerConnectivityException ex) {
-        if ((expectedResult.intValue() == NOTAUTHZ_EXCEPTION)
-                && (ex.getCause() instanceof NotAuthorizedException)) {
-          getLogWriter().info(
-                  "Got expected NotAuthorizedException when doing gets: "
-                          + ex.getCause());
+
+      } catch (ServerConnectivityException ex) {
+        if ((expectedResult == NOTAUTHZ_EXCEPTION) && (ex.getCause() instanceof NotAuthorizedException)) {
+          getLogWriter().info("Got expected NotAuthorizedException when doing gets: " + ex.getCause());
           continue;
-        }
-        else if (expectedResult.intValue() == OTHER_EXCEPTION) {
+        } else if (expectedResult == OTHER_EXCEPTION) {
           getLogWriter().info("Got expected exception when doing gets: " + ex);
+        } else {
+          fail("Got unexpected exception when doing gets", ex);
         }
-        else {
+
+      } catch (Exception ex) {
+        if (expectedResult == OTHER_EXCEPTION) {
+          getLogWriter().info("Got expected exception when doing gets: " + ex);
+        } else {
           fail("Got unexpected exception when doing gets", ex);
         }
       }
-      catch (Exception ex) {
-        if (expectedResult.intValue() == OTHER_EXCEPTION) {
-          getLogWriter().info("Got expected exception when doing gets: " + ex);
-        }
-        else {
-          fail("Got unexpected exception when doing gets", ex);
-        }
-      }
+
       assertNotNull(value);
+
       if (newVals) {
         assertEquals(NVALUES[index], value);
-      }
-      else {
+      } else {
         assertEquals(VALUES[index], value);
       }
     }

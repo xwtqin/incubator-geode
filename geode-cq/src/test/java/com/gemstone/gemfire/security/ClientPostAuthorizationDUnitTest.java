@@ -54,9 +54,8 @@ public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestCas
   public void testAllPostOps() throws Exception {
     OperationWithAction[] allOps = allOpsForTestAllPostOps();
 
-    for (Iterator iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
-
-      AuthzCredentialGenerator gen = (AuthzCredentialGenerator)iter.next();
+    for (Iterator<AuthzCredentialGenerator> iter = getDummyGeneratorCombos().iterator(); iter.hasNext();) {
+      AuthzCredentialGenerator gen = iter.next();
       CredentialGenerator cGen = gen.getCredentialGenerator();
       Properties extraAuthProps = cGen.getSystemProperties();
       Properties javaProps = cGen.getJavaProperties();

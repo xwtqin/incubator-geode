@@ -54,7 +54,7 @@ public class ClientAuthorizationTwoDUnitTest extends ClientAuthorizationTestCase
 
   @Test
   public void testAllOpsWithFailover2() throws Exception {
-    runOpsWithFailover(allOps(), "testAllOpsWithFailover2");
+    runOpsWithFailOver(allOps(), "testAllOpsWithFailover2");
   }
 
   private OperationWithAction[] allOps() {

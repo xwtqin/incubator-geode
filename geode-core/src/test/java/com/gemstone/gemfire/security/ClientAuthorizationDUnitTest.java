@@ -393,7 +393,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestCase {
   @Test
   public void testAllOpsWithFailover() throws InterruptedException {
     addIgnoredException("Read timed out");
-    runOpsWithFailover(allOpsForAllOpsWithFailover(), "testAllOpsWithFailover");
+    runOpsWithFailOver(allOpsForAllOpsWithFailover(), "testAllOpsWithFailover");
   }
 
   private OperationWithAction[] unregisterOpsForTestUnregisterInterestWithFailover() {
@@ -563,7 +563,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestCase {
         Properties opCredentials = null;
         String currentRegionName = '/' + regionName;
         if ((opFlags & OpFlags.USE_SUBREGION) > 0) {
-          currentRegionName += ('/' + subregionName);
+          currentRegionName += ('/' + SUBREGION_NAME);
         }
         String credentialsTypeStr;
         OperationCode authOpCode = currentOp.getAuthzOperationCode();
