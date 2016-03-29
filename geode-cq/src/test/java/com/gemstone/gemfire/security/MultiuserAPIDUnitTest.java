@@ -17,7 +17,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.distributed.internal.DistributionConfig.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
@@ -42,7 +42,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(DistributedTest.class)
-public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
+public class MultiUserAPIDUnitTest extends ClientAuthorizationTestCase {
 
   private static final String[] serverIgnoredExceptions = {
       AuthenticationRequiredException.class.getName(),
@@ -95,8 +95,8 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
       }
 
     } else { // multiuser mode
-      Region realRegion = GemFireCacheImpl.getInstance().getRegion(SecurityTestUtil.REGION_NAME);
-      Region proxyRegion = SecurityTestUtil.getProxyCaches(0).getRegion(SecurityTestUtil.REGION_NAME);
+      Region realRegion = GemFireCacheImpl.getInstance().getRegion(SecurityTestUtils.REGION_NAME);
+      Region proxyRegion = SecurityTestUtils.getProxyCaches(0).getRegion(SecurityTestUtils.REGION_NAME);
       Pool pool = PoolManagerImpl.getPMI().find("testPool");
 
       for (int i = 0; i <= 27; i++) {
@@ -200,12 +200,12 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
             // QueryService.newQuery().execute()/newCq().execute/executeWithInitialResults()
             case 20:
               op = "QueryService.newQuery.execute()";
-              Query query = pool.getQueryService().newQuery("SELECT * FROM /" + SecurityTestUtil.REGION_NAME);
+              Query query = pool.getQueryService().newQuery("SELECT * FROM /" + SecurityTestUtils.REGION_NAME);
               query.execute();
               break;
             case 21:
               op = "QueryService.newCq.execute()";
-              CqQuery cqQuery = pool.getQueryService().newCq("SELECT * FROM /" + SecurityTestUtil.REGION_NAME, new CqAttributesFactory().create());
+              CqQuery cqQuery = pool.getQueryService().newCq("SELECT * FROM /" + SecurityTestUtils.REGION_NAME, new CqAttributesFactory().create());
               try {
                 cqQuery.execute();
               } catch (CqException ce) {
@@ -214,7 +214,7 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
               break;
             case 22:
               op = "QueryService.newCq.executeWithInitialResults()";
-              cqQuery = pool.getQueryService().newCq("SELECT * FROM /" + SecurityTestUtil.REGION_NAME, new CqAttributesFactory().create());
+              cqQuery = pool.getQueryService().newCq("SELECT * FROM /" + SecurityTestUtils.REGION_NAME, new CqAttributesFactory().create());
               try {
                 cqQuery.executeWithInitialResults();
               } catch (CqException ce) {
@@ -225,15 +225,15 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
             // expect an exception, fail otherwise.
             case 23:
               op = "ProxyQueryService().getIndexes()";
-              SecurityTestUtil.getProxyCaches(0).getQueryService().getIndexes(null);
+              SecurityTestUtils.getProxyCaches(0).getQueryService().getIndexes(null);
               break;
             case 24:
               op = "ProxyQueryService().createIndex()";
-              SecurityTestUtil.getProxyCaches(0).getQueryService().createIndex(null, null, null );
+              SecurityTestUtils.getProxyCaches(0).getQueryService().createIndex(null, null, null );
               break;
             case 25:
               op = "ProxyQueryService().removeIndexes()";
-              SecurityTestUtil.getProxyCaches(0).getQueryService().removeIndexes();
+              SecurityTestUtils.getProxyCaches(0).getQueryService().removeIndexes();
               break;
             case 26:
               op = "ProxyRegion.localDestroy()";
@@ -270,9 +270,9 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
     getLogWriter().info("testValidCredentials: Using authinit: " + authInit);
 
     // Start the servers
-    int locPort1 = SecurityTestUtil.getLocatorPort();
-    int locPort2 = SecurityTestUtil.getLocatorPort();
-    String locString = SecurityTestUtil.getLocatorString();
+    int locPort1 = SecurityTestUtils.getLocatorPort();
+    int locPort2 = SecurityTestUtils.getLocatorPort();
+    String locString = SecurityTestUtils.getLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
@@ -299,12 +299,12 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestBase {
       authProps.setProperty(SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
     }
 
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
+    return SecurityTestUtils.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
   }
 
   // a
   protected static void createCacheClient(final String authInit, final Properties authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean multiUserMode, final int expectedResult) {
-    SecurityTestUtil.createCacheClient(authInit, authProps, javaProps, ports, numConnections, multiUserMode, expectedResult); // invokes SecurityTestUtil 2
+    SecurityTestUtils.createCacheClient(authInit, authProps, javaProps, ports, numConnections, multiUserMode, expectedResult); // invokes SecurityTestUtils 2
   }
 
   // b

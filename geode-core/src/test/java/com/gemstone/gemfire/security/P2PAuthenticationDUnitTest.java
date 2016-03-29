@@ -20,7 +20,7 @@ package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.distributed.internal.DistributionConfig.*;
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
 import static com.gemstone.gemfire.test.dunit.NetworkUtils.*;
@@ -160,7 +160,7 @@ public class P2PAuthenticationDUnitTest extends JUnit4DistributedTestCase {
     startTheLocator(props, gen.getJavaProperties(), locatorPort);
 
     try {
-      new SecurityTestUtil("tmp").createSystem(props, null);
+      new SecurityTestUtils("tmp").createSystem(props, null);
       fail("AuthenticationFailedException was expected as the AuthInitialize object passed is incorrect");
 
     } catch (AuthenticationFailedException expected) {
@@ -191,7 +191,7 @@ public class P2PAuthenticationDUnitTest extends JUnit4DistributedTestCase {
     startTheLocator(props, null, locatorPort);
 
     try {
-      new SecurityTestUtil("tmp").createSystem(props, null);
+      new SecurityTestUtils("tmp").createSystem(props, null);
       fail("AuthenticationFailedException was expected as the Authenticator object passed is incorrect");
 
     } catch (AuthenticationFailedException expected) {
@@ -221,7 +221,7 @@ public class P2PAuthenticationDUnitTest extends JUnit4DistributedTestCase {
     startTheLocator(props, null, locatorPort);
 
     try {
-      new SecurityTestUtil("tmp").createSystem(props, null);
+      new SecurityTestUtils("tmp").createSystem(props, null);
       fail("AuthenticationFailedException was expected as no credentials are set");
 
     } catch (AuthenticationFailedException expected) {
@@ -291,7 +291,7 @@ public class P2PAuthenticationDUnitTest extends JUnit4DistributedTestCase {
       props.putAll(gen.getInvalidCredentials(1));
 
       try {
-        new SecurityTestUtil("tmp").createSystem(props, null);
+        new SecurityTestUtils("tmp").createSystem(props, null);
         fail("AuthenticationFailedException was expected as wrong credentials were passed");
 
       } catch (AuthenticationFailedException expected) {
@@ -524,7 +524,7 @@ public class P2PAuthenticationDUnitTest extends JUnit4DistributedTestCase {
   }
 
   private static void createDS(final Properties props, final Properties javaProps) {
-    SecurityTestUtil tmpUtil = new SecurityTestUtil("tmp");
+    SecurityTestUtils tmpUtil = new SecurityTestUtils("tmp");
     tmpUtil.createSystem(props, javaProps);
   }
 

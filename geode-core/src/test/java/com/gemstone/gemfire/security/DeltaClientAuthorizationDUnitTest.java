@@ -18,9 +18,8 @@
  */
 package com.gemstone.gemfire.security;
 
-import static com.gemstone.gemfire.security.ClientAuthenticationUtils.*;
-import static com.gemstone.gemfire.security.ClientAuthorizationTestBase.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.ClientAuthenticationTestUtils.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
@@ -40,7 +39,7 @@ import org.junit.experimental.categories.Category;
  * @since 6.1
  */
 @Category(DistributedTest.class)
-public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
+public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorizationTestCase {
 
   private DeltaTestImpl[] deltas = new DeltaTestImpl[8];
 

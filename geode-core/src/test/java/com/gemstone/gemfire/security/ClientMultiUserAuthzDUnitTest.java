@@ -18,9 +18,9 @@
  */
 package com.gemstone.gemfire.security;
 
-//import static com.gemstone.gemfire.security.ClientAuthenticationUtils.*;
-//import static com.gemstone.gemfire.security.ClientAuthorizationTestBase.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+//import static com.gemstone.gemfire.security.ClientAuthenticationTestUtils.*;
+//import static com.gemstone.gemfire.security.ClientAuthorizationTestCase.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
 import java.util.Iterator;
@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(DistributedTest.class)
-public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
+public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestCase {
 
   @Override
   public final void preTearDownClientAuthorizationTestBase() throws Exception {
@@ -340,6 +340,6 @@ public class ClientMultiUserAuthzDUnitTest extends ClientAuthorizationTestBase {
   }
 
   private int createCacheServerOnVM(final VM server, final Properties javaProps, final Properties serverProps) {
-    return server.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
+    return server.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 }

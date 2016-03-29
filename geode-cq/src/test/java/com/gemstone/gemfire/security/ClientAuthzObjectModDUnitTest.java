@@ -18,7 +18,7 @@ package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.distributed.internal.DistributionConfig.*;
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ import org.junit.experimental.categories.Category;
  * @since 5.5
  */
 @Category(DistributedTest.class)
-public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestBase {
+public class ClientAuthzObjectModDUnitTest extends ClientAuthorizationTestCase {
 
   private static final String preAccessor = FilterPreAuthorization.class.getName() + ".create";
   private static final String postAccessor = FilterPostAuthorization.class.getName() + ".create";

@@ -17,7 +17,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.Invoke.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
@@ -57,7 +57,7 @@ import org.junit.experimental.categories.Category;
  * This is for multiuser-authentication
  */
 @Category(DistributedTest.class)
-public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestBase {
+public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestCase {
 
   private Map<String, String> cqNameToQueryStrings = new HashMap<>();
 
@@ -212,7 +212,7 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
   }
 
   private void createTheServerCache(final Properties serverProps, final Properties javaProps, final int locatorPort, final  int serverPort) {
-    SecurityTestUtil.createCacheServer(serverProps, javaProps, locatorPort, (String)null, serverPort, true, NO_EXCEPTION);
+    SecurityTestUtils.createCacheServer(serverProps, javaProps, locatorPort, (String)null, serverPort, true, NO_EXCEPTION);
   }
 
   private void createClientCache(final Properties javaProps, final String authInit, final Properties[] authProps, final int ports[], final int numOfUsers, final boolean[] postAuthzAllowed) {

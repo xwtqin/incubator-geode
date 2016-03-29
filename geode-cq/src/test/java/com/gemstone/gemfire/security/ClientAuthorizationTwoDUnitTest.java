@@ -16,7 +16,7 @@
  */
 package com.gemstone.gemfire.security;
 
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
@@ -36,7 +36,7 @@ import org.junit.experimental.categories.Category;
  * @since 5.5
  */
 @Category(DistributedTest.class)
-public class ClientAuthorizationTwoDUnitTest extends ClientAuthorizationTestBase {
+public class ClientAuthorizationTwoDUnitTest extends ClientAuthorizationTestCase {
 
   @Override
   public final void postSetUpClientAuthorizationTestBase() throws Exception {

@@ -17,7 +17,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import org.junit.experimental.categories.Category;
  * @since 5.5
  */
 @Category(DistributedTest.class)
-public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestBase {
+public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestCase {
 
   @Rule
   public RetryRule retryRule = new RetryRule();

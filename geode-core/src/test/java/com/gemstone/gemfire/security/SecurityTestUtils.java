@@ -91,7 +91,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  * 
  * @since 5.5
  */
-public final class SecurityTestUtil {
+public final class SecurityTestUtils {
 
   private final DistributedTestCase distributedTestCase = new DistributedTestCase(getClass().getSimpleName()) {}; // TODO: delete
 
@@ -126,7 +126,7 @@ public final class SecurityTestUtil {
 
   private static Region regionRef = null;
 
-  public SecurityTestUtil(String name) { // TODO: delete
+  public SecurityTestUtils(String name) { // TODO: delete
   }
 
   /**
@@ -197,7 +197,7 @@ public final class SecurityTestUtil {
   }
 
   protected static void registerExpectedExceptions(final String[] expectedExceptions) { // TODO: delete
-    SecurityTestUtil.ignoredExceptions = expectedExceptions;
+    SecurityTestUtils.ignoredExceptions = expectedExceptions;
   }
 
   protected static int createCacheServer(final Properties authProps, final Properties javaProps, final int dsPort, final String locatorString, final int serverPort, final int expectedResult) {
@@ -219,7 +219,7 @@ public final class SecurityTestUtil {
     getLogWriter().info("Set the server properties to: " + authProps);
     getLogWriter().info("Set the java properties to: " + javaProps);
 
-    SecurityTestUtil tmpInstance = new SecurityTestUtil("temp");
+    SecurityTestUtils tmpInstance = new SecurityTestUtils("temp");
     try {
       tmpInstance.createSystem(authProps, javaProps);
       if (expectedResult != NO_EXCEPTION) {
@@ -321,7 +321,7 @@ public final class SecurityTestUtil {
           authInitModule);
     }
 
-    SecurityTestUtil tmpInstance = new SecurityTestUtil("temp");
+    SecurityTestUtils tmpInstance = new SecurityTestUtils("temp");
     tmpInstance.createSystem(authProps, javaProps);
     AttributesFactory factory = new AttributesFactory();
     int[] portsI = new int[ports.length];
@@ -454,7 +454,7 @@ public final class SecurityTestUtil {
           .valueOf(DEFAULT_DURABLE_CLIENT_TIMEOUT));
     }
 
-    SecurityTestUtil tmpInstance = new SecurityTestUtil("temp");
+    SecurityTestUtils tmpInstance = new SecurityTestUtils("temp");
     tmpInstance.createSystem(props, javaProps);
     AttributesFactory factory = new AttributesFactory();
     int[] portsI = new int[ports.length];
@@ -631,7 +631,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserPuts(final Integer num, final Integer numOfUsers,
                                         final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserPuts(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserPuts(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -655,7 +655,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserGetAll(final Integer numOfUsers,
                                           final Integer[] expectedResults, final boolean useTX) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserGetAll(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserGetAll(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -668,7 +668,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserGets(final Integer num, final Integer numOfUsers,
                                         final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserGets(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserGets(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -680,7 +680,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserRegionDestroys(final Integer numOfUsers,
                                                   final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserRegionDestroys(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserRegionDestroys(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = numOfUsers-1; i >= 0; i--) {
@@ -692,7 +692,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserDestroys(final Integer num, final Integer numOfUsers,
                                             final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserDestroys(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserDestroys(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -704,7 +704,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserInvalidates(final Integer num, final Integer numOfUsers,
                                                final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserInvalidates(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserInvalidates(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -716,11 +716,11 @@ public final class SecurityTestUtil {
   protected static void doMultiUserContainsKeys(final Integer num, final Integer numOfUsers,
                                                 final Integer[] expectedResults, final Boolean[] results) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
     }
     if (numOfUsers != results.length) {
-      fail("SecurityTestUtil.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
           + ", but #expected output " + results.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -732,7 +732,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserQueries(final Integer numOfUsers,
                                            final Integer[] expectedResults, final Integer valueSize) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserQueries(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserQueries(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -744,11 +744,11 @@ public final class SecurityTestUtil {
   protected static void doMultiUserFE(final Integer numOfUsers, final Function function,
                                       final Integer[] expectedResults, final Object[] results, final Boolean isFailoverCase) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserFE(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
     }
     if (numOfUsers != results.length) {
-      fail("SecurityTestUtil.doMultiUserFE(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
           + ", but #expected output " + results.length);
     }
     for (int i = 0; i < numOfUsers; i++) {
@@ -771,7 +771,7 @@ public final class SecurityTestUtil {
   protected static void doMultiUserQueryExecute(final Integer numOfUsers,
                                                 final Integer[] expectedResults, final Integer result) {
     if (numOfUsers != expectedResults.length) {
-      fail("SecurityTestUtil.doMultiUserFE(): numOfUsers = " + numOfUsers
+      fail("SecurityTestUtils.doMultiUserFE(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
     }
     for (int i = 0; i < numOfUsers; i++) {

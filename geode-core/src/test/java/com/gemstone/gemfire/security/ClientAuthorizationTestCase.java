@@ -19,7 +19,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.Host.*;
 import static com.gemstone.gemfire.test.dunit.Wait.*;
@@ -73,7 +73,7 @@ import com.gemstone.gemfire.test.dunit.internal.JUnit4DistributedTestCase;
  * 
  * @since 5.5
  */
-public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
+public class ClientAuthorizationTestCase extends JUnit4DistributedTestCase {
 
   private static final int PAUSE = 5 * 1000;
 
@@ -201,14 +201,14 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     if (locatorPort == 0) {
       locatorPort = getRandomAvailablePort(SOCKET);
     }
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, locatorPort, null, 0, true, NO_EXCEPTION);
+    return SecurityTestUtils.createCacheServer(authProps, javaProps, locatorPort, null, 0, true, NO_EXCEPTION);
   }
 
   protected static int createCacheServer(int locatorPort, int serverPort, Properties authProps, Properties javaProps) {
     if (locatorPort == 0) {
       locatorPort = getRandomAvailablePort(SOCKET);
     }
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, locatorPort, null, serverPort, true, NO_EXCEPTION);
+    return SecurityTestUtils.createCacheServer(authProps, javaProps, locatorPort, null, serverPort, true, NO_EXCEPTION);
   }
 
   protected static Region getRegion() {
@@ -765,9 +765,9 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
         boolean setupDynamicRegionFactory = (opFlags & OpFlags.ENABLE_DRF) > 0;
 
         if (useThisVM) {
-          SecurityTestUtil.createCacheClientWithDynamicRegion(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION);
+          SecurityTestUtils.createCacheClientWithDynamicRegion(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION);
         } else {
-          clientVM.invoke(() -> SecurityTestUtil.createCacheClientWithDynamicRegion(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION));
+          clientVM.invoke(() -> SecurityTestUtils.createCacheClientWithDynamicRegion(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION));
         }
       }
 
@@ -786,7 +786,7 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
       } else {
         byte ordinal = opCode.toOrdinal();
         int[] indices = currentOp.getIndices();
-        clientVM.invoke(() -> ClientAuthorizationTestBase.doOp( new Byte(ordinal), indices, new Integer(opFlags), new Integer(expectedResult) ));
+        clientVM.invoke(() -> ClientAuthorizationTestCase.doOp( new Byte(ordinal), indices, new Integer(opFlags), new Integer(expectedResult) ));
       }
     }
   }
@@ -862,14 +862,14 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
           locator1PortKeeper.release();
           port1Keeper.release();
           // Start the first server and execute the operation block
-          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(locator1Port, port1, serverProps, javaProps ));
+          server1.invoke(() -> ClientAuthorizationTestCase.createCacheServer(locator1Port, port1, serverProps, javaProps ));
           server2.invoke(() -> closeCache());
           executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
           if (!currentOp.equals(OperationWithAction.OPBLOCK_NO_FAILOVER)) {
             // Failover to the second server and run the block again
             locator2PortKeeper.release();
             port2Keeper.release();
-            server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(locator2Port, port2, serverProps, javaProps ));
+            server2.invoke(() -> ClientAuthorizationTestCase.createCacheServer(locator2Port, port2, serverProps, javaProps ));
             server1.invoke(() -> closeCache());
             executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
           }

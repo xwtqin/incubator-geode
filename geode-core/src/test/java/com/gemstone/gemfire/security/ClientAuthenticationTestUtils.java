@@ -16,7 +16,7 @@
  */
 package com.gemstone.gemfire.security;
 
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
@@ -27,9 +27,9 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 /**
  * Extracted from ClientAuthenticationDUnitTest
  */
-public abstract class ClientAuthenticationUtils {
+public abstract class ClientAuthenticationTestUtils {
 
-  protected ClientAuthenticationUtils() {
+  protected ClientAuthenticationTestUtils() {
   }
 
   protected static Integer createCacheServer(int dsPort, String locatorString, String authenticator, Properties extraProps, Properties javaProps) {
@@ -44,7 +44,7 @@ public abstract class ClientAuthenticationUtils {
       authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
     }
 
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
+    return SecurityTestUtils.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
   }
 
   protected static void createCacheServer(int dsPort, String locatorString, int serverPort, String authenticator, Properties extraProps, Properties javaProps) {
@@ -58,11 +58,11 @@ public abstract class ClientAuthenticationUtils {
     if (authenticator != null) {
       authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
     }
-    SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, serverPort, NO_EXCEPTION);
+    SecurityTestUtils.createCacheServer(authProps, javaProps, dsPort, locatorString, serverPort, NO_EXCEPTION);
   }
 
   protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, boolean subscriptionEnabled, int expectedResult) {
-    SecurityTestUtil.createCacheClient(authInit, authProps, javaProps, ports, numConnections, false, multiUserMode, subscriptionEnabled, expectedResult);
+    SecurityTestUtils.createCacheClient(authInit, authProps, javaProps, ports, numConnections, false, multiUserMode, subscriptionEnabled, expectedResult);
   }
 
   protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, int expectedResult) {

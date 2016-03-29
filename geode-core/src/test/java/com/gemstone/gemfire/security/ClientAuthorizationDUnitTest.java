@@ -19,9 +19,9 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-//import static com.gemstone.gemfire.security.ClientAuthenticationUtils.*;
-//import static com.gemstone.gemfire.security.ClientAuthorizationTestBase.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+//import static com.gemstone.gemfire.security.ClientAuthenticationTestUtils.*;
+//import static com.gemstone.gemfire.security.ClientAuthorizationTestCase.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
@@ -51,7 +51,7 @@ import org.junit.experimental.categories.Category;
  * @since 5.5
  */
 @Category(DistributedTest.class)
-public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
+public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestCase {
 
   @Override
   public final void preTearDownClientAuthorizationTestBase() throws Exception {
@@ -223,10 +223,10 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
 
     getLogWriter().info("testInvalidAccessor: For second client GET credentials: " + getCredentials);
 
-    client1.invoke(() -> ClientAuthenticationUtils.createCacheClient( authInit, createCredentials, createJavaProps, port1, port2, 0, false, false, NO_EXCEPTION));
+    client1.invoke(() -> ClientAuthenticationTestUtils.createCacheClient( authInit, createCredentials, createJavaProps, port1, port2, 0, false, false, NO_EXCEPTION));
     client1.invoke(() -> doPuts(1, AUTHFAIL_EXCEPTION));
 
-    client2.invoke(() -> ClientAuthenticationUtils.createCacheClient( authInit, getCredentials, getJavaProps, port1, port2, 0, false, false, NO_EXCEPTION));
+    client2.invoke(() -> ClientAuthenticationTestUtils.createCacheClient( authInit, getCredentials, getJavaProps, port1, port2, 0, false, false, NO_EXCEPTION));
     client2.invoke(() -> doPuts(1, AUTHFAIL_EXCEPTION));
 
     // Now start server2 that has valid accessor
@@ -314,7 +314,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
     client2.invoke(() -> doGets(4, NOTAUTHZ_EXCEPTION));
 
     // force a failover and do the drill again
-    server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer( getLocatorPort(), port1, serverProps, javaProps ));
+    server1.invoke(() -> ClientAuthorizationTestCase.createCacheServer( getLocatorPort(), port1, serverProps, javaProps ));
     server2.invoke(() -> closeCache());
 
     // Perform some put operations from client1
@@ -369,7 +369,7 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
         // End of current operation block; execute all the operations on the servers with/without failover
         if (opBlock.size() > 0) {
           // Start the first server and execute the operation block
-          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port1, serverProps, javaProps));
+          server1.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), port1, serverProps, javaProps));
           server2.invoke(() -> closeCache());
 
           executeRIOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, javaProps);
@@ -619,28 +619,28 @@ public class ClientAuthorizationDUnitTest extends ClientAuthorizationTestBase {
       } else {
         byte ordinal = opCode.toOrdinal();
         int[] indices = currentOp.getIndices();
-        clientVM.invoke(() -> ClientAuthorizationTestBase.doOp(ordinal, indices, opFlags, expectedResult));
+        clientVM.invoke(() -> ClientAuthorizationTestCase.doOp(ordinal, indices, opFlags, expectedResult));
       }
     }
   }
 
   private void createClient2NoException(final Properties javaProps, final String authInit, final int port1, final int port2, final Properties getCredentials) {
-    client2.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, getCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
+    client2.invoke(() -> ClientAuthenticationTestUtils.createCacheClient(authInit, getCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
   private void createClient1NoException(final Properties javaProps, final String authInit, final int port1, final int port2, final Properties createCredentials) {
-    client1.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, createCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
+    client1.invoke(() -> ClientAuthenticationTestUtils.createCacheClient(authInit, createCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
   private int createServer2(final Properties javaProps, final Properties serverProps) {
-    return server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
+    return server2.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
   private int createServer1(final Properties javaProps, final Properties serverProps) {
-    return server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
+    return server1.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
   private void createServer2(Properties javaProps, Properties serverProps, int port2) {
-    server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port2, serverProps, javaProps));
+    server2.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), port2, serverProps, javaProps));
   }
 }

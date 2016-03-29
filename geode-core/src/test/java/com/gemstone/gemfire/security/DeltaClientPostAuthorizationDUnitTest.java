@@ -19,8 +19,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
-import static com.gemstone.gemfire.security.DeltaClientPostAuthorizationDUnitTest.*;
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
+import static com.gemstone.gemfire.security.SecurityTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
@@ -45,7 +44,7 @@ import org.junit.experimental.categories.Category;
  * @since 6.1
  */
 @Category(DistributedTest.class)
-public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTestBase {
+public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTestCase {
 
   private static final int PAUSE = 5 * 1000; // TODO: replace with Awaitility
 
@@ -100,14 +99,14 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
         // End of current operation block; execute all the operations on the servers with failover
         if (opBlock.size() > 0) {
           // Start the first server and execute the operation block
-          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port1, serverProps, javaProps ));
+          server1.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), port1, serverProps, javaProps ));
           server2.invoke(() -> closeCache());
 
           executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
 
           if (!currentOp.equals(OperationWithAction.OPBLOCK_NO_FAILOVER)) {
             // Failover to the second server and run the block again
-            server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port2, serverProps, javaProps ));
+            server2.invoke(() -> ClientAuthorizationTestCase.createCacheServer(getLocatorPort(), port2, serverProps, javaProps ));
             server1.invoke(() -> closeCache());
 
             executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
