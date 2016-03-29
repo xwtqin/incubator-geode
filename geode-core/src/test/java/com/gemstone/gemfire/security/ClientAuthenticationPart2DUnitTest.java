@@ -32,43 +32,43 @@ public class ClientAuthenticationPart2DUnitTest extends ClientAuthenticationTest
 
   @Test
   public void testNoCredentialsForMultipleUsers() throws Exception {
-    doTestNoCredentials(Boolean.TRUE);
+    doTestNoCredentials(true);
   }
 
   @Test
   public void testInvalidCredentialsForMultipleUsers() throws Exception {
-    doTestInvalidCredentials(Boolean.TRUE);
+    doTestInvalidCredentials(true);
   }
 
   @Test
   public void testInvalidAuthInitForMultipleUsers() throws Exception {
-    doTestInvalidAuthInit(Boolean.TRUE);
+    doTestInvalidAuthInit(true);
   }
 
   @Test
   public void testNoAuthInitWithCredentialsForMultipleUsers() throws Exception {
-    doTestNoAuthInitWithCredentials(Boolean.TRUE);
+    doTestNoAuthInitWithCredentials(true);
   }
 
   @Test
   public void testInvalidAuthenitcatorForMultipleUsers() throws Exception {
-    doTestInvalidAuthenticator(Boolean.TRUE);
+    doTestInvalidAuthenticator(true);
   }
 
   @Test
   public void testNoAuthenticatorWithCredentialsForMultipleUsers() throws Exception {
-    doTestNoAuthenticatorWithCredentials(Boolean.TRUE);
+    doTestNoAuthenticatorWithCredentials(true);
   }
 
   @Ignore("Disabled for unknown reason")
   @Test
   public void testCredentialsWithFailoverForMultipleUsers() throws Exception {
-    doTestCredentialsWithFailover(Boolean.TRUE);
+    doTestCredentialsWithFailover(true);
   }
 
   @Ignore("Disabled for unknown reason")
   @Test
   public void testCredentialsForNotificationsForMultipleUsers() throws Exception {
-    doTestCredentialsForNotifications(Boolean.TRUE);
+    doTestCredentialsForNotifications(true);
   }
 }

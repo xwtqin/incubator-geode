@@ -18,13 +18,6 @@
  */
 package com.gemstone.gemfire.security;
 
-import static com.gemstone.gemfire.security.SecurityTestUtil.*;
-import static com.gemstone.gemfire.test.dunit.Assert.*;
-
-import java.util.Properties;
-
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.test.junit.categories.DistributedTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,53 +35,52 @@ public class ClientAuthenticationDUnitTest extends ClientAuthenticationTestCase 
 
   @Test
   public void testValidCredentials() throws Exception {
-    doTestValidCredentials(Boolean.FALSE);
+    doTestValidCredentials(false);
   }
 
   @Test
   public void testNoCredentials() throws Exception {
-    doTestNoCredentials(Boolean.FALSE);
+    doTestNoCredentials(false);
   }
 
   @Test
   public void testInvalidCredentials() throws Exception {
-    doTestInvalidCredentials(Boolean.FALSE);
+    doTestInvalidCredentials(false);
   }
 
   @Test
   public void testInvalidAuthInit() throws Exception {
-    doTestInvalidAuthInit(Boolean.FALSE);
+    doTestInvalidAuthInit(false);
   }
 
   @Test
   public void testNoAuthInitWithCredentials() throws Exception {
-    doTestNoAuthInitWithCredentials(Boolean.FALSE);
+    doTestNoAuthInitWithCredentials(false);
   }
 
   @Test
   public void testInvalidAuthenticator() throws Exception {
-    doTestInvalidAuthenticator(Boolean.FALSE);
+    doTestInvalidAuthenticator(false);
   }
 
   @Test
   public void testNoAuthenticatorWithCredentials() throws Exception {
-    doTestNoAuthenticatorWithCredentials(Boolean.FALSE);
+    doTestNoAuthenticatorWithCredentials(false);
   }
 
   @Test
   public void testCredentialsWithFailover() throws Exception {
-    doTestCredentialsWithFailover(Boolean.FALSE);
+    doTestCredentialsWithFailover(false);
   }
 
   @Test
   public void testCredentialsForNotifications() throws Exception {
-    doTestCredentialsForNotifications(Boolean.FALSE);
+    doTestCredentialsForNotifications(false);
   }
 
   @Ignore("Disabled for unknown reason")
   @Test
   public void testValidCredentialsForMultipleUsers() throws Exception {
-    doTestValidCredentials(Boolean.TRUE);
+    doTestValidCredentials(true);
   }
-
 }

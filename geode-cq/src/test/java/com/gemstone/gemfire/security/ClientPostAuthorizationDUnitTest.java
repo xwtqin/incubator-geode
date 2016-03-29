@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.internal.AvailablePort.*;
 import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 
@@ -26,7 +27,6 @@ import java.util.Properties;
 import java.util.Random;
 
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.junit.Retry;
@@ -74,8 +74,8 @@ public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestBas
       Properties serverProps = buildProperties(authenticator, accessor, true, extraAuthProps, extraAuthzProps);
 
       // Get ports for the servers
-      Integer port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-      Integer port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
+      int port1 = getRandomAvailablePort(SOCKET);
+      int port2 = getRandomAvailablePort(SOCKET);
 
       // Close down any running servers
       server1.invoke(() -> closeCache());
@@ -97,7 +97,7 @@ public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestBas
             executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
             if (!currentOp.equals(OperationWithAction.OPBLOCK_NO_FAILOVER)) {
               // Failover to the second server and run the block again
-              server2.invoke(() -> createCacheServer(SecurityTestUtil.getLocatorPort(), port2, serverProps, javaProps ));
+              server2.invoke(() -> createCacheServer(getLocatorPort(), port2, serverProps, javaProps ));
               server1.invoke(() -> closeCache());
               executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
             }
@@ -135,9 +135,10 @@ public class ClientPostAuthorizationDUnitTest extends ClientAuthorizationTestBas
 
     // Start servers with all required properties
     Properties serverProps = buildProperties(authenticator, accessor, true, extraAuthProps, extraAuthzProps);
+
     // Get ports for the servers
-    Integer port1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
-    Integer port2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
+    int port1 = getRandomAvailablePort(SOCKET);
+    int port2 = getRandomAvailablePort(SOCKET);
 
     // Perform all the ops on the clients
     List opBlock = new ArrayList();

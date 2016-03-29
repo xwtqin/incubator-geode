@@ -18,12 +18,15 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.distributed.internal.DistributionConfig.*;
 import static com.gemstone.gemfire.internal.AvailablePort.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.DistributedTestUtils.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 import static com.gemstone.gemfire.test.dunit.NetworkUtils.*;
 import static com.gemstone.gemfire.test.dunit.Wait.*;
+
+import static com.gemstone.gemfire.cache30.ClientServerTestCase.configureConnectionPoolWithNameAndFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
@@ -49,7 +51,6 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
@@ -75,18 +76,13 @@ import com.gemstone.gemfire.cache.query.Query;
 import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
 import com.gemstone.gemfire.cache.query.SelectResults;
 import com.gemstone.gemfire.cache.server.CacheServer;
-import com.gemstone.gemfire.cache30.ClientServerTestCase;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.Locator;
-import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.logging.InternalLogWriter;
-import com.gemstone.gemfire.internal.logging.PureLogWriter;
 import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.pdx.PdxReader;
 import com.gemstone.gemfire.pdx.PdxSerializable;
 import com.gemstone.gemfire.pdx.PdxWriter;
 import com.gemstone.gemfire.test.dunit.DistributedTestCase;
-import com.gemstone.gemfire.test.dunit.IgnoredException;
 import com.gemstone.gemfire.test.dunit.WaitCriterion;
 
 /**
@@ -97,7 +93,7 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
  */
 public final class SecurityTestUtil {
 
-  private final DistributedTestCase distributedTestCase = new DistributedTestCase(getClass().getSimpleName()) {};
+  private final DistributedTestCase distributedTestCase = new DistributedTestCase(getClass().getSimpleName()) {}; // TODO: delete
 
   protected static final int NO_EXCEPTION = 0;
   protected static final int AUTHREQ_EXCEPTION = 1;
@@ -122,7 +118,6 @@ public final class SecurityTestUtil {
   private static Cache cache = null;
   private static Properties currentJavaProps = null;
   private static String locatorString = null;
-  private static Integer mcastPort = null;
 
   private static Pool pool = null;
   private static boolean multiUserAuthMode = false;
@@ -131,38 +126,38 @@ public final class SecurityTestUtil {
 
   private static Region regionRef = null;
 
-  public SecurityTestUtil(String name) {
+  public SecurityTestUtil(String name) { // TODO: delete
   }
 
   /**
-   * @deprecated Please {@link IgnoredException} instead
+   * @deprecated Please use {@link com.gemstone.gemfire.test.dunit.IgnoredException} instead
    */
-  protected static void addIgnoredExceptions(String[] expectedExceptions, LogWriter logWriter) {
+  private static void addIgnoredExceptions(final String[] expectedExceptions) { // TODO: delete
     if (expectedExceptions != null) {
       for (int index = 0; index < expectedExceptions.length; index++) {
-        logWriter.info("<ExpectedException action=add>" + expectedExceptions[index] + "</ExpectedException>");
+        getLogWriter().info("<ExpectedException action=add>" + expectedExceptions[index] + "</ExpectedException>");
       }
     }
   }
 
   /**
-   * @deprecated Please {@link IgnoredException} instead
+   * @deprecated Please use {@link com.gemstone.gemfire.test.dunit.IgnoredException} instead
    */
-  protected static void removeExpectedExceptions(String[] expectedExceptions, LogWriter logWriter) {
+  private static void removeExpectedExceptions(final String[] expectedExceptions) { // TODO: delete
     if (expectedExceptions != null) {
       for (int index = 0; index < expectedExceptions.length; index++) {
-        logWriter.info("<ExpectedException action=remove>" + expectedExceptions[index] + "</ExpectedException>");
+        getLogWriter().info("<ExpectedException action=remove>" + expectedExceptions[index] + "</ExpectedException>");
       }
     }
   }
 
-  protected static void setJavaProps(Properties javaProps) {
+  protected static void setJavaProps(final Properties javaProps) {
     removeJavaProperties(currentJavaProps);
     addJavaProperties(javaProps);
     currentJavaProps = javaProps;
   }
 
-  protected static ProxyCache getProxyCaches(int index) {
+  protected static ProxyCache getProxyCaches(final int index) {
     return proxyCaches[index];
   }
 
@@ -185,13 +180,13 @@ public final class SecurityTestUtil {
    * Note that this clears the string after returning for convenience in reusing
    * for other tests. Hence it should normally be invoked only once for a test.
    */
-  protected static String getLocatorString() {
+  protected static String getLocatorString() { // TODO: rename
     String locString = locatorString;
     locatorString = null;
     return locString;
   }
 
-  protected static Properties concatProperties(Properties[] propsList) {
+  protected static Properties concatProperties(final Properties[] propsList) {
     Properties props = new Properties();
     for (int index = 0; index < propsList.length; ++index) {
       if (propsList[index] != null) {
@@ -201,26 +196,26 @@ public final class SecurityTestUtil {
     return props;
   }
 
-  protected static void registerExpectedExceptions(String[] expectedExceptions) {
+  protected static void registerExpectedExceptions(final String[] expectedExceptions) { // TODO: delete
     SecurityTestUtil.ignoredExceptions = expectedExceptions;
   }
 
-  protected static int createCacheServer(Properties authProps, Properties javaProps, int dsPort, String locatorString, int serverPort, int expectedResult) {
+  protected static int createCacheServer(final Properties authProps, final Properties javaProps, final int dsPort, final String locatorString, final int serverPort, final int expectedResult) {
     return createCacheServer(authProps, javaProps, dsPort, locatorString, serverPort, false, expectedResult);
   }
 
-  protected static int createCacheServer(Properties authProps, Properties javaProps, int locatorPort, String locatorString, int serverPort, boolean setupDynamicRegionFactory, int expectedResult) {
+  protected static int createCacheServer(Properties authProps, final Properties javaProps, final int locatorPort, final String locatorString, final int serverPort, final boolean setupDynamicRegionFactory, final int expectedResult) {
     if (authProps == null) {
       authProps = new Properties();
     }
-    authProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
+    authProps.setProperty(MCAST_PORT_NAME, "0");
     if (locatorString != null && locatorString.length() > 0) {
-      authProps.setProperty(DistributionConfig.LOCATORS_NAME, locatorString);
-      authProps.setProperty(DistributionConfig.START_LOCATOR_NAME, getIPLiteral() + "[" + locatorPort + ']');
+      authProps.setProperty(LOCATORS_NAME, locatorString);
+      authProps.setProperty(START_LOCATOR_NAME, getIPLiteral() + "[" + locatorPort + ']');
     } else {
       authProps.setProperty("locators", "localhost["+getDUnitLocatorPort()+"]");
     }
-    authProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
+    authProps.setProperty(SECURITY_LOG_LEVEL_NAME, "finest");
     getLogWriter().info("Set the server properties to: " + authProps);
     getLogWriter().info("Set the java properties to: " + javaProps);
 
@@ -282,47 +277,47 @@ public final class SecurityTestUtil {
   }
 
   // 1
-  protected static void createCacheClient(String authInitModule, Properties authProps, Properties javaProps, int[] ports, int numConnections, int expectedResult) {
+  protected static void createCacheClient(final String authInitModule, final Properties authProps, final Properties javaProps, final int[] ports, final int numConnections, final int expectedResult) {
     createCacheClient(authInitModule, authProps, javaProps, ports, numConnections, false, expectedResult);
   }
 
-  // 2
-  protected static void createCacheClient(String authInitModule, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, int expectedResult) {
+  // 2 a
+  protected static void createCacheClient(final String authInitModule, final Properties authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean multiUserMode, final int expectedResult) {
     createCacheClient(authInitModule, authProps, javaProps, ports, numConnections, false, multiUserMode, expectedResult);
   }
 
   // 3
-  protected static void createCacheClientWithDynamicRegion(String authInitModule, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean setupDynamicRegionFactory, int expectedResult) {
+  protected static void createCacheClientWithDynamicRegion(final String authInitModule, final Properties authProps, final Properties javaProps, final int[] ports, final int numConnections, final boolean setupDynamicRegionFactory, final int expectedResult) {
     createCacheClient(authInitModule, authProps, javaProps, ports, numConnections, setupDynamicRegionFactory, false, expectedResult);
   }
 
   // 4
-  protected static void createCacheClient(String authInitModule,
-      Properties authProps, Properties javaProps, int[] ports,
-      int numConnections, boolean setupDynamicRegionFactory,
-      boolean multiUserMode, int expectedResult) {
+  protected static void createCacheClient(final String authInitModule,
+                                          final Properties authProps, final Properties javaProps, final int[] ports,
+                                          final int numConnections, final boolean setupDynamicRegionFactory,
+                                          final boolean multiUserMode, final int expectedResult) {
     createCacheClient(authInitModule, authProps, javaProps, ports,
         numConnections, setupDynamicRegionFactory, multiUserMode, Boolean.TRUE,
         expectedResult);
   }
 
   // 5
-  protected static void createCacheClient(String authInitModule,
-      Properties authProps, Properties javaProps, int[] ports,
-      int numConnections, boolean setupDynamicRegionFactory,
-      boolean multiUserMode, boolean subscriptionEnabled,
-      int expectedResult) {
+  protected static void createCacheClient(final String authInitModule,
+                                          Properties authProps, final Properties javaProps, int[] ports,
+                                          final int numConnections, final boolean setupDynamicRegionFactory,
+                                          final boolean multiUserMode, final boolean subscriptionEnabled,
+                                          final int expectedResult) {
 
     multiUserAuthMode = Boolean.valueOf(multiUserMode);
     if (authProps == null) {
       authProps = new Properties();
     }
-    authProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    authProps.setProperty(DistributionConfig.LOCATORS_NAME, "");
-    authProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
+    authProps.setProperty(MCAST_PORT_NAME, "0");
+    authProps.setProperty(LOCATORS_NAME, "");
+    authProps.setProperty(SECURITY_LOG_LEVEL_NAME, "finest");
     // TODO (ashetkar) Add " && (!multiUserAuthMode)" below.
     if (authInitModule != null) {
-      authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTH_INIT_NAME,
+      authProps.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME,
           authInitModule);
     }
 
@@ -344,7 +339,7 @@ public final class SecurityTestUtil {
         // Actually setting it to false causes MultiuserAPIDUnitTest to fail.
         //poolFactory.setSubscriptionEnabled(false);
       }
-      pool = ClientServerTestCase.configureConnectionPoolWithNameAndFactory(factory,
+      pool = configureConnectionPoolWithNameAndFactory(factory,
           getIPLiteral(), portsI, subscriptionEnabled, 0,
           numConnections, null, null,
           poolFactory);
@@ -415,20 +410,20 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void createCacheClientForMultiUserMode(int numOfUsers,
-      String authInitModule, Properties[] authProps, Properties javaProps,
-      int[] ports, int numConnections,
-      boolean setupDynamicRegionFactory, int expectedResult) {
+  protected static void createCacheClientForMultiUserMode(final int numOfUsers,
+                                                          final String authInitModule, final Properties[] authProps, final Properties javaProps,
+                                                          final int[] ports, final int numConnections,
+                                                          final boolean setupDynamicRegionFactory, final int expectedResult) {
     createCacheClientForMultiUserMode(numOfUsers, authInitModule, authProps,
         javaProps, ports, numConnections, setupDynamicRegionFactory, null,
         expectedResult);
   }
 
-  protected static void createCacheClientForMultiUserMode(int numOfUsers,
-      String authInitModule, Properties[] authProps, Properties javaProps,
-      int[] ports, int numConnections,
-      boolean setupDynamicRegionFactory, String durableClientId,
-      int expectedResult) {
+  protected static void createCacheClientForMultiUserMode(final int numOfUsers,
+                                                          final String authInitModule, final Properties[] authProps, final Properties javaProps,
+                                                          final int[] ports, final int numConnections,
+                                                          final boolean setupDynamicRegionFactory, final String durableClientId,
+                                                          final int expectedResult) {
 
     if (numOfUsers < 1) {
       fail("Number of users cannot be less than one");
@@ -441,22 +436,22 @@ public final class SecurityTestUtil {
     if (authProps[0] == null) {
       authProps[0] = new Properties();
     }
-    authProps[0].setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-    authProps[0].setProperty(DistributionConfig.LOCATORS_NAME, "");
-    authProps[0].setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME,
+    authProps[0].setProperty(MCAST_PORT_NAME, "0");
+    authProps[0].setProperty(LOCATORS_NAME, "");
+    authProps[0].setProperty(SECURITY_LOG_LEVEL_NAME,
         "finest");
     Properties props = new Properties();
     if (authInitModule != null) {
       authProps[0].setProperty(
-          DistributionConfig.SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
-      props.setProperty(DistributionConfig.SECURITY_CLIENT_AUTH_INIT_NAME,
+          SECURITY_CLIENT_AUTH_INIT_NAME, authInitModule);
+      props.setProperty(SECURITY_CLIENT_AUTH_INIT_NAME,
           authInitModule);
     }
     if (durableClientId != null) {
-      props.setProperty(DistributionConfig.DURABLE_CLIENT_ID_NAME,
+      props.setProperty(DURABLE_CLIENT_ID_NAME,
           durableClientId);
-      props.setProperty(DistributionConfig.DURABLE_CLIENT_TIMEOUT_NAME, String
-          .valueOf(DistributionConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT));
+      props.setProperty(DURABLE_CLIENT_TIMEOUT_NAME, String
+          .valueOf(DEFAULT_DURABLE_CLIENT_TIMEOUT));
     }
 
     SecurityTestUtil tmpInstance = new SecurityTestUtil("temp");
@@ -473,7 +468,7 @@ public final class SecurityTestUtil {
       poolFactory.setRetryAttempts(200);
       poolFactory.setMultiuserAuthentication(multiUserAuthMode);
       poolFactory.setSubscriptionEnabled(true);
-      pool = ClientServerTestCase.configureConnectionPoolWithNameAndFactory(factory,
+      pool = configureConnectionPoolWithNameAndFactory(factory,
           getIPLiteral(), portsI, true, 1,
           numConnections, null, null,
           poolFactory);
@@ -531,7 +526,7 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void createProxyCache(Integer[] userIndices, Properties[] props) {
+  protected static void createProxyCache(final int[] userIndices, final Properties[] props) {
     int j = 0;
     for (int i : userIndices) {
       proxyCaches[i] = (ProxyCache)((PoolImpl) pool)
@@ -540,48 +535,23 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void stopCacheServers() {
-    Iterator iter = getCache().getCacheServers().iterator();
-    if (iter.hasNext()) {
-      CacheServer server = (CacheServer)iter.next();
-      server.stop();
-      assertFalse(server.isRunning());
-    }
-  }
-
-  protected static void restartCacheServers() {
-    Iterator iter = getCache().getCacheServers().iterator();
-    if (iter.hasNext()) {
-      CacheServer server = (CacheServer)iter.next();
-      try {
-        server.start();
-      }
-      catch (Exception ex) {
-        fail("Unexpected exception when restarting cache servers", ex);
-      }
-      assertTrue(server.isRunning());
-    }
-  }
-
-  protected static void startLocator(String name, Integer port, Object extraProps,
-      Object javaProps, String[] expectedExceptions) {
+  protected static void startLocator(final String name, Integer port, final Object extraProps,
+                                     final Object javaProps, final String[] expectedExceptions) {
     File logFile = new File(name + "-locator" + port.intValue() + ".log");
     try {
       Properties authProps = new Properties();
       if (extraProps != null) {
         authProps.putAll((Properties)extraProps);
       }
-      authProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
-      authProps.setProperty(DistributionConfig.LOCATORS_NAME, 
+      authProps.setProperty(MCAST_PORT_NAME, "0");
+      authProps.setProperty(LOCATORS_NAME, 
                             getIPLiteral() + "[" + port + "]");
-      authProps.setProperty(DistributionConfig.ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
+      authProps.setProperty(ENABLE_CLUSTER_CONFIGURATION_NAME, "false");
       clearStaticSSLContext();
       setJavaProps((Properties)javaProps);
       FileOutputStream logOut = new FileOutputStream(logFile);
       PrintStream logStream = new PrintStream(logOut);
-      LogWriter logger = new PureLogWriter(InternalLogWriter.CONFIG_LEVEL,
-          logStream);
-      addIgnoredExceptions(expectedExceptions, logger);
+      addIgnoredExceptions(expectedExceptions);
       logStream.flush();
       locator = Locator.startLocatorAndDS(port.intValue(), logFile, null,
           authProps);
@@ -591,10 +561,10 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void stopLocator(Integer port, String[] expectedExceptions) {
+  protected static void stopLocator(final Integer port, final String[] expectedExceptions) {
     try {
       locator.stop();
-      removeExpectedExceptions(expectedExceptions, getLogWriter());
+      removeExpectedExceptions(expectedExceptions);
     }
     catch (Exception ex) {
       fail("While stopping locator on port " + port.intValue(), ex);
@@ -607,12 +577,12 @@ public final class SecurityTestUtil {
 
   // Some useful region methods used by security tests
 
-  protected static void waitForCondition(Callable cond) {
+  protected static void waitForCondition(final Callable cond) {
     waitForCondition(cond, 100, 120);
   }
 
-  protected static void waitForCondition(final Callable cond, int sleepMillis,
-      int numTries) {
+  protected static void waitForCondition(final Callable cond, final int sleepMillis,
+                                         final int numTries) {
     WaitCriterion ev = new WaitCriterion() {
       public boolean done() {
         try {
@@ -630,7 +600,7 @@ public final class SecurityTestUtil {
     waitForCriterion(ev, sleepMillis * numTries, 200, true);
   }
 
-  protected static Object getLocalValue(Region region, Object key) {
+  protected static Object getLocalValue(final Region region, final Object key) {
     Region.Entry entry = region.getEntry(key);
     return (entry != null ? entry.getValue() : null);
   }
@@ -650,16 +620,16 @@ public final class SecurityTestUtil {
     region.putAll(map);
   }
   
-  protected static void doPuts(Integer num) {
+  protected static void doPuts(final Integer num) {
     doPutsP(num, new Integer(NO_EXCEPTION), false);
   }
 
-  protected static void doPuts(Integer num, Integer expectedResult) {
+  protected static void doPuts(final Integer num, final Integer expectedResult) {
     doPutsP(num, expectedResult, false);
   }
 
-  protected static void doMultiUserPuts(Integer num, Integer numOfUsers,
-      Integer[] expectedResults) {
+  protected static void doMultiUserPuts(final Integer num, final Integer numOfUsers,
+                                        final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserPuts(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -670,20 +640,20 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doGets(Integer num) {
+  protected static void doGets(final Integer num) {
     doGetsP(num, new Integer(NO_EXCEPTION), false);
   }
 
-  protected static void doGets(Integer num, Integer expectedResult) {
+  protected static void doGets(final Integer num, final Integer expectedResult) {
     doGetsP(num, expectedResult, false);
   }
 
-  protected static void doMultiUserGetAll(Integer numOfUsers, Integer[] expectedResults) {
+  protected static void doMultiUserGetAll(final Integer numOfUsers, final Integer[] expectedResults) {
     doMultiUserGetAll(numOfUsers, expectedResults, false);
   }
 
-  protected static void doMultiUserGetAll(Integer numOfUsers,
-      Integer[] expectedResults, boolean useTX) {
+  protected static void doMultiUserGetAll(final Integer numOfUsers,
+                                          final Integer[] expectedResults, final boolean useTX) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserGetAll(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -695,8 +665,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserGets(Integer num, Integer numOfUsers,
-      Integer[] expectedResults) {
+  protected static void doMultiUserGets(final Integer num, final Integer numOfUsers,
+                                        final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserGets(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -707,8 +677,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserRegionDestroys(Integer numOfUsers,
-      Integer[] expectedResults) {
+  protected static void doMultiUserRegionDestroys(final Integer numOfUsers,
+                                                  final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserRegionDestroys(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -719,8 +689,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserDestroys(Integer num, Integer numOfUsers,
-      Integer[] expectedResults) {
+  protected static void doMultiUserDestroys(final Integer num, final Integer numOfUsers,
+                                            final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserDestroys(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -731,8 +701,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserInvalidates(Integer num, Integer numOfUsers,
-      Integer[] expectedResults) {
+  protected static void doMultiUserInvalidates(final Integer num, final Integer numOfUsers,
+                                               final Integer[] expectedResults) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserInvalidates(): numOfUsers = " + numOfUsers
           + ", but expected results " + expectedResults.length);
@@ -743,8 +713,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserContainsKeys(Integer num, Integer numOfUsers,
-      Integer[] expectedResults, Boolean[] results) {
+  protected static void doMultiUserContainsKeys(final Integer num, final Integer numOfUsers,
+                                                final Integer[] expectedResults, final Boolean[] results) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserContainsKeys(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
@@ -759,8 +729,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserQueries(Integer numOfUsers,
-      Integer[] expectedResults, Integer valueSize) {
+  protected static void doMultiUserQueries(final Integer numOfUsers,
+                                           final Integer[] expectedResults, final Integer valueSize) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserQueries(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
@@ -771,8 +741,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserFE(Integer numOfUsers, Function function,
-      Integer[] expectedResults, Object[] results, Boolean isFailoverCase) {
+  protected static void doMultiUserFE(final Integer numOfUsers, final Function function,
+                                      final Integer[] expectedResults, final Object[] results, final Boolean isFailoverCase) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserFE(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
@@ -798,8 +768,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doMultiUserQueryExecute(Integer numOfUsers,
-      Integer[] expectedResults, Integer result) {
+  protected static void doMultiUserQueryExecute(final Integer numOfUsers,
+                                                final Integer[] expectedResults, final Integer result) {
     if (numOfUsers != expectedResults.length) {
       fail("SecurityTestUtil.doMultiUserFE(): numOfUsers = " + numOfUsers
           + ", but #expected results " + expectedResults.length);
@@ -810,31 +780,31 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doLocalGets(Integer num) {
+  protected static void doLocalGets(final Integer num) {
     doLocalGetsP(num.intValue(), false);
   }
 
-  protected static void doNPuts(Integer num) {
+  protected static void doNPuts(final Integer num) {
     doPutsP(num, new Integer(NO_EXCEPTION), true);
   }
 
-  protected static void doNPuts(Integer num, Integer expectedResult) {
+  protected static void doNPuts(final Integer num, final Integer expectedResult) {
     doPutsP(num, expectedResult, true);
   }
 
-  protected static void doNGets(Integer num) {
+  protected static void doNGets(final Integer num) {
     doGetsP(num, new Integer(NO_EXCEPTION), true);
   }
 
-  protected static void doNGets(Integer num, Integer expectedResult) {
+  protected static void doNGets(final Integer num, final Integer expectedResult) {
     doGetsP(num, expectedResult, true);
   }
 
-  protected static void doNLocalGets(Integer num) {
+  protected static void doNLocalGets(final Integer num) {
     doLocalGetsP(num.intValue(), true);
   }
 
-  protected static void doSimpleGet(String expectedResult) {
+  protected static void doSimpleGet(final String expectedResult) {
     if (regionRef != null) {
       try {
         regionRef.get("KEY");
@@ -854,7 +824,7 @@ public final class SecurityTestUtil {
     }
   }
 
-  protected static void doSimplePut(String expectedResult) {
+  protected static void doSimplePut(final String expectedResult) {
     if (regionRef != null) {
       try {
         regionRef.put("KEY", "VALUE");
@@ -912,7 +882,7 @@ public final class SecurityTestUtil {
   }
 
   protected static void closeCache() {
-    removeExpectedExceptions(ignoredExceptions, getLogWriter());
+    removeExpectedExceptions(ignoredExceptions);
     if (cache != null && !cache.isClosed()) {
       DistributedSystem sys = cache.getDistributedSystem();
       cache.close();
@@ -922,8 +892,8 @@ public final class SecurityTestUtil {
     DistributedTestCase.disconnectFromDS();
   }
 
-  protected static void closeCache(Boolean keepAlive) {
-    removeExpectedExceptions(ignoredExceptions, getLogWriter());
+  protected static void closeCache(final Boolean keepAlive) {
+    removeExpectedExceptions(ignoredExceptions);
     if (cache != null && !cache.isClosed()) {
       DistributedSystem sys = cache.getDistributedSystem();
       cache.close(keepAlive);
@@ -935,11 +905,11 @@ public final class SecurityTestUtil {
 
   // ------------------------- private static methods -------------------------
 
-  private static void initClientDynamicRegionFactory(String poolName) {
+  private static void initClientDynamicRegionFactory(final String poolName) {
     DynamicRegionFactory.get().open(new DynamicRegionFactory.Config(null, poolName, false, true));
   }
 
-  private static void addJavaProperties(Properties javaProps) {
+  private static void addJavaProperties(final Properties javaProps) {
     if (javaProps != null) {
       Iterator iter = javaProps.entrySet().iterator();
       while (iter.hasNext()) {
@@ -949,7 +919,7 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void removeJavaProperties(Properties javaProps) {
+  private static void removeJavaProperties(final Properties javaProps) {
     if (javaProps != null) {
       Properties props = System.getProperties();
       Iterator iter = javaProps.keySet().iterator();
@@ -960,13 +930,13 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doPutsP(Integer num, Integer expectedResult,
-                              boolean newVals) {
+  private static void doPutsP(final Integer num, final Integer expectedResult,
+                              final boolean newVals) {
     doPutsP(num, Integer.valueOf(0), expectedResult, newVals);
   }
 
-  private static void doPutsP(Integer num, Integer multiUserIndex,
-                              Integer expectedResult, boolean newVals) {
+  private static void doPutsP(final Integer num, final Integer multiUserIndex,
+                              final Integer expectedResult, final boolean newVals) {
     assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
@@ -1050,7 +1020,7 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static HashMap getSSLFields(Object obj, Class[] classes) {
+  private static HashMap getSSLFields(final Object obj, final Class[] classes) {
     HashMap resultFields = new HashMap();
     Field[] fields = obj.getClass().getDeclaredFields();
     for (int index = 0; index < fields.length; ++index) {
@@ -1075,7 +1045,7 @@ public final class SecurityTestUtil {
     return resultFields;
   }
 
-  private static void makeNullSSLFields(Object obj, Map fieldMap) {
+  private static void makeNullSSLFields(final Object obj, final Map fieldMap) {
     Iterator fieldIter = fieldMap.entrySet().iterator();
     while (fieldIter.hasNext()) {
       Map.Entry entry = (Map.Entry)fieldIter.next();
@@ -1094,7 +1064,7 @@ public final class SecurityTestUtil {
   }
 
   // Deal with javax SSL properties
-  private static void makeNullStaticField(Class cls) {
+  private static void makeNullStaticField(final Class cls) {
     Field[] fields = cls.getDeclaredFields();
     for (int index = 0; index < fields.length; ++index) {
       Field field = fields[index];
@@ -1122,8 +1092,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doQueryExecuteP(Integer multiUserIndex,
-                                      Integer expectedResult, Integer expectedValue) {
+  private static void doQueryExecuteP(final Integer multiUserIndex,
+                                      final Integer expectedResult, final Integer expectedValue) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1184,9 +1154,9 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doFunctionExecuteP(Integer multiUserIndex,
-                                         Function function, Integer expectedResult, Object expectedValue,
-                                         String method) {
+  private static void doFunctionExecuteP(final Integer multiUserIndex,
+                                         final Function function, Integer expectedResult, final Object expectedValue,
+                                         final String method) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1269,8 +1239,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doQueriesP(Integer multiUserIndex,
-                                 Integer expectedResult, Integer expectedValue) {
+  private static void doQueriesP(final Integer multiUserIndex,
+                                 final Integer expectedResult, final Integer expectedValue) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1333,8 +1303,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doContainsKeysP(Integer num, Integer multiUserIndex,
-                                      Integer expectedResult, boolean newVals, boolean expectedValue) {
+  private static void doContainsKeysP(final Integer num, final Integer multiUserIndex,
+                                      final Integer expectedResult, final boolean newVals, final boolean expectedValue) {
 
     assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
@@ -1401,8 +1371,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doInvalidatesP(Integer num, Integer multiUserIndex,
-                                     Integer expectedResult, boolean newVals) {
+  private static void doInvalidatesP(final Integer num, final Integer multiUserIndex,
+                                     final Integer expectedResult, final boolean newVals) {
     assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
@@ -1466,8 +1436,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doDestroysP(Integer num, Integer multiUserIndex,
-                                  Integer expectedResult, boolean newVals) {
+  private static void doDestroysP(final Integer num, final Integer multiUserIndex,
+                                  final Integer expectedResult, final boolean newVals) {
     assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
@@ -1531,8 +1501,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doRegionDestroysP(Integer multiuserIndex,
-                                        Integer expectedResult) {
+  private static void doRegionDestroysP(final Integer multiuserIndex,
+                                        final Integer expectedResult) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1591,7 +1561,7 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doLocalGetsP(int num, boolean checkNVals) {
+  private static void doLocalGetsP(final int num, final boolean checkNVals) {
     assertTrue(num <= KEYS.length);
     String[] vals = VALUES;
     if (checkNVals) {
@@ -1616,8 +1586,8 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doGetAllP(Integer multiUserIndex,
-                                Integer expectedResult, boolean useTX) {
+  private static void doGetAllP(final Integer multiUserIndex,
+                                final Integer expectedResult, final boolean useTX) {
     Region region = null;
     try {
       if (multiUserAuthMode) {
@@ -1685,13 +1655,13 @@ public final class SecurityTestUtil {
     }
   }
 
-  private static void doGetsP(Integer num, Integer expectedResult,
-                              boolean newVals) {
+  private static void doGetsP(final Integer num, final Integer expectedResult,
+                              final boolean newVals) {
     doGetsP(num, Integer.valueOf(0), expectedResult, newVals);
   }
 
-  private static void doGetsP(Integer num, Integer multiUserIndex,
-                              Integer expectedResult, boolean newVals) {
+  private static void doGetsP(final Integer num, final Integer multiUserIndex,
+                              final Integer expectedResult, final boolean newVals) {
     assertTrue(num.intValue() <= KEYS.length);
     Region region = null;
     try {
@@ -1770,14 +1740,14 @@ public final class SecurityTestUtil {
 
   // ----------------------------- member methods -----------------------------
 
-  public DistributedSystem createSystem(Properties sysProps, Properties javaProps) {
+  public DistributedSystem createSystem(final Properties sysProps, final Properties javaProps) {
     closeCache();
     clearStaticSSLContext();
     setJavaProps(javaProps);
 
     DistributedSystem dsys = distributedTestCase.getSystem(sysProps);
     assertNotNull(dsys);
-    addIgnoredExceptions(ignoredExceptions, getLogWriter());
+    addIgnoredExceptions(ignoredExceptions);
     return dsys;
   }
 

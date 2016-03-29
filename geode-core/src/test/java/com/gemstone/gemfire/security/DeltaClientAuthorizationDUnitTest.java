@@ -18,6 +18,8 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.security.ClientAuthenticationUtils.*;
+import static com.gemstone.gemfire.security.ClientAuthorizationTestBase.*;
 import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
@@ -72,19 +74,21 @@ public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorization
     // Start servers with all required properties
     Properties serverProps = buildProperties(authenticator, accessor, false, extraAuthProps, extraAuthzProps);
 
-    Integer port1 = createServer1(javaProps, serverProps);
-    Integer port2 = createServer2(javaProps, serverProps);
+    int port1 = createServer1(javaProps, serverProps);
+    int port2 = createServer2(javaProps, serverProps);
 
     // Start client1 with valid CREATE credentials
     Properties createCredentials = gen.getAllowedCredentials(new OperationCode[] { OperationCode.PUT }, new String[] { REGION_NAME }, 1);
     javaProps = cGen.getJavaProperties();
 
     getLogWriter().info("testAllowPutsGets: For first client credentials: " + createCredentials);
+
     createClient1(javaProps, authInit, port1, port2, createCredentials);
 
     // Start client2 with valid GET credentials
     Properties getCredentials = gen.getAllowedCredentials(new OperationCode[] { OperationCode.GET }, new String[] { REGION_NAME }, 2);
     javaProps = cGen.getJavaProperties();
+
     getLogWriter().info("testAllowPutsGets: For second client credentials: " + getCredentials);
 
     createClient2(javaProps, authInit, port1, port2, getCredentials);
@@ -99,23 +103,23 @@ public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorization
     client2.invoke(() -> doGets(2, NO_EXCEPTION));
   }
 
-  private void createClient2(Properties javaProps, String authInit, int port1, int port2, Properties getCredentials) {
-    client2.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, getCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
+  private void createClient2(final Properties javaProps, final String authInit, final int port1, final int port2, final Properties getCredentials) {
+    client2.invoke(() -> createCacheClient(authInit, getCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
-  private void createClient1(Properties javaProps, String authInit, int port1, int port2, Properties createCredentials) {
-    client1.invoke(() -> ClientAuthenticationUtils.createCacheClient(authInit, createCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
+  private void createClient1(final Properties javaProps, final String authInit, final int port1, final int port2, final Properties createCredentials) {
+    client1.invoke(() -> createCacheClient(authInit, createCredentials, javaProps, port1, port2, 0, NO_EXCEPTION));
   }
 
-  private Integer createServer2(Properties javaProps, Properties serverProps) {
-    return server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
+  private int createServer2(final Properties javaProps, final Properties serverProps) {
+    return server2.invoke(() -> createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
-  private Integer createServer1(Properties javaProps, Properties serverProps) {
-    return server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), serverProps, javaProps));
+  private int createServer1(final Properties javaProps, final Properties serverProps) {
+    return server1.invoke(() -> createCacheServer(getLocatorPort(), serverProps, javaProps));
   }
 
-  private void doPuts(int num, int expectedResult) {
+  private void doPuts(final int num, final int expectedResult) {
     assertTrue(num <= KEYS.length);
     Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
@@ -130,10 +134,10 @@ public final class DeltaClientAuthorizationDUnitTest extends ClientAuthorization
     }
   }
 
-  private void doGets(int num, int expectedResult) {
+  private void doGets(final int num, final int expectedResult) {
     assertTrue(num <= KEYS.length);
 
-    Region region = SecurityTestUtil.getCache().getRegion(REGION_NAME);
+    Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
 
     for (int index = 0; index < num; ++index) {

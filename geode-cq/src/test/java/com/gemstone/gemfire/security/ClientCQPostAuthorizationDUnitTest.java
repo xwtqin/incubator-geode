@@ -74,11 +74,7 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
   }
 
   @Override
-  public final void preTearDownClientAuthorizationTestBase() throws Exception {
-    client1.invoke(() -> closeCache());
-    client2.invoke(() -> closeCache());
-    server1.invoke(() -> closeCache());
-    server2.invoke(() -> closeCache());
+  public final void postTearDownClientAuthorizationTestBase() throws Exception {
     this.cqNameToQueryStrings.clear();
   }
 
@@ -181,7 +177,7 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
     server1.invoke(() -> closeCache());
     server2.invoke(() -> closeCache());
 
-    server1.invoke(() -> createServerCache(serverProps, javaProps, locatorPort, port1));
+    server1.invoke(() -> createTheServerCache(serverProps, javaProps, locatorPort, port1));
     client1.invoke(() -> createClientCache(javaProps2, authInit, authProps, new int[] {port1, port2}, numOfUsers, postAuthzAllowed));
     client2.invoke(() -> createClientCache(javaProps2, authInit, authProps, new int[] {port1, port2}, numOfUsers, postAuthzAllowed));
 
@@ -203,7 +199,7 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
     client1.invoke(() -> checkCQListeners(numOfUsers, postAuthzAllowed, numOfPuts + 1/* last key */, 0, !failover));
 
     if (failover) {
-      server2.invoke(() -> createServerCache(serverProps, javaProps, locatorPort, port2));
+      server2.invoke(() -> createTheServerCache(serverProps, javaProps, locatorPort, port2));
       server1.invoke(() -> closeCache());
 
       // Allow time for client1 to register its CQs on server2
@@ -215,8 +211,8 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
     }
   }
 
-  private void createServerCache(final Properties serverProps, final Properties javaProps, final int locatorPort, final  int serverPort) {
-    SecurityTestUtil.createCacheServer(serverProps, javaProps, locatorPort, null, serverPort, true, NO_EXCEPTION);
+  private void createTheServerCache(final Properties serverProps, final Properties javaProps, final int locatorPort, final  int serverPort) {
+    SecurityTestUtil.createCacheServer(serverProps, javaProps, locatorPort, (String)null, serverPort, true, NO_EXCEPTION);
   }
 
   private void createClientCache(final Properties javaProps, final String authInit, final Properties[] authProps, final int ports[], final int numOfUsers, final boolean[] postAuthzAllowed) {
@@ -318,7 +314,7 @@ public class ClientCQPostAuthorizationDUnitTest extends ClientAuthorizationTestB
 
   private void waitForLastKey(final int cqIndex) {
     String cqName = "CQ_" + cqIndex;
-    QueryService qService = SecurityTestUtil.getProxyCaches(cqIndex).getQueryService();
+    QueryService qService = getProxyCaches(cqIndex).getQueryService();
     ClientCQImpl cqQuery = (ClientCQImpl)qService.getCq(cqName);
     ((CqQueryTestListener)cqQuery.getCqListeners()[0]).waitForCreated("LAST_KEY");
   }

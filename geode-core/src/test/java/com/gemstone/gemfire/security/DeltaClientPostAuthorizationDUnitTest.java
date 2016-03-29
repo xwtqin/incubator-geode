@@ -19,6 +19,7 @@
 package com.gemstone.gemfire.security;
 
 import static com.gemstone.gemfire.internal.AvailablePort.*;
+import static com.gemstone.gemfire.security.DeltaClientPostAuthorizationDUnitTest.*;
 import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.IgnoredException.*;
@@ -27,19 +28,12 @@ import static com.gemstone.gemfire.test.dunit.LogWriterUtils.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
 import com.gemstone.gemfire.DeltaTestImpl;
-import com.gemstone.gemfire.cache.InterestResultPolicy;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.client.ServerConnectivityException;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import com.gemstone.gemfire.cache.query.CqException;
-import com.gemstone.gemfire.cache.query.QueryInvocationTargetException;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest;
-import com.gemstone.gemfire.internal.util.Callable;
 import com.gemstone.gemfire.security.generator.AuthzCredentialGenerator;
 import com.gemstone.gemfire.security.generator.CredentialGenerator;
 import com.gemstone.gemfire.test.dunit.VM;
@@ -66,7 +60,7 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
 
   @Override
   public final void preTearDownClientAuthorizationTestBase() throws Exception {
-    SecurityTestUtil.closeCache();
+    closeCache();
   }
 
   @Test
@@ -106,15 +100,15 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
         // End of current operation block; execute all the operations on the servers with failover
         if (opBlock.size() > 0) {
           // Start the first server and execute the operation block
-          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), port1, serverProps, javaProps ));
-          server2.invoke(() -> SecurityTestUtil.closeCache());
+          server1.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port1, serverProps, javaProps ));
+          server2.invoke(() -> closeCache());
 
           executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
 
           if (!currentOp.equals(OperationWithAction.OPBLOCK_NO_FAILOVER)) {
             // Failover to the second server and run the block again
-            server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(SecurityTestUtil.getLocatorPort(), port2, serverProps, javaProps ));
-            server1.invoke(() -> SecurityTestUtil.closeCache());
+            server2.invoke(() -> ClientAuthorizationTestBase.createCacheServer(getLocatorPort(), port2, serverProps, javaProps ));
+            server1.invoke(() -> closeCache());
 
             executeOpBlock(opBlock, port1, port2, authInit, extraAuthProps, extraAuthzProps, tgen, rnd);
           }
@@ -180,26 +174,26 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
           credentialsTypeStr = " authorized " + authOpCode;
         }
 
-        Properties clientProps = SecurityTestUtil.concatProperties(new Properties[] { opCredentials, extraAuthProps, extraAuthzProps });
+        Properties clientProps = concatProperties(new Properties[] { opCredentials, extraAuthProps, extraAuthzProps });
 
         // Start the client with valid credentials but allowed or disallowed to perform an operation
         getLogWriter().info("executeOpBlock: For client" + clientNum + credentialsTypeStr + " credentials: " + opCredentials);
         boolean setupDynamicRegionFactory = (opFlags & OpFlags.ENABLE_DRF) > 0;
         if (useThisVM) {
-          createCacheClient(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, SecurityTestUtil.NO_EXCEPTION);
+          createCacheClient(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION);
 
         } else {
-          clientVM.invoke(() -> createCacheClient(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, SecurityTestUtil.NO_EXCEPTION));
+          clientVM.invoke(() -> createCacheClient(authInit, clientProps, javaProps, new int[] { port1, port2 }, 0, setupDynamicRegionFactory, NO_EXCEPTION));
         }
       }
 
       int expectedResult;
       if ((opFlags & OpFlags.CHECK_NOTAUTHZ) > 0) {
-        expectedResult = SecurityTestUtil.NOTAUTHZ_EXCEPTION;
+        expectedResult = NOTAUTHZ_EXCEPTION;
       } else if ((opFlags & OpFlags.CHECK_EXCEPTION) > 0) {
-        expectedResult = SecurityTestUtil.OTHER_EXCEPTION;
+        expectedResult = OTHER_EXCEPTION;
       } else {
-        expectedResult = SecurityTestUtil.NO_EXCEPTION;
+        expectedResult = NO_EXCEPTION;
       }
 
       // Perform the operation from selected client
@@ -208,15 +202,14 @@ public class DeltaClientPostAuthorizationDUnitTest extends ClientAuthorizationTe
       } else {
         byte ordinal = opCode.toOrdinal();
         int[] indices = currentOp.getIndices();
-        clientVM.invoke(() -> DeltaClientPostAuthorizationDUnitTest.doOp(new Byte(ordinal), indices, new Integer(opFlags), new Integer(expectedResult) ));
+        clientVM.invoke(() -> doOp(new Byte(ordinal), indices, new Integer(opFlags), new Integer(expectedResult) ));
       }
     }
   }
 
-  private final void setUpDeltas() {
+  private void setUpDeltas() {
     for (int i = 0; i < 8; i++) {
-      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0],
-              new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("0", 0));
+      deltas[i] = new DeltaTestImpl(0, "0", new Double(0), new byte[0], new PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1("0", 0));
     }
     deltas[1].setIntVar(5);
     deltas[2].setIntVar(5);

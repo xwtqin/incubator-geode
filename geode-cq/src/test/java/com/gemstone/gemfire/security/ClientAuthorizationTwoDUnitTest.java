@@ -161,8 +161,7 @@ public class ClientAuthorizationTwoDUnitTest extends ClientAuthorizationTestBase
         new OperationWithAction(OperationCode.REGION_DESTROY, 1, OpFlags.NONE, 1),
         new OperationWithAction(OperationCode.GET, 2, OpFlags.CHECK_NOKEY | OpFlags.CHECK_EXCEPTION, 4),
 
-        // Skip failover for region destroy since it shall fail
-        // without restarting the server
+        // Skip failover for region destroy since it shall fail without restarting the server
         OperationWithAction.OPBLOCK_NO_FAILOVER };
   }
 }

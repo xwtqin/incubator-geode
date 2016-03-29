@@ -18,6 +18,7 @@
  */
 package com.gemstone.gemfire.security;
 
+import static com.gemstone.gemfire.internal.AvailablePort.*;
 import static com.gemstone.gemfire.security.SecurityTestUtil.*;
 import static com.gemstone.gemfire.test.dunit.Assert.*;
 import static com.gemstone.gemfire.test.dunit.Host.*;
@@ -53,7 +54,6 @@ import com.gemstone.gemfire.cache.query.QueryService;
 import com.gemstone.gemfire.cache.query.SelectResults;
 import com.gemstone.gemfire.cache.query.Struct;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.AvailablePort.Keeper;
 import com.gemstone.gemfire.internal.cache.AbstractRegionEntry;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
@@ -199,14 +199,14 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
 
   protected static Integer createCacheServer(int locatorPort, Properties authProps, Properties javaProps) {
     if (locatorPort == 0) {
-      locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
+      locatorPort = getRandomAvailablePort(SOCKET);
     }
     return SecurityTestUtil.createCacheServer(authProps, javaProps, locatorPort, null, 0, true, NO_EXCEPTION);
   }
 
   protected static int createCacheServer(int locatorPort, int serverPort, Properties authProps, Properties javaProps) {
     if (locatorPort == 0) {
-      locatorPort = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
+      locatorPort = getRandomAvailablePort(SOCKET);
     }
     return SecurityTestUtil.createCacheServer(authProps, javaProps, locatorPort, null, serverPort, true, NO_EXCEPTION);
   }
@@ -839,10 +839,10 @@ public class ClientAuthorizationTestBase extends JUnit4DistributedTestCase {
     Properties serverProps = buildProperties(authenticator, accessor, false, extraAuthProps, extraAuthzProps);
 
     // Get ports for the servers
-    Keeper locator1PortKeeper = AvailablePort.getRandomAvailablePortKeeper(AvailablePort.SOCKET);
-    Keeper locator2PortKeeper = AvailablePort.getRandomAvailablePortKeeper(AvailablePort.SOCKET);
-    Keeper port1Keeper = AvailablePort.getRandomAvailablePortKeeper(AvailablePort.SOCKET);
-    Keeper port2Keeper = AvailablePort.getRandomAvailablePortKeeper(AvailablePort.SOCKET);
+    Keeper locator1PortKeeper = getRandomAvailablePortKeeper(SOCKET);
+    Keeper locator2PortKeeper = getRandomAvailablePortKeeper(SOCKET);
+    Keeper port1Keeper = getRandomAvailablePortKeeper(SOCKET);
+    Keeper port2Keeper = getRandomAvailablePortKeeper(SOCKET);
     int locator1Port = locator1PortKeeper.getPort();
     int locator2Port = locator2PortKeeper.getPort();
     int port1 = port1Keeper.getPort();

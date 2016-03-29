@@ -27,67 +27,66 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 /**
  * Extracted from ClientAuthenticationDUnitTest
  */
-public class ClientAuthenticationUtils {
+public abstract class ClientAuthenticationUtils {
 
   protected ClientAuthenticationUtils() {
   }
 
-  public static Integer createCacheServer(int dsPort, String locatorString, String authenticator, Properties extraProps, Properties javaProps) {
+  protected static Integer createCacheServer(int dsPort, String locatorString, String authenticator, Properties extraProps, Properties javaProps) {
     Properties authProps;
     if (extraProps == null) {
       authProps = new Properties();
     } else {
-      authProps = (Properties)extraProps;
+      authProps = extraProps;
     }
 
     if (authenticator != null) {
-      authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator.toString());
+      authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
     }
 
-    return SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, (String)locatorString, 0, NO_EXCEPTION);
+    return SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, 0, NO_EXCEPTION);
   }
 
-  public static void createCacheServer(int dsPort, String locatorString, int serverPort, String authenticator, Properties extraProps, Properties javaProps) {
+  protected static void createCacheServer(int dsPort, String locatorString, int serverPort, String authenticator, Properties extraProps, Properties javaProps) {
     Properties authProps;
     if (extraProps == null) {
       authProps = new Properties();
     } else {
-      authProps = (Properties)extraProps;
+      authProps = extraProps;
     }
 
     if (authenticator != null) {
-      authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator.toString());
+      authProps.setProperty(DistributionConfig.SECURITY_CLIENT_AUTHENTICATOR_NAME, authenticator);
     }
     SecurityTestUtil.createCacheServer(authProps, javaProps, dsPort, locatorString, serverPort, NO_EXCEPTION);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, boolean subscriptionEnabled, int expectedResult) {
-
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, boolean subscriptionEnabled, int expectedResult) {
     SecurityTestUtil.createCacheClient(authInit, authProps, javaProps, ports, numConnections, false, multiUserMode, subscriptionEnabled, expectedResult);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, int expectedResult) {
-    createCacheClient(authInit, (Properties)authProps, (Properties)javaProps, ports, numConnections, multiUserMode, true, expectedResult);
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int[] ports, int numConnections, boolean multiUserMode, int expectedResult) {
+    createCacheClient(authInit, authProps, javaProps, ports, numConnections, multiUserMode, true, expectedResult);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int numConnections, int expectedResult) {
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int numConnections, int expectedResult) {
     createCacheClient(authInit, authProps, javaProps, new int[] { port1 }, numConnections, Boolean.FALSE, Boolean.TRUE, expectedResult);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int port2, int numConnections, int expectedResult) {
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int port2, int numConnections, int expectedResult) {
     createCacheClient(authInit, authProps, javaProps, port1, port2, numConnections, Boolean.FALSE, expectedResult);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, Integer port1, Integer port2, int numConnections, boolean multiUserMode, int expectedResult) {
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, Integer port1, Integer port2, int numConnections, boolean multiUserMode, int expectedResult) {
     createCacheClient(authInit, authProps, javaProps, port1, port2, numConnections, multiUserMode, Boolean.TRUE, expectedResult);
   }
 
-  public static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int port2, int numConnections, boolean multiUserMode, boolean subscriptionEnabled, int expectedResult) {
+  protected static void createCacheClient(String authInit, Properties authProps, Properties javaProps, int port1, int port2, int numConnections, boolean multiUserMode, boolean subscriptionEnabled, int expectedResult) {
     createCacheClient(authInit, authProps, javaProps, new int[] { port1, port2 }, numConnections, multiUserMode, subscriptionEnabled, expectedResult);
   }
 
-  public static void registerAllInterest() {
-    Region region = SecurityTestUtil.getCache().getRegion(SecurityTestUtil.REGION_NAME);
+  protected static void registerAllInterest() {
+    Region region = getCache().getRegion(REGION_NAME);
     assertNotNull(region);
     region.registerInterestRegex(".*");
   }
