@@ -65,7 +65,6 @@ import com.gemstone.gemfire.test.dunit.WaitCriterion;
 import com.gemstone.gemfire.test.junit.categories.IntegrationTest;
 
 /**
- * @author dsmith
  *
  */
 @Category(IntegrationTest.class)
@@ -265,13 +264,13 @@ public class ConnectionManagerJUnitTest {
     Assert.assertEquals(5,factory.creates);
     Assert.assertEquals(0,factory.destroys);
     Assert.assertEquals(0,factory.closes);
-    Assert.assertEquals(0,poolStats.getIdleExpire());
-
-    // make sure a thread local connection that has been passivated can idle-expire
-    manager.passivate(conn1, true);
+    Assert.assertEquals(0,poolStats.getIdleExpire());    
     
     {
       long start = System.currentTimeMillis();
+   // make sure a thread local connection that has been passivated can idle-expire
+      manager.passivate(conn1, true);
+      
       synchronized(factory) {
         long remaining = TIMEOUT;
         while(factory.destroys < 1 && remaining > 0) {
@@ -282,7 +281,7 @@ public class ConnectionManagerJUnitTest {
       long elapsed = System.currentTimeMillis() - start;
       Assert.assertTrue("Elapsed " + elapsed + " is less than idle timeout "
           + idleTimeout,
-          elapsed + ALLOWABLE_ERROR_IN_EXPIRATION >= idleTimeout);
+          elapsed >= idleTimeout && elapsed <= idleTimeout + 100);
       Assert.assertEquals(5,factory.creates);
       Assert.assertEquals(1,factory.destroys);
       Assert.assertEquals(1,factory.closes);

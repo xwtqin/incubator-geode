@@ -50,7 +50,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(DistributedTest.class)
 public class MultiUserDurableCQAuthzDUnitTest extends ClientAuthorizationTestBase {
-  
+
   private final Map<String, String> cqNameToQueryStrings = new HashMap<>();
 
   @Override
