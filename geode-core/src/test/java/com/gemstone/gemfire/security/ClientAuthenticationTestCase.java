@@ -87,7 +87,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the servers
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
@@ -133,7 +133,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the servers
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = createServer1(extraProps, javaProps, authenticator, locPort1, locString);
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
@@ -176,7 +176,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the servers
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = createServer1(extraProps, javaProps, authenticator, locPort1, locString);
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
@@ -212,7 +212,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
 
     // Start the server
     int locPort1 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = createServer1(extraProps, javaProps, authenticator, locPort1, locString);
     Properties credentials = gen.getValidCredentials(1);
@@ -233,7 +233,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the servers
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = createServer1(extraProps, javaProps, authenticator, locPort1, locString);
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
@@ -272,7 +272,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
 
     // Start the server with invalid authenticator
     int locPort1 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, "com.gemstone.gemfire.none", extraProps, javaProps));
 
@@ -305,7 +305,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the servers with no authenticator
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, null, extraProps, javaProps));
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, null, extraProps, javaProps));
@@ -343,7 +343,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the first server
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
 
@@ -419,7 +419,7 @@ public abstract class ClientAuthenticationTestCase extends JUnit4DistributedTest
     // Start the first server
     int locPort1 = getLocatorPort();
     int locPort2 = getLocatorPort();
-    String locString = getLocatorString();
+    String locString = getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
 

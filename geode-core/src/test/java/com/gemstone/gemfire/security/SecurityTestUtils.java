@@ -180,7 +180,7 @@ public final class SecurityTestUtils {
    * Note that this clears the string after returning for convenience in reusing
    * for other tests. Hence it should normally be invoked only once for a test.
    */
-  protected static String getLocatorString() { // TODO: rename
+  protected static String getAndClearLocatorString() {
     String locString = locatorString;
     locatorString = null;
     return locString;

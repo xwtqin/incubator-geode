@@ -272,7 +272,7 @@ public class MultiUserAPIDUnitTest extends ClientAuthorizationTestCase {
     // Start the servers
     int locPort1 = SecurityTestUtils.getLocatorPort();
     int locPort2 = SecurityTestUtils.getLocatorPort();
-    String locString = SecurityTestUtils.getLocatorString();
+    String locString = SecurityTestUtils.getAndClearLocatorString();
 
     int port1 = server1.invoke(() -> createCacheServer(locPort1, locString, authenticator, extraProps, javaProps));
     int port2 = server2.invoke(() -> createCacheServer(locPort2, locString, authenticator, extraProps, javaProps));
