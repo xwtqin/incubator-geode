@@ -204,6 +204,9 @@ public class CacheFactory {
    * @throws RegionExistsException
    *         If the declarative caching XML file describes a region
    *         that already exists (including the root region).
+   * @throws AuthenticationFailedException if authentication fails.
+   * @throws AuthenticationRequiredException if the distributed system is in secure mode 
+   *         and this new member is not configured with security credentials.
    * @since 6.5
    */
   public Cache create()
