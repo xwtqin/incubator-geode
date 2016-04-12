@@ -8426,11 +8426,6 @@ public abstract class MultiVMRegionTestCase extends RegionTestCase {
   
   
   public void versionTestTombstones() {
-    _versionTestTombstones();
-    _versionTestTombstones();
-    _versionTestTombstones();
-  }
-  public void _versionTestTombstones() {
     disconnectAllFromDS();
     Host host = Host.getHost(0);
     VM vm0 = host.getVM(0);
