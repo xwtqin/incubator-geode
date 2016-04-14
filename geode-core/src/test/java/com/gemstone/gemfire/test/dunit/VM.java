@@ -440,22 +440,22 @@ public class VM implements Serializable {
   }
 
   private MethExecutorResult execute(final Class targetClass, final String methodName, final Object[] args) {
-      try {
-        return this.client.executeMethodOnClass(targetClass.getName(), methodName, args);
-      } catch (RemoteException e) {
-        throw new RMIException(this, targetClass.getName(), methodName, e );
-      }
+    try {
+      return this.client.executeMethodOnClass(targetClass.getName(), methodName, args);
+    } catch (RemoteException exception) {
+      throw new RMIException(this, targetClass.getName(), methodName, exception);
+    }
   }
 
   private MethExecutorResult execute(final Object targetObject, final String methodName, final Object[] args) {
-      try {
-        if (args == null) {
-          return this.client.executeMethodOnObject(targetObject, methodName);
-        } else {
-          return this.client.executeMethodOnObject(targetObject, methodName, args);
-        }
-      } catch (RemoteException e) {
-        throw new RMIException(this, targetObject.getClass().getName(), methodName, e );
+    try {
+      if (args == null) {
+        return this.client.executeMethodOnObject(targetObject, methodName);
+      } else {
+        return this.client.executeMethodOnObject(targetObject, methodName, args);
       }
+    } catch (RemoteException exception) {
+      throw new RMIException(this, targetObject.getClass().getName(), methodName, exception);
+    }
   }
 }
